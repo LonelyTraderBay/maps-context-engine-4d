@@ -1252,7 +1252,7 @@ Cột Cases là truy vết tới oracle nghiệm thu, không có nghĩa một ta
 
 | Task | Gate | Dependencies | Deliverable / định nghĩa hoàn thành | Req | Cases | Status | Owner | Evidence |
 |---|---|---|---|---|---|---|---|---|
-| T001 | G0 | NONE | Site survey + safe private module bootstrap only; preserve existing workspace; no feature code trước T108. Resolve source-policy docs/mode theo S50; ghi actual path/hash, không sửa bản gốc. AW-08: khảo sát Git/remote/branch/identity/hooks/rules, xác định repo+nhánh được phép; bootstrap CI thực cho docs/foundation trước delivery đầu, không job echo PASS hoặc claim product chưa có. Verify stable repository ID/visibility/publication authority; actual credential-event-checkout canary PASS trước closing T001. H04/H07: delivery vs merge-stage plan/canary, fresh destination identity/visibility trước mọi push; archive root/private/owned/staging naming trước first payload. J01/J03/J05/J06 và L01–L04: verified canary/source graph, historical P/live C PR binding, push lifecycle/pre-post, native mapping và fresh live CI collection. M01/M03/M04 bootstrap: actual S51 common records, permitted feature-ref/PR flow, Vietnamese commit metadata/self-review trước first delivery. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R001,R105,R106,R125 | C041,C137,C138,C181,C191 | TODO | UNASSIGNED | NONE |
+| T001 | G0 | NONE | Site survey + safe private module bootstrap only; preserve existing workspace; no feature code trước T108. Resolve source-policy docs/mode theo S50; ghi actual path/hash, không sửa bản gốc. AW-08: khảo sát Git/remote/branch/identity/hooks/rules, xác định repo+nhánh được phép; bootstrap CI thực cho docs/foundation trước delivery đầu, không job echo PASS hoặc claim product chưa có. Verify stable repository ID/visibility/publication authority; actual credential-event-checkout canary PASS trước closing T001. H04/H07: delivery vs merge-stage plan/canary, fresh destination identity/visibility trước mọi push; archive root/private/owned/staging naming trước first payload. J01/J03/J05/J06 và L01–L04: verified canary/source graph, historical P/live C PR binding, push lifecycle/pre-post, native mapping và fresh live CI collection. M01/M03/M04 bootstrap: actual S51 common records, permitted feature-ref/PR flow, Vietnamese commit metadata/self-review trước first delivery. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R001,R105,R106,R125 | C041,C137,C138,C181,C191 | IN_PROGRESS | Codex | E-T001-LOCAL-01; payload 3a071439df555d281c363e43ebeb37fb4da99972; shell auth pending; classic protection unknown (403); delivery, CI and canary NOT_RUN |
 | T002 | G0 | T001 | Pin exact toolchain/dependencies/license/API; DEP-01 actual embedded SQLite patch gate+driver/FTS5/pool smoke; S51 preflight trước bounded build. AI tự resolve pins trong BP-04, không @latest. J07: effective sqlite_busy_timeout_ms default5000/nondefault1234 trên mỗi pooled connection. | R001,R036,R108,R109,R128 | C039,C042,C046,C140,C141,C142,C188,C182 | TODO | UNASSIGNED | NONE |
 | T003 | G0 | T001 | Stdlib spec_check IDs/DAG/counts/schedule/gates/evidence, bidirectional R↔T và case/card parity; autonomy108/no fake final status; source hashes/mode/claims. Missing historical proof tự dựng checks hiện hành. AW-08 static validators cho commit/receipt/expected-check plan và observer boundary; mở rộng CI bootstrap, reject stale SHA/empty checks/skip-as-pass, không chờ own running CI. GIT-DATA-01/02 schema+semantic evaluator và CLOSE-DIFF-01 leaf classifier; tests pending/restart/ambiguous/event/privacy/archive, không exempt whole SPEC. H01–H04/H07: relational evaluator rejects four1.6.4 counterexamples; deterministic archive publication/recovery + active selector/checkpoint; phase/queue/destination binding, static/observer parity. J01–J06: complete required evidence/canary, timestamp instant ordering, actual PR parents/current base, selection history/checkpoint semantics, push lifecycle/native API mapping; eight1.6.5 counterexamples phải REJECT/UNKNOWN. L01–L06: implement temporal P/live C, complete native source graph/mapping/collection and invocation-bound live verifier, execution uniqueness và allocated checkpoint; no fixture-generated live evidence inside evaluator. M01–M04: common typed lifecycle+push/resume parity, partial/full job reruns+native attempt history, frozen PR flow và actual Git message/scope guard; no fake enforcement. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R030,R093,R102,R103,R105,R106,R112,R124,R125,R129 | C043,C133,C135,C137,C138,C148,C180,C181,C189,C190,C191 | TODO | UNASSIGNED | NONE |
 | T004 | G1 | T005,T106 | Catalog register/profile/rebind/remove/CAS; SEC-CORE-01 policy epoch1+default allowed roots/executables, no automatic profile/index. RuntimeConfig/group/permission metadata foundations theo CT-07. Home-shared config/admission ports; private tests trước OS adapter, public writes sau T010. source/effective digest tách biệt, CAS canonical source và fixed result hardcaps; provenance response parity. H05: config validate/set same whole-document replacement pure pipeline; candidate_input provenance, missing field defaults, no old-home merge. | R002,R118,R119,R126,R127 | C001,C016,C167,C168,C157,C169,C170,C183,C186,C187,C176 | TODO | UNASSIGNED | NONE |
@@ -1467,7 +1467,7 @@ Evidence IDs E001,E002,... monotonic unique, cấp khi code thật có run/artif
 
 | Evidence ID | Task | Code revision / tree digest | Environment + versions | Command / case | Result | Artifact path + SHA-256 | Checked at UTC |
 |---|---|---|---|---|---|---|---|
-| NONE | NONE | NONE | NONE | NONE | NOT_RUN | NONE | NONE |
+| E-T001-LOCAL-01 | T001 | 3a071439df555d281c363e43ebeb37fb4da99972; tree 681b5e7007aac384a33d8dc283a33810d30d58cf | Windows NT 10.0.26300.0; PowerShell 7.6.5; Python 3.12.10; Git 2.45.1 | python -B tools/ci/bootstrap_check.py; python -B tools/ci/test_bootstrap_check.py (7 cases); git diff --cached --check before commit | PASS local only; hosted YAML, push, GitHub checks and canary NOT_RUN | .gitattributes=8c522ddb584919506c69ce15e7633c3a80df2c28190b65e4d7ea5bb637bd8b0b; .gitignore=663fe7effd358c6f3011a4fb86cc510210c39e4ee7c60a966cb2ebe4a40660e0; .github/workflows/bootstrap.yml=ce7ca952ffc1a79e6a105cf4122c474016b9e6d5c0a01423028b9e3449e3adfe; tools/ci/bootstrap_check.py=ff7e9742241718bd43110c71f44ba9fe4990be57b4797d9f484c8d16fb7a5920; tools/ci/test_bootstrap_check.py=499a727bc4d510debe17b37f0f9bf1c6a214a0f217c7daac09f0a3109dfadf4c | 2026-10-15T16:49:27Z |
 
 Format result: PASS, FAIL, NOT_RUN. NOT_RUN phải có lý do trong record. Hash tree dùng khi chưa commit; không bịa commit SHA. Absolute local paths chỉ trong private evidence khi cần, không publish; log sanitized. File artifact không tồn tại thì không tạo pointer giả. DONE task MUST trỏ >=1 evidence record PASS bao phủ test scope; gate reviewer kiểm tra không chỉ string “PASS”.
 
@@ -4972,7 +4972,7 @@ Discrepancy register (điền khi có bằng chứng về docs/source/policy/env
 ```yaml
 resume:
   spec_version: 1.6.13
-  implementation_revision: null
+  implementation_revision: 3a071439df555d281c363e43ebeb37fb4da99972
   release_label: NOT_BUILT
   gate: G0
   design_seal: NOT_RUN
@@ -4986,20 +4986,20 @@ resume:
   canonical_codec: MCE-C14N1
   remaining_scope_gate: ACTUAL_TOOLCHAIN_OS_BROWSER_AND_REAL_REPO_VERIFICATION
   policy_adoption_status: ACCEPTED_SCOPED
-  project_policy_files_status: VERIFIED_RAW_HASHES_3_OF_3_2026_10_14
+  project_policy_files_status: VERIFIED_RAW_HASHES_3_OF_3_2026_10_15
   policy_runtime_enforcement: NOT_IMPLEMENTED
-  last_request_mode: docs_only
-  next_task_mode: implement_on_coding_kickoff
+  last_request_mode: implement_full_108
+  next_task_mode: implement
   authorized_build_scope: [R1, R2, R3, U0, U1, U2, U3]
   autonomous_contract: S53
   git_delivery_policy: S53_AW_08
   git_delivery:
-    repository_status: INITIALIZED_UNBORN_NO_REMOTE
+    repository_status: REMOTE_CONFIGURED_PUBLIC_SHELL_AUTH_PENDING_CLASSIC_PROTECTION_UNKNOWN
     local_branch: main
-    local_head_sha: null
-    author_identity_status: NOT_CONFIGURED
-    approved_remote: null
-    approved_branch: null
+    local_head_sha: 3a071439df555d281c363e43ebeb37fb4da99972
+    author_identity_status: CONFIGURED
+    approved_remote: origin
+    approved_branch: main
     last_verified_payload_sha: null
     closing_commit_ref: null # legacy summary; actual locator is delivery_id + parent + approved ancestry
     pending_delivery_id: null
@@ -5014,23 +5014,23 @@ resume:
     last_live_verification_ref: null # LIVE-CI-01, external evidence, not sealed history
     last_live_verification_id: null
     last_ci_collection_ref: null
-    pending_delivery_task: null
+    pending_delivery_task: T001
     last_delivery_evidence_ref: null
   auto_advance_tasks: true
   auto_close_internal_gates: true
   intermediate_user_approval: false
   final_user_acceptance: once_after_engineering_complete
-  assignment_start_status: NOT_STARTED_SPEC_EDIT_ONLY
-  final_engineering_status: NOT_STARTED
+  assignment_start_status: IMPLEMENTATION_STARTED
+  final_engineering_status: IN_PROGRESS
   completed_scope_tasks: 0
   required_scope_tasks: 108
   required_check_failures: null
   required_check_not_run: null
   foundation_sequence: [T001, T002, T003, T105, T106, T107, T108]
   next_task: T001
-  active_task: null
+  active_task: T001
   execution_checkpoint: null # GitExecutionCheckpoint after actual execution; GIT-DATA-04/CHECKPOINT-CURRENT-01
-  active_owner: null
+  active_owner: Codex
   done_r1_tasks: 0
   total_r1_tasks: 52
   deferred_r2_tasks: 0
@@ -5053,8 +5053,8 @@ resume:
   blocking_user_decision: null
   discovery_gaps: [K001, K002, K003, K004, K007, K008, K009, K010, K011, K014, K015]
   known_limits: [K005, K006, K012]
-  last_evidence_id: null
-  last_checked_at_utc: null
+  last_evidence_id: E-T001-LOCAL-01
+  last_checked_at_utc: 2026-10-15T16:49:27Z
 ```
 
 MUST cập nhật resume chỉ sau khi tracker/evidence nhất quán; current command ref/digest/lifecycle/retry lấy từ secured actual context CHECKPOINT-CURRENT-01, không từ checkpoint cache; current attempt selector/revision và execution_checkpoint theo GIT-DATA-04, planned path khác actual archive pointer; là summary derived, không nguồn thay thế task rows. Coding assignment108 và ủy quyền còn hiệu lực xuyên task/compaction/phiên tiếp tục đến completion hoặc user stop/revoke; kiểm hiện trạng mà không yêu cầu cấp lại cùng quyền. Không lưu chain-of-thought vào tài liệu. Chỉ lưu quyết định, bằng chứng, lỗi tái hiện được và hành động tiếp theo.
