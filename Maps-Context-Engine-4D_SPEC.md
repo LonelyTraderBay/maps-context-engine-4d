@@ -1253,7 +1253,7 @@ Cột Cases là truy vết tới oracle nghiệm thu, không có nghĩa một ta
 | Task | Gate | Dependencies | Deliverable / định nghĩa hoàn thành | Req | Cases | Status | Owner | Evidence |
 |---|---|---|---|---|---|---|---|---|
 | T001 | G0 | NONE | Site survey + safe private module bootstrap only; preserve existing workspace; no feature code trước T108. Resolve source-policy docs/mode theo S50; ghi actual path/hash, không sửa bản gốc. AW-08: khảo sát Git/remote/branch/identity/hooks/rules, xác định repo+nhánh được phép; bootstrap CI thực cho docs/foundation trước delivery đầu, không job echo PASS hoặc claim product chưa có. Verify stable repository ID/visibility/publication authority; actual credential-event-checkout canary PASS trước closing T001. H04/H07: delivery vs merge-stage plan/canary, fresh destination identity/visibility trước mọi push; archive root/private/owned/staging naming trước first payload. J01/J03/J05/J06 và L01–L04: verified canary/source graph, historical P/live C PR binding, push lifecycle/pre-post, native mapping và fresh live CI collection. M01/M03/M04 bootstrap: actual S51 common records, permitted feature-ref/PR flow, Vietnamese commit metadata/self-review trước first delivery. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R001,R105,R106,R125 | C041,C137,C138,C181,C191 | DONE | Codex | E001,E002,E003;task_revision=1;delivery=34f45d36-60c0-45e2-ab0e-f6522349c6e8;plan=45eb7200270514269f977494f4d86b5e94248e76f22d43d876bd17feb1ecb0f4;repo_id=1421031011;visibility=public;publication_authority=user-request+destination-selection;branch_protection=verified-absent;rulesets=none;payload_sha=3c0e4fcacc64c220c928eb06ff39988c977872fc;closing_sha=344c8b2a7493d391c44e87f8a8a11a47ad14828b;payload_CI=PASS;closing_CI=PASS;archive=sealed-readback-PASS;live=bf53373e-ee55-42c8-a3ea-ba3a19bc549c-PASS |
-| T002 | G0 | T001 | Pin exact toolchain/dependencies/license/API; DEP-01 actual embedded SQLite patch gate+driver/FTS5/pool smoke; S51 preflight trước bounded build. AI tự resolve pins trong BP-04, không @latest. J07: effective sqlite_busy_timeout_ms default5000/nondefault1234 trên mỗi pooled connection. | R001,R036,R108,R109,R128 | C039,C042,C046,C140,C141,C142,C188,C182 | VERIFY | Codex | E004;task_revision=1;delivery=f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1;plan=a46f72ae133975d48b209f036ba04e90b50af4c0d3e9668f95ed82c2fca30f06;local=PASS;payload/closing_CI=PENDING |
+| T002 | G0 | T001 | Pin exact toolchain/dependencies/license/API; DEP-01 actual embedded SQLite patch gate+driver/FTS5/pool smoke; S51 preflight trước bounded build. AI tự resolve pins trong BP-04, không @latest. J07: effective sqlite_busy_timeout_ms default5000/nondefault1234 trên mỗi pooled connection. | R001,R036,R108,R109,R128 | C039,C042,C046,C140,C141,C142,C188,C182 | VERIFY | Codex | E004,E005;task_revision=1;delivery=f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1;plan=a46f72ae133975d48b209f036ba04e90b50af4c0d3e9668f95ed82c2fca30f06;local=PASS;payload_sha=86236123b48a7104bf230315c7c44f84edf6e1ee;payload_CI=PASS(run:38789874166,ubuntu+windows);closing_CI=PENDING;archive/live=PENDING |
 | T003 | G0 | T001 | Stdlib spec_check IDs/DAG/counts/schedule/gates/evidence, bidirectional R↔T và case/card parity; autonomy108/no fake final status; source hashes/mode/claims. Missing historical proof tự dựng checks hiện hành. AW-08 static validators cho commit/receipt/expected-check plan và observer boundary; mở rộng CI bootstrap, reject stale SHA/empty checks/skip-as-pass, không chờ own running CI. GIT-DATA-01/02 schema+semantic evaluator và CLOSE-DIFF-01 leaf classifier; tests pending/restart/ambiguous/event/privacy/archive, không exempt whole SPEC. H01–H04/H07: relational evaluator rejects four1.6.4 counterexamples; deterministic archive publication/recovery + active selector/checkpoint; phase/queue/destination binding, static/observer parity. J01–J06: complete required evidence/canary, timestamp instant ordering, actual PR parents/current base, selection history/checkpoint semantics, push lifecycle/native API mapping; eight1.6.5 counterexamples phải REJECT/UNKNOWN. L01–L06: implement temporal P/live C, complete native source graph/mapping/collection and invocation-bound live verifier, execution uniqueness và allocated checkpoint; no fixture-generated live evidence inside evaluator. M01–M04: common typed lifecycle+push/resume parity, partial/full job reruns+native attempt history, frozen PR flow và actual Git message/scope guard; no fake enforcement. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R030,R093,R102,R103,R105,R106,R112,R124,R125,R129 | C043,C133,C135,C137,C138,C148,C180,C181,C189,C190,C191 | TODO | UNASSIGNED | NONE |
 | T004 | G1 | T005,T106 | Catalog register/profile/rebind/remove/CAS; SEC-CORE-01 policy epoch1+default allowed roots/executables, no automatic profile/index. RuntimeConfig/group/permission metadata foundations theo CT-07. Home-shared config/admission ports; private tests trước OS adapter, public writes sau T010. source/effective digest tách biệt, CAS canonical source và fixed result hardcaps; provenance response parity. H05: config validate/set same whole-document replacement pure pipeline; candidate_input provenance, missing field defaults, no old-home merge. | R002,R118,R119,R126,R127 | C001,C016,C167,C168,C157,C169,C170,C183,C186,C187,C176 | TODO | UNASSIGNED | NONE |
 | T005 | G1 | T108 | Secure paths/deny policy/secret controls theo SEC-CORE-01; closed bounded glob/scanner/default text allowlist + OS/case/containment tests; no raw persistence before checks. | R013,R014,R110,R126 | C024,C025,C026,C145,C183,C184,C185 | TODO | UNASSIGNED | NONE |
@@ -1475,6 +1475,7 @@ Evidence IDs E001,E002,... monotonic unique, cấp khi code thật có run/artif
 
 | E003 | T001 | payload=3c0e4fcacc64c220c928eb06ff39988c977872fc; closing=344c8b2a7493d391c44e87f8a8a11a47ad14828b | GitHub.com; Git2.45.1; Actions Ubuntu + Windows; authenticated repo ID1421031011, public, refs/heads/main | Recheck exact P/C runs; verify C checkout SHA and two expected checks; seal/read back archive; independent fresh live verification/readback | PASS — P and C each have both planned bootstrap checks; archive 251 members/1112016 bytes; live verification all 27 members/141915 bytes | manifest.json=785a3e67278c0adb7527f6040986584a1e75e14fa7829ebc8f2f69eec803a437; seal.json=152a1ebc73d9d92a3d3836406def1c3fd2c73bd5dc32f5447a1a295f39eed73f; archive-publication.json=b83752e2b4759f5ee4cd1795cd7f2f8ccafc351dd272b49d812963f5595c3c61; closing-observation.json=a13256c94bf0a1f265fa30164984139cf30ad614150a01e31dde74e9430c7286; live-readback.json=74449d65a89241ea88e470f3a4cf5d5ab2f8686ed0b2c50bfa3a06dab2b08015; live-verification.json=904bb0f6dee364778d824104941365a043193de775c496b6657feeae9331dbc8 | 2026-10-15T18:49:23.889099Z |
 | E004 | T002 | source hashes: go.mod=342751a0ff22de2a09761c51da51b60fb27c578071ebf47794a48d0138091b8c; go.sum=841c9f72d3fda6497d0d52a11321127309a3d95f2d547a6b1e36810bd32c6a43; smoke=4b0f6276ea1e2de9e95e045ef93d9bfa452d6dcb37b6d0e4af458a4d06633f7c; fixture=d95db62d2e8039f103aee563ad112e0244a4c79573687b31e1c078297ae48c35 | Windows11 Go1.27.2/NTFS; WSL2 Ubuntu26.04 Go1.27.2/ext4; Git2.45.1; Go module graph38 | go mod verify both OS; native Go build and smoke on Windows/WSL2; actual SQLite3.53.4/FTS5 and 4 pooled connections at5000/1234ms; MCP protocol2026-07-28 handshake/tool; typed go/packages fixture; root license evidence all38 modules | PASS local; graph37→38 reconciliation is explicit in review; corrected Linux wrapper run exited0. Task GitHub P/C checks still pending | dependency-review.json=51451B sha256:0af7042d8bcccabff23b6c41a3813ac11432e070b4d6d7ab1c322435f4eb122f; platform-filesystem-linux.json=2120B sha256:615fc4adbdeca0ab02db448e89e15dc432173ac204d589cbf6461f2531681e85; smoke-windows-b91fa17e-8182-436e-8e8a-ea936fbed3a2.json=3785B sha256:ea16c5bb3511c521809f59a987b3baea6ebb14043ca7f6aaaf4f67527c30c29e; smoke-linux-d79ec9cc-3de2-497b-beae-6ca7ffc05d4b.json=3811B sha256:fb9f78a17958713dfe9622c764f36483def9f294f2e13769557cd42029856545; private diagnostics preserve wrapper retries | 2026-10-15T18:49:23.889099Z |
+| E005 | T002 | payload=86236123b48a7104bf230315c7c44f84edf6e1ee; local source and dependency hashes are recorded in E004 | Windows 11 native NTFS + WSL2 Ubuntu 26.04.1 native ext4; GitHub Actions App 15368; Go 1.27.2 | Eight frozen local checks PASS at exact P; exact push run 38789874166 on both runners; checkout logs and check-runs bind to P | PASS — payload and local checks; closing C checks and archive/live still pending | selection.json=468B sha256:6f3f9bfb88536fbc6e4a5fab3aad72233d39fbc8df4b2f773acac6ed972c064e; check-plan.json=1826B sha256:a46f72ae133975d48b209f036ba04e90b50af4c0d3e9668f95ed82c2fca30f06; scope/payload-01.json=497B sha256:6e5a93811e39a7a60cc5535391c3247cdf55fe21c8eaaadd5b03963b47c1d14a; local-checks/summary.json=2751B sha256:5b3363f38836307b3b9c89d1ff89b7ab9bd93bef5821635a7fb1299a7af6d700; local-checks/go-mod-verify.json=388B sha256:db17c16b2a0ed72484bb538854cca2f5439113f6c79e901079d1e49b6608f106; local-checks/toolchain-hashes.json=397B sha256:f50e319984db5ce1fbba55bee61064d69b745369b6162afff084ba0127cedbb0; local-checks/sqlite-smoke-windows.json=409B sha256:7642dcc546290c3ac3f040e1fd686667e327140e3c3a1eb08c5a9fe88fd6914e; local-checks/sqlite-smoke-wsl2.json=400B sha256:dc843d81168237c28c5d4926cf13482e32be495ae80aeafa773fdcf427aa527f; local-checks/license-review.json=391B sha256:803981b225cb91882a669e0bc63ab0d2d3e9cb26418e9fef5497f626beeda66e; local-checks/bootstrap.json=376B sha256:6bb29f3d53ff0f8c220c033ee88ccb75a653cae31c452fa2917772cd3bf469c5; local-checks/fixtures.json=373B sha256:5b7f8f6d02887e914b56151735972afdcbc2b94833f2bde4cdcecbf1139ae62d; local-checks/diff-check.json=379B sha256:92a404db51f0bcfee1bf987bf31822c945a2c79b9d62a6be3f2ec93a09545ab7; push/payload-operation.json=653B sha256:1af20232cb0a5bcabef3d947ab61890e78104fae619bc7f937e76d50304e0b06; push/payload-destination-observation.json=910B sha256:ea5a13703058ed164b9be2d32e2925a75c1b850c115ae4bc645c856a116d2c61; ci/payload-observation-01/summary.json=550B sha256:e915d1196193730512f799111779d14379f8744c87f2ee26b247e28697893765; ci/payload-observation-01/typed/payload-observation.json=998B sha256:f37ef4cc3c90dca93e96a6e3b43eddf1c07d1f235d96dd7942ba95750f887cf0; ci/payload-observation-01/typed/ci-collection.json=1300B sha256:364f2a6a3297a8f2dd029c2ec08985feabda349ae1323f240ce7135cbe4cefd3; ci/payload-observation-01/run.json=2873B sha256:a628ac6de8c394dcc4db3bf6703bafa142016444259d45422865c2f85c46bd32; ci/payload-observation-01/check-runs.json=6329B sha256:fd2f73b7a442c1497c8de49b274ee3ac0eef00257c729f8d1c01700b97848fb9; ci/payload-observation-01/ubuntu.log=25091B sha256:372b5f6258f31e2d22d5623c09e20b420080503002e762defab5fb0b6d53b8be; ci/payload-observation-01/windows.log=24593B sha256:1ff0aa180ed85543e768b4e1a763585e6e888213a30235831ab3600d5c0dfc57 | 2026-10-15T18:57:41Z |
 Format result: PASS, FAIL, NOT_RUN. NOT_RUN phải có lý do trong record. Hash tree dùng khi chưa commit; không bịa commit SHA. Absolute local paths chỉ trong private evidence khi cần, không publish; log sanitized. File artifact không tồn tại thì không tạo pointer giả. DONE task MUST trỏ >=1 evidence record PASS bao phủ test scope; gate reviewer kiểm tra không chỉ string “PASS”.
 
 ### Metadata áp dụng cho task/lệnh — không thêm tracker
@@ -4978,7 +4979,7 @@ Discrepancy register (điền khi có bằng chứng về docs/source/policy/env
 ```yaml
 resume:
   spec_version: 1.6.13
-  implementation_revision: 3c0e4fcacc64c220c928eb06ff39988c977872fc
+  implementation_revision: 86236123b48a7104bf230315c7c44f84edf6e1ee
   release_label: NOT_BUILT
   gate: G0
   design_seal: NOT_RUN
@@ -5002,60 +5003,60 @@ resume:
   git_delivery:
     repository_status: REMOTE_CONFIGURED_PUBLIC_AUTHENTICATED_BRANCH_UNPROTECTED_ACTIONS_ENABLED
     local_branch: main
-    local_head_sha: 3c0e4fcacc64c220c928eb06ff39988c977872fc
+    local_head_sha: 86236123b48a7104bf230315c7c44f84edf6e1ee
     author_identity_status: CONFIGURED
     approved_remote: origin
     approved_branch: main
-    last_verified_payload_sha: 3c0e4fcacc64c220c928eb06ff39988c977872fc
+    last_verified_payload_sha: 86236123b48a7104bf230315c7c44f84edf6e1ee
     closing_commit_ref: null # legacy summary; actual locator is delivery_id + parent + approved ancestry
-    pending_delivery_id: 34f45d36-60c0-45e2-ab0e-f6522349c6e8
-    active_delivery_id: 34f45d36-60c0-45e2-ab0e-f6522349c6e8 # derived from S19/S21 selection, never authority
+    pending_delivery_id: f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1
+    active_delivery_id: f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1 # derived from S19/S21 selection, never authority
     task_revision: 1
-    planned_archive_path: artifacts/git-delivery/34f45d36-60c0-45e2-ab0e-f6522349c6e8
-    closing_parent_sha: 3c0e4fcacc64c220c928eb06ff39988c977872fc
+    planned_archive_path: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1
+    closing_parent_sha: 86236123b48a7104bf230315c7c44f84edf6e1ee
     durable_archive_ref: null
-    observed_remote_sha: 3c0e4fcacc64c220c928eb06ff39988c977872fc
-    expected_check_plan_ref: artifacts/git-delivery/.staging-34f45d36-60c0-45e2-ab0e-f6522349c6e8/check-plan.json
-    last_ci_result: PASS (payload; closing pending)
-    last_live_verification_ref: null # LIVE-CI-01, external evidence, not sealed history
-    last_live_verification_id: null
-    last_ci_collection_ref: artifacts/git-delivery/.staging-34f45d36-60c0-45e2-ab0e-f6522349c6e8/ci/payload-observation-05/typed/ci-collection.json
-    pending_delivery_task: T001
-    last_delivery_evidence_ref: artifacts/git-delivery/.staging-34f45d36-60c0-45e2-ab0e-f6522349c6e8/ci/payload-observation-05/typed/payload-observation.json
+    observed_remote_sha: 86236123b48a7104bf230315c7c44f84edf6e1ee
+    expected_check_plan_ref: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/check-plan.json
+    last_ci_result: PASS (T002 payload; C pending)
+    last_live_verification_ref: artifacts/git-live/34f45d36-60c0-45e2-ab0e-f6522349c6e8/bf53373e-ee55-42c8-a3ea-ba3a19bc549c/live-verification.json # LIVE-CI-01, external evidence, not sealed history
+    last_live_verification_id: bf53373e-ee55-42c8-a3ea-ba3a19bc549c
+    last_ci_collection_ref: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/ci/payload-observation-01/typed/ci-collection.json
+    pending_delivery_task: T002
+    last_delivery_evidence_ref: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/ci/payload-observation-01/typed/payload-observation.json
   auto_advance_tasks: true
   auto_close_internal_gates: true
   intermediate_user_approval: false
   final_user_acceptance: once_after_engineering_complete
   assignment_start_status: IMPLEMENTATION_STARTED
   final_engineering_status: IN_PROGRESS
-  completed_scope_tasks: 0
+  completed_scope_tasks: 1
   required_scope_tasks: 108
   required_check_failures: null
   required_check_not_run: null
   foundation_sequence: [T001, T002, T003, T105, T106, T107, T108]
-  next_task: T001
-  active_task: T001
+  next_task: T002
+  active_task: T002
   execution_checkpoint:
     format_version: 1
-    checkpoint_id: "fc7aac15-02be-4d1c-9e89-c5dafae8289c"
+    checkpoint_id: "ab0a1b57-8c31-4320-8fa7-b22a06fb85b3"
     assignment_ref: "S53/AW-01/AW-08:user-assignment-2026-10-15"
-    task_id: "T001"
+    task_id: "T002"
     task_revision: 1
-    delivery_id: "34f45d36-60c0-45e2-ab0e-f6522349c6e8"
+    delivery_id: "f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1"
     local_branch: "main"
-    head_sha: "3c0e4fcacc64c220c928eb06ff39988c977872fc"
-    working_tree_digest: "22f888bf8bee42ffdc2dc8cb573616e42bc6d35aab6223f0b629cc976857c91f"
-    index_digest: "22f888bf8bee42ffdc2dc8cb573616e42bc6d35aab6223f0b629cc976857c91f"
-    command_record_ref: "commands/payload-ci-observation-v5.json"
-    operation_id: "32fb2429-6cb4-41cc-9c9c-83f33ab8f39d"
+    head_sha: "86236123b48a7104bf230315c7c44f84edf6e1ee"
+    working_tree_digest: "0a81b365bcae20771ef1827d273d5f8bae6517e9a57b65d363185bf3bdbf36a2"
+    index_digest: "557ef5c530e08e23e259219b5825b39d6151c0ed690bfb5bf547277c14d19fae"
+    command_record_ref: "commands/payload-ci-observation-01.json"
+    operation_id: "d1f3a07c-7659-49b6-82e2-a5705455e040"
     command_state: "SUCCEEDED"
-    unfinished_check_refs: ["closing:actions/bootstrap/ubuntu","closing:actions/bootstrap/windows","archive publication and fresh live verification"]
+    unfinished_check_refs: ["closing:actions/bootstrap/ubuntu","closing:actions/bootstrap/windows","archive publication","fresh live verification","effective completion evidence reconciliation"]
     blocker_refs: []
-    next_action_ref: "S53/GIT-06: stage metadata-only C, commit with required trailers, then run closing checks and publish/read back archive before fresh live verification."
-    planned_archive_path: "artifacts/git-delivery/34f45d36-60c0-45e2-ab0e-f6522349c6e8"
-    checkpointed_at_utc: "2026-10-15T17:25:14.149781Z"
+    next_action_ref: "S53/GIT-06: create metadata-only C as direct child of P, push normally, verify exact C checks, then publish/read back archive and run fresh live verification. Record effective completion in the next tracker reconciliation."
+    planned_archive_path: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1
+    checkpointed_at_utc: "2026-10-15T19:00:51.091450Z"
   active_owner: Codex
-  done_r1_tasks: 0
+  done_r1_tasks: 1
   total_r1_tasks: 52
   deferred_r2_tasks: 0
   todo_r2_tasks: 20
@@ -5077,8 +5078,8 @@ resume:
   blocking_user_decision: null
   discovery_gaps: [K001, K002, K003, K004, K007, K008, K009, K010, K011, K014, K015]
   known_limits: [K005, K006, K012]
-  last_evidence_id: E002
-  last_checked_at_utc: 2026-10-15T17:20:22.826850Z
+  last_evidence_id: E005
+  last_checked_at_utc: 2026-10-15T18:57:41Z
 ```
 
 MUST cập nhật resume chỉ sau khi tracker/evidence nhất quán; current command ref/digest/lifecycle/retry lấy từ secured actual context CHECKPOINT-CURRENT-01, không từ checkpoint cache; current attempt selector/revision và execution_checkpoint theo GIT-DATA-04, planned path khác actual archive pointer; là summary derived, không nguồn thay thế task rows. Coding assignment108 và ủy quyền còn hiệu lực xuyên task/compaction/phiên tiếp tục đến completion hoặc user stop/revoke; kiểm hiện trạng mà không yêu cầu cấp lại cùng quyền. Không lưu chain-of-thought vào tài liệu. Chỉ lưu quyết định, bằng chứng, lỗi tái hiện được và hành động tiếp theo.
