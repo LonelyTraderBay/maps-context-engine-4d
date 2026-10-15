@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
+from urllib.parse import quote, urlsplit
 from uuid import UUID
 
 from .ci_order import (
@@ -31,6 +32,28 @@ def _parse_time(value: Any) -> tuple[int, Fraction] | None:
         return parse_instant(value)
     except (OrderingError, TypeError, ValueError):
         return None
+
+
+def _check_run_api_url_matches(url: Any, *, host: Any, owner: Any, name: Any, record_id: Any) -> bool:
+    if not all(isinstance(value, str) and value for value in (url, host, owner, name, record_id)):
+        return False
+    try:
+        parsed = urlsplit(url)
+        if parsed.scheme != "https" or parsed.username or parsed.password or parsed.port is not None:
+            return False
+    except ValueError:
+        return False
+    if parsed.query or parsed.fragment:
+        return False
+    if host == "github.com":
+        expected_host, api_prefix = "api.github.com", "/repos"
+    else:
+        expected_host, api_prefix = host.lower(), "/api/v3/repos"
+    expected_path = (
+        f"{api_prefix}/{quote(owner, safe='')}/{quote(name, safe='')}"
+        f"/check-runs/{record_id}"
+    )
+    return parsed.hostname is not None and parsed.hostname.lower() == expected_host and parsed.path == expected_path
 
 
 def _safe_relative_path(value: Any) -> bool:
@@ -952,6 +975,8 @@ def _observation_link_errors(
                     app_id = app.get("id") if isinstance(app, dict) else None
                     source_app = check.get("source_app")
                     expected_app_id = source_app.rsplit(":", 1)[-1] if isinstance(source_app, str) else None
+                    workflow_row = next((row for row in workflow_rows
+                                         if str(row.get("id")) == str(check.get("run_id"))), None)
                     if (native_row.get("name") != check.get("context")
                             or native_row.get("head_sha") != subject
                             or native_row.get("status") != "completed"
@@ -959,11 +984,18 @@ def _observation_link_errors(
                             or str(app_id) != expected_app_id
                             or native_row.get("details_url") != source.get("job_check_run_url")):
                         error(f"check {check_id} raw check_run fields lệch selected source")
+                    check_suite = native_row.get("check_suite")
+                    native_suite_id = check_suite.get("id") if isinstance(check_suite, dict) else None
+                    workflow_suite_id = workflow_row.get("check_suite_id") if workflow_row else None
+                    if (native_suite_id is None or workflow_suite_id is None
+                            or source.get("check_suite_id") != str(native_suite_id)
+                            or str(native_suite_id) != str(workflow_suite_id)):
+                        error(f"check {check_id} check_suite_id không khớp raw check_run/workflow_run")
                     try:
-                        raw_created = _parse_time(native_row.get("created_at"))
+                        raw_created = _parse_time(workflow_row.get("created_at")) if workflow_row else None
                         source_created = _parse_time(source.get("created_at_utc"))
                         if raw_created is None or raw_created != source_created:
-                            error(f"check {check_id} source creation instant lệch raw check_run")
+                            error(f"check {check_id} source creation instant lệch native workflow_run.created_at")
                     except (TypeError, ValueError):
                         error(f"check {check_id} source creation instant sai")
                 run_job_match = re.search(
@@ -995,7 +1027,7 @@ def _observation_link_errors(
                             "source_app": source_app, "context": check.get("context"),
                             "workflow_path": check.get("workflow_path"), "job_name": check.get("job_name"),
                             "event": check.get("event"), "subject_sha": subject,
-                            "id": row.get("id"), "created_at_utc": row.get("created_at"),
+                            "id": row.get("id"), "created_at_utc": row_workflow.get("created_at"),
                             "status": row.get("status"), "conclusion": row.get("conclusion"),
                             "sha": row.get("head_sha"),
                         })
@@ -1028,6 +1060,20 @@ def _observation_link_errors(
                       or job_row.get("head_sha") != subject
                       or job_row.get("conclusion") != "success"):
                     error(f"check {check_id} raw job fields lệch selected execution")
+                elif (str(job_row.get("run_id")) != str(check.get("run_id"))
+                      or (job_row.get("run_attempt") is not None
+                          and job_row.get("run_attempt") != check.get("attempt"))):
+                    error(f"check {check_id} raw job run/attempt không khớp endpoint scope")
+                elif native_row is not None:
+                    job_check_url = job_row.get("check_run_url")
+                    if (str(job_row.get("id")) != source.get("record_id")
+                            or job_check_url != native_row.get("url")
+                            or not _check_run_api_url_matches(
+                                job_check_url, host=repository.get("host"),
+                                owner=repository.get("owner"), name=repository.get("name"),
+                                record_id=source.get("record_id"))
+                            or job_row.get("html_url") != source.get("job_check_run_url")):
+                        error(f"check {check_id} job.check_run_url không bind native check ID/host/repository")
         execution_ref = check.get("execution_evidence_ref")
         execution = resolve(execution_ref, "GitCheckExecutionEvidence", f"check {check_id}.execution_evidence_ref")
         if execution is not None:

@@ -583,28 +583,34 @@ def _delivery_link_bundle() -> tuple[dict[str, dict[str, object]], dict[str, obj
             execution_ref = f"ci/{phase}/execution-{index}.json"
             raw_api_ref = f"ci/{phase}/pages/check-runs-1.json"
             job_id = str(200 + index)
+            job_url = f"https://github.com/{repository['owner']}/{repository['name']}/actions/runs/101/jobs/{job_id}"
+            check_run_url = f"https://api.github.com/repos/{repository['owner']}/{repository['name']}/check-runs/{job_id}"
             source = {
                 "format_version": 1, "kind": "check_source", "source_kind": "actions_check_run",
                 "host": repository["host"], "repository_id": repository["repository_id"],
-                "record_id": str(300 + index), "run_id": "101", "job_id": job_id, "attempt": 1,
+                "record_id": job_id, "run_id": "101", "job_id": job_id, "attempt": 1,
                 "created_at_utc": "2026-10-16T00:00:04Z", "source_app": expected["source_app"],
                 "context": expected["context"], "workflow_path": expected["workflow_path"],
                 "job_name": expected["job_name"], "matrix": expected["matrix"], "event": "push",
                 "reported_head_sha": subject, "native_status": "completed",
                 "native_conclusion": "success", "raw_api_ref": raw_api_ref,
                 "check_suite_id": "301", "workflow_head_sha": subject, "job_head_sha": subject,
-                "job_check_run_url": f"https://github.com/owner/repo/actions/runs/101/jobs/{job_id}",
+                "job_check_run_url": job_url,
             }
             add(source_ref, "GitCheckSourceEvidence", source)
             raw_check_runs.append({
-                "id": 300 + index, "name": expected["context"], "head_sha": subject,
+                "id": int(job_id), "name": expected["context"], "head_sha": subject,
                 "status": "completed", "conclusion": "success", "app": {"id": 15368},
-                "details_url": f"https://github.com/owner/repo/actions/runs/101/jobs/{job_id}",
-                "created_at": "2026-10-16T00:00:04Z",
+                "url": check_run_url,
+                "check_suite": {"id": 301},
+                "details_url": job_url,
             })
             raw_jobs.append({
                 "id": 200 + index, "name": expected["context"], "head_sha": subject,
                 "conclusion": "success", "created_at": "2026-10-16T00:00:04Z",
+                "run_id": 101, "run_attempt": 1,
+                "check_run_url": check_run_url,
+                "html_url": job_url,
             })
             command_results = [
                 {"command_ref": command, "revision": subject, "result": "PASS",
@@ -651,7 +657,7 @@ def _delivery_link_bundle() -> tuple[dict[str, dict[str, object]], dict[str, obj
             "workflow_runs": [{
                 "id": 101, "head_sha": subject, "event": "push", "status": "completed",
                 "conclusion": "success", "run_attempt": 1, "path": ".github/workflows/bootstrap.yml",
-                "created_at": "2026-10-16T00:00:04Z",
+                "created_at": "2026-10-16T00:00:04Z", "check_suite_id": 301,
             }],
         }
         raw_members[f"ci/{phase}/pages/workflow-attempt-1.json"] = {
@@ -881,6 +887,36 @@ class DeliveryLinkTests(unittest.TestCase):
         self.assertEqual("REJECT", result["verdict"])
         self.assertTrue(any("native source fields lệch" in error for error in result["errors"]))
 
+    def test_actions_source_timestamp_uses_native_workflow_creation(self) -> None:
+        bundle = self._bundle()
+        source_ref = bundle["payload"]["value"]["checks"][0]["source_evidence_ref"]
+        bundle[source_ref]["value"]["created_at_utc"] = "2026-10-16T00:00:05Z"
+        result = self._validate(bundle)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("native workflow_run.created_at" in error for error in result["errors"]))
+
+    def test_actions_job_check_run_url_binds_native_check_identity(self) -> None:
+        bundle = self._bundle()
+        collection_ref = bundle["payload"]["value"]["collection_evidence_ref"]
+        collection = bundle[collection_ref]["value"]
+        attempt_page = next(page for page in collection["pages"]
+                            if page["endpoint"] == "workflow_run_attempt")
+        self.raw_members[attempt_page["raw_page_ref"]]["jobs"][0]["check_run_url"] = (
+            "https://api.github.com/repos/owner/repo/check-runs/999"
+        )
+        result = self._validate(bundle)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("job.check_run_url không bind native check ID" in error for error in result["errors"]))
+
+    def test_actions_check_suite_identity_matches_workflow(self) -> None:
+        bundle = self._bundle()
+        source_ref = bundle["payload"]["value"]["checks"][0]["source_evidence_ref"]
+        raw_ref = bundle[source_ref]["value"]["raw_api_ref"]
+        self.raw_members[raw_ref]["check_runs"][0]["check_suite"]["id"] = 999
+        result = self._validate(bundle)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("check_suite_id không khớp" in error for error in result["errors"]))
+
     def test_command_execution_is_bound_to_subject_revision(self) -> None:
         bundle = self._bundle()
         execution_ref = bundle["payload"]["value"]["checks"][0]["execution_evidence_ref"]
@@ -932,11 +968,13 @@ class DeliveryLinkTests(unittest.TestCase):
         bundle = self._bundle()
         raw_page = self.raw_members["ci/payload/pages/check-runs-1.json"]
         raw_page["total_count"] += 1
+        subject = bundle["payload"]["value"]["subject_sha"]
         raw_page["check_runs"].append({
-            "id": 999, "name": "bootstrap (ubuntu-latest)", "head_sha": "1" * 40,
+            "id": 999, "name": "bootstrap (ubuntu-latest)", "head_sha": subject,
             "status": "completed", "conclusion": "failure", "app": {"id": 15368},
-            "details_url": "https://github.com/owner/repo/actions/runs/101/jobs/999",
-            "created_at": "2026-10-16T00:00:04.500Z",
+            "url": f"https://api.github.com/repos/{bundle['plan']['value']['repository']['owner']}/{bundle['plan']['value']['repository']['name']}/check-runs/999",
+            "check_suite": {"id": 301},
+            "details_url": f"https://github.com/{bundle['plan']['value']['repository']['owner']}/{bundle['plan']['value']['repository']['name']}/actions/runs/101/jobs/999",
         })
         result = self._validate(bundle)
         self.assertEqual("REJECT", result["verdict"])
