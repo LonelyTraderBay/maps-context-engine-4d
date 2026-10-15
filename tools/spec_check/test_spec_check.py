@@ -166,6 +166,21 @@ class GovernanceSchemaTests(unittest.TestCase):
 
 
 class GovernanceSemanticsTests(unittest.TestCase):
+    def test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed(self) -> None:
+        attempt = {
+            "delivery_id": "e740c5aa-cf6d-4dd4-9cae-d8dd7ed4ae33",
+            "phase": "payload_pending",
+            "payload_mode": "changes",
+            "ordered_commits": [],
+            "noop_reason_ref": None,
+        }
+        self.assertEqual([], validate_semantics("GitDeliveryAttempt", attempt))
+        attempt["phase"] = "closing_proposed"
+        self.assertIn(
+            "payload_mode=changes cần ordered payload commit",
+            validate_semantics("GitDeliveryAttempt", attempt),
+        )
+
     def _push_operation(self) -> dict[str, object]:
         lifecycle = "11111111-1111-4111-8111-111111111111"
         repo = {"host": "github.com", "repository_id": 42, "owner": "owner", "name": "repo"}
@@ -471,6 +486,7 @@ def _delivery_link_bundle() -> tuple[dict[str, dict[str, object]], dict[str, obj
     delivery_id = "eca9684d-8e74-4b06-8168-47f2a3c82e9e"
     payload_sha, closing_sha = "1" * 40, "2" * 40
     plan = strict_json_loads((ROOT / "tools/ci/check-plan.json").read_bytes())
+    plan["canary_ref"] = f"delivery:{delivery_id}:payload"
     plan_sha = hashlib.sha256(_canonical(plan)).hexdigest()
     repository = plan["repository"]
     objects: dict[str, dict[str, object]] = {"plan": {"kind": "GitCheckPlan", "value": plan}}

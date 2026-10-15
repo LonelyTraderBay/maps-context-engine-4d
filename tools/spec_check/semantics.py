@@ -191,7 +191,8 @@ def validate_semantics(kind: str, record: Any) -> list[str]:
                 error("verified_noop chỉ được giữ một historical payload P")
             if record.get("noop_reason_ref") is None:
                 error("verified_noop cần retained reason reference")
-        elif record.get("payload_mode") == "changes" and (not isinstance(ordered, list) or not ordered):
+        elif (record.get("phase") == "closing_proposed" and record.get("payload_mode") == "changes"
+              and (not isinstance(ordered, list) or not ordered)):
             error("payload_mode=changes cần ordered payload commit")
         marker = record.get("closing_marker")
         if marker is not None and marker != f"MCE4D-Delivery-ID: {record.get('delivery_id')}":
