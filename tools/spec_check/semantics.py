@@ -999,7 +999,7 @@ def _observation_link_errors(
                     except (TypeError, ValueError):
                         error(f"check {check_id} source creation instant sai")
                 run_job_match = re.search(
-                    r"/actions/runs/([1-9][0-9]*)/jobs/([1-9][0-9]*)$",
+                    r"/actions/runs/([1-9][0-9]*)/job/([1-9][0-9]*)$",
                     source.get("job_check_run_url", "") if isinstance(source.get("job_check_run_url"), str) else "",
                 )
                 if (run_job_match is None or run_job_match.group(1) != str(check.get("run_id"))
@@ -1011,7 +1011,7 @@ def _observation_link_errors(
                     row_app_id = row_app.get("id") if isinstance(row_app, dict) else None
                     details_url = row.get("details_url")
                     match_url = re.search(
-                        r"/actions/runs/([1-9][0-9]*)/jobs/([1-9][0-9]*)$",
+                        r"/actions/runs/([1-9][0-9]*)/job/([1-9][0-9]*)$",
                         details_url if isinstance(details_url, str) else "",
                     )
                     row_workflow = next(

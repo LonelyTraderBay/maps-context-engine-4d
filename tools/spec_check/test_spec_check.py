@@ -583,7 +583,7 @@ def _delivery_link_bundle() -> tuple[dict[str, dict[str, object]], dict[str, obj
             execution_ref = f"ci/{phase}/execution-{index}.json"
             raw_api_ref = f"ci/{phase}/pages/check-runs-1.json"
             job_id = str(200 + index)
-            job_url = f"https://github.com/{repository['owner']}/{repository['name']}/actions/runs/101/jobs/{job_id}"
+            job_url = f"https://github.com/{repository['owner']}/{repository['name']}/actions/runs/101/job/{job_id}"
             check_run_url = f"https://api.github.com/repos/{repository['owner']}/{repository['name']}/check-runs/{job_id}"
             source = {
                 "format_version": 1, "kind": "check_source", "source_kind": "actions_check_run",
@@ -630,7 +630,7 @@ def _delivery_link_bundle() -> tuple[dict[str, dict[str, object]], dict[str, obj
                 "reported_head_sha": subject, "tested_checkout_sha": subject,
                 "pr_head_sha": None, "pr_base_sha": None, "tested_merge_sha": None,
                 "status": "completed", "conclusion": "success", "execution_verified": True,
-                "url": f"https://github.com/owner/repo/actions/runs/101/jobs/{job_id}",
+                "url": f"https://github.com/owner/repo/actions/runs/101/job/{job_id}",
                 "evidence_refs": [
                     source_ref, execution_ref, raw_api_ref,
                     *(row["log_ref"] for row in command_results),
@@ -974,7 +974,7 @@ class DeliveryLinkTests(unittest.TestCase):
             "status": "completed", "conclusion": "failure", "app": {"id": 15368},
             "url": f"https://api.github.com/repos/{bundle['plan']['value']['repository']['owner']}/{bundle['plan']['value']['repository']['name']}/check-runs/999",
             "check_suite": {"id": 301},
-            "details_url": f"https://github.com/{bundle['plan']['value']['repository']['owner']}/{bundle['plan']['value']['repository']['name']}/actions/runs/101/jobs/999",
+            "details_url": f"https://github.com/{bundle['plan']['value']['repository']['owner']}/{bundle['plan']['value']['repository']['name']}/actions/runs/101/job/999",
         })
         result = self._validate(bundle)
         self.assertEqual("REJECT", result["verdict"])
