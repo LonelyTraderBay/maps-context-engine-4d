@@ -1,0 +1,55 @@
+{
+  "format_version": 1,
+  "task_id": "T002",
+  "platform": "wsl2-linux/amd64",
+  "runtime": "native WSL2 Ubuntu 26.04.1 LTS",
+  "toolchain": "go1.27.2",
+  "filesystem": "ext4",
+  "device": "/dev/sdd",
+  "mount": "/",
+  "workspace_and_fixture_filesystem": "ext4",
+  "fixture_root_relative": "artifacts/git-delivery/.staging-f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/scratch/T002/linux",
+  "temp_build_cache_module_cache_share_volume": true,
+  "preflight_source_graph": "302 packages; 1850 Go files; 32110029 bytes",
+  "admitted_cap_bytes": 805306368,
+  "cold_run": {
+    "run_id": "d4649d47-f652-4215-b1f2-30568510f1f1",
+    "report": "artifacts/preflight/T002/smoke-linux-d4649d47-f652-4215-b1f2-30568510f1f1.json",
+    "report_sha256": "732d35b213ff363d55923051d369ad9f5c6760e43078a4a4a3fe6aba818cac5b",
+    "go_build_exit": 0,
+    "smoke_exit": 0,
+    "measured_build_cache_growth_bytes": 201848370,
+    "peak_sampled_volume_consumption_bytes": 438235136,
+    "result": "PASS_WITH_WRAPPER_RECONCILIATION",
+    "wrapper_exit": 127,
+    "wrapper_diagnostic": "A trailing CR after the heredoc; preserved as private reconciliation."
+  },
+  "reproduced_run": {
+    "run_id": "d79ec9cc-3de2-497b-beae-6ca7ffc05d4b",
+    "report": "artifacts/preflight/T002/smoke-linux-d79ec9cc-3de2-497b-beae-6ca7ffc05d4b.json",
+    "report_sha256": "fb9f78a17958713dfe9622c764f36483def9f294f2e13769557cd42029856545",
+    "go_build_exit": 0,
+    "smoke_exit": 0,
+    "wrapper_exit": 0,
+    "build_cache_growth_bytes": 0,
+    "peak_sampled_volume_consumption_bytes": 22011904,
+    "database_files": [
+      {
+        "name": "sqlite-5000.db",
+        "bytes": 24576
+      },
+      {
+        "name": "sqlite-1234.db",
+        "bytes": 0
+      }
+    ],
+    "result": "PASS"
+  },
+  "windows_smoke": {
+    "report": "artifacts/preflight/T002/smoke-windows-b91fa17e-8182-436e-8e8a-ea936fbed3a2.json",
+    "report_sha256": "ea16c5bb3511c521809f59a987b3baea6ebb14043ca7f6aaaf4f67527c30c29e",
+    "filesystem": "NTFS",
+    "result": "PASS"
+  },
+  "observed_at_utc": "2026-10-15T18:46:06.5591697Z"
+}

@@ -1,0 +1,1348 @@
+{
+  "format_version": 1,
+  "task_id": "T002",
+  "adr": "S21 A055",
+  "reviewed_at_utc": "2026-10-15T18:46:32.190186+00:00",
+  "toolchain": {
+    "go_language_version": "1.27.0",
+    "exact_toolchain": "go1.27.2",
+    "official_release_history": "https://go.dev/doc/devel/release",
+    "official_download_metadata": "https://go.dev/dl/?mode=json",
+    "release_license": {
+      "classification": "BSD-3-Clause",
+      "archive_license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+    },
+    "version_choice_note": "Go 1.27.2 is the newer supported major line; Go 1.26.9 also received security fixes on 2026-10-08, so no claim is made that those fixes are exclusive to 1.27.2.",
+    "archives": [
+      {
+        "platform": "windows/amd64",
+        "url": "https://go.dev/dl/go1.27.2.windows-amd64.zip",
+        "bytes": 79008081,
+        "sha256": "1314008898bd40df77af4b014f777f08873dbdfbcd3d92308728ee03304fe04f"
+      },
+      {
+        "platform": "linux/amd64",
+        "url": "https://go.dev/dl/go1.27.2.linux-amd64.tar.gz",
+        "bytes": 70590635,
+        "sha256": "ecbadb99091a3f46e31f5f934b068b1864eafa7995211b39eaddf76996045fe5"
+      }
+    ]
+  },
+  "dependencies": {
+    "go_mod_sha256": "342751a0ff22de2a09761c51da51b60fb27c578071ebf47794a48d0138091b8c",
+    "go_sum_sha256": "841c9f72d3fda6497d0d52a11321127309a3d95f2d547a6b1e36810bd32c6a43",
+    "resolved_module_count": 38,
+    "direct_module_count": 3,
+    "transitive_module_count": 35,
+    "modules": [
+      {
+        "path": "cloud.google.com/go/compute/metadata",
+        "version": "v0.3.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:Tz+eQXMEqDIKRsmY3cHTL6FVaynIjX2QxYC4trgAKZc=",
+        "go_mod_sum": "h1:zFmK7XCadkQkj6TtorcaGlCW1hT1fIilQDwofLpJ20k=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 11358,
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "classification": "Apache-2.0",
+        "classification_basis": "Root license has the standard Apache License 2.0 grant"
+      },
+      {
+        "path": "golang.org/x/telemetry",
+        "version": "v0.0.0-20261009151841-97e8ea77aa2a",
+        "dependency_kind": "indirect",
+        "sum": "h1:wnveMBKHwx8/nIb8WYT5P9vtefdXOvIWxzycCkc5n6Q=",
+        "go_mod_sum": "h1:i+ivNqjDnTF3WTElsdk5g9V5DTSBYgdNo7xTU9SDwYA=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "golang.org/x/time",
+        "version": "v0.15.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=",
+        "go_mod_sum": "h1:Y4YMaQmXwGQZoFaVFk4YpCt4FLQMYKZe9oeV/f4MSno=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "golang.org/x/tools",
+        "version": "v0.52.0",
+        "dependency_kind": "direct",
+        "sum": "h1:ryxg4U63oaUYk7uOLTF37n43f4qgtGvqV4Ioit1BaEs=",
+        "go_mod_sum": "h1:ItcP5UNaVGG+Yc4eIYmaFLNJ4soEopkx5Y2d4lcEurs=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/cc/v4",
+        "version": "v4.29.7",
+        "dependency_kind": "indirect",
+        "sum": "h1:q+NXGJ0bK3b4TXFYQQVr9pYETGnmwFWkrUzJnMya/Tg=",
+        "go_mod_sum": "h1:OnovgIhbbMXMu1aISnJ0wvVD1KnW+cAUJkIrAWh+kVI=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1480,
+            "sha256": "1c77905db36f407e0fdb513f97f1f2a3f2282049ca273637841face982d5d003"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/ccgo/v4",
+        "version": "v4.36.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:ZNIUZAryN0UgnJwtyxrdEzcFc3yD4Cu4AzjfPXsLsIE=",
+        "go_mod_sum": "h1:rrtGc2QkS239nYb/mQNuBMyjq3/y3ZXWbBjPoV3wqzA=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1482,
+            "sha256": "343748b20da2ceb739c1ab7b85fe16f6fe4b67fad88fea40c5835a08383d8ffe"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/fileutil",
+        "version": "v1.4.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:j6ZzNTftVS054gi281TyLjHPp6CPHr2KCxEXjEbD6SM=",
+        "go_mod_sum": "h1:EqdKFDxiByqxLk8ozOxObDSfcVOv/54xDs/DUHdvCUU=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "7dc07397727fc500d5ce768d724e4d555eee8fb7687f421fd40d72249868b0ca"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/gc/v2",
+        "version": "v2.6.5",
+        "dependency_kind": "indirect",
+        "sum": "h1:nyqdV8q46KvTpZlsw66kWqwXRHdjIlJOhG6kxiV/9xI=",
+        "go_mod_sum": "h1:YgIahr1ypgfe7chRuJi2gD7DBQiKSLMPgBQe9oIiito=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 3567,
+            "sha256": "4719790df5e9d33b1cef3a67df8264fb1e3e7f54f3ca900c562e84a951de62d9"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/gc/v3",
+        "version": "v3.1.5",
+        "dependency_kind": "indirect",
+        "sum": "h1:21ldfPfRYE31Tb7B3mwAK8gy1AxP4+dKjrOQPfqakoc=",
+        "go_mod_sum": "h1:HFK/6AGESC7Ex+EZJhJ2Gni6cTaYpSMmU/cT9RmlfYY=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 3567,
+            "sha256": "4719790df5e9d33b1cef3a67df8264fb1e3e7f54f3ca900c562e84a951de62d9"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/goabi0",
+        "version": "v0.2.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:HvEowk7LxcPd0eq6mVOAEMai46V+i7Jrj13t4AzuNks=",
+        "go_mod_sum": "h1:CEFRnnJhKvWT1c1JTI3Avm+tgOWbkOu5oPA8eH8LnMI=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1489,
+            "sha256": "6d33428c98f9d7113dfc86e17fca00f81aeaac33e02f79c8a5afafb0a5fd33c6"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/libc",
+        "version": "v1.77.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs=",
+        "go_mod_sum": "h1:87/pZ4L6nD1zqW4nItuS12YO7hN1igAah34xjnQo/W0=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1482,
+            "sha256": "95ff867eb55a56935fa7492406cfa953fb7c13ca73f4c0a86ae05756b4605600"
+          },
+          {
+            "name": "LICENSE-3RD-PARTY.md",
+            "bytes": 10505,
+            "sha256": "f597097efe3d97021f89170746bd3a0fb9a8b6fb26b82043ed68a4e0283bee6c"
+          }
+        ],
+        "classification": "BSD-3-Clause package; third-party manifest",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/mathutil",
+        "version": "v1.7.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=",
+        "go_mod_sum": "h1:4p5IwJITfppl0G4sUEDtCr4DthTaT47/N3aT6MhfgJg=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "bfa9bf72a72ca009fd62a8f84fca3dca67e51d93af96352723646599898b6cf5"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/memory",
+        "version": "v1.12.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=",
+        "go_mod_sum": "h1:/JP4VbVC+K5sU2wZi9bHoq2MAkCnrt2r98UGeSK7Mjw=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1484,
+            "sha256": "59895e669f48f168b6b858358f6005779cdf40a265f7828813061b56af67b496"
+          },
+          {
+            "name": "LICENSE-GO",
+            "bytes": 1479,
+            "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+          },
+          {
+            "name": "LICENSE-LOGO",
+            "bytes": 62,
+            "sha256": "5ae5bee3072a841376451b48d8cfcec7188e10543926d5870828d36c8a750dc5"
+          },
+          {
+            "name": "LICENSE-MMAP-GO",
+            "bytes": 1518,
+            "sha256": "c2eba69f20d05414538c3a5df7694dde392e065ff70882e1625e90f5d6659fff"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/opt",
+        "version": "v0.2.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:tGyef5ApycA7FSEOMraay9SaTk5zmbx7Tu+cJs4QKZg=",
+        "go_mod_sum": "h1:03fq9lsNfvkYSfxrfUhZCWPk1lm4cq4N+Bh//bEtgns=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1481,
+            "sha256": "7a0dd90f1d1c8fa80d03c1806bdd8e4dca7285fae9b4a34f2c4a8a2552fdd77c"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/sortutil",
+        "version": "v1.2.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:+xyoGf15mM3NMlPDnFqrteY07klSFxLElE2PVuWIJ7w=",
+        "go_mod_sum": "h1:7ZI3a3REbai7gzCLcotuw9AC4VZVpYMjDzETGsSMqJE=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "7bc9df688c16dd8e64463ec0ad66728730a0e1a70a1dbda3dcbcd8a9b45bfaab"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "modernc.org/sqlite",
+        "version": "v1.60.1",
+        "dependency_kind": "direct",
+        "sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw=",
+        "go_mod_sum": "h1:1dIoEagfDE72QytD5scH1lxARtaUgKgHC/NuApA27r0=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1489,
+            "sha256": "c6fe05491a60ae13bcd223088d2705e36dede24e5587226231d2459ada5c4822"
+          },
+          {
+            "name": "LICENSE-3RD-PARTY.md",
+            "bytes": 74323,
+            "sha256": "b4366b9c27a9364633e015011a231913ed19bf1228f335bf617e50a6f7b168a6"
+          },
+          {
+            "name": "LICENSE-SQLITE",
+            "bytes": 1506,
+            "sha256": "8438c9c89b849131ead81d5435cb97fcf052df5b0b286dda8a2d4c29e6cb3fd0"
+          },
+          {
+            "name": "LICENSE-SQLITE_VEC",
+            "bytes": 1068,
+            "sha256": "6ce72bbe12d975bd5286e5ab0a064c069693300c47bccbc57bec18485f1621ea"
+          }
+        ],
+        "classification": "Mixed: BSD-3-Clause package; bundled SQLite public domain; sqlite_vec MIT; third-party manifest",
+        "classification_basis": "Root license and notice set declares multiple component or contribution terms"
+      },
+      {
+        "path": "golang.org/x/sys",
+        "version": "v0.49.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+        "go_mod_sum": "h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "golang.org/x/sync",
+        "version": "v0.24.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=",
+        "go_mod_sum": "h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "golang.org/x/oauth2",
+        "version": "v0.35.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:Mv2mzuHuZuY2+bkyWXIHMfhNdJAdwW3FuWeCPYN5GVQ=",
+        "go_mod_sum": "h1:lzm5WQJQwKZ3nwavOZ3IS5Aulzxi68dUSgRHujetwEA=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "golang.org/x/net",
+        "version": "v0.61.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:RR+6j/BTBCrggOLugxa+66R8FvoN6MHlzDlZIbN9YFw=",
+        "go_mod_sum": "h1:WgDCOTH8iwtB66T4/GfI94AHo/hhdb7Hah9NDseQfiI=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/dustin/go-humanize",
+        "version": "v1.0.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=",
+        "go_mod_sum": "h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1136,
+            "sha256": "a973b4498c13eb74baa2a8e5c351426a6826f2fcdd909916dbe53ee2e755fd71"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/golang-jwt/jwt/v5",
+        "version": "v5.3.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:kYf81DTWFe7t+1VvL7eS+jKFVWaUnK9cB1qbwn63YCY=",
+        "go_mod_sum": "h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1100,
+            "sha256": "fe26ca41577b9b2b4448050a24b25e5753af66b5d5945d5d36094e7790bfcb2f"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/google/go-cmp",
+        "version": "v0.7.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=",
+        "go_mod_sum": "h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "17b5d209ba8f9684257ecfcff87df6ceda6194143a8fbd074f29727cff6f0c40"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/google/jsonschema-go",
+        "version": "v0.4.3",
+        "dependency_kind": "indirect",
+        "sum": "h1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=",
+        "go_mod_sum": "h1:r5quNTdLOYEz95Ru18zA0ydNbBuYoo9tgaYcxEYhJVE=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1087,
+            "sha256": "2d56c53449691d85d9aea245eb8dac12713e9075d70d5557b82ae1e94805b357"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/google/pprof",
+        "version": "v0.0.0-20260802141513-ef3492d7dac3",
+        "dependency_kind": "indirect",
+        "sum": "h1:LMLX+LgTNWpfvCBdFebv6EsYotImrt/Ppc5cXIriCSo=",
+        "go_mod_sum": "h1:jl5iWTm0/hd5PjEYEOuwAJ57L/CibdZfrqZ5XA5GrCk=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 11358,
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "classification": "Apache-2.0",
+        "classification_basis": "Root license has the standard Apache License 2.0 grant"
+      },
+      {
+        "path": "github.com/google/uuid",
+        "version": "v1.6.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=",
+        "go_mod_sum": "h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1480,
+            "sha256": "0a8d61ed3cbfd5312326e8126c31ce9c627a283adc99131b56896d29ada04b2d"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/hashicorp/golang-lru/v2",
+        "version": "v2.0.7",
+        "dependency_kind": "indirect",
+        "sum": "h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=",
+        "go_mod_sum": "h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 15957,
+            "sha256": "6c7088eb877b5d7e6e0e9d27e822ea25fcda2e83f9eba59bb5f1418a656796e0"
+          }
+        ],
+        "classification": "MPL-2.0",
+        "classification_basis": "Root license identifies Mozilla Public License version 2.0"
+      },
+      {
+        "path": "modernc.org/strutil",
+        "version": "v1.2.1",
+        "dependency_kind": "indirect",
+        "sum": "h1:UneZBkQA+DX2Rp35KcM69cSsNES9ly8mQWD71HKlOA0=",
+        "go_mod_sum": "h1:EHkiggD70koQxjVdSBM3JKM7k6L0FbGE5eymy9i3B9A=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1485,
+            "sha256": "0f594b710bedb0335b15155204150cb1aac98e76144b52b852b43ce6a65eaaad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/mattn/go-isatty",
+        "version": "v0.0.24",
+        "dependency_kind": "indirect",
+        "sum": "h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=",
+        "go_mod_sum": "h1:nMCL3Zebbrt45jsMDgnfIwz6ydEQApk5oEI3HqDio6A=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1099,
+            "sha256": "08eab1118c80885fa1fa6a6dd7303f65a379fcb3733e063d20d1bbc2c76e6fa1"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/ncruces/go-strftime",
+        "version": "v1.0.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w=",
+        "go_mod_sum": "h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1068,
+            "sha256": "38ae43959daf953a393a585b2988672cb65a5a541aca0d0be5e72595a0a16883"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/remyoudompheng/bigfft",
+        "version": "v0.0.0-20230129092748-24d4a6f8daec",
+        "dependency_kind": "indirect",
+        "sum": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=",
+        "go_mod_sum": "h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "dd26a7abddd02e2d0aba97805b31f248ef7835d9e10da289b22e3b8ab78b324d"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/segmentio/asm",
+        "version": "v1.1.3",
+        "dependency_kind": "indirect",
+        "sum": "h1:WM03sfUOENvvKexOLp+pCqgb/WDjsi7EK8gIsICtzhc=",
+        "go_mod_sum": "h1:Ld3L4ZXGNcSLRg4JBsZ3//1+f/TjYl0Mzen/DQy1EJg=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1064,
+            "sha256": "e2a78de21d6d8ded2dff0f3189cd32e011630d785da127ebfbc8949012c0947b"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/segmentio/encoding",
+        "version": "v0.5.4",
+        "dependency_kind": "indirect",
+        "sum": "h1:OW1VRern8Nw6ITAtwSZ7Idrl3MXCFwXHPgqESYfvNt0=",
+        "go_mod_sum": "h1:HS1ZKa3kSN32ZHVZ7ZLPLXWvOVIiZtyJnO1gPH1sKt0=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1073,
+            "sha256": "d6d71a1f7dc6539e371120cc7af6e3257e55ca79634d473211f217b8965b0f16"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "github.com/yosida95/uritemplate/v3",
+        "version": "v3.0.2",
+        "dependency_kind": "indirect",
+        "sum": "h1:Ed3Oyj9yrmi9087+NczuL5BwkIc4wvTb5zIM+UJPGz4=",
+        "go_mod_sum": "h1:ILOh0sOhIJR3+L/8afwt/kE++YT040gmv5BQTMR2HP4=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1546,
+            "sha256": "0761aadfb1921103752869ee942d4a71bdd54494697684d4b13dc17ad9781191"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/yuin/goldmark",
+        "version": "v1.4.13",
+        "dependency_kind": "indirect",
+        "sum": "h1:fVcFKWvrslecOb/tg+Cc05dkeYx540o0FuFt3nUVDoE=",
+        "go_mod_sum": "h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1071,
+            "sha256": "c1d6f653c38c80294dc7994647ba0dcc508ce64a86996303c804efa2f7982bff"
+          }
+        ],
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant"
+      },
+      {
+        "path": "golang.org/x/mod",
+        "version": "v0.42.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:ICeL3t2L30ljSPHHxDnR4fqVcBt/zR2zJAb9juavmQg=",
+        "go_mod_sum": "h1:u5fzIrRInkL8MaO1cbRkUHT64v303YIT5KEqpNr7jRs=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      },
+      {
+        "path": "github.com/modelcontextprotocol/go-sdk",
+        "version": "v1.8.0",
+        "dependency_kind": "direct",
+        "sum": "h1:KIvahhYqwtbeniWVPs3TcXEA7b8jEtwfBpOTAI+Urx4=",
+        "go_mod_sum": "h1:dL7u98E/zjJTGzEq+j30jQ8K2k1mb6LeAH4inEcSGts=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 12223,
+            "sha256": "af679003d933f045393a6a029f43da113f9ae364eac651d9ae268392985580f5"
+          }
+        ],
+        "classification": "Mixed: MIT + Apache-2.0 + CC-BY-4.0; contribution-dependent terms declared in LICENSE",
+        "classification_basis": "Root license and notice set declares multiple component or contribution terms"
+      },
+      {
+        "path": "modernc.org/token",
+        "version": "v1.1.0",
+        "dependency_kind": "indirect",
+        "sum": "h1:Xl7Ap9dKaEs5kLoOQeQmPWevfnk/DM5qcLcYlA8ys6Y=",
+        "go_mod_sum": "h1:UGzOrNV1mAFSEB63lOFHIpNRUVMvYTc6yu1SMY/XTDM=",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+          }
+        ],
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause"
+      }
+    ]
+  },
+  "module_graph_reconciliation": {
+    "status": "PASS_WITH_RECONCILIATION",
+    "initial_pre_tidy_external_modules": 37,
+    "actual_selected_external_modules": 38,
+    "additional_module": "cloud.google.com/go/compute/metadata@v0.3.0",
+    "actual_download_count": 38,
+    "go_mod_verify": "PASS on Windows and WSL2 Linux",
+    "preflight_observation_ref": "private T002 diagnostic download-all-preflight-reconciliation.json",
+    "preflight_reconciliation_sha256": "714d315d6062a2c6aeb33df3674ceb5666830a611bab4045e8fffdce5a83b59f",
+    "note": "The pre-tidy graph undercounted one module. The additional module and its exact checksums were reconciled and downloaded; measured growth remained below the admitted cap. The original graph is not claimed as exact."
+  },
+  "sqlite": {
+    "module": "modernc.org/sqlite",
+    "module_version": "v1.60.1",
+    "module_sum": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw=",
+    "matching_libc_version": "modernc.org/libc v1.77.1",
+    "embedded_version": "3.53.4",
+    "sqlite_source_id": "2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "wal_reset_patch_floor": "3.51.3",
+    "compatibility_evidence": [
+      "artifacts/preflight/T002/smoke-windows-b91fa17e-8182-436e-8e8a-ea936fbed3a2.json",
+      "artifacts/preflight/T002/smoke-linux-d79ec9cc-3de2-497b-beae-6ca7ffc05d4b.json"
+    ],
+    "upstream_sources": [
+      "https://gitlab.com/cznic/sqlite/-/raw/v1.60.1/CHANGELOG.md",
+      "https://www.sqlite.org/wal.html"
+    ],
+    "fts5_compile_and_create_query": "PASS on Windows NTFS and WSL2 ext4",
+    "busy_timeout_each_of_four_pooled_connections": {
+      "default_ms": 5000,
+      "override_ms": 1234
+    },
+    "limitations": "SQLite multi-process WAL/checkpoint lifecycle remains assigned to T036/T037/T106."
+  },
+  "mcp": {
+    "module": "github.com/modelcontextprotocol/go-sdk",
+    "version": "v1.8.0",
+    "negotiated_protocol": "2026-07-28",
+    "in_memory_handshake_and_tool_call": "PASS on Windows and Linux",
+    "sources": [
+      "https://github.com/modelcontextprotocol/go-sdk/releases",
+      "https://raw.githubusercontent.com/modelcontextprotocol/go-sdk/v1.8.0/go.mod"
+    ],
+    "license_classification": "Mixed, contribution-dependent terms"
+  },
+  "semantic_loader": {
+    "module": "golang.org/x/tools",
+    "version": "v0.52.0",
+    "api": "go/packages",
+    "typed_fixture": "Marker{Value int} loaded with type information on Windows and Linux",
+    "source": "https://raw.githubusercontent.com/golang/tools/v0.52.0/go.mod"
+  },
+  "license_review": {
+    "result": "PASS_WITH_RECORDED_COMPONENT_LICENSES",
+    "resolved_module_count": 38,
+    "modules_with_root_license_evidence": 38,
+    "unclassified_modules": 0,
+    "basis": "Root LICENSE/LICENCE/COPYING/NOTICE files were inventoried, SHA-256 hashed, and classified from the actual license text. SQLite and MCP use mixed-license notes; modernc third-party manifests remain recorded.",
+    "modules": [
+      {
+        "path": "cloud.google.com/go/compute/metadata",
+        "version": "v0.3.0",
+        "dependency_kind": "indirect",
+        "classification": "Apache-2.0",
+        "classification_basis": "Root license has the standard Apache License 2.0 grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 11358,
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/telemetry",
+        "version": "v0.0.0-20261009151841-97e8ea77aa2a",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/time",
+        "version": "v0.15.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/tools",
+        "version": "v0.52.0",
+        "dependency_kind": "direct",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/cc/v4",
+        "version": "v4.29.7",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1480,
+            "sha256": "1c77905db36f407e0fdb513f97f1f2a3f2282049ca273637841face982d5d003"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/ccgo/v4",
+        "version": "v4.36.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1482,
+            "sha256": "343748b20da2ceb739c1ab7b85fe16f6fe4b67fad88fea40c5835a08383d8ffe"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/fileutil",
+        "version": "v1.4.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "7dc07397727fc500d5ce768d724e4d555eee8fb7687f421fd40d72249868b0ca"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/gc/v2",
+        "version": "v2.6.5",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 3567,
+            "sha256": "4719790df5e9d33b1cef3a67df8264fb1e3e7f54f3ca900c562e84a951de62d9"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/gc/v3",
+        "version": "v3.1.5",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 3567,
+            "sha256": "4719790df5e9d33b1cef3a67df8264fb1e3e7f54f3ca900c562e84a951de62d9"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/goabi0",
+        "version": "v0.2.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1489,
+            "sha256": "6d33428c98f9d7113dfc86e17fca00f81aeaac33e02f79c8a5afafb0a5fd33c6"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/libc",
+        "version": "v1.77.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause package; third-party manifest",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1482,
+            "sha256": "95ff867eb55a56935fa7492406cfa953fb7c13ca73f4c0a86ae05756b4605600"
+          },
+          {
+            "name": "LICENSE-3RD-PARTY.md",
+            "bytes": 10505,
+            "sha256": "f597097efe3d97021f89170746bd3a0fb9a8b6fb26b82043ed68a4e0283bee6c"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/mathutil",
+        "version": "v1.7.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "bfa9bf72a72ca009fd62a8f84fca3dca67e51d93af96352723646599898b6cf5"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/memory",
+        "version": "v1.12.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1484,
+            "sha256": "59895e669f48f168b6b858358f6005779cdf40a265f7828813061b56af67b496"
+          },
+          {
+            "name": "LICENSE-GO",
+            "bytes": 1479,
+            "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+          },
+          {
+            "name": "LICENSE-LOGO",
+            "bytes": 62,
+            "sha256": "5ae5bee3072a841376451b48d8cfcec7188e10543926d5870828d36c8a750dc5"
+          },
+          {
+            "name": "LICENSE-MMAP-GO",
+            "bytes": 1518,
+            "sha256": "c2eba69f20d05414538c3a5df7694dde392e065ff70882e1625e90f5d6659fff"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/opt",
+        "version": "v0.2.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1481,
+            "sha256": "7a0dd90f1d1c8fa80d03c1806bdd8e4dca7285fae9b4a34f2c4a8a2552fdd77c"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/sortutil",
+        "version": "v1.2.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1486,
+            "sha256": "7bc9df688c16dd8e64463ec0ad66728730a0e1a70a1dbda3dcbcd8a9b45bfaab"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/sqlite",
+        "version": "v1.60.1",
+        "dependency_kind": "direct",
+        "classification": "Mixed: BSD-3-Clause package; bundled SQLite public domain; sqlite_vec MIT; third-party manifest",
+        "classification_basis": "Root license and notice set declares multiple component or contribution terms",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1489,
+            "sha256": "c6fe05491a60ae13bcd223088d2705e36dede24e5587226231d2459ada5c4822"
+          },
+          {
+            "name": "LICENSE-3RD-PARTY.md",
+            "bytes": 74323,
+            "sha256": "b4366b9c27a9364633e015011a231913ed19bf1228f335bf617e50a6f7b168a6"
+          },
+          {
+            "name": "LICENSE-SQLITE",
+            "bytes": 1506,
+            "sha256": "8438c9c89b849131ead81d5435cb97fcf052df5b0b286dda8a2d4c29e6cb3fd0"
+          },
+          {
+            "name": "LICENSE-SQLITE_VEC",
+            "bytes": 1068,
+            "sha256": "6ce72bbe12d975bd5286e5ab0a064c069693300c47bccbc57bec18485f1621ea"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/sys",
+        "version": "v0.49.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/sync",
+        "version": "v0.24.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/oauth2",
+        "version": "v0.35.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/net",
+        "version": "v0.61.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "github.com/dustin/go-humanize",
+        "version": "v1.0.1",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1136,
+            "sha256": "a973b4498c13eb74baa2a8e5c351426a6826f2fcdd909916dbe53ee2e755fd71"
+          }
+        ]
+      },
+      {
+        "path": "github.com/golang-jwt/jwt/v5",
+        "version": "v5.3.1",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1100,
+            "sha256": "fe26ca41577b9b2b4448050a24b25e5753af66b5d5945d5d36094e7790bfcb2f"
+          }
+        ]
+      },
+      {
+        "path": "github.com/google/go-cmp",
+        "version": "v0.7.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "17b5d209ba8f9684257ecfcff87df6ceda6194143a8fbd074f29727cff6f0c40"
+          }
+        ]
+      },
+      {
+        "path": "github.com/google/jsonschema-go",
+        "version": "v0.4.3",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1087,
+            "sha256": "2d56c53449691d85d9aea245eb8dac12713e9075d70d5557b82ae1e94805b357"
+          }
+        ]
+      },
+      {
+        "path": "github.com/google/pprof",
+        "version": "v0.0.0-20260802141513-ef3492d7dac3",
+        "dependency_kind": "indirect",
+        "classification": "Apache-2.0",
+        "classification_basis": "Root license has the standard Apache License 2.0 grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 11358,
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ]
+      },
+      {
+        "path": "github.com/google/uuid",
+        "version": "v1.6.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1480,
+            "sha256": "0a8d61ed3cbfd5312326e8126c31ce9c627a283adc99131b56896d29ada04b2d"
+          }
+        ]
+      },
+      {
+        "path": "github.com/hashicorp/golang-lru/v2",
+        "version": "v2.0.7",
+        "dependency_kind": "indirect",
+        "classification": "MPL-2.0",
+        "classification_basis": "Root license identifies Mozilla Public License version 2.0",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 15957,
+            "sha256": "6c7088eb877b5d7e6e0e9d27e822ea25fcda2e83f9eba59bb5f1418a656796e0"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/strutil",
+        "version": "v1.2.1",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1485,
+            "sha256": "0f594b710bedb0335b15155204150cb1aac98e76144b52b852b43ce6a65eaaad"
+          }
+        ]
+      },
+      {
+        "path": "github.com/mattn/go-isatty",
+        "version": "v0.0.24",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1099,
+            "sha256": "08eab1118c80885fa1fa6a6dd7303f65a379fcb3733e063d20d1bbc2c76e6fa1"
+          }
+        ]
+      },
+      {
+        "path": "github.com/ncruces/go-strftime",
+        "version": "v1.0.0",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1068,
+            "sha256": "38ae43959daf953a393a585b2988672cb65a5a541aca0d0be5e72595a0a16883"
+          }
+        ]
+      },
+      {
+        "path": "github.com/remyoudompheng/bigfft",
+        "version": "v0.0.0-20230129092748-24d4a6f8daec",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "dd26a7abddd02e2d0aba97805b31f248ef7835d9e10da289b22e3b8ab78b324d"
+          }
+        ]
+      },
+      {
+        "path": "github.com/segmentio/asm",
+        "version": "v1.1.3",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1064,
+            "sha256": "e2a78de21d6d8ded2dff0f3189cd32e011630d785da127ebfbc8949012c0947b"
+          }
+        ]
+      },
+      {
+        "path": "github.com/segmentio/encoding",
+        "version": "v0.5.4",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1073,
+            "sha256": "d6d71a1f7dc6539e371120cc7af6e3257e55ca79634d473211f217b8965b0f16"
+          }
+        ]
+      },
+      {
+        "path": "github.com/yosida95/uritemplate/v3",
+        "version": "v3.0.2",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1546,
+            "sha256": "0761aadfb1921103752869ee942d4a71bdd54494697684d4b13dc17ad9781191"
+          }
+        ]
+      },
+      {
+        "path": "github.com/yuin/goldmark",
+        "version": "v1.4.13",
+        "dependency_kind": "indirect",
+        "classification": "MIT",
+        "classification_basis": "Root license has the standard MIT permission grant",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1071,
+            "sha256": "c1d6f653c38c80294dc7994647ba0dcc508ce64a86996303c804efa2f7982bff"
+          }
+        ]
+      },
+      {
+        "path": "golang.org/x/mod",
+        "version": "v0.42.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1453,
+            "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+          }
+        ]
+      },
+      {
+        "path": "github.com/modelcontextprotocol/go-sdk",
+        "version": "v1.8.0",
+        "dependency_kind": "direct",
+        "classification": "Mixed: MIT + Apache-2.0 + CC-BY-4.0; contribution-dependent terms declared in LICENSE",
+        "classification_basis": "Root license and notice set declares multiple component or contribution terms",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 12223,
+            "sha256": "af679003d933f045393a6a029f43da113f9ae364eac651d9ae268392985580f5"
+          }
+        ]
+      },
+      {
+        "path": "modernc.org/token",
+        "version": "v1.1.0",
+        "dependency_kind": "indirect",
+        "classification": "BSD-3-Clause",
+        "classification_basis": "Root license includes the third no-endorsement clause",
+        "license_files": [
+          {
+            "name": "LICENSE",
+            "bytes": 1479,
+            "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+          }
+        ]
+      }
+    ]
+  },
+  "platform_smoke": [
+    {
+      "platform": "windows/amd64",
+      "filesystem": "NTFS",
+      "report": "artifacts/preflight/T002/smoke-windows-b91fa17e-8182-436e-8e8a-ea936fbed3a2.json",
+      "report_sha256": "ea16c5bb3511c521809f59a987b3baea6ebb14043ca7f6aaaf4f67527c30c29e",
+      "result": "PASS",
+      "run_id": "b91fa17e-8182-436e-8e8a-ea936fbed3a2"
+    },
+    {
+      "platform": "wsl2-linux/amd64",
+      "filesystem": "ext4",
+      "report": "artifacts/preflight/T002/smoke-linux-d79ec9cc-3de2-497b-beae-6ca7ffc05d4b.json",
+      "report_sha256": "fb9f78a17958713dfe9622c764f36483def9f294f2e13769557cd42029856545",
+      "result": "PASS",
+      "run_id": "d79ec9cc-3de2-497b-beae-6ca7ffc05d4b",
+      "filesystem_sidecar": "artifacts/preflight/T002/platform-filesystem-linux.json",
+      "filesystem_sidecar_sha256": "615fc4adbdeca0ab02db448e89e15dc432173ac204d589cbf6461f2531681e85",
+      "cold_build_peak_sampled_bytes": 438235136,
+      "cold_build_cap_bytes": 805306368
+    }
+  ],
+  "verification_scope": {
+    "local_compile_and_smoke": "PASS on native Windows and native WSL2 Linux with CGO_ENABLED=0",
+    "github_ci": "Pending T002 payload and closing delivery; existing Actions bootstrap workflow validates Python bootstrap sources and fixtures, not Go compilation",
+    "distribution_security_audit": "Not claimed by this dependency/license pin record."
+  },
+  "source_review": [
+    "https://go.dev/doc/devel/release",
+    "https://go.dev/dl/?mode=json",
+    "https://gitlab.com/cznic/sqlite/-/raw/v1.60.1/go.mod",
+    "https://gitlab.com/cznic/sqlite/-/raw/v1.60.1/CHANGELOG.md",
+    "https://www.sqlite.org/wal.html",
+    "https://github.com/modelcontextprotocol/go-sdk/releases",
+    "https://raw.githubusercontent.com/modelcontextprotocol/go-sdk/v1.8.0/go.mod",
+    "https://raw.githubusercontent.com/golang/tools/v0.52.0/go.mod"
+  ]
+}
