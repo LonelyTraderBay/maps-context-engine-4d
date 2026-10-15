@@ -1,0 +1,8428 @@
+---
+document_id: MCE4D-SPEC
+file_name: Maps-Context-Engine-4D_SPEC.md
+spec_version: 1.6.13
+spec_date: 2026-10-15
+language: vi
+primary_reader: AI_CODING_AGENT
+project_label: Maps-Context-Engine-4D
+project_id: maps-context-engine-4d
+binary_name: mce4d
+project_name_status: INTERNAL_WORKING_NAME_NOT_TRADEMARK_CLEARED
+spec_status: AUTONOMOUS_108_TASK_BASELINE_SINGLE_FINAL_USER_ACCEPTANCE
+implementation_status: NOT_STARTED
+product_verification_status: NOT_RUN
+document_structural_validation: PASS_2095_DOCUMENT_REFERENCE_CHECKS_20_CODEC_2_RAW_NODE_5_PROCESS_EXIT_BOUNDARIES_1_6_13_PRODUCT_AND_GITHUB_NOT_RUN
+source_of_truth: THIS_FILE
+policy_reference_directory: docs
+policy_adoption: ACCEPTED_SCOPED_S50
+policy_installation_in_project: VERIFIED_RAW_HASHES_3_OF_3_2026_10_14
+policy_runtime_enforcement: NOT_IMPLEMENTED
+approved_audit_findings: 8
+approved_audit_findings_integrated: 8
+latest_review_findings: 5
+latest_review_findings_integrated: 5
+latest_review_status: CLOSED_IN_SPEC_PRODUCT_UNVERIFIED
+previous_spec_sha256: 3fe454622803ddfb4f9f7e283b8fca53c42edc2017d70fbb15c9e27d01781533
+initial_task: T001
+current_gate: G0
+execution_scope: ALL_108_TASKS_R1_R2_R3_U0_U1_U2_U3
+execution_policy: AUTO_ADVANCE_INTERNAL_GATES
+owner_acceptance: ONCE_AFTER_FINAL_ENGINEERING_COMPLETION
+completion_target: 108_OF_108_WITH_REQUIRED_EVIDENCE
+coding_assignment_status: NOT_STARTED_SPEC_EDIT_ONLY
+git_delivery_policy: REQUIRED_PER_TASK_S53_AW_08
+git_repository_status: INITIALIZED_UNBORN_NO_REMOTE
+github_verification_status: NOT_RUN
+---
+
+# Maps-Context-Engine-4D — đặc tả và sổ triển khai duy nhất
+
+## S00 — BOOT: hợp đồng thực thi dành cho AI
+
+MUST đọc S00/S53 và resume S22 trước; lấy hàng task hiện tại trong S19, rồi chỉ đọc mục/requirement/case mà task tham chiếu. T001/T002 cần S01–S03; không load toàn bộ tài liệu vào mỗi phiên. S23 chỉ là nguồn kiểm chứng. S26–S33 là phần mở rộng lõi v1.1.0; S34–S40 là Code↔UI Explorer v1.2.0 trong cùng đặc tả. T105–T108 đóng model/schema/DDL/flow proof trước feature; T026 kiểm conformance/wiring; T081 đóng UI adapter seal trước T082. S41–S49 là bản vẽ thi công v1.3.0; authority cụ thể S41, không duplicate engine. S50 quy định vai trò/nguồn/version/mode của ba file nguyên bản trong docs; S51 là command/storage policy cho hoạt động phát triển. V1.5.0 sửa trực tiếp S43/S44/S45 để khép audit A01–A08; S52 giữ bảng audit lịch sử. V1.6.0 mở toàn bộ108 task theo yêu cầu người dùng; S53 quy định tự triển khai/tự kiểm/tự sửa và một lần nghiệm thu cuối. Policy/quota/SQLite preflight được đóng tại S14/S15/S03; S19 vẫn là tracker duy nhất. Các section/task ID ổn định để agent tìm đúng đoạn bằng heading, không phải nhớ số dòng.
+
+MUST xây một sản phẩm độc lập từ đặc tả này; không fork, dịch, chuyển đổi, tái tạo từng module hoặc dùng source/test/prompt/schema nội bộ của sản phẩm khác làm đầu vào triển khai. MUST NOT truy xuất GitNexus/Graphify để lấy cách triển khai khi thực hiện tài liệu này. Tên hai sản phẩm chỉ dùng để xác định ranh giới không kế thừa; không phải dependency.
+
+MUST hiểu đây là đặc tả cần triển khai, không phải mô tả tính năng đã tồn tại. Cả108 task trong baseline v1.6.0 ban đầu là TODO; không có build/test/benchmark sản phẩm đã chạy. Các giá trị hiệu năng là mục tiêu kiểm thử, không phải số đo.
+
+MUST khảo sát thư mục thực tế trước khi tạo/sửa file. Nếu repository rỗng, bootstrap theo T001. Nếu đã có code, đối chiếu từng task với code và bằng chứng; không ghi đè, xóa hoặc tái tạo repository. Không giả định repository cũ nào còn tồn tại; không phụ thuộc `memory-for-ai`.
+
+MUST chỉ sửa phạm vi task hiện tại trong assignment toàn bộ108 task; hoàn tất task thì tự nhận task Ready tiếp theo theo S47/S53, không chờ giao lại từng task. Trình tự: đọc invariant → xác minh hiện trạng → test/fixture → thay đổi tối thiểu → automated build/test/lint → tự review diff → commit nhỏ đúng thứ tự, ghi chú tiếng Việt → push và xác minh GitHub checks đúng SHA → chốt evidence/tracker/resume theo AW-08 → tiếp tục.
+
+MUST dùng nguồn gốc code, contract và test làm bằng chứng. Không đoán API thư viện, tên module Go, version tương thích hoặc cấu hình máy người dùng. Discovery gate được phép kiểm tra tài liệu chính thức và môi trường; lựa chọn thu được phải được pin, ghi lại và kiểm thử.
+
+MUST giữ tài liệu thiết kế/quyết định/tracker trong đúng file này. Không tách PRD, ARCHITECTURE, ROADMAP, TODO, AI_RULES riêng dự án hay CHANGELOG thành tài liệu cạnh tranh. Ba file quy tắc nguồn nguyên bản trong docs theo S50 được phép và phải giữ nguyên; chúng không giữ dữ kiện/kiến trúc/tracker riêng của MCE4D. Code, migration, test, lockfile, cấu hình CI, NOTICE/LICENSE bên thứ ba và log kiểm thử máy sinh vẫn được phép tạo khi cần. Chỉ tạo `AGENTS.md` tối đa 15 dòng trỏ về S00 nếu host cần và không có file sẵn; không sao chép toàn đặc tả vào đó; không ghi đè hướng dẫn hiện hữu.
+
+MUST phân biệt: “AI đang xây MCE4D” được sửa code của MCE4D theo task đã được giao; “MCE4D đang phân tích một repository” mặc định không được sửa source/config/AGENTS của repository đó. Xác định task_mode theo POL-03 trước ghi: file bootstrap nằm trong docs không tự bật chế độ docs-only hay tự cho phép triển khai. Nhiệm vụ chỉ cập nhật bản vẽ không tự chuyển thành coding.
+
+Thứ tự ưu tiên: chỉ dẫn hệ thống và quyền của người dùng → yêu cầu mới được xác nhận → invariant bảo mật/tính đúng → ADR ACCEPTED_USER/ACCEPTED_DELEGATED_AI/BASELINE_SPEC trong file này → yêu cầu/tracker → source/test hiện có. Phát hiện mâu thuẫn: tự resolve theo BP-04/S53 và kiểm lại; unresolved thật chỉ BLOCKED đúng phạm vi, làm tiếp việc độc lập. Không bỏ gate hoặc hạ tiêu chuẩn để qua test. Các default thiết kế trong tài liệu là quyết định của bản đặc tả, không gán chúng thành lựa chọn đã được người dùng xác nhận riêng.
+
+Từ khóa: MUST/MUST NOT = bắt buộc; SHOULD = mặc định phải làm, ngoại lệ phải có ADR; MAY = tùy chọn không thuộc cam kết release. Không dùng lời hứa “hiểu toàn bộ code”, “không bao giờ bỏ sót”, “không có rủi ro bản quyền” hoặc “tiết kiệm X%” khi chưa có bằng chứng tương ứng.
+
+### Bản đồ đọc theo tác vụ
+
+| Loại việc | Mục cần đọc |
+|---|---|
+| Bootstrap, license, dependency | S00,S22,S41–S44,S46–S50; thêm S01–S03 và S51 khi command có output |
+| Repo/worktree/path/security | S04, S06–S08, S14–S15, S17 |
+| Schema/index/freshness | S06–S09, S14–S17 |
+| Phân tích symbol/ngôn ngữ | S04, S08–S10, S12, S17 |
+| Context/token/MCP | S06, S10–S13, S17–S18 |
+| Release/benchmark | S14–S22, S27, S32 |
+| Overview/greenfield/self-index | S26, S27, S32; T049,T051,T054 |
+| Scale/freshness modes | S07–S08, S27; T050,T052,T053 |
+| Polyglot/contracts/domain | S24, S28–S30, S32; các task R2 |
+| Runtime/test/editor/advanced | S31–S32; các task R3 |
+| Code↔UI Explorer / click hai chiều | S34–S35, S37–S40; T081–T094 |
+| Frontend→API→backend→DB / flow | S28, S36–S40; T095–T104 |
+| Tiếp nhận ba file docs / mode / policy conflict | S50; source headings theo POL-05; S41 |
+| Build/test/generator/benchmark có output | S46 CODE-09, S51; POL-SRC-02; S48 QA-04/QA-05 |
+| Audit v1.4.0 / runtime config / restore / continuation | S52 → section owner S43 CT-04–CT-08, S44 DB-05–DB-07, S45 AL-08–AL-10 |
+| Tự thực hiện108 task / tự đóng gate / bàn giao một lần | S53; S19/S20/S22/S47; BP-04 ở S41 |
+
+Sau mỗi task chỉ chuyển tiếp khi automated local checks và Git delivery AW-08 đã đạt; cập nhật đúng hàng/evidence/resume rồi tự nhận Ready task. Host buộc ngắt phiên thì checkpoint S22; khi còn việc Ready và quyền/tài nguyên, không kết thúc để xin duyệt task hoặc hỏi “có muốn tiếp tục”. Không viết lại toàn tài liệu. Không dùng việc đã đọc trong phiên trước làm bằng chứng rằng phiên hiện tại vẫn giữ đủ context.
+
+MUST theo S47 cho thứ tự và phiếu thi công. T001/T002/T003/T105–T108 chỉ foundation/admin/contract proofs; chưa seal G0 không feature implementation. S43/schema và S44/DDL từ v1.5.0 giữ baseline audit; v1.6.1 chốt capacity target repo lớn tại S14/S15/S18 và đồng bộ defaults/schema, nhưng benchmark sản phẩm vẫn chưa chạy; API upstream/version chỉ được xác minh qua preflight, không đoán. Thiếu dữ kiện chặn đúng scope theo S41, không cấm sửa lỗi thật để giữ lời hứa zero rework.
+
+## S01 — Mục tiêu, phạm vi và tiêu chí sản phẩm
+
+### Mục tiêu được giữ cố định
+
+Xây công cụ local cho một người dùng có nhiều repository. Công cụ lưu bản đồ cấu trúc ngoài model, cung cấp ngữ cảnh có bằng chứng cho từng thay đổi code và thêm Code↔UI Explorer: graph bên trái, frontend preview hoặc backend flow bên phải, chọn đồng bộ hai chiều. Tối ưu tổng token để hoàn thành một nhiệm vụ đúng, không tối ưu riêng kích thước phản hồi đầu tiên. Explorer dùng cùng facts với AI; không phải trình tạo giao diện từ graph.
+
+MUST giải quyết đồng thời: không khảo sát lại toàn dự án bằng LLM; phân biệt đúng symbol trùng tên; phát hiện các quan hệ đã biết có liên quan; không trộn worktree/phiên bản; cập nhật thay đổi chưa commit; trả source hiện tại cần thiết; công khai phần chưa biết; giữ các dự án độc lập không bị khóa chéo.
+
+Thứ tự đánh đổi: correctness/security → freshness/provenance → completeness trong phạm vi hỗ trợ → reliability → token/latency → tính năng bổ sung. Một thay đổi có ảnh hưởng rộng được phép cần nhiều context hơn.
+
+### Release boundary
+
+| Release | Bắt buộc | Không được tuyên bố |
+|---|---|---|
+| R1: local Go context engine | Nhiều Git repo/worktree; file map cho các text file cho phép; Go syntax + typed index theo profile; source evidence; hierarchy/overview; spec-only planning; context packs; MCP/CLI; rename preview Go; incremental invalidation; snapshot analysis mode; recovery; scale/self-index fixtures | Không phải hỗ trợ ngữ nghĩa mọi ngôn ngữ; không phải công cụ tự sửa source; không phải phân tích runtime đầy đủ |
+| R2: web/trading/commerce/AI | TS/JS + Python providers, frontend/API/SQL/event contracts, nhóm repo, approved state/invariants, semantic diff, AI metadata lineage | Bắt buộc trong 108 task; tự bắt đầu sau G5 theo S47, không chờ mở scope lại; không tính vào R1 |
+| R3: evidence và scale nâng cao | Runtime/test evidence import, editor buffers, local semantic retrieval, storage/deployment/language extensions theo AW-05 | Bắt buộc xây/kiểm sau prerequisites; runtime addons vẫn opt-in, không tự chạy target hoặc tải model |
+| U0–U2: Code↔UI Explorer | GUI local 2D: graph trái, source/preview/flow phải; Inspect hai chiều, React+Vite bridge, frontend→Go/API/DB theo capability | Scope người dùng yêu cầu; sau core G5 và các prerequisite R2 riêng, không chờ toàn G6/G7; xem S39 |
+| U3: observed run overlay | Runtime trace overlay + tương tác trong isolated test; tái dùng R3 runtime importer | Bắt buộc xây/kiểm trong 108 task; runtime activation có quyền riêng |
+| FUTURE | 3D/4D graphics, distributed indexing, browser extension tổng quát | Ngoài baseline Explorer; cần ADR và task riêng |
+
+R1 không cần: web frontend, account/auth cloud, SaaS, billing, microservices, queue/cache server, graph database server, Docker/Kubernetes bắt buộc, LLM API, embeddings/vector DB, auto-agent, tự chạy test của repo đang index, tự apply rename, marketplace plugin, hỗ trợ PDF/audio/video.
+
+Frontend của core R1 = không có; CLI JSON/MCP STDIO vẫn dùng độc lập. Product track U0–U3 bổ sung frontend Explorer và loopback HTTP adapter opt-in theo S34–S40; không sửa definition of done core R1 để che tiến độ UI. Không nhúng business analysis vào frontend. React/Vite của Explorer không bắt target repo phải đổi framework.
+
+Tác vụ hỗ trợ: `explore`, `plan`, `rename`, `type_change`, `behavior_change`, `contract_change`, `debug`. “Sửa biến” không được tự diễn giải thành đổi tên hay đổi hành vi; khi chỉ tên không đủ định danh, công cụ trả ứng viên và `AMBIGUOUS_SYMBOL`, không chọn tùy ý.
+
+### Ranh giới dữ liệu
+
+R1 phân tích bytes đã lưu trên đĩa, kể cả thay đổi chưa commit và file untracked được phép. Buffer chưa lưu trong editor không được biết; MUST trả `buffer_scope="disk_only"`. Không giả vờ đã thấy buffer. Nested repo/submodule, external module và ngôn ngữ chưa hỗ trợ là boundary được liệt kê, không phải vùng “không có dependency”.
+
+Giảm token không đồng nghĩa giảm số lần chương trình local đọc file. Hash/parse local được phép đọc nhiều file; phần được gửi vào model mới là đối tượng giảm. Host AI vẫn có thể truyền tool output tới nhà cung cấp model; MCE4D local không bảo đảm toàn bộ workflow nằm offline.
+
+### Danh mục yêu cầu có truy vết
+
+| ID | Mức | Điều kiện bắt buộc | Đặc tả | Task |
+|---|---|---|---|---|
+| R001 | P0 | Triển khai độc lập; lưu provenance và license dependency. | S02 | T001,T002 |
+| R002 | P0 | Định danh riêng repo/worktree; không dùng tên folder hoặc remote URL làm ID. | S06 | T004 |
+| R003 | P0 | Không có khóa build/index toàn máy do dự án khác sở hữu. | S09,S15 | T010,T011 |
+| R004 | P0 | Mỗi response ràng buộc snapshot/profile/policy/version và source view. | S06,S11 | T007,T026 |
+| R005 | P0 | Source bytes và vị trí có hash; không trộn source mới với edge cũ. | S07,S08,S10 | T006,T015 |
+| R006 | P0 | Freshness phân biệt đã kiểm tra/đã đổi/chưa biết; HEAD không đủ. | S08 | T018,T019 |
+| R007 | P0 | Index mới chỉ hiện ra bằng publish transaction; crash giữ bản đã publish. | S07,S08 | T008,T009 |
+| R008 | P0 | Định danh symbol theo khai báo/scope; tên chỉ là điều kiện tìm ứng viên. | S06,S09 | T013,T014 |
+| R009 | P0 | Không loại local-variable references cần cho truy vấn symbol Go. | S09 | T014 |
+| R010 | P0 | Quan hệ có hướng, loại và callsite; giữ đa cạnh có ý nghĩa. | S07,S09 | T007,T015 |
+| R011 | P0 | Tách typed/syntax/candidate/text evidence; không biến heuristic thành chắc chắn. | S09,S10 | T015,T016 |
+| R012 | P0 | Không sửa target repo; rename chỉ preview từ LSP. | S12,S14 | T029,T030 |
+| R013 | P0 | Cấm path escape, symlink escape và truy cập repo chưa đăng ký/cho phép. | S06,S14 | T005,T032 |
+| R014 | P0 | Không gửi secrets/log source; không tự network/install/execute target code. | S14 | T005,T020,T032 |
+| R015 | P0 | Kết quả rỗng không chứng minh không có phụ thuộc. | S10,S11 | T016,T024 |
+| R016 | P0 | Không cắt JSON hoặc âm thầm bỏ cảnh báo/mandatory evidence vì budget. | S10,S11 | T024,T025 |
+| R017 | P0 | Xác minh source/preconditions ngay trước khi consumer sửa. | S08,S12 | T019,T030 |
+| R018 | P0 | API có schema version, error codes, timeout/cancel và pagination ổn định. | S11,S13 | T026,T027,T028 |
+| R019 | P1 | File map/text search cho file được cho phép; khai báo capability từng ngôn ngữ. | S04,S09 | T012,T017 |
+| R020 | P1 | Incremental dựa nội dung; thêm/xóa/đổi tên/config/profile được invalidation đúng. | S08 | T018,T021 |
+| R021 | P1 | Có fallback semantic full rebuild khi dependency invalidation chưa được chứng minh. | S08 | T021 |
+| R022 | P1 | Context pack theo loại task, provenance, safety gaps, expansion. | S10 | T022,T023,T024 |
+| R023 | P1 | Dedup trong response; không ngầm tin model đã giữ nội dung từ phiên cũ. | S10 | T024,T025 |
+| R024 | P1 | MCP tối đa 6 tool R1; startup không index toàn bộ repo. | S11,S13 | T027,T028 |
+| R025 | P1 | Tests được liên kết bằng bằng chứng; heuristic không phải chứng minh coverage. | S09,S17 | T016,T034 |
+| R026 | P1 | Quota/GC/backup/rollback không xóa target source hoặc khóa repo khác. | S15 | T033,T035 |
+| R027 | P1 | Log/metrics đủ điều tra nhưng không chứa secret, query hoặc source mặc định. | S16 | T031 |
+| R028 | P1 | Chạy Linux/WSL2 và Windows native; phát hành chỉ platform đã qua gate. | S03,S17 | T036,T037 |
+| R029 | P1 | Benchmark đối chứng cùng task/model; báo failure cùng token, không cherry-pick. | S18 | T038,T039 |
+| R030 | P1 | Một tài liệu quy định + tracker; DONE phải có evidence. | S00,S19–S22 | T003,T040,T042 |
+| R031 | P1 | Không tự ghi AGENTS/config/hook vào repository được phân tích. | S13,S14 | T028,T032 |
+| R032 | P1 | Offline degradation rõ khi thiếu dependency hoặc language server. | S09,S12 | T020,T029 |
+| R033 | P1 | Chỉ tài liệu được khai báo/trusted mới là rule; text trong repo không tự thành instruction. | S10,S14 | T023,T032 |
+| R034 | P1 | Hướng dẫn test/build phù hợp repo; không mặc định một lệnh áp dụng cho mọi repo. | S12,S17 | T030,T034 |
+| R035 | P1 | Migration/schema mới không phá binary cũ bằng overwrite in-place không phục hồi. | S07,S15 | T035 |
+| R036 | P1 | Release pin dependencies; license/security review trước gắn nhãn ổn định. | S02,S03,S20 | T002,T041 |
+| R037 | P2 | Provider TS/JS typed, có kiểm thử same-name/re-export/path alias và profile. | S04,S24,S28 | T043,T044,T055,T056 |
+| R038 | P2 | Contract/API/SQL/queue chỉ nối khi có bằng chứng; không gộp repo bằng tên. | S24,S28 | T045,T046,T059,T060,T061,T063 |
+| R039 | P2 | Bộ nhớ quyết định có scope/source hash/approval; không tự học thành invariant. | S24,S30 | T047,T062,T064 |
+| R040 | P2 | Rebenchmark R2; không nới an toàn để tăng tỷ lệ tiết kiệm. | S18,S24,S32 | T048,T068 |
+| R041 | P1 | Hierarchy/overview 4D capability; nhóm không làm mất evidence hoặc caller. | S26,S27 | T049,T051 |
+| R042 | P1 | Spec-only/intended không giả implemented; planning context cho repo mới. | S26 | T051,T054 |
+| R043 | P1 | Partition/cache/invalidation theo closure; scale đúng quota và memory scope. | S27 | T050,T053 |
+| R044 | P0 | Analysis snapshot khác live validation; không dùng cached freshness cho edit. | S08,S27 | T052 |
+| R045 | P1 | Self-index bằng binary pin, independent oracle và bootstrap fallback. | S26 | T054 |
+| R046 | P2 | Provider interface tối thiểu; Python không import/exec target, capability versioned. | S28 | T055,T057,T058 |
+| R047 | P2 | Frontend route/component/client/backend mapping có source evidence. | S28 | T056 |
+| R048 | P2 | SQL dialect/engine, migration/routine/view/trigger/event lineage có giới hạn rõ. | S28 | T059 |
+| R049 | P2 | HTTP/schema/proto identity, local refs, source vs declared contract riêng. | S28 | T060 |
+| R050 | P2 | Event/cache namespace/producer/consumer/schema/ack evidence, không fake exactly-once. | S28 | T061 |
+| R051 | P2 | Approved business state/invariant/flow và failure obligations; không bịa policy. | S29,S30 | T062,T065 |
+| R052 | P2 | Federation theo declared groups và vector snapshot/policy từng member. | S28 | T063 |
+| R053 | P2 | Temporal semantic diff và source-bound decision invalidation. | S30 | T064 |
+| R054 | P2 | AI metadata lineage/prompt/tokenizer/eval/data/schema; không load model/dataset payload. | S29 | T066 |
+| R055 | P2 | Architecture intended-vs-observed với witness/gaps, không refactor tự động. | S30 | T067 |
+| R056 | P2 | Đa domain/polyglot benchmark không lấy engine output làm oracle. | S18,S32 | T068 |
+| R057 | P3 | Runtime observation có revision/environment/sampling, không suy exhaustive call graph. | S31 | T069,T070 |
+| R058 | P3 | Test evidence theo revision, selection không quyền bỏ regression hoặc chạy target. | S31 | T071,T072 |
+| R059 | P3 | Editor buffer session version/hash riêng; không trộn disk hoặc auto-save. | S31 | T073 |
+| R060 | P3 | Semantic retrieval chỉ candidate, privacy/version/license và exact fallback. | S31 | T074 |
+| R061 | P3 | R3 immutable fact sets/partition activation theo profiling, atomic manifests/safe GC; XL baseline mandatory code/test, runtime opt-in/measured envelope. | S27,S53 AW-05 | T075,T077 |
+| R062 | P3 | Static deployment/config mapping và read-only machine reports, không chạy IaC. | S31 | T076,T078 |
+| R063 | P3 | Provider bổ sung theo nhu cầu có capability fixtures trước nhãn hỗ trợ. | S28 | T079 |
+| R064 | P3 | Advanced capability release review/benchmark toàn R3 trong 108; no false DONE cho capability chưa code/test. | S32 | T080 |
+| R065 | P1 | [U0] Hai pane co giãn: graph cố định trái; source/preview/flow theo selection ở phải. | S34,S38 | T081,T083,T084 |
+| R066 | P0 | [U1] Inspect click button hoặc chọn block/component ở preview phải resolve đúng graph trái; không dispatch action nghiệp vụ. | S34,S35,S37 | T088,T089,T094 |
+| R067 | P1 | [U1] Chọn node trái highlight instance phải/ancestor; nhiều instance hoặc chưa render phải trả trạng thái, không click/navigate ngầm. | S34,S35 | T090,T091,T094 |
+| R068 | P0 | [U1] Phân biệt definition/render-site/event-site/DOM instance, many-to-many, build/profile/generation/session identities. | S35,S38 | T085,T086,T089,T091 |
+| R069 | P0 | [U1/U2] Evidence source-static/build-map/runtime/manual/proposal riêng; mapping không có bằng chứng không được vẽ thành exact edge. | S35,S36 | T085,T089,T092,T095,T096 |
+| R070 | P0 | [U1/U3] Inspect khác Interact; chặn input gây action, không hứa ngăn mount effects/network; môi trường test và quyền tách rõ. | S34,S37 | T087,T088,T094,T102 |
+| R071 | P0 | [U1] Adapter/SDK chỉ development/test opt-in, không auto sửa source/config/khởi động repo; production build không chứa mapping SDK/metadata. | S35,S37 | T085,T086,T094 |
+| R072 | P0 | [U1] Bridge verify exact origin/source/session/nonce/schema/sequence; không expose engine auth hoặc quyền đọc file cho iframe. | S35,S37,S38 | T087,T088,T094 |
+| R073 | P0 | [U1] HMR/navigation/remount/build mismatch/policy revoke invalidate binding; không map preview cũ lên HEAD mới. | S35,S38 | T091,T094 |
+| R074 | P1 | [U2] Chọn backend thì panel phải thành flow API→middleware/handler/service→data ops có evidence; static path không giả execution. | S36 | T095,T097,T100 |
+| R075 | P0 | [U2] Liên kết UI/FE client với BE operation bằng namespace/method/path/profile/contract và member snapshot vector. | S28,S36 | T096,T097,T100 |
+| R076 | P0 | [U2/U3] READ/WRITE/query attempt/success/commit/rollback tách riêng; không khẳng định đã lưu DB từ static call hoặc span thành công. | S36 | T095,T098,T101,T103 |
+| R077 | P0 | [U0/U1] Mở source tại anchor/hash đã kiểm tra; không HTTP shell/editor command tùy ý, không để iframe yêu cầu source. | S34,S37,S38 | T083,T090,T093 |
+| R078 | P1 | [U2] Lazy subgraph, bounded visible nodes/edges, progressive hierarchy; preview updates không reload toàn graph. | S34,S38,S39 | T083,T099,T100 |
+| R079 | P1 | [U0/U2] Splitter/selection keyboard, semantic list thay canvas-only, focus/reduced motion; labels không chỉ dựa màu. | S34,S39 | T083,T099 |
+| R080 | P0 | [U0–U2] Index và preview từ repo thực; fixtures để test có nhãn; không hardcode graph/demo UI thay target. | S34,S39 | T081,T084,T094,T100 |
+| R081 | P0 | [U0] HTTP loopback opt-in, session auth/host/origin/CSRF; không CORS rộng, proxy URL hay tự chạy target app. | S37,S38 | T082,T084 |
+| R082 | P0 | [U1] Session/DOM instances ephemeral bounded; manifests immutable scoped; cache GC/record ownership không mất approved mappings. | S35,S38 | T086,T087,T092 |
+| R083 | P1 | [U1] Selection → typed source/entity locator → context pack cùng engine; không gửi screenshot/full graph hoặc gọi model tự động. | S38,S40 | T093,T094 |
+| R084 | P1 | [U1/U2] Verified matrix React+Vite và Go net/http+database/sql subset trước; framework/DOM loại khác có unsupported gaps. | S35,S36,S39 | T081,T085,T095,T100 |
+| R085 | P0 | [U3] Runtime path cần trace/span/request/build lineage; không last-click/timestamp correlation làm proof; CORS propagation opt-in. | S36,S37 | T101,T102,T103,T104 |
+| R086 | P0 | [U0–U3] E2E roundtrip UI↔graph↔flow/source, no Inspect actions, no production leakage, HMR/ambiguity/security và measured latency. | S39 | T084,T094,T100,T103,T104 |
+| R087 | P0 | [U1] Manual correction có approval/version/provenance, stale/revoked lifecycle; không đổi static facts hoặc giả runtime truth. | S35,S38 | T092 |
+| R088 | P1 | [U0–U3] Track Explorer theo capability prerequisites, không block bởi toàn Python/ML/R3; một spec/tracker/engine, progress tách. | S19,S20,S39,S40 | T081,T084,T094,T100,T104 |
+| R089 | P0 | Khóa thiết kế trước feature code; không tự đổi stack/contract/permission; discrepancy có authority. | S41,S46,S49 | T105,T108 |
+| R090 | P0 | Một canonical model/schema/operation registry; scope vector và source bytes không bị định nghĩa hai nơi. | S43 | T026,T105,T107 |
+| R091 | P0 | Physical migrations có FK/state/FTS guards và proof trước store use cases. | S44 | T007,T106 |
+| R092 | P0 | Mọi luồng có owner, input/output, write boundary, retry/cancel và failure paths. | S42,S45 | T008,T107,T108 |
+| R093 | P0 | Thứ tự task topo/gate, publish sau lock, tổng nghiệm thu sau GC; contract trước adapter. | S47 | T003,T008,T040,T108 |
+| R094 | P0 | Approved records durable ngoài index GC, version/head CAS, mutation-id replay, effective stale state. | S42,S44 | T047,T092,T106 |
+| R095 | P0 | Build producer map không phụ thuộc generation; binding immutable độc lập, server không giả DOM instances. | S43,S45 | T081,T085,T087,T089 |
+| R096 | P0 | Pairing bind/BOUND_ACK và arming MODE_ACK mới cho Interact; fail closed trên stale epoch. | S42,S45 | T081,T087,T088,T094 |
+| R097 | P0 | Scope/cache/pack bao gồm policy/binding/record/group revisions và optimistic postcheck. | S42,S43 | T019,T025,T047,T105 |
+| R098 | P0 | MCP delivery compatibility và actual duplicate bytes budget; payload luôn parseable. | S43 | T024,T027,T107 |
+| R099 | P0 | Provider không lách capture policy; types từ Load khác nhau không trộn identity; AST src khớp bytes. | S45 | T014,T020,T107 |
+| R100 | P0 | Coding boundaries/error/cancel/config/testing từ bootstrap; mocks không thành runtime. | S46 | T040,T105,T108 |
+| R101 | P0 | SQL GC/purge không giả secure erase; record retention/source privacy kiểm độc lập. | S44 | T035,T092 |
+| R102 | P0 | Bản vẽ có document-level evidence riêng product verification; không fake gate/test/rework-free. | S48 | T003,T040,T108 |
+| R103 | P1 | Phiếu task có read sections/owned paths/flow/acceptance/conditions, dùng tracker duy nhất. | S47 | T003,T108 |
+| R104 | P0 | Contract/schema/DDL thay đổi theo revision; incomplete addon chặn đúng scope, không sửa bừa core. | S41,S43,S49 | T045,T081,T108 |
+| R105 | P0 | Một spec chính, ba nguồn docs nguyên bản có version/hash/activation; không tự nâng/copy thành policy dự án thứ hai. | S00,S50 | T001,T003,T040 |
+| R106 | P0 | task_mode theo assignment; docs-only onboarding khác foundation implement, không kích hoạt prompt chỉ vì file tồn tại. | S41,S46,S50 | T001,T003,T108 |
+| R107 | P1 | Complexity Gate/Change Budget bảo vệ baseline và scope hành vi; không tùy tiện thêm hoặc bỏ bảo vệ bắt buộc. | S46,S47 | T040,T105,T108 |
+| R108 | P0 | Command contract có cwd/argv/version/writes/network/quyền/bằng chứng; không chạy placeholder hoặc tin tên dry-run. | S46,S51 | T002,T081,T107 |
+| R109 | P0 | Preflight/growth budget trên mọi volume, gộp shared volume/reservation remaining; không global build lock hoặc đoán đủ chỗ. | S51 | T002,T033,T107 |
+| R110 | P0 | Owned-output/finalization giữ lỗi gốc; dry-run thực sự chỉ đọc; cleanup cần containment/approval, không source/durable records. Fresh scratch exception TEARDOWN-01/A045 đóng class; old/protected deletion vẫn approval. TEARDOWN-FIXTURE-01 covers only fresh reconstructible synthetic Git/SQLite copies; actual data preserved. | S15,S51 | T005,T033,T035,T107 |
+| R111 | P1 | V0–V4 là loại bằng chứng, mutation có chọn lọc và kiểm lại bản kết hợp; evidence cũ phải còn đúng input. | S46,S48 | T034,T040,T094,T100,T107 |
+| R112 | P0 | Không làm yếu test/validator/gate để xanh; phân biệt policy documented/enforced/verified và claim sản phẩm có evidence/quyền riêng. | S46,S48,S50 | T003,T040,T041,T042,T094,T100,T108 |
+| R113 | P0 | GC theo FK leaf-before-parent, rollback toàn generation, không disable FK hoặc xóa active/durable records. | S44 DB-03 | T034,T035,T106 |
+| R114 | P0 | Resolver digest đồng nhất binding ID/natural key/cache; nhiều resolver cùng source/map hợp lệ, immutable. | S43 CT-04,S44 DB-03/DB-07 | T081,T085,T106 |
+| R115 | P0 | Preview status read không gia hạn quyền; SDK liveness riêng; revoke/expired/stale disarm, no old ACK escalation. | S43 CT-08,S45 AL-04 | T082,T087,T088,T094,T105,T107 |
+| R116 | P0 | Mapping/rename/source có bounded continuation đầy đủ, same result/vector, no partial apply/repeated LSP/cursor loop. | S43 CT-05,S45 AL-02 | T025,T029,T030,T090,T093,T105,T107 |
+| R117 | P0 | Group input giữ pinned vector+typed ref/member, expected-unavailable riêng, không fake generation hoặc latest fallback. | S43 CT-06,S42 DF19 | T045,T046,T063,T093,T096,T105,T107 |
+| R118 | P1 | RuntimeConfig/defaults/precedence/CAS/restart rõ, không lẫn policy/build budget hoặc vượt hard wire caps. source_digest/source_kind/effective_sources closed; CAS canonical source, result hardcaps fixed. CONFIG-REPLACE-01 fixes validate/set whole replacement and effective provenance. | S43 CT-07,S13,S15 | T004,T028,T033,T105,T107 |
+| R119 | P0 | Group/permission/record lifecycle có get/list/mutation CAS theo authority, phân trang; CLI-only không expose MCP/HTTP control. | S43 CT-07,S44 | T004,T046,T047,T087,T092,T105,T107 |
+| R120 | P0 | Shared lifecycle pool lease/exclusive maintenance, scoped restore journal+new incarnations, không replace khi reader còn mở. | S44 DB-05/DB-06,S42 DF20 | T007,T010,T035,T036,T037,T105,T106,T107 |
+| R121 | P0 | MCE-C14N1 byte codec+recipe+cross-language vectors; capture manifest bất biến độc lập parse/type result; portable path validator. MCE-MANIFEST-JSON1 canonical raw bytes/key order+escapes ngoài logical C14N digest. | S43 CT-04,S45 AL-01 | T006,T020,T081,T085,T105,T107 |
+| R122 | P1 | HMR export/import/watch local opt-in, immutable artifacts/coalesce/busy/status; không source exec hoặc auto Interact. | S45 AL-08,S38 | T085,T087,T091,T094 |
+| R123 | P1 | Retention/records continuity/lock wait đo thực; GC không auto reapprove source, không thêm unlimited snapshot leases. | S44 DB-07,S16,S27 | T025,T035,T039,T047,T092,T099 |
+| R124 | P0 | Đóng audit A01–A08 ở đúng schema/DDL/flow/task/case; document proof khác product test, không claim universal 100%. | S48,S52 | T003,T040,T042,T081,T094,T100,T108 |
+| R125 | P0 | AI thực hiện liên tục108 task, tự kiểm/sửa/đóng gates; mỗi task commit nhỏ đúng thứ tự với ghi chú tiếng Việt, tự push và xác minh GitHub đúng SHA theo AW-08 trước khi đi tiếp; user acceptance một lần cuối, không fake100%. Candidate DONE chỉ effective sau evaluator+durable archive, private-first eligible CI. Current selector+sealed archive before auto-next; interrupted checkpoint never creates extra approval gate. | S53,S19,S20,S22,S47 | T001,T003,T042,T080,T108 |
+| R126 | P0 | Default policy/register, closed glob/scanner/allowlist version semantics đúng, deny trước persistence; policy không silently widen. | S14 SEC-CORE-01,S43 | T004,T005,T032,T105,T107 |
+| R127 | P0 | Effective cache quota(default384 GiB/worktree), manifest/RSS/headroom; home-shared cache+volume reservations cho cache/durable/catalog/log writers, config/recovery; no fake reclaim/durable GC. | S15 ACC-01,S43 CT-07,S44,S51 | T004,T007,T010,T020,T025,T028,T033,T035,T047,T053,T069,T077,T105,T107 |
+| R128 | P0 | Embedded SQLite có WAL-reset patch provenance+actual version, driver/pool/checkpoint/OS compatibility proof, không dùng audit in-memory thay runtime. | S03 DEP-01,S44 | T002,T036,T037,T041,T106 |
+| R129 | P1 | Bidirectional requirement↔task/case/card parity, proof reproducibility và per-task Git/CI delivery receipts; missing historical ZIP hoặc missing/stale/skipped CI không fake PASS, không bắt user cung cấp proof lịch sử để code. Closed governance schema/static-observer parity, durable unique closing identity+archive/replay. DELIVERY-LINK-01 regression negatives + ARCHIVE-PUBLISH-01 replay, phase/task/ref/ancestry verified. | S19,S48,S53 AW-04/AW-08 | T003,T040,T107,T108 |
+| R130 | P0 | R3/U3 baselines AW-05 được implement/test thật, runtime opt-in không bỏ task; final packaged integration đủ108 và required matrix trước user acceptance. | S53 AW-05/AW-06,S31,S32 | T073,T074,T075,T076,T077,T079,T080,T104 |
+
+## S02 — Độc lập triển khai, license và nguồn gốc
+
+IP-01 MUST NOT nhập/copy/biến đổi source, test, comment, prompt, fixture, schema đặc thù hoặc tài liệu nội bộ từ GitNexus/Graphify. Không đổi ngôn ngữ để che nguồn gốc. Không phụ thuộc engine của chúng qua CLI/API/package.
+
+IP-02 MUST dùng đặc tả này, yêu cầu người dùng, quy tắc đã tiếp nhận theo S50 và tài liệu công khai chính thức của chuẩn/thư viện. Fixtures tự viết từ invariant; không chuyển test sản phẩm khác sang test mới. Khi cần thuật toán phổ biến, tự hiện thực từ mô tả độc lập hoặc dùng thư viện có license phù hợp.
+
+IP-03 Các trao đổi trước đây đã có tiếp xúc source của sản phẩm tham khảo. File này không chứng nhận clean-room pháp lý. SHOULD bắt đầu phiên coding mới chỉ với file này và repository mới; không đính kèm source tham khảo. Rà soát nguồn gốc vẫn bắt buộc. Phân biệt ý tưởng/chức năng với cách thể hiện theo nguyên tắc tham khảo REF15; luật áp dụng và các quyền khác không được kết luận từ đặc tả này.
+
+IP-04 Code riêng mặc định PRIVATE; chưa chọn giấy phép phát hành. Không tự gán Apache/MIT cho quyền của người khác. Trước phát hành công khai/thương mại phải có quyết định của chủ sở hữu, kiểm tra tên sản phẩm, notices, dependency và quyền liên quan. Tên `Maps-Context-Engine-4D/mce4d` chỉ là nhãn nội bộ.
+
+IP-05 Allowlist mặc định cho dependency code: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD; thành phần public-domain/CC0 phải có bằng chứng cụ thể. License chưa biết, noncommercial, source-available hạn chế hoặc copyleft ngoài policy → BLOCKED đến khi đánh giá. Đây là policy thận trọng của dự án, không kết luận rằng mọi license ngoài danh sách đều cấm dùng.
+
+IP-06 Kiểm tra đúng artifact và version, cả transitive dependencies, generated/vendored code, grammar, binary phụ trợ, assets và tài liệu phân phối. Metadata package có nhiều license không được rút gọn tùy tiện thành một license. Giữ NOTICE/copyright theo điều kiện áp dụng; REF11/REF12/REF16 là điểm bắt đầu kiểm chứng, không thay thế audit release.
+
+IP-07 Mỗi dependency mới cần: lý do không dùng stdlib/dependency sẵn có; version/hash/source; license artifact; API đã đọc; test tương thích; rủi ro bảo trì. AI không tạo dependency chỉ để theo framework mẫu.
+
+IP-08 Không copy tài liệu tham khảo dài vào file này. Chỉ lưu quyết định và URL nguồn ở S23. Nguồn kỹ thuật không trở thành nội dung gửi vào model ở mọi task.
+
+## S03 — Quyết định công nghệ và môi trường
+
+### Stack R1
+
+| Thành phần | Quyết định | Ràng buộc |
+|---|---|---|
+| Application/core/CLI | Go; chọn stable supported và pin tại T002 từ release history chính thức [REF01] | T002 xác minh compatibility và pin; không tải toolchain lúc runtime |
+| API client AI | MCP STDIO qua official Go SDK [REF02,REF03] | Không tự viết lại protocol; không bắt buộc HTTP |
+| Storage | SQLite embedded; `database/sql`; `modernc.org/sqlite` baseline [REF04,REF11] | Không ORM; kiểm tra FTS5, pragmas, license và platform trước pin |
+| Go syntax | `go/parser`, `go/ast`, `go/token` | Parse bytes đã capture, không chạy code |
+| Go semantics | `go/types` qua `golang.org/x/tools/go/packages` [REF07] | Chỉ profile được phép; thiếu type info → partial |
+| Go rename/semantic query bổ sung | `gopls` local qua LSP [REF08,REF09,REF10] | Binary đã kiểm chứng; preview-only; không code action tùy ý |
+| Search | Exact symbol/path trước; FTS5 cho metadata/text được phép [REF06] | Parameter binding; không coi lexical hit là semantic reference |
+| Watch | Poll inventory/stat theo interval; full reconciliation định kỳ | Không thêm watcher dependency trước khi chứng minh cần |
+| Logging/testing/config | `log/slog`, `testing`, JSON stdlib | Không framework logger/config/test bổ sung mặc định |
+| OS lock | Adapter nhỏ dùng primitive OS phù hợp | Linux và Windows test thực; cho phép `x/sys` khi cần |
+
+Metadata/release notes không chứng minh dependency bundle đã được thử trong môi trường triển khai. `go.mod/go.sum` chưa tồn tại ở lúc soạn. T002 phải khóa một bộ phiên bản tương thích đã test; không dùng `@latest` trong build/release script. Có thể pin bản ổn định không phải mới nhất sau khi kiểm tra security/compatibility và ghi quyết định.
+
+Git là executable ngoài phục vụ thao tác đọc metadata; mặc định không bundle Git. Dependency executable không bị xem là thư viện liên kết tự động; nếu phân phối kèm phải rà soát riêng.
+
+### Môi trường đích
+
+R1 primary: Linux amd64; WSL2 chạy Linux binary với repo và state trên Linux filesystem. R1 secondary bắt buộc kiểm thử trước nhãn hỗ trợ: Windows amd64 native. macOS/arm64 chưa cam kết.
+
+MUST không chia sẻ cùng state SQLite giữa Windows binary và WSL binary; không đặt state trên NFS/SMB/OneDrive/Dropbox/network share. WAL có yêu cầu/giới hạn filesystem cần kiểm chứng [REF04]. Repo target có thể ở đường dẫn khác nhưng cấu hình đó phải có benchmark/path tests; không tự di chuyển repo người dùng.
+
+Cấu trúc runtime là modular monolith. Explorer là optional adapter/UI theo S38; `mce4d explorer` chỉ phục vụ tài sản của engine và API local khi được chạy explicit, không khởi động target app. `mce4d mcp` phục vụ truy vấn, không là daemon toàn máy. `mce4d index` chạy job hữu hạn; `mce4d watch` là tiến trình foreground chỉ tồn tại khi chủ máy khởi chạy. Không tự đăng ký service, startup task, scheduled task hay Git hook.
+
+Không tái viết Go compiler/language server. Không viết parser đa ngôn ngữ ở R1; R2 ưu tiên TS/JS và Python qua provider/adapter có gate S28. Nếu stack lựa chọn thất bại gate, ghi chứng cứ và ADR thay đổi; không tự thay toàn kiến trúc giữa task.
+
+
+### DEP-01 — SQLite engine pin có bản vá WAL-reset
+
+T002 phải đo `SELECT sqlite_version()` từ chính modernc.org/sqlite artifact đã chọn, lưu module checksum + embedded engine version + compile options/FTS5 + nguồn patch. Theo REF04, WAL-reset đã được sửa ở SQLite3.51.3 và các backport3.50.7/3.44.6; default chọn supported artifact chứa engine>=3.51.3 hoặc bản backport/cherry-pick có upstream patch provenance được kiểm. Không chấp nhận module version string hoặc SQL parse PASS thay patch evidence; missing evidence BLOCKED dependency use, AI tự tìm bundle hợp lệ/compatible theo BP-04 rồi đi tiếp. Exact version vẫn pin qua release/API/license/OS smoke thực, không điền @latest.
+
+T106/T036/T037 kiểm multi-connection/process write+checkpoint+reader lifecycle trên driver/OS mục tiêu, guards FK/FTS/recovery không bị bỏ. Version gate không hứa loại mọi corruption bug. Document audit SQLite3.46.1 lịch sử và in-memory3.49.1 review chỉ là DDL evidence, không WAL-runtime patch proof; không dùng chúng làm approved production engine.
+
+### Ledger dependency — snapshot ban đầu
+
+| Artifact | Lựa chọn | Pin | License review | Compatibility | Task |
+|---|---|---|---|---|---|
+| Go toolchain | Stable supported được xác minh ở T002 | UNRESOLVED_AT_SPEC | REF01 | NOT_RUN | T002 |
+| SQLite driver | modernc.org/sqlite | UNRESOLVED | REVIEW_REQUIRED; REF11 | NOT_RUN | T002 |
+| MCP SDK | github.com/modelcontextprotocol/go-sdk | UNRESOLVED | MULTI_LICENSE_REVIEW; REF12 | NOT_RUN | T002 |
+| Semantic Go loader | golang.org/x/tools/go/packages | UNRESOLVED | REVIEW_REQUIRED; REF07 | NOT_RUN | T002 |
+| Go language server | golang.org/x/tools/gopls | UNRESOLVED | REVIEW_REQUIRED; REF13 | NOT_RUN | T029 |
+| OS adapters | golang.org/x/sys nếu cần | UNRESOLVED | REVIEW_REQUIRED | NOT_RUN | T010 |
+| Exact tokenizer | Không bắt buộc R1 | NOT_SELECTED | N/A | N/A | T025 |
+
+MUST T002 điền pin/checksum/license scope sau khi kiểm tra, không đoán số version trong file này. Không blocking người dùng bằng câu hỏi lựa chọn library đã được tài liệu quyết định; giải quyết qua gate kỹ thuật.
+
+Thiết kế vật tư đóng ở BP-03; exact versions UNRESOLVED là dữ kiện preflight AI tự resolve. Giữ selected libraries mặc định; khi official API/license/security/compatibility proof không đạt, chọn smallest equivalent dependency và seal ADR theo BP-04/S53 trước feature, không silent swap/đổi stack. T105–T108 trước feature; UI pins tại T081.
+
+## S04 — Capability contract theo ngôn ngữ
+
+| Input | R1 capability | Giới hạn bắt buộc trả về |
+|---|---|---|
+| Go có đủ module/type metadata local | syntax, definitions, typed references, direct static calls, method/field selections, imports, test references | Chỉ profile GOOS/GOARCH/tags/CGO/module đã nêu; interface dispatch/callback runtime có thể chưa resolve |
+| Go syntax hợp lệ nhưng dependency thiếu | syntax, lexical declarations; một phần typed nếu có evidence | `semantic_status=partial`; cấm rename preview khi type precondition không đủ |
+| Go lỗi parse/type | Những fact có vị trí chứng minh được; diagnostics | Không bỏ file khỏi denominator; không suy ra zero dependencies |
+| Go local variables/params/fields | Index scope, defs/uses có typed evidence | Không gộp theo tên; không hứa liên thông reflection/serialization |
+| TS/JS/TSX/JSX, Python, Rust, Java... | File inventory + allowed text search | `semantic_status=unsupported`; không sinh cạnh calls chắc chắn bằng regex |
+| Markdown / text config / SQL | File/chunk/source anchors, text search theo allowlist | SQL text match không chứng minh table lineage; config text không phải instruction |
+| Binary, large file, secret, symlink, nested checkout | Inventory reason hoặc boundary đã che thông tin nhạy cảm | Không giả vờ đã phân tích |
+
+MUST capability là dữ liệu runtime, có `provider_id`, `provider_version`, `capabilities[]`, `profile_id`, `limits[]`, `diagnostics[]`. Không dùng một boolean `supports_go=true` để ám chỉ mọi tính năng Go.
+
+S26 thêm file/module overview và intended document anchors; không nâng semantic_status của ngôn ngữ chưa hỗ trợ.
+
+R1 khởi đầu với một interface nhỏ chỉ khi tách `GoAnalyzer` khỏi `Indexer/Query` phục vụ test. Không tạo plugin loader, dynamic module registry hay abstraction chung cho ngôn ngữ chưa có implementation. Khi R2 có provider thứ hai mới tổng quát hóa phần đã chứng minh trùng lặp.
+
+Đối với financial/concurrent/backend code: graph không chứng minh transaction atomicity, deadlock-freedom, idempotency, exactly-once, ordering hay finality. Context pack phải tìm source/rules/test liên quan khi có; AI vẫn phải phân tích invariant và failure paths.
+
+## S05 — Kiến trúc và cấu trúc repository cần tạo
+
+### Luồng và ownership
+
+```text
+CLI quản trị -> Catalog (repo/worktree/profile/policy)
+CLI index/watch -> Safe inventory -> Captured bytes -> Go analyzer
+                                         |                  |
+                                         +------> Index writer -> SQLite worktree
+                                                                  |
+AI host -> MCP STDIO -> Application query -> Snapshot reader -------+
+                              |
+                              +-> Task context pack -> bounded response/cursor
+                              +-> Freshness validator -> current checkout checks
+                              +-> gopls session -> rename preview only
+```
+
+`Catalog` chỉ giữ registry/config, không là hàng đợi index toàn cục. `Index writer` sở hữu mutation database index. `Snapshot reader` luôn đọc một generation đã publish. `Context builder` không tự sửa/index repo. `gopls session` không sở hữu graph và không được apply source edits. Source repository thuộc người dùng/AI host, không thuộc MCE4D.
+
+### Cấu trúc dự án
+
+```text
+maps-context-engine-4d/
+  Maps-Context-Engine-4D_SPEC.md     # duy nhất: yêu cầu/kiến trúc/tracker
+  docs/                            # quy tắc nguồn giữ nguyên; xem S50, không tracker thứ hai
+    AI_RULES.md
+    AI_RULES_STORAGE_SUPPLEMENT.md
+    PROJECT_BOOTSTRAP_PROMPT.txt
+  contracts/                        # schema/registry trích từ S43; không spec cạnh tranh
+  go.mod
+  go.sum
+  .gitignore
+  .gitattributes
+  cmd/
+    mce4d/main.go                     # wiring, exit codes; không business logic
+  internal/
+    model/                          # pure validated IDs/value types/errors; S43
+    ports/                          # small cross-module contracts only when needed; S46
+    app/                            # use cases; DTO từ canonical contracts, không tự tạo schema khác
+    catalog/                        # registration, profile/policy, rebind/remove
+    paths/                          # canonical identity, secure open, ranges
+    inventory/                      # Git read-only listing, ignores, hashes
+    snapshot/                       # manifests, generation state, freshness
+    indexer/                        # pipeline, invalidation, publish
+    analysis/golang/                # AST/type facts, call/ref extraction
+    store/sqlite/                   # repositories, transactions, migrations
+      migrations/                   # SQL; embed vào binary
+    search/                         # symbol/path/FTS, graph traversal
+    contextpack/                    # task slicing, evidence, budget, pagination
+    overview/                       # T049/T051: hierarchy, intended vs observed summaries
+    analysis/providers/             # R2 T055: minimal adapters, chỉ tạo khi provider thứ hai có thật
+    contracts/                      # R2: explicit HTTP/SQL/event/schema facts
+    history/                        # R2: snapshot comparison, source-bound decisions
+    domain/                         # R2: approved state/constraint/context profiles; không business execution
+    evidence/                       # R3: sanitized artifact imports, không live collector
+    lsp/                            # lifecycle, encoding, Go rename preview
+    mcp/                            # tool schemas/adapters only
+    cli/                            # flag parsing/JSON adapters
+    policy/                         # trust, secrets, source allowlists
+    runtime/                        # OS lock, exec limits, process lifecycle
+    telemetry/                      # redaction, operation metrics
+  testdata/
+    fixtures/                       # tự viết; mỗi fixture có expected.json
+    malicious/                      # path/secret/injection cases tự viết
+  tests/
+    integration/
+    contract/
+    acceptance/
+  tools/
+    spec_check/                     # Go validator cho tracker/IDs/gates
+    bench/                          # deterministic harness; không tự gọi LLM
+  .github/workflows/                # chỉ khi repository dùng GitHub/CI được phép
+  artifacts/                        # output máy sinh, gitignored mặc định
+```
+
+Tạo module khi task cần; không tạo hàng chục file rỗng/TODO stub rồi đánh dấu hoàn thành. Không package `utils` tổng hợp không trách nhiệm. Interface đặt tại consumer, nhỏ và có implementation/test; không repository abstraction cho database chưa dùng.
+
+Module path Go: lấy remote thực tế đã được xác nhận khi có. Repo local chưa có remote dùng `maps-context-engine-4d` để phát triển private; MUST NOT bịa GitHub owner/path hoặc xuất bản module. Thay module path về sau bằng task riêng có build/test.
+
+Explorer extension cấu trúc `web/explorer`, `packages/preview-sdk`, `packages/vite-inspector`, `packages/react-inspector` và internal adapters nằm ở S38; không scaffold trước U0/U1.
+
+### State ngoài source
+
+```text
+<MCE4D_HOME>/
+  catalog.sqlite
+  catalog.lock                      # chỉ transaction registry ngắn
+  cursor.key                        # random secret; quyền owner-only
+  runtime.json                      # RuntimeConfig optional; CT-07, không policy hay bản vẽ khác
+  lifecycle.lock                    # catalog store shared/exclusive pool lease; DB-05
+  .maintenance/                     # bounded operation journals; không chứa source
+  volume-admission/                 # shared per-volume quota admission, MCE4D_HOME only
+    <volume_id>.lock                # short reservation bookkeeping critical section
+    <volume_id>.json                # private journal, cache+durable future bytes/shared config digest
+  operation-leases/                 # owner-only OS operation leases; no task progress/tracker
+  backups/                          # durable catalog backup sets; no cache GC
+  worktrees/<worktree_id>/
+    index.sqlite                    # derived generations/facts/build bindings; cache
+    manifests/                      # immutable full CaptureManifest files; derived cache, GC by live refs
+    records.sqlite                  # durable decisions/manual links/imported evidence; NO cache GC
+    lifecycle.lock                  # maintenance lease riêng worktree, không global build lock
+    writer.lock                     # primitive OS; không stale TTL tự xóa
+
+    scratch/                        # bounded, owner-only, disposable; rename result spools CT-05
+    backups/                        # durable backups tách index quota; records/catalog retention
+    logs/                           # rotated; không raw source
+```
+
+`MCE4D_HOME` mặc định: Linux `$XDG_STATE_HOME/mce4d`, fallback `~/.local/state/mce4d`; Windows `%LOCALAPPDATA%\mce4d`. Resolve/canonicalize một lần; cho phép override explicit tới local filesystem. Không đặt cache vào target repo và không âm thầm sửa `.gitignore` của nó.
+
+Index là dữ liệu dẫn xuất, có thể rebuild; catalog chứa đăng ký/profile/policy, records.sqlite chứa decision/manual mappings/evidence durable. Cả catalog lẫn records không được xóa theo cache GC. Dữ liệu target repo không nằm trong phạm vi GC.
+
+## S06 — Identity, invariant và trạng thái
+
+### Identity
+
+| Key | Quy tắc |
+|---|---|
+| `repo_id` | UUID sinh khi đăng ký Git common-dir identity đã canonicalize; không suy từ remote/name. Clone khác là repo khác trừ thao tác link explicit. |
+| `worktree_id` | UUID riêng cho checkout; bind root canonical + filesystem identity kiểm chứng. Hai worktree cùng HEAD vẫn khác ID. |
+| `profile_id` | SHA-256 của build/module/tool policy canonical: GOOS/GOARCH/tags/CGO, workspace roots, toolchain/provider versions, nonsecret effective config. |
+| `generation_id` | UUID cho một lần publish index; không đổi nội dung sau publish. |
+| `snapshot_digest` | SHA-256 manifest nội dung + profile/config/policy/provider fingerprint; không chỉ HEAD/mtime. |
+| `symbol_id` | Hash trong generation từ language/package-variant/path/kind/lexical-owner/declaration byte range; tên không đủ. Không bảo đảm ID sống qua rename/move. |
+| `content_hash` | SHA-256 bytes gốc của một file được phép; không normalize CRLF/Unicode trước hash. |
+| `scope_vector` | catalog_incarnation + resolved members (index/records incarnation, epochs) + unavailable_members + group revision; S43 là canonical wire; không tạo generation giả. |
+| `binding_id` | engine-bound hash nối producer build_map tới source generation/profile/policy/resolver_digest; recipe CT-04, natural unique key phải cùng đầu vào. |
+| `pack_token` | Opaque signed descriptor chứa scope/generation/query/policy/ranking-version/expiry; không chứa source bytes. |
+
+Canonical hashing duy nhất: MCE-C14N1 tại CT-04, kèm recipe/normalization/test vectors. Không dùng JSON.stringify hoặc fmt.Sprint/map iteration thay codec. content_hash luôn SHA-256 bytes gốc, không qua codec. Snapshot identity tách analysis result; metadata HEAD/branch không đủ. Runtime observations/expiry/TTL không vào content fingerprint trừ trường thời gian là nội dung có nghĩa của record cần hash theo recipe.
+
+Path: nội bộ lưu relative path dùng `/`, so sánh theo filesystem thực tế; giữ nguyên case trong hiển thị. Không tự lowercase toàn đường dẫn. Trên Windows kiểm tra case-fold collision, drive/UNC/junction/ADS/device path; trên Linux filename không phải UTF-8 được ghi `UNSUPPORTED_PATH_ENCODING`, không silently drop. Root move/delete/reclone tại cùng path → `ROOT_IDENTITY_CHANGED`, cần `repo rebind` explicit.
+
+Mọi symbol/reference trả ra MUST kèm `worktree_id`, `generation_id`, `profile_id`, `path`, `content_hash`, byte range. Byte offsets `[start,end)` là nguồn chuẩn; hiển thị line dùng 1-based, end_line là dòng chứa byte cuối nếu range không rỗng. LSP position được convert theo encoding đã negotiate; không truyền byte offset trực tiếp thành UTF-16 character.
+
+### Invariant
+
+| ID | Bất biến |
+|---|---|
+| I01 | Core single-scope đọc một worktree/profile/generation; federation dùng explicit ScopeVector đầy đủ; không fallback theo tên hoặc trộn member phiên bản. |
+| I02 | Source snippet và graph evidence có cùng captured content hash/generation. |
+| I03 | Generation đã publish bất biến; active pointer chỉ trỏ READY hoặc READY_PARTIAL. |
+| I04 | Chỉ writer giữ OS lock của worktree đó mới mutation index; không lock toàn máy qua catalog. |
+| I05 | Unknown/partial/unsupported không được chuyển thành complete/no-risk. |
+| I06 | Payload parse được đầy đủ; budget không xóa safety metadata hoặc cắt giữa JSON/string. |
+| I07 | Không có source mutation, arbitrary command, network fetch hoặc trust escalation qua MCP. |
+| I08 | Path/ID/cursor không vượt worktree allowlist; không redirect sang snapshot khác khi cursor hết hạn. |
+| I09 | Dependency invalidation bảo thủ; index incremental không được ít đúng hơn full rebuild trên fixture. |
+| I10 | Cache retention chỉ xóa derived owned data, không source/catalog/policy/records.sqlite hoặc durable backups. |
+| I11 | Cache/session chỉ tối ưu tính toán; không giả định LLM vẫn nhớ nội dung trước. |
+| I12 | DONE cần code + tests + evidence trên revision xác định; không đồng nhất có file với có tính năng. |
+
+### State machines
+
+`Generation.state`: BUILDING → READY | READY_PARTIAL | FAILED | CANCELLED. READY_PARTIAL chỉ khi dữ liệu đã capture nhất quán và lỗi phân tích đã được ghi đầy đủ; inconsistent capture không được publish kể cả partial. READY/READY_PARTIAL → RETIRED chỉ bằng GC policy; reader không đọc BUILDING/FAILED.
+
+`Freshness.status`: `observed_current` | `changed` | `unknown` | `not_checked`.
+`Freshness.scope`: `workspace` | `returned_files` | `none`.
+`Freshness.buffer_scope`: luôn `disk_only` trong R1.
+`Freshness.checked_at`: RFC3339 UTC hoặc null.
+
+`observed_current` chỉ là kết quả tại khoảng kiểm tra, không bảo đảm filesystem đứng yên sau đó và không chứng nhận một atomic snapshot của editor. MUST trả `consistency="captured_bytes_with_observed_stability"`. Workspace đang bị chỉnh liên tục có thể không đạt strict verification; trả bounded error, không giữ source lock.
+
+`Coverage.status`: `supported_scope_complete` | `partial` | `unsupported` | `unknown`. Complete chỉ trong scope/capability/profile nêu rõ, không là mọi hành vi runtime. `Readiness`: `reviewable` | `needs_context` | `blocked`; tuyệt đối không có trường `safe_to_edit=true` được hiểu như bảo đảm.
+
+`Job.state`: QUEUED → RUNNING → SUCCEEDED | PARTIAL | FAILED | CANCELLED. Job index có scope worktree, không điều khiển build/test của repository khác. R1 không cần durable job queue; generation BUILDING và log đủ để recovery.
+
+S43 SourceRef canonical byte-only và ScopeVector epochs bắt buộc cho transport; line numbers trong UI/CLI là derived display, không field identity thứ hai. BuildMap và Binding theo S45, record effective state theo S44; browser state transition S45.
+
+## S07 — Mô hình dữ liệu và transaction
+
+### Ownership database
+
+`catalog.sqlite`: repositories, worktrees, profiles, policies, schema metadata. Chỉ transaction registry ngắn; không giữ connection/transaction catalog trong parse, hash, LSP, index, build hay test.
+
+`worktrees/<id>/index.sqlite`: generation, captured bytes, graph facts, diagnostics, search. Một DB/worktree; các profile khác nhau cùng worktree chia sẻ writer này nhưng không chia sẻ active pointer. Giữ FK bật trên mọi connection; không chỉ bật lúc migrate [REF05].
+
+Thiết lập đề xuất: WAL, `foreign_keys=ON`, `synchronous=FULL`, `busy_timeout=5000` ms; read transaction ngắn. SQLite WAL cho phép các read snapshot cùng writer nhưng vẫn chỉ một writer một lúc [REF04]. Chỉ số tối ưu phải đo trước khi thay synchronous/transaction policy.
+
+### Schema logic chuẩn R1
+
+Các bảng dưới đây là logical overview. S44 chứa physical DDL authority: T106 chứng minh migrations trước feature, T007 implement adapters theo DDL đó. Không tự thiết kế lại columns/FKs. Những field bổ sung (epochs/owner/search_documents/records) đọc trực tiếp S44, không suy từ bảng tóm tắt.
+
+| Table | PK / dữ liệu chính | Ràng buộc / index |
+|---|---|---|
+| `schema_meta` | singleton=1; schema_version; min_reader_version | CHECK singleton; version tăng theo migration |
+| generations | generation_id; profile_id; snapshot_digest; state; created_at; completed_at; manifest_json(StoredCaptureManifestRef JSON,<=4 KiB); provider_fingerprint; policy_digest | Full manifest immutable file, không giant SQLite TEXT; published rows immutable; index(profile_id,completed_at) |
+| `active_generations` | profile_id → generation_id | FK generation; unique generation; publish cùng transaction kiểm tra state/profile |
+| `content_blobs` | content_hash → raw bytes; byte_length | hash unique; byte_length=length(bytes); chỉ bytes được phép |
+| `files` | (generation_id,path); content_hash nullable; kind; status; byte_length; package_key nullable | FK generation/blob; index(generation,status); excluded/error có reason, không fake empty bytes |
+| `packages` | (generation_id,package_key); import_path; module_key; variant; input_digest; semantic_status | package variant gồm production/test/profile; index(generation,import_path) |
+| `symbols` | (generation_id,symbol_id); path nullable; package_key nullable; kind; name; qualified_name; scope_key; start_byte; end_byte; signature; exported | FK(gen,path) files khi local; FK(gen,package) packages; check ranges; index(gen,name); index(gen,qualified_name); index(gen,path,start_byte) |
+| `relations` | (generation_id,relation_id); source_symbol_id; target_symbol_id nullable; kind; evidence_kind; site_path; start_byte; end_byte; reason; unresolved_label nullable | Composite FKs tới symbols cùng gen; FK(gen,site_path) files; index(gen,source,kind); index(gen,target,kind); unique semantic tuple+callsite |
+| `diagnostics` | (generation_id,diagnostic_id); path nullable; package_key nullable; code; severity; sanitized_message; scope_json | index(gen,severity,code); không raw secret/source trong message |
+| `capability_results` | (generation_id,capability_key,scope_key); status; summary_json | status enum; số lượng files/packages skipped/error/unsupported được lưu |
+| `search_documents` + `search_fts` | Relational documents scoped generation; external-content FTS5 rowid liên kết documents | Trigger sync; query luôn join/filter authorized generation; physical definition S44 |
+
+Giá trị enum/string phải có schema validation và CHECK nơi phù hợp; JSON phải được parse/validate trước insert. Timestamp dùng UTC; không dùng floating point cho IDs/counts/byte positions. Signature/source text có quota; mandatory source lớn chia fragment có SourceRef exact theo CT-05, không trả cùng item bất tận. `files.status`: indexed, metadata_only, excluded, missing, read_error, parse_error; capability semantic lưu riêng, không lẫn file read thành công với semantic đầy đủ.
+
+Nodes boundary cho external symbols được phép path=null; phải có package/qualified identity và `kind=external`. Không đọc raw source ngoài allowlist chỉ để hiển thị external definition. Relation target=null chỉ cho unresolved reference kèm reason, không là edge chắc chắn tới một tên đoán.
+
+### Chiến lược lưu snapshot
+
+R1 cho phép lặp metadata/facts giữa generations để đơn giản correctness; raw file bytes dedup bằng `content_hash` trong DB của worktree. Không global dedup cross-repo ở R1. Parse cache persistent chưa bắt buộc; no-op update và file-byte cache là ưu tiên trước.
+
+Không tái sử dụng semantic facts chỉ vì file không đổi: profile/imported type/package membership có thể đổi. Chỉ reuse semantic facts khi input fingerprint gồm dependencies đúng scope đã được chứng minh tương đương; nếu không, rebuild semantic graph.
+
+### Publish transaction
+
+Pha scan/parse ngoài SQL write transaction dài. Insert generation BUILDING và facts theo batch hữu hạn; mọi query public lọc theo generation đã publish. Trước publish: kiểm tra hash/range/FK/số lượng/diagnostics/FTS consistency + revalidate manifest. Transaction publish nhỏ: xác nhận owner/job/profile → set READY/READY_PARTIAL → đổi active pointer → commit. Nếu fail, không đổi active pointer. Không query `latest created_at` để chọn index.
+
+Read: bắt đầu transaction → lấy active generation đúng profile hoặc explicit generation → đọc facts/snippets/coverage cùng snapshot → kết thúc transaction trước gọi LSP/stream nhiều trang. Không giữ read transaction qua lượt hội thoại; page sau dùng generation token. Nếu generation đã GC → `SNAPSHOT_EXPIRED`.
+
+Integrity verification khi publish: mọi local range nằm trong captured bytes; mọi edge endpoint cùng generation; mọi unresolved có reason; FTS không xuất generation chưa publish; capabilities tổng hợp từ manifest không bỏ sót lỗi. Parameterized SQL bắt buộc; không cung cấp raw SQL MCP.
+
+Migration: backup đúng cách trước migration của catalog; index có thể rebuild vào DB mới nếu incompatible. Không copy một file SQLite đang WAL hoạt động rồi coi là backup đầy đủ; dùng backup API/controlled offline checkpoint theo REF14. Older binary phát hiện schema mới → `SCHEMA_TOO_NEW`, không “sửa cho chạy”.
+
+Durable approved/mapping versions ở records.sqlite theo S44, không embed vào index cache. Database/sql transaction ownership và policy/record optimistic checks theo DF-19/DF-20; không cross-file atomic claim.
+
+## S08 — Inventory, capture, index và cập nhật
+
+### Pipeline chuẩn
+
+1. Validate authorization/root/worktree/profile/config/version. Resolve công cụ allowed; đọc active metadata không làm side effect lên target repo.
+2. Acquire writer lock của worktree cho index job; job khác cùng worktree chờ hữu hạn hoặc nhận `WORKTREE_BUSY`. Reader không cần writer lock.
+3. Enumerate candidate files: Git tracked + untracked được phép; xử lý deletion, unmerged state, sparse/nested boundaries. Git NUL-delimited tránh lỗi tên file có whitespace/newline [REF17].
+4. Áp dụng deny policy trước đọc bytes. File riêng tư bị từ chối không được đưa vào blob/FTS/log. Theo dõi reason/count; không coi `.gitignore` là security policy.
+5. Capture bytes của regular file bằng secure open; record filesystem identity/stat trước/sau; hash bytes gốc. File bị đổi lúc đọc → retry tối đa 2 lần rồi lỗi instability. Không normalize line endings.
+6. Tạo CaptureManifest bất biến: capture status chỉ captured/metadata_only/excluded/missing/read_error; membership/path/hash hoặc reason; profile/tool/policy/config và dependency fingerprints. Tính snapshot_digest theo CT-04, không chứa parse/type result. Freeze manifest trước provider start.
+   Counting: inventory_count=unique candidate file paths đã enumerate trong approved root(tracked file entries gồm missing/read_error/type-denied và allowed untracked regular files); tất cả manifest statuses tính max_indexed_files. Denied directories không traverse giữ boundary/count-unknown diagnostic, không fake descendants. manifest_entry_count=inventory_count=captured_count+metadata_only_count+excluded_count+missing_count+read_error_count. indexed_count là processed projection, không admission denominator; dependency_input_count cap riêng1.000.000. source_bytes=sum raw captured byte_length, không excluded/metadata bodies; manifest_bytes actual UTF-8 artifact riêng source/cache/volume. 1.000.001 rows RESOURCE_LIMIT dù cuối excluded, report dimension/count, không partial-as-full.
+7. Parse/resolve trên captured bytes. Go typed analyzer dùng overlay/snapshot inputs khớp bytes; package loader đọc metadata theo cấu hình explicit [REF07]. Nếu provider không thể chứng minh nó phân tích đúng captured inputs, không publish semantic-complete.
+8. Tạo symbols/relations/diagnostics/capabilities; projection files.status có thể indexed hoặc parse_error từ captured input, nhưng không sửa CaptureManifest/snapshot_digest. Lexical/text index không thay thế typed facts. Validate toàn bộ ranges/identity.
+9. Re-enumerate membership và kiểm tra full content/config digest trước publish. Có thay đổi → hủy candidate/retry job tối đa 1 lần với snapshot mới; vẫn thay đổi → `WORKTREE_CHANGED_DURING_INDEX`.
+10. Publish theo S07. Release lock và tài nguyên trong mọi exit path. Lưu metrics/evidence không source.
+
+Bước 5/9 cung cấp observed stability, không atomic snapshot filesystem. Tính đúng của source snippet được bảo đảm bằng captured bytes bất biến; không hứa mọi file từng đồng thời có nội dung đó trong một instant nếu writer ngoài MCE4D đang thay đổi. Operation cần metadata/type coherence mà không kiểm chứng được phải degrade hoặc fail rõ.
+
+### Git/file handling
+
+Git chỉ đọc metadata/inventory. Không checkout/fetch/reset/clean/submodule update, không hook, pager, external diff, textconv hoặc fsmonitor command từ target config. Exec bằng argv, cwd/root cố định; validate path bắt đầu `-` và dùng delimiter khi áp dụng. Không build shell string. Test bảo đảm environment/config không cho repo chèn command.
+
+Include tracked source và tests mặc định nếu không vi phạm policy; untracked được phép theo effective ignore. Generated source được index với `generated=true` khi thuộc build; không tự đề xuất sửa generated output. Vendor/dependencies/.git/build artifacts mặc định boundary/excluded; include cần explicit scope. Nếu build dùng vendor hay replace local mà input bị exclude, semantic completeness phải giảm hoặc profile được cấu hình cho phép.
+
+Nested Git root/submodule: không tự traverse; báo boundary và yêu cầu đăng ký riêng. Symlink/junction bị từ chối mặc định; không chỉ kiểm tra string prefix root. Sparse checkout và inaccessible file phải xuất hiện trong coverage.
+
+Git include/ignore behavior và global ignores phải được pin trong effective policy. Khi chạy Git với config sanitized, không được vô tình hứa giống đầy đủ config cá nhân bị vô hiệu; ghi rõ rule effective và fingerprint. HEAD có thể null cho repo chưa commit; vẫn index files được phép.
+
+### Incremental correctness
+
+| Thay đổi | Invalidation bắt buộc |
+|---|---|
+| Không đổi manifest/profile/policy/provider | NOOP; không rebuild graph và không gọi LLM |
+| Sửa nội dung file | Recapture/parse file; semantic scope tối thiểu package + reverse dependents nếu đã chứng minh đủ |
+| Thêm/xóa file | Re-enumerate package membership, remove edges cũ khỏi generation mới, re-resolve references |
+| Rename/move file | Xử lý delete+add an toàn; không yêu cầu đoán identity qua rename |
+| go.mod/go.sum/go.work, build tags, GOOS/GOARCH/CGO, local replacement | Invalidate semantic scope đầy đủ của profile; fingerprint input/config |
+| Exported type/signature, interface, embedding | Re-resolve importers và candidate dispatch; fallback semantic full rebuild |
+| Provider/toolchain/schema/policy/ignore rule | Rebuild phần bị ảnh hưởng; nếu không chứng minh boundary → full |
+| Branch checkout không đổi HEAD nhưng dirty khác | Manifest phát hiện; không dùng HEAD làm cache key đủ |
+| External allowed dependency thay đổi | Invalidate consumers; external unverified dependency → coverage partial |
+
+R1 baseline: reuse captured blobs/không parse lại bytes không đổi khi có cache phù hợp, nhưng semantic full rebuild sau thay đổi được chấp nhận đến khi T021 chứng minh selective invalidation. Phải báo `incremental_mode=content_only|semantic_selective|full`, không gọi content-only là toàn pipeline incremental.
+
+### Freshness trước truy vấn/sửa
+
+`explore/locate`: MAY kiểm tra returned_files hoặc trả not_checked; luôn ghi scope/limitations.
+`context_pack` cho rename/type/behavior/contract/debug: default `freshness_mode=checked_workspace`, kiểm tra workspace manifest đầy đủ, hash nội dung theo membership hiện tại, kể cả config và file mới; quá deadline → `FRESHNESS_UNKNOWN`, không tự hạ về HEAD-only. Chế độ explicit `analysis_snapshot` theo S27 được phép cho điều tra trên captured snapshot nhưng luôn needs_context/not_checked và không thay validation trước sửa.
+`expand_pack`: đọc đúng generation và policy. Checked-workspace pack kiểm tra returned files; mismatch → edit preparation blocked. Analysis-snapshot pack trả historical captured source với not_checked/needs_context, không full-scan mỗi trang, không quảng cáo current source. Trước apply vẫn bắt buộc validate_pack/full workspace và host source preconditions.
+`validate_pack`: full workspace verification default; checked range precondition + membership/profile; output không phải khóa filesystem. AI consumer kiểm tra lại hash ngay trước khi apply patch qua công cụ sửa riêng.
+
+Watch/stat cache chỉ là tín hiệu tối ưu. Mtime/size bằng nhau không chứng minh bytes bằng nhau. R1 strict validation không được skip full hash dựa duy nhất mtime, Git clean, hoặc watcher không có event.
+
+Sau AI sửa source: `validate_pack` của bản trước phải phát hiện mismatch; gọi `mce4d index` khi được phép rồi tạo pack mới. Không tự relabel edge cũ là current. Crash/timeout index không khiến source cũ được coi là mới.
+
+## S09 — Go facts, reference resolution và concurrency
+
+### Phân tích Go
+
+Syntax facts lấy từ AST captured bytes: file/package/declaration, lexical scope, source range, import text, struct tags; syntax-only relation phải ghi evidence_kind đúng. Typed facts lấy từ `types.Info`/package metadata trong profile: Defs/Uses/Selections/Types và method sets. Local variable, parameter, receiver, named result, field phải có identity riêng khi được hỗ trợ.
+
+Phân biệt package production, internal-test variant, external-test package; dedup cùng source occurrence với variant provenance, không nhân số caller vì test variant. Closure/anonymous function có scope ID theo location; không gộp mọi closure cùng tên rỗng. Package identifier không chỉ là folder basename.
+
+Semantic loader: module-aware, explicit workspace roots; không gọi arbitrary GOPACKAGESDRIVER. Environment whitelist; `GOTOOLCHAIN=local`, `GOPROXY=off`, `GOSUMDB=off`, `GOPACKAGESDRIVER=off`; hiệu lực Go flags được kiểm tra, không kế thừa `GOFLAGS` tùy ý. `-mod=readonly` khi hợp lệ để không sửa go.mod/go.sum. `CGO_ENABLED=0` là default an toàn cho profile R1, không đồng nghĩa đã hỗ trợ code yêu cầu CGO. Profile khác cần test/quyền tương ứng.
+
+Typed preflight MUST kiểm tra package-input closure: file bị deny, ignored nhưng cần cho build, local replace hoặc dependency root chưa được cho phép không được âm thầm đọc lại qua loader để lách policy capture. Không xác minh được closure an toàn → chỉ syntax/partial cho scope đó. Thư viện/LSP không phải security sandbox; chỉ khởi chạy trên roots và toolchain đã được user policy cho phép. Analyzer không được đưa snippet/diagnostic chứa raw source từ dependency ngoài payload allowlist.
+
+Missing module/toolchain → diagnostics và syntax fallback, không tự `go get`, tải network, chạy generator/build/install. Trusted local cache/stdlib chỉ đọc metadata cần thiết; dữ liệu source ngoài registered allowlist không đưa vào payload. Local replace ngoài root cần explicit allowlist/fingerprint; nếu không, boundary.
+
+### Relation kinds và bằng chứng
+
+| Relation | Hướng | Điều kiện |
+|---|---|---|
+| CONTAINS | lexical owner → declaration | AST location |
+| IMPORTS | package/file owner → package symbol | import đã resolve; unresolved phải riêng |
+| REFERS_TO | enclosing symbol/scope → declaration | Typed binding; mỗi occurrence có site |
+| READS / WRITES | enclosing scope → binding | AST/type đủ xác định thao tác; compound update có cả hai; alias không chắc chỉ REFERS_TO |
+| CALLS_DIRECT | callable owner → concrete function/method | Static target chứng minh bằng type info |
+| CALLS_INTERFACE | caller → interface method | Không suy thành concrete runtime callee |
+| MAY_DISPATCH_TO | interface/callsite owner → candidate implementation | Type-compatible candidate, `evidence_kind=type_possible`; không là call đã xảy ra |
+| UNRESOLVED_REF / UNRESOLVED_CALL | owner → null | Giữ reason/site/label; không bỏ cạnh im lặng |
+| TEST_REF | test scope → symbol | Có static reference; không chứng minh test kiểm tra mọi hành vi |
+| DOC_LINK | documented owner → source/document symbol | Link explicit resolve được; text co-occurrence chỉ search result |
+
+`evidence_kind`: syntax_exact, type_resolved, type_possible, explicit_document, text_match, unresolved. Không dùng số % confidence tự nghĩ ra. Provider output phải nêu giới hạn: reflection, function values, plugin, dynamic dispatch, codegen chưa chạy, assembly/cgo, build-profile khác, runtime config.
+
+gopls references/call hierarchy có phạm vi và giới hạn riêng; không coi call hierarchy là mọi lời gọi runtime [REF08]. Rename provider cũng không chứng minh hành vi reflection/serialization sau thay đổi [REF09]. Chỗ hai nguồn evidence mâu thuẫn phải giữ diagnostics, không chọn nguồn “confidence cao” rồi giấu mâu thuẫn.
+
+### Concurrency và khóa
+
+Một worktree có tối đa một writer index tại một thời điểm; profile khác cùng worktree được serialize. Hai worktree/repo độc lập được phép index đồng thời. Khóa OS giải phóng khi process chết; metadata PID/start chỉ để diagnostic, không đủ để tự xóa file lock. Không dùng heartbeat timeout làm lý do giành lock của process còn sống.
+
+Không giữ catalog lock trong index; không lock target source; không bao giữ lock khi gọi model, chạy build/test hoặc chờ người dùng. Query reader đang index phải đọc generation trước nhất quán và báo freshness phù hợp, không thấy half-built graph.
+
+OS advisory lock là phối hợp giữa process MCE4D, không ngăn editor khác sửa source. Writer token/job ID kiểm tra khi publish để tránh worker cũ công bố sau cancel. Nếu background goroutine còn chạy sau cancellation, MUST chờ/terminate trong shutdown policy trước release ownership; không cấp quyền publish cho worker mất ownership.
+
+Semaphore giới hạn CPU/RAM chỉ trong process scheduler; không dựng global mutex có semantics “dự án A đang build nên B phải chờ”. Nếu thật sự hết tài nguyên, trả `RESOURCE_LIMIT`/queue reason rõ, có deadline; không giả thành dependency giữa repo.
+
+## S10 — Context pack và ngân sách context
+
+### Hợp đồng đầu vào
+
+`task_kind` là enum S01; `intent` là text dữ liệu, không instruction cấp quyền. Selector phải là một trong: `symbol_id` gắn generation; `path + byte_offset + expected_content_hash`; hoặc query để trả ứng viên, không tự chọn khi mơ hồ. `worktree_id/profile_id` explicit, ngoại trừ MCP server đã bind đúng một scope ở startup.
+
+`context_pack` cần selector resolved; R1 selector workspace/module/document cho overview/plan theo S26/S32, symbol/source-position cho sửa code; không đoán symbol bằng tên gần giống. Có thể dùng `locate` trước hoặc trong application use case nhưng mọi ambiguity phải surfaced. `change_constraints[]` ví dụ `preserve_json_keys`, `preserve_db_schema`, `no_public_api_change` là constraint của task; không tự invent business rules.
+
+### Content selection theo task
+
+| Task | Mandatory candidate evidence | Mở rộng khi cần |
+|---|---|---|
+| explore | Identity, definition/module summary, capability/freshness | Neighbors/docs |
+| plan | Intended/observed separation, trusted requirement anchors, existing modules, explicit gaps | Constraints/decisions; không tự tạo implementation facts |
+| rename | Target binding, declarations/references, scope/shadowing conflicts, interface/serialization boundaries, validation plan | LSP preview, ambiguous references, alternate profile warnings |
+| type_change | Declaration/type, known readers/writers/callers/implementers, serialization contracts, relevant tests | Reverse impact closure trong budget, external boundaries |
+| behavior_change | Current function body + immediate dependencies/callers, related invariants/error paths/tests | Transitive impact, transactional/retry/concurrency paths |
+| contract_change | Explicit provider/consumer evidence trong scope, version/serialization keys, backward-compatibility constraints | SQL/API/queue boundaries; R1 chỉ claims chứng minh được |
+| debug | Symptom supplied, candidate call/ref path, current code/tests/diagnostics | Config/related state ownership; không bịa log runtime |
+
+MUST phân loại `required_for_review` theo task và evidence chứ không hardcode 2-hop là đủ. Start từ target, expand incoming/outgoing relevant kinds với cycle detection, bounded nodes/edges/depth/time. Khi chạm boundary hoặc limit, thêm gap/continuation; không tuyên bố đã có toàn blast radius.
+
+### Pipeline chọn ngữ cảnh
+
+1. Resolve identity, capture request scope, chọn published generation.
+2. Freshness/policy/capability check; edit preparation không đạt → blocked/needs_context; analysis_snapshot chỉ cung cấp historical evidence, không cấp readiness thay validation.
+3. Lấy declaration, typed references, các boundary và tests đã có; explicit query được parameterized.
+4. Gắn từng evidence với why_included, source hash/range, relation kind, evidence kind.
+5. Hợp nhất overlapping ranges trong cùng file/hash; không gộp across files hoặc across snapshots.
+6. Sắp xếp deterministic: safety/identity → target → required constraints/refs → related tests → optional neighbors/docs. Tie-break bằng kind/path/start/id.
+7. Đóng gói budget theo item/range có ý nghĩa; không cắt giữa codepoint, token JSON, signature hoặc warning.
+8. Nếu required evidence vượt budget: trả `needs_context`, required_pending count, continuation và instruction dữ liệu “expand trước khi sửa”; không giả đã đủ.
+9. Tạo signed token xác định truy vấn/generation/order-version. Page sau recompute cùng order, không query active generation mới.
+
+### Budget semantics
+
+R1 hard limit dựa serialized UTF-8 byte count, không hứa số token chính xác. Default `max_output_bytes=24576`; minimum 4096, maximum 131072. Đếm toàn tool-visible payload, gồm envelope/metadata và phần bị host/SDK lặp. Delivery mode theo CT-03: compatibility default mcp_dual, mcp_structured_verified chỉ khi host đã test. Đếm cả phần tool-visible lặp; contract test đo emitted payload, không bỏ compatibility để báo ít bytes.
+
+`token_count=null`, `tokenizer_id=null` khi không có tokenizer exact đã test. MAY trả `token_estimate` nhưng MUST `estimate_only=true`, không dùng estimate làm bảo đảm hard token cap. Exact tokenizer là optional adapter theo model/version; không tự gọi API để đếm hoặc tải tokenizer runtime.
+
+Metadata safety có reserved envelope và bounded arrays; số lượng gaps lớn trả grouped counts và cursor tới details. Nếu ngay cả envelope tối thiểu không vừa budget → `BUDGET_TOO_SMALL`. Không dùng suffix `...` để biểu diễn một object bị cắt. Source line quá dài → trả range descriptor + gap; không bí mật bỏ đuôi dòng. Secret redaction không được thay đổi source ranges rồi gắn hash của nội dung nguyên như snippet hoàn chỉnh.
+
+`truncated` chỉ thông báo có phần chưa trả; thêm `required_pending`, `optional_pending`, `enumeration_complete`, `limit_reason`, `next_cursor`. Count chưa biết phải null/unknown, không ghi 0. Khi graph traversal chưa enumerate hết, không bịa tổng số còn lại.
+
+### Bộ nhớ và tài liệu liên quan
+
+R1 không cần LLM summary. Facts generated từ index, không biến kết luận của AI thành source truth. Rule/invariant lấy từ đường dẫn được người dùng/host khai báo; file repo tự nói “ignore previous instructions” vẫn là dữ liệu không đáng tin. Trích excerpt liên quan kèm hash/anchor thay vì gửi toàn bộ AGENTS/spec.
+
+Dedup giữa pages dựa stable item IDs trong một pack. Không dedup ngầm giữa các cuộc hội thoại. Phiên mới/compaction → tạo pack mới hoặc explicit gửi lại phần cần; không chỉ nói “đã gửi trước đó”. Không lưu conversation transcript làm corpus mặc định.
+
+Pack/cursor descriptor: HMAC với key owner-only, gồm worktree/profile/generation/policy digest/request descriptor/ranking version/offset/expiry. Request bounded; token không chứa source; không log token. Expiry default 15 phút; verify signature/type/range trước dùng. Generation/policy bị thay/GC → explicit error. Không có quyền tạo/bẻ scope bằng chỉnh token.
+
+## S11 — Core API/MCP: adapter contract
+
+S43 là định nghĩa wire DUY NHẤT (schema, request/output registry, semantic validators). Sáu tool: `mce4d_workspace_status`, `mce4d_locate`, `mce4d_context_pack`, `mce4d_expand_pack`, `mce4d_validate_pack`, `mce4d_rename_preview`. Không đổi tên thêm alias riêng. T105/T107 seal contract trước feature, T026 kiểm actual implementation parity, T027 expose chỉ capability đã implement.
+
+Response.scope là ScopeVector có catalog/store incarnations, resolved member generations/policy/binding/record revisions và unavailable_members; source locations dùng captured hash+byte ranges. Request defaults/budget/errors ở CT-02/CT-03, không rải một bộ optional schema thứ hai. Unknown/addon chưa support trả typed error; scope.pinned_vector và Selector.kind=ref giữ đúng selection đa repo qua CT-06. Annotation readOnly không thay authorization; không tool exec/apply/write_file/install/fetch_url/raw_sql/shell/delete_repo.
+
+Request deadline/cancel propagate app/store/provider. Domain tool failure map SDK isError; MCP framing/log stdout riêng. No auto index/LLM/network/spend. SDK/server version được pin và contract-tested; schema meta-validation không chứng minh host compatibility.
+
+Read convenience fallback không được cấp lại quyền: missing/partial/unsupported khác zero dependency; safety fields không bị cắt để vừa token budget. Source data từ published generation cùng scope only.
+
+## S12 — Quy trình sửa code và rename preview
+
+### Hợp đồng với AI coding consumer
+
+1. Xác định đúng worktree/profile, gọi status và locate khi cần.
+2. Lấy pack theo task; đọc source/rules/test evidence, không chỉ danh sách filename.
+3. Resolve `required_pending`, ambiguity và những gap có thể thay đổi quyết định. Gap runtime không thể resolve phải được ghi vào risk review, không xóa khỏi response.
+4. Lập thay đổi nhỏ nhất, nêu invariant cần giữ; không suy từ tên field thành thay đổi JSON/SQL/API/message key.
+5. `validate_pack` và so expected file hashes ngay trước sửa. Nếu bất kỳ precondition không khớp: dừng apply, lấy source mới; không fuzzy-apply patch cũ.
+6. Thực hiện sửa bằng editor/host đã được người dùng cho phép, không bằng MCE4D R1.
+7. Build/test/lint phù hợp project thực tế; kiểm tra diff và lỗi cùng pattern. Ghi PASS/FAIL/NOT_RUN với nguyên nhân, không fake test.
+8. Index lại khi được phép, kiểm tra impacted references và regression; không commit/push/deploy nếu không thuộc quyền/task.
+
+Số liệu token bao gồm cả bước sửa lại khi fail. Graph không thay code review. Transaction/retry/idempotency/concurrency chỉ được kết luận từ code/contract/test, không vì node cùng cluster.
+
+### Rename preview Go
+
+MUST gọi LSP `prepareRename` rồi `textDocument/rename` theo capability negotiated; dùng session có đúng build profile và source bytes. LSP response là đề xuất edit, không tự apply. Client MCE4D MUST từ chối `workspace/applyEdit` và arbitrary `workspace/executeCommand` nếu server gửi; không chạy code action tùy ý.
+
+Gopls khởi chạy từ absolute binary path được allowlist, sanitized env, cwd scoped. Không tải/cài binary runtime. R1 cho phép session theo request và shutdown sau idle ngắn; không chạy LSP cho mọi repo khi MCP start. Startup/read/rename deadline tách nhau; stdout LSP framing không được trộn log.
+
+MUST hỗ trợ UTF-16 mặc định của LSP và encoding được negotiate theo protocol; convert bằng bytes captured, test Unicode nhiều byte/surrogate pairs/CRLF. Reject position giữa UTF-8 codepoint, out-of-range và mismatched version/hash. Không round vị trí sang symbol lân cận.
+
+Preview post-validation: mọi edit nằm trong allowed worktree, file hash/version khớp; không overlap edit mâu thuẫn; ghi tất cả edits, không chỉ một occurrence/file; không phát sinh resource rename/create/delete ở R1. Package move/rename directory trả unsupported thay vì tự di chuyển file.
+
+Rename pagination CT-05: complete LSP computation/postvalidation trước page1, immutable bounded temporary result; continuation không gọi lại LSP; final host validation nhận result_token tại tool validate hiện có. Chỉ initial request nhận selector/new_name, continuation nhận result_token/cursor. Không áp page1 khi các edits/conflicts còn pending.
+
+Default `preserve_contracts=true`: không chấp nhận chỉnh literal/tag contract mà chưa explicit task constraint. Field rename có thể làm thay đổi default JSON field name ngay cả khi không có json tag; MUST flag `IMPLICIT_SERIALIZATION_NAME_CHANGE` khi applicable evidence, không coi không sửa string là giữ contract. Reflection/runtime string lookup phải là warning/boundary nếu chưa chứng minh không liên quan.
+
+Typed rename không phải guarantee runtime behavior; gopls mô tả các trường hợp reflection/type assertions cần review/test [REF09]. Preview phải có `validation_required=true`, `applied=false`, `source_mutation_count=0`.
+
+`new_name` validate theo ngôn ngữ và provider; không regex global replacement. Missing type info/conflicts → typed error. Không fallback rename thành text replace khi provider fail. Không viết riêng full rename engine trong R1.
+
+Build/test suggestion lấy từ config/build files của đúng repo khi có bằng chứng. Nếu chưa biết command: `validation_plan.status=unknown`, gợi ý khảo sát đúng files; không tự bịa `npm test`/`go test ./...` cho mọi repo. Chạy test target có thể thực thi code, nên nằm ngoài read-only permission của MCE4D.
+
+Multi-file apply không được quảng cáo atomic qua filesystem nếu host không có transaction. Khi host apply một phần rồi lỗi: báo partial, kiểm tra diff từng file, không tự reset toàn worktree hoặc xóa thay đổi của người khác.
+
+## S13 — CLI, cấu hình và tích hợp Codex
+
+### CLI contract
+
+```text
+mce4d version --json
+mce4d doctor --json
+mce4d repo add --root <absolute-path>
+mce4d repo list --json
+mce4d repo rebind --worktree-id <id> --root <absolute-path> --confirm
+mce4d repo remove --worktree-id <id> --confirm [--purge-index]
+mce4d profile set --worktree-id <id> --input-json <profile-file>
+mce4d index --worktree-id <id> --profile-id <id> [--full]
+mce4d watch --worktree-id <id> --profile-id <id>
+mce4d query status|locate|context|expand|validate|rename-preview --input-json <file-or-dash>
+mce4d mcp --worktree-id <id> --profile-id <id>
+mce4d cache inspect --worktree-id <id> --json
+mce4d cache gc --worktree-id <id> --dry-run
+mce4d cache gc --worktree-id <id> --confirm
+mce4d bench --suite <local-suite-path> --output <artifact-dir>
+```
+
+CLI flags là spec cần implement. T028 validate help/docs/examples đồng bộ. JSON stdout chỉ kết quả; progress/log stderr. `--input-json -` đọc stdin; MCP STDIO dùng stdin/stdout riêng, không multiplex với CLI input. Exit: 0=ok; 2=argument; 3=blocked/precondition; 4=timeout/busy/resource; 5=internal/storage; 6=partial có data cần xử lý. SIGINT cancel child processes trước thoát.
+
+`repo remove` bỏ đăng ký; không xóa source. `--purge-index` chỉ xóa owned cache sau root-marker validation và confirm; bảo toàn catalog entry history tối thiểu cần audit nếu policy yêu cầu. `doctor` phát hiện binaries/version/platform/filesystem/FTS/config; không install/fix/pull hay đổi setting hệ thống.
+
+### Cấu hình effective
+
+Semantic profile dùng defaults của adapter đã seal rồi registered EffectiveProfile đầy đủ; request chỉ chọn profile_id/scope hoặc thu hẹp operation, không gửi profile/policy/runtime override. RuntimeConfig và PolicyConfig có authority/merge riêng CT-07, không một precedence chung cho ba loại. RuntimeConfigData có config_digest effective và source_kind/source_digest/effective_sources bắt buộc theo CT-07; config set expected_digest chỉ CAS canonical-home source digest, không digest sau CPU/CLI merge. Result cache hard maxima theo CoreRuntimeLimits, không tăng theo cache repo384 GiB. Target .mce4d.json/AGENTS không tự trusted; chỉ đọc/chuyển đổi khi có thao tác explicit phù hợp, validate thành request chuẩn trước đăng ký; unknown fields bị reject.
+
+Profile wire chỉ là EffectiveProfile S43: GoProfile dùng goos/goarch/build_tags/cgo_enabled/tests_enabled/module_roots/toolchain_digest/provider_digest/module_mode/analysis_mode/dependency_roots; TSProfile dùng tsconfig_paths/compiler_digest/node_digest/provider_digest/allow_project_plugins/analysis_mode; cả hai có schema_version/language. worktree_id/profile_name/expected_revision thuộc ProfileAdminRequest, không preimage profile_id. PolicyConfig giữ trusted_rule_paths/denied_globs/allowed_roots/executables/source caps; RuntimeConfig giữ resource limits. Không có GOOS/GOARCH/budgets/generated_policy/dependency_allowlist/exclusions trong EffectiveProfile. Adapter bổ sung cần closed schema seal; secret không nằm trong profile/fingerprint, environment chỉ whitelist nonsecret effective values.
+
+### Codex integration
+
+Codex có đường kết nối MCP local qua STDIO [REF18]. T028 phải xác minh version/khả năng của client được cài và test thực; không mặc định cloud session nhìn thấy local filesystem/server.
+
+Command mẫu, chỉ chạy sau khi có binary và ID thật:
+
+```text
+codex mcp add mce4d -- <absolute-path-to-mce4d> mcp --worktree-id <real-id> --profile-id <real-profile-id>
+```
+
+Không thực thi placeholder. Không auto edit `~/.codex/config.toml`; nếu được yêu cầu cấu hình, đọc file hiện có, patch block riêng, backup và giữ MCP servers khác. Không ghi secret vào config. Project-local hay user-level config phải theo client thực tế và quyền người dùng; không hứa cấu hình được cho mọi host giống nhau.
+
+MCP start chỉ load metadata/SDK + scope được bind; không scan/index/khởi chạy gopls tất cả repos. Nhiều repo có thể dùng nhiều server binding hoặc một allowlist explicit ở phiên sau; R1 single-bound server là default đơn giản. Không vì global registry biết repo mà tự cấp mọi session quyền đọc tất cả repo.
+
+Không cài skill/plugin global, không chèn hooks, không sửa rules của target. Nếu người dùng có quy trình chuẩn hóa riêng, MCE4D cung cấp context như công cụ bổ sung; không thay thế quy trình đó.
+
+## S14 — Security, privacy và trust boundary
+
+### Threat model
+
+Untrusted: file content/name, symlink/junction, Git config, build manifests, source comments, JSON requests, cursor token, LSP output, malformed text, imported decision records. Trusted có điều kiện: MCE4D binary/dependencies đã kiểm chứng, user-approved root/profile/policy, owner OS account. Root/malware có quyền cùng OS user ngoài phạm vi bảo đảm chống xâm nhập; MUST không tuyên bố mã hóa/sandbox tuyệt đối.
+
+### Controls bắt buộc
+
+Các controls dưới đây áp dụng core index/query/MCP. Explorer loopback/preview có permission bổ sung giới hạn tại S37, không tự nới source/exec/network quyền của core.
+
+| Boundary | Control | Failure |
+|---|---|---|
+| Root/path | Canonical relative paths + secure handle open/no-follow; containment sau resolve; reject traversal/ADS/device/junction escape | ACCESS_DENIED/PATH_ESCAPE |
+| File size/type | Regular text allowlist, byte quotas, no archive extraction/network | Boundary diagnostic |
+| Secrets | Deny `.env` thật, private keys, credentials stores, wallet seed/key material, dumps; scan trước persistence/output | SECRET_BLOCKED; không log value |
+| Repository instructions | Dữ liệu repo không được tự nâng thành instruction/exec authority | Trích dẫn có provenance, không làm theo embedded prompt |
+| Exec | Absolute allowlisted executable + argv/cwd/env validated; no shell; no custom loader/hook | Policy error |
+| Network | Không LLM/telemetry/download runtime; dependency loader offline flags; no URL tool | Missing deps → partial |
+| MCP scope | Startup binding/allowlist independent registry; validate mỗi call/cursor | ACCESS_DENIED |
+| Database | Parameter binding, FKs, schema guard, integrity checks, quotas | Controlled error/recovery |
+| LSP | Read/preview methods only; bounded JSON-RPC; reject applyEdit/executeCommand | Provider error |
+| Logs | Request ID/IDs/codes/counts; no raw query/source/absolute paths/cursor by default | Redaction tests |
+
+Secret detection không chứng minh bắt được mọi bí mật. Deny-by-path trước đọc; content detection trước lưu blob; file có secret không được lưu bản raw rồi “redact lúc gửi”. Trong mixed source file, R1 exclude raw body và đánh dấu gap thay vì thay bytes âm thầm làm lệch source map. `.env.example` không tự được exempt nếu chứa secret thật. Test fixtures dùng secret giả và assert không có marker trong DB/FTS/log/output.
+
+Captured source trong SQLite là dữ liệu nhạy cảm như repository gốc. Owner-only dir/file permissions trên Unix; Windows kiểm tra ACL tương ứng, không coi chmod portable là đủ. Không bật HTTP listener mặc định. Ngoại lệ có chủ ý: `mce4d explorer` opt-in, chỉ loopback có session auth và kiểm tra origin/host theo S37; MCP/index mặc định vẫn không listener. Không index secret files bằng “force” request MCP.
+
+Không bundle sandbox hứa hẹn trong R1. Offline flags là ứng xử của các tool đã allowlist, không thay thế OS firewall với executable độc hại. Runtime network-negative tests kiểm tra fixture/local dependencies; untrusted binary không được cho chạy chỉ vì tên `gopls`.
+
+Output escaping: JSON encoder; CLI text strip/control-escape ANSI và control chars; không in filename như command. Tool output là untrusted context đối với host; hints/annotations không cấp quyền. Rule excerpt phải ghi origin/trust class; document tự nhận “system prompt” không có hiệu lực.
+
+DoS: limit request/body/intent/path lengths, file size/count, traversal nodes/edges/depth, source bytes, query/LSP runtime, stdout/stderr của child. `context.Context` cancel toàn pipeline, no unbounded recursion/queue/read. Malformed graph/cursor/schema không panic process.
+
+TOCTOU: string-check path rồi mở lại bằng đường dẫn không đủ cho protected read. T005 cần adapter secure open theo OS và adversarial rename/symlink tests. Không xác nhận I07/I08 chỉ bằng unit test string normalization.
+
+
+### SEC-CORE-01 — Policy mặc định khi đăng ký và matcher đóng (v1.6.2)
+
+`repo add --root` là thao tác explicit cho phép đăng ký/đọc root đó, không cấp quyền target execution. DF01 tạo worktree và policy head epoch1 trong cùng catalog transaction; default allowed_roots chỉ root canonical đã xác minh; dependency_roots=[], trusted_rule_paths=[]; allowed_executables chỉ Git path+SHA256 đã doctor/preflight kiểm, không thừa hưởng PATH/env arbitrary. Profile chưa tạo thì không index; `profile set` explicit theo CT-07 mới cho semantic profile, Go/gopls phải được verify+allowlist riêng. Register không tự index/start LSP/watch/preview và không sửa target. Root có sẵn policy không overwrite; rebind/profile/policy mutations dùng CAS hiện có.
+
+Default PolicyConfig: schema_version=1; allow_target_execution=false; allow_runtime_download=false; max_file_bytes=2097152; max_source_bytes=34359738368; max_output_bytes=24576; secret_rules_version=`mce4d-secret-v1`. Runtime chỉ được thu hẹp các cap policy đang có, không tự tăng chúng. denied_globs ban đầu chứa toàn bảng dưới; built-in denies và source-size/type controls luôn được áp dụng dù user policy bỏ các chuỗi deny khỏi array. user denied_globs chỉ bổ sung deny, không có negation để cấp lại quyền. Explicit OS/user permission vẫn cần cho mọi source read.
+
+| Built-in deny glob (root-relative) | Phạm vi |
+|---|---|
+| `**/.git/**` | Git internal payload; metadata/inventory lấy qua Git đọc có kiểm soát |
+| `**/.env`, `**/.env.*` | Environment secrets; gồm .env.example để không có exemption ngầm |
+| `**/*.pem`, `**/*.key`, `**/*.p12`, `**/*.pfx`, `**/id_rsa`, `**/id_dsa`, `**/id_ecdsa`, `**/id_ed25519` | Conservative key/container deny, kể cả file có thể chỉ chứa public data |
+| `**/.aws/**`, `**/.ssh/**`, `**/.gnupg/**`, `**/.netrc`, `**/.npmrc`, `**/.pypirc`, `**/credentials.json`, `**/secrets.json`, `**/wallet.dat`, `**/keystore/**` | Credential/wallet stores; không đọc raw để phán đoán chúng an toàn |
+| `**/node_modules/**`, `**/vendor/**`, `**/dist/**`, `**/build/**`, `**/coverage/**`, `**/*.dump`, `**/*.sql.gz`, `**/*.log` | Dependency/build/dump boundary; metadata/counts giữ reason; include dependency qua allowlisted provider closure, không mở payload |
+
+Matcher algorithm: split pattern/path bằng `/`, match toàn relative path từ root. `*` match0+ Unicode codepoints trong một segment; `?` match đúng1 codepoint trong segment; `**` chỉ hợp lệ khi là cả segment, match0+ segments. `**/.env` phải match cả `.env` và `a/.env`; `a/*` không match `a/b/c`. Không hỗ trợ []/{} hoặc ! negation, escape/backslash, absolute/drive/UNC, control, empty segment, . hoặc ..; invalid pattern bị reject trước register/set. Matcher dùng bounded DP theo số pattern/path segments và length đã cap, không regex backtracking. Directory subtree deny áp trước traverse; `**/build/**` cũng chặn chính directory build. Built-in deny so ASCII case-insensitive trên mọi OS cho conservative protection; user globs dùng case semantics của filesystem/root đã verify, không tự lowercase path identity/display. T005 kiểm Windows case-sensitive directory khi có; unknown filesystem semantics fail closed cho matcher phụ thuộc, không giả hỗ trợ.
+
+Default text allowlist theo suffix ASCII case-insensitive: .go,.mod,.sum,.work,.md,.txt,.json,.yaml,.yml,.toml,.ini,.cfg,.sql,.ts,.tsx,.js,.jsx,.mjs,.cjs,.py,.rs,.css,.html,.xml,.proto,.tf; tên Dockerfile,Makefile,LICENSE,NOTICE được đọc như text nếu không bị deny. Binary/NUL/invalid UTF-8/oversized/archive/notebook output là metadata_only hoặc excluded với reason, không ingest raw. .ipynb chỉ qua sanitized metadata provider đã seal; không đưa output cells vào FTS. Filetypes thêm qua closed capability registry tại adapter seal BP-04, không force-read request. Go build inputs bị deny không được lách qua loader: scope partial/syntax theo S09.
+
+`mce4d-secret-v1` là immutable scanner ruleset baseline: (a) tìm PEM header ở đầu dòng theo regex `(?m)^-----BEGIN (?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----\r?$`; (b) tìm literal credential assignments theo regex Go RE2 sau; (c) tìm synthetic marker có prefix `MCE4D_FAKE_SECRET_` và đúng32 chữ số hex uppercase [0-9A-F]. Mô tả/pattern prefix trong source hoặc SPEC không tự là một secret fixture nếu chưa có suffix; marker đầy đủ trong raw input vẫn bị block. Matching không đồng nghĩa phát hiện mọi secret. Regex thuộc source policy, compile/test ở T005; không nhận pattern executable từ target:
+`(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|client[_-]?secret|private[_-]?key|password|passwd|mnemonic|seed[_-]?phrase)\b["']?\s*(?::=|=|:)\s*["'][^"'\\\r\n]+["']`.
+Escaped/computed/encoded secrets và cách khai báo ngoài subset giữ detection limitation; không hứa zero false-negative. Baseline bảo thủ có thể exclude dummy/test/public-key file; trả reason, không tự exempt theo tên example/test. File có hit bị exclude toàn raw body TRƯỚC blob/FTS/diagnostic/payload persistence. Scanner chạy trên bounded bytes đã secure-capture, không log match/value. Thay rule/allowlist/matcher semantics phải bump version/fingerprint, invalidate đúng snapshot/policy và có tests; không đổi implementation dưới cùng ruleset version.
+
+T105/T107 kiểm defaults và matcher fixtures; T005/T004 implement đúng policy bootstrap; T032 kiểm secret marker không tồn tại DB/FTS/log/output. Closed runtime fields của PolicyConfig S43 giữ nguyên; các rule ở đây là compile-time versioned controls, không thêm any/payload override.
+
+## S15 — Resource, recovery, retention và vận hành
+
+Phạm vi mục này là runtime engine và owned index. Build/test/benchmark/generator do AI thực hiện để phát triển MCE4D dùng thêm S51; không lấy runtime quota làm budget build, không suy quyền dọn output từ đặc tả GC.
+
+### Default capacity target v1.6.2
+
+| Setting | Default R1 | Ý nghĩa / không được hiểu sai |
+|---|---|---|
+| max_file_bytes | 2 MiB | Vượt → metadata_only/gap; không tự đọc hết |
+| max_indexed_files | 1000000 | Tên legacy: cap inventory/manifest entries một snapshot, mọi status đều tính; schema hard maximum1.000.000 |
+| max_source_bytes_per_snapshot | 32 GiB (34359738368 bytes) | Default captured bytes; effective=min(runtime,policy.max_source_bytes), không hard byte cap schema |
+| max_capture_manifest_bytes | 32 GiB (34359738368 bytes) | Artifact hard maximum32 GiB; bytes riêng source, streaming/bounded, chỉ reserve actual growth |
+| max_parallel_index_jobs | 2 mỗi watch/scheduler process | Không là quota toàn máy; các CLI riêng cần report resource pressure |
+| max_parse_workers | min(4, số CPU khả dụng), ít nhất 1 | Bounded workers, không goroutine/file không giới hạn |
+| max_lsp_sessions | 1 mỗi MCP process | Giới hạn resource, không lock repo toàn máy |
+| sqlite_busy_timeout_ms | 5000 | Không retry vô hạn; mọi pooled connection dùng effective config, default5000 |
+| writer_lock_wait_ms | 5000 | Hết → WORKTREE_BUSY với worktree/job metadata |
+| query_timeout_ms | 10000 | Bao gồm strict check; quá hạn trả unknown/timeout |
+| lsp_startup_timeout_ms | 30000 | Không startup gopls trong MCP handshake |
+| rename_timeout_ms | 30000 sau startup | Cancel và child teardown |
+| index_timeout_ms | 600000 | Mặc định hữu hạn, user tăng explicit theo workload |
+| watch_poll_interval_ms | 2000 | Hint stat; không bảo đảm freshness |
+| full_reconcile_interval_ms | 60000 | Hash/inventory background trong process watch được user chạy |
+| max_output_bytes | 24576 | S10; không đồng nghĩa 6144 token |
+| max_graph_nodes / edges / depth | 2000 / 10000 / 8 | Trả limits và continuations; không gọi full impact |
+| keep_generations | 2/profile | Token có thể expire sớm do GC; trả lỗi, không rebase |
+| pack_ttl_seconds | 900 | Stateless signed descriptor; không bảo đảm retention |
+| max_worktree_cache_bytes | 384 GiB (412316860416 bytes)/worktree | Default derived-cache cap; authority home runtime config, không reserve toàn cap trước |
+| volume_reserve_bytes / volume_warning_bytes | 2 GiB / 4 GiB | Home-shared operating headroom; reserve>0, warning>=reserve, không source/cache quota |
+| process_tree_rss_budget_bytes | 8 GiB (8589934592 bytes) | Per-process-tree monitored stop/admission threshold, không hard OS memory limit |
+| resource_monitor_interval_ms | 250 ms | RSS/free-space sampling; bounded write batch checks độc lập timer |
+| log_retention | 5 file × 10 MiB/worktree | Không log source/request raw |
+
+Defaults là capacity target v1.6.2, không benchmark đã đạt. 1.000.000 là hard maximum inventory/manifest entries; source32 GiB/cache384 GiB là defaults, không số từ chối viết cứng. Effective source/file/output=min(runtime,registered policy,schema/capability hard caps); policy increase cần explicit authorized mutation, runtime không tự cấp quyền. Source/cache lớn hơn defaults có thể schema-valid nhưng ngoài tested XL envelope đến khi có evidence. Admission so effective cap. GOMEMLIMIT soft Go heap; RSS budget monitored threshold có thể overshoot giữa samples, không hard RSS guarantee nếu thiếu OS enforcement. Không reserve trước toàn cap RAM/đĩa. T033/T039/T053/T077 đo counts/source/manifest/cache/WAL/temp/RSS/time/headroom và limits có hiệu lực.
+
+
+### ACC-01 — Accounting quota và admission cho cache/durable/home writers (v1.6.2)
+
+Estimate384 GiB v1.6.1 là single-profile planning example: B=32 GiB, ba generation-equivalents(active+previous+building), source3B + facts/FTS4,5B + scratch/WAL0,5B=256 GiB, safety1,5=384 GiB; không bound đã chứng minh. Mô hình thật: cache_peak=retained immutable manifests + retained shared blobs + facts/FTS TẤT CẢ profiles/generations + maps/spools/sidecars + incremental candidate/materialization/staging/WAL peak. N_retained=sum generations mọi profile; building/abandoned bytes chưa recover vẫn tính; keep_generations2/profile không tổng hai/ba. Chỉ trừ dedup có verified identity/reference. Ba profiles×hai retained + một building=bảy fact generations; theo giả định48 GiB/generation, facts336 GiB trước source/temp. Materialization có thể tới B hoặc closure lớn hơn, không giả0,5B. T053/T077 đo single/multiple profiles, unchanged/high-churn và build overlap; không nâng default/giảm coverage để che quota case. New profile/retention build phải admit whole-worktree peak; reject giữ active mọi profile và durable data.
+
+max_worktree_cache_bytes giới hạn tổng logical file lengths của derived owned cache thuộc đúng worktree: index.sqlite + immutable manifests/ artifacts + mọi WAL/SHM/journal/staging sidecar của index + scratch capture/provider/rename/results + producer map artifacts/partition cache đã import hoặc chờ import. Hardlinks chỉ đếm một lần theo verified filesystem file identity; alias path không được đếm như capacity mới. Không follow symlink/reparse/mount escape. Unknown length/identity/containment → RESOURCE_LIMIT/PATH_ESCAPE trước write phụ thuộc. Temporary operation dùng directory riêng trong cùng owned scope và cùng volume MCE4D_HOME; runtime cache/temp không redirect sang volume khác trong baseline, nếu không xác minh được cùng volume thì fail closed. Producer map directory bên ngoài approved root không được tự xóa/claim owned; imported copy và import peak đều phải budget.
+
+Catalog, records.sqlite+sidecars/durable backups không cache quota/GC; logs quota riêng; development artifacts S51. Mọi engine-owned write trong MCE4D_HOME, gồm register/config/record/evidence/backup/log, cần volume admission trước growth. Durable/log/home có cache_reserved_remaining_bytes=0; volume_reserved_remaining_bytes gồm future physical growth/temp/sidecars, ít nhất conservative logical-growth estimate. Report cache_file_bytes/cache_reserved_remaining_bytes/volume_reserved_remaining_bytes/index_live_page_bytes/index_free_page_bytes/wal_bytes/scratch_bytes/map_bytes/durable_bytes/allocated_bytes/observed_at riêng; no double-count, allocated unknown không thay bằng logical. Writers ngoài cùng home coordination là external, OS available đo lại.
+
+Index live/free page metrics từ verified page_size/page_count/freelist_count; chúng giải thích reusable pages, không trừ freelist khỏi physical file-length cap hoặc coi DELETE đã trả space cho OS. GC giữ DB-03 order; sau commit đo lại quota thật. Checkpoint hữu hạn theo driver/lifecycle, không xóa -wal/-shm bằng filesystem command. Không auto VACUUM/replace live DB: compaction/rebuild là maintenance DB-05/DB-06 với peak-space admission + recovery proof + đúng quyền; không đủ điều kiện thì controlled RESOURCE_LIMIT/DISK_FULL, giữ active và durable stores. reader starvation/WAL growth phải được đo, không hidden long read transaction.
+
+Trước owned write lấy bounded peak-growth evidence hoặc exact serialized length. Dưới short admission lock đồng thời kiểm: cache_file_bytes(worktree)+sum(cache_reserved_remaining_bytes cùng worktree)+new_cache_peak<=shared effective max_worktree_cache_bytes; observed_available_bytes(volume)>=sum(volume_reserved_remaining_bytes mọi entries)+new_volume_peak+effective volume_reserve_bytes. Home/durable không thêm cache. Available phản ánh bytes hiện có; reservation chỉ future growth, giữ volume>=cache remaining. Headroom sau reservations dưới warning cảnh báo sanitized; dưới reserve RESOURCE_LIMIT trước write, không cố tới disk-full. Trước mỗi bounded batch/spool chunk/publish kiểm config digest/ownership/length/available/growth; timer không thay batch check. Giảm remaining chỉ khi actual growth đo dưới lock; extension admit trước ghi; unknown không0. Reject cancel/rollback giữ active/source/records; OS ENOSPC sau admission DISK_FULL. Không hard guarantee chống external writers.
+
+Derived cache/runtime scratch/spool và durable home stores dùng volume đã verify của MCE4D_HOME; no cache/temp redirect baseline. Short volume lock/journal tại volume-admission/<volume_id>.lock/.json; identity=OS stable opaque volume ID+verified home directory identity, không drive-letter/path/PID. PRIVATE schemas VolumeAdmissionJournal/VolumeAdmissionEntry/AdmissionOwnedPath S43 là authority, không endpoint: format_version1; volume_id,home_identity,admission_config_digest,entries<=256; serialized<=1 MiB, atomic temp→flush→rename. Entry có operation_id,scope_kind(home|worktree),worktree_id(UUID|null),owner_identity,ownership_ref,operation_kind,allowed_paths1..8,volume_reserved_remaining_bytes,cache_reserved_remaining_bytes,created_at. Keys required, duplicate/unknown/invalid rejected. home scope worktree_id=null/cache remaining0; worktree scope UUID. index/map_import/rename_result/partition là cache; record_write/evidence_import/backup/log_write cache remaining0; catalog_write/config_write home scope; maintenance phân loại store/path, không cấp quyền GC. Home kinds chỉ catalog_write/config_write/maintenance/backup; worktree kinds chỉ index/map_import/rename_result/partition/maintenance/record_write/evidence_import/backup/log_write.
+allowed_paths/ownership_ref là canonical HOME-relative owned locators<=256 Unicode codepoints, không volume-relative/source paths; bounded output roots, không một locator mỗi source. Secure no-follow actual-handle containment: home identity/volume khớp; worktree entries đúng owned subtree; catalog/records/backups không disposable vì có entry. ownership_ref luôn operation-leases/<operation_id>.lock cho cả home/worktree, OS lease owner giữ; allowed_paths worktree phải đúng worktrees/<worktree_id>/ subtree, lease locator là exception root-owned rõ ràng; recovery kiểm lease+actual paths/file identities/digests, no PID/TTL steal/xóa records. Owner chết recover actual growth/reservation; unknown fail closed.
+Shared admission digest=H(admission-config-v1,{schema_version:1,max_worktree_cache_bytes,volume_reserve_bytes,volume_warning_bytes}) từ canonical home config CT-07. Cùng home không cap riêng mỗi process. Trước admission/write batch đọc home digest; mismatch CONFIG_CONFLICT+settle/rollback/restart, không hot apply. Journal giữ digest đã admit; chỉ đổi header sang digest mới khi entries rỗng và actual sizes recheck; new process không admit qua live old entries, nhưng release/recovery old entries được phép. Config change không cướp lease.
+Lock order: shared lifecycle → relevant short catalog/config lock hoặc worktree writer nếu cần → short admission; không chờ writer/config/lifecycle trong admission, không giữ admission qua parse/index/SQL workload/test/user wait. Journal/lease bootstrap bookkeeping<=2 MiB peak kiểm available+reserve trực tiếp, không recursive reservation. Logger không reenter để log admission failure, fallback sanitized stderr; log payload growth vẫn admit. Coordination chỉ cùng home, không global build/index mutex. Journal count/byte cap RESOURCE_LIMIT với reason dimension=coordination_metadata, không throughput failure. T105/T107 private decoder/fake-meter proof; T004 config/registration ports, T007 store wiring, T010 OS/lease/admission; public writers chỉ expose sau T010 wired và G1 đạt.
+RSS: OS adapter đo process chính+owned descendants bằng verified process identity; budget toàn tree, không nhân theo job. Scheduler admit measured baseline+bounded next-scope estimate và OS available memory; unknown required measurement RESOURCE_LIMIT trước heavy scope. Sample resource_monitor_interval_ms+scope boundaries; RSS đạt budget cancel owned work DF20, RESOURCE_LIMIT dimension=rss; join/terminate children. Monitored threshold không hard containment; hard OS limit chỉ claim khi target adapter/test có evidence. Chia smaller independent scopes được phép nếu whole-workload completeness giữ nguyên.
+
+T004/T007/T010/T020/T025/T028/T047/T069 áp authority home/cache/durable từ first exposed write; typed ports/private tests không OS PASS trước T010. T033/T035/T053/T077 kiểm process/volume/RSS/config races, durable import+index, crash recovery/nondefault caps/headroom. T105/T107 fake proofs trước feature; T010/T033/T036/T037 actual OS tests. Cache default384 GiB không reserved space; per-worktree cache và home-aggregate volume. Deadline CT-03/DF20, không timeout-as-quota.
+
+### Failure handling
+
+| Sự cố | Bắt buộc |
+|---|---|
+| Crash giữa parse/insert | Active generation cũ giữ nguyên; BUILDING trở thành abandoned khi lấy lại OS ownership |
+| Crash ngay publish | Transaction quyết định old hoặc new, không half pointer; verify lại state |
+| Kill/timeout LSP | Cancel request, terminate process tree trong deadline, đóng handles/pipes; không orphan |
+| Disk full | Abort job; không prune source; last published vẫn query nếu DB còn đọc được |
+| DB corrupt | Quarantine owned index, giữ catalog/profile; rebuild explicit; không xóa âm thầm |
+| Writer busy | Reader vẫn trả old snapshot + freshness; writer timeout rõ |
+| Branch/file đổi liên tục | Bounded retry rồi WORKTREE_CHANGED_DURING_INDEX; không lock editor |
+| Policy tightening | Invalidate old tokens; không phục vụ forbidden blobs từ generation cũ; purge theo policy an toàn |
+| Repo bị xóa/move | Mark unavailable; không remap theo tên/remote; confirm rebind |
+| Schema upgrade fail | Restore backup/catalog an toàn hoặc rebuild index; giữ binary tương thích |
+
+### GC/backup/rollback
+
+GC chỉ chạy với writer lock worktree, không catalog lock dài; chỉ derived index, không records.sqlite/durable backups. Chỉ delete generations không active và owned artifacts; mọi profile phải giữ active pointer hợp lệ. Reader đang trong transaction phải có snapshot nhất quán; page/cursor lần sau có thể SNAPSHOT_EXPIRED. Không cần lease hội thoại trong R1.
+
+Delete FTS rows/facts/generation theo FK order hoặc cascade đã test; sau đó xóa blob không còn reference từ mọi generation còn giữ. Không xóa blob chỉ vì không thuộc generation mới nhất. Catalog backup tách cache quota. Validate marker/ID/realpath trước xóa thư mục; dry-run mặc định cho command GC thủ công.
+
+Không phát hành task “dọn ổ toàn máy” hoặc global build lock. Không xóa cache của công cụ khác. State folder thuộc từng worktree, index A thất bại không làm index B bị khóa.
+
+Backup SQLite theo REF14; copy source code không nằm trong trách nhiệm backup MCE4D. Rollback binary cần schema compatibility; derived index schema không tương thích → rebuild riêng sau khi giữ registration/policy. Không down-migrate destructive để làm test xanh.
+
+Physical GC order và privacy residual WAL/FTS/deleted pages theo DB-03/DB-04; xóa row không là secure erase. Records/cursor/policy mutations theo DF15, không được gom vào cache cleanup.
+
+## S16 — Observability
+
+Structured event fields: timestamp UTC, level, request_id/job_id, worktree_id, profile_id, generation_id, phase, duration_ms, outcome, error_code, counts, budget, provider_version. Không source, query text, secret, full local path hoặc pack_token mặc định. Debug log opt-in vẫn redact; không tự upload.
+
+Metric bắt buộc: inventory_files, files_excluded_by_reason, bytes_hashed, cache_hit/noop, files_reparsed, semantic_rebuild_mode, nodes/edges/unresolved, freshness_duration/result, query_latency, output_bytes, required_pending, cursor_errors, lock_wait_ms, busy_count, index_duration, cancellation_latency, child_process_count, disk_bytes, recovery_count, hierarchy_query_scope, partition_cache_hit, invalidation_closure_size, snapshot_analysis_count, live_validation_count, self_index_analyzer_revision.
+
+Nơi lưu: bounded JSONL log + CLI doctor/stats; chưa cần Prometheus/Grafana/HTTP metrics server. Errors có context phase/IDs, không dump SQL binds/source. Instrumentation không giữ lock lâu hơn hoặc khiến operation fail vì log sink đầy; phải báo logging degradation qua stderr sanitized khi phù hợp.
+
+MUST benchmark trả đủ profile/tool versions, fixture revision, filesystem class, OS/CPU/RAM, warm/cold classification và commit của MCE4D. Không trộn data user private vào report public.
+
+## S17 — Chiến lược kiểm thử và bộ nghiệm thu
+
+Fixtures MUST tự tạo từ case dưới đây; `expected.json` ghi binding/edge/source positions/limitations mong đợi. Expected results do kiểm tra độc lập và source language semantics, không dùng chính output indexer làm oracle. Golden update phải review diff, không auto bless.
+
+Unit: canonical hash, byte/line/LSP positions, path, schema, selector, ranking, budget, cursor, status transitions. Integration: SQLite/WAL, Git worktrees, go/packages offline, gopls, child lifecycle. Acceptance: end-to-end CLI/MCP/canary source, target OS. Fault injection: kill/reorder/read/write/disk/network/timeout. Property/fuzz: malformed inputs, cursor, Unicode, graph traversal; bounded resources.
+
+Tổng quát code coverage chỉ là chỉ số hỗ trợ; không ép 100% toàn code. Critical modules paths/publish/freshness/budget/rename/policy MUST có positive + negative + failure + concurrency cases tương ứng. Test pass phải gắn commit/toolchain/platform; NOT_RUN không tính pass.
+
+### Acceptance case catalog
+
+
+| Case | Mức | Tình huống | Oracle bắt buộc |
+|---|---|---|---|
+| C001 | P0 | Cùng folder basename/remote, clone khác, hai worktree cùng HEAD có dirty khác | IDs/snapshot/scopes khác đúng; không fallback theo tên |
+| C002 | P0 | Hai function/field cùng tên ở package khác | locate trả ambiguity; positional selector resolve đúng |
+| C003 | P0 | Nested scopes, variable shadowing, receiver/named result | Defs/Uses không lẫn; rename conflict không text replace |
+| C004 | P0 | Closures/lambda có local cùng tên, generic method/embedded fields | Identity/ranges riêng; unsupported cases có diagnostic |
+| C005 | P1 | Read, assignment, +=, pointer alias | READS/WRITES chỉ khi chứng minh; alias unresolved không fake data flow |
+| C006 | P0 | Direct calls xuyên package + function value callback | Direct edge đúng; callback không được gọi là complete runtime call graph |
+| C007 | P0 | Interface có nhiều implementation cùng method name | CALLS_INTERFACE khác MAY_DISPATCH_TO; không gán một callee tùy ý |
+| C008 | P0 | Reflection/string lookup/dynamic invocation | Limitations/boundary tồn tại; không kết luận zero impact |
+| C009 | P0 | GOOS/GOARCH/tags/CGO khác; cùng repo/profile đổi config | Index/profile phân biệt; alternate build không tự included |
+| C010 | P1 | Internal/external test packages và production variants | Không đếm trùng reference; tests không biến thành coverage guarantee |
+| C011 | P1 | Generated source, vendor/sparse/submodule/nested repo | Metadata/coverage đúng; không tự generate/traverse/mutate |
+| C012 | P0 | Dependency/toolchain missing; offline workspace | Syntax fallback đúng; không network/install; no semantic-complete |
+| C013 | P0 | File untracked mới thêm sau index tạo caller mới | Strict validation phát hiện membership change, không chỉ returned files |
+| C014 | P0 | Delete/rename/move file hoặc đổi tên symbol | Generation mới không có edge cũ mồ côi; no fuzzy ID reuse |
+| C015 | P0 | Thay bytes nhưng giữ mtime/size; Git assume-unchanged | Full hash phát hiện; cache không coi clean là proof |
+| C016 | P0 | Switch branch, reset về commit cũ, detached HEAD, repo chưa commit | Freshness/identity đúng theo bytes; HEAD null không crash |
+| C017 | P0 | Đổi go.mod/go.work/local replace/exported interface | Invalidation consumers hoặc full rebuild; no stale edge |
+| C018 | P0 | Chuỗi mutation random trên fixture, full vs incremental | Facts normalized tương đương; replay deterministic |
+| C019 | P0 | Fault injection ở capture/batch/publish/commit | Reader chỉ thấy old hoặc new published generation; FK/index integrity |
+| C020 | P0 | Readers liên tục khi writer publish nhiều lần | Mỗi response source/facts cùng generation; no BUILDING exposure |
+| C021 | P0 | Index A và B đồng thời; A giữ writer lock | B vẫn tiến triển; reader A phục vụ old snapshot; không global build lock |
+| C022 | P0 | Process chết/lock metadata cũ/PID reuse/owner còn sống | Chỉ OS ownership quyết định; không steal bằng TTL |
+| C023 | P0 | Source/membership đổi trong scan/parse/validation | Bounded retry hoặc explicit instability; không chứng nhận atomic filesystem |
+| C024 | P0 | Traversal/symlink race/junction/UNC/ADS/control chars/invalid UTF-8 path | No root escape/source leak; unknown platform case BLOCKED |
+| C025 | P0 | Secret giả trong .env, key file, source mixed-content, .env.example | Marker không xuất hiện DB blobs/FTS/log/MCP; gap preserved |
+| C026 | P0 | Repo prompt injection + Git config fsmonitor/custom command | Không exec/nâng quyền; nội dung chỉ là data |
+| C027 | P0 | Vietnamese/Lao/emoji, UTF-16 surrogate, CRLF, multibyte positions | Range roundtrip exact; invalid byte offset rejected |
+| C028 | P0 | Tiny/large budget, metadata nhiều, source line rất dài | JSON valid trong cap; safety không mất; BUDGET_TOO_SMALL đúng |
+| C029 | P0 | Hàng nghìn refs/cycle/traversal limit/required evidence quá lớn | required_pending hoặc unknown + continuation; không complete giả |
+| C030 | P0 | Cursor tamper/cross-repo/policy change/TTL/GC | Error đúng; không rebase sang snapshot hiện tại |
+| C031 | P1 | Phiên AI mới và context compaction | Không hidden skip vì đã gửi trước; có thể nhận lại source cần thiết |
+| C032 | P0 | Rename nhiều occurrences/file và nhiều file | Preview liệt kê mọi edit; source hash before=after |
+| C033 | P0 | Rename Go exported field có/không json tag | Phát hiện implicit serialization key risk; preserve constraint không bị bỏ |
+| C034 | P0 | LSP yêu cầu applyEdit/executeCommand/create/delete/move file | MCE4D không apply; reject unsupported resource edits |
+| C035 | P0 | Timeout/cancel/repeat start-stop LSP/MCP/index | Không goroutine/connection/child leak sau settling window |
+| C036 | P0 | Disk full/permission denied/corrupt DB | Không xóa source; old published hoặc controlled recovery |
+| C037 | P0 | Schema upgrade fail và chạy binary cũ trên schema mới | Backup/rebuild path đúng; SCHEMA_TOO_NEW không mutate |
+| C038 | P0 | GC nhiều profiles/generation dùng chung blobs | Không xóa blob còn reference/active/catalog/source; dry-run chính xác |
+| C039 | P0 | Malformed JSON, unknown args, stdout log leak, protocol cancel | Schema/MCP framing pass; bounded output và errors đúng |
+| C040 | P1 | CLI help/example và Codex thực tế trên version ghi nhận | Roundtrip tool call; không auto ghi đè config hoặc server khác |
+| C041 | P0 | Chạy mọi public tool trên canary repo | Toàn target tree content/config/AGENTS bất biến |
+| C042 | P1 | FTS/symbol/adjacency queries trên fixture scale | EXPLAIN QUERY PLAN dùng index dự kiến; bounded traversal/no N+1 bất hợp lý |
+| C043 | P1 | Hai agent update tracker; DONE không evidence; dangling ID | Validator fail hoặc merge đúng; không mất hàng/progress giả |
+| C044 | P1 | Benchmark có task fail, warm/cold và cached-token reports | Không bỏ failure; report reproducible, baseline không bị giảm khả năng |
+| C045 | P0 | TS/SQL/config text match và unknown external boundary trong R1 | Không gọi lexical hit semantic relation; no fabricated contract |
+| C046 | P0 | GOPACKAGESDRIVER/GOFLAGS/env poison, binary thay đổi | Policy từ chối/chặn; tool fingerprint thay làm invalidation |
+| C047 | P0 | Network monitoring ở runtime với modules local/missing | Không kết nối model/telemetry/download; thiếu dữ liệu báo rõ |
+| C048 | P1 | Log error paths, huge diagnostics, secret-bearing filenames | Redacted logs/counts useful; no secrets/stack/source dump |
+| C049 | P1 | [R1] Hierarchy overview của module/shared package và hàng nghìn refs | Summary giữ exact expansion scope; grouping không mất edge/hub consumers |
+| C050 | P0 | [R1] Partition/reverse dependency/cache negative qua thay đổi export/config/closure | Selective/full normalized facts tương đương hoặc fallback rõ |
+| C051 | P0 | [R1] Analysis snapshot cũ, validate live và membership đổi giữa các trang | Không báo current/reviewable để edit trước strict verification; pinned pages không rebase |
+| C052 | P0 | [R1] Repo Git chưa commit/spec-only có component chưa có code | Intended facts khác observed; no invented implementation/call edges |
+| C053 | P1 | [R1] S/M/L + XL count-only/byte-only/combined1.000.000 manifest entries/32 GiB, fanout/multiple profiles/worktrees | Whole-workload counts/independent oracles, actual RSS/cache/manifest/WAL/time/headroom trên sealed config; đủ admission no legacy reject, over-cap/deadline/error đúng taxonomy |
+| C054 | P0 | [R1] Self-index engine bằng binary revision cũ/đổi provider | Analyzer revision tách target revision; independent oracle và direct-tool fallback |
+| C055 | P0 | [R2] TS aliases/reexports/project refs/JS any + malicious config plugin | Binding đúng supported profile; unknown dynamic separate; không execute plugin |
+| C056 | P1 | [R2] Frontend route/client/backend route cùng path khác service | Namespace/source links đúng; không nối bằng route string đơn lẻ |
+| C057 | P0 | [R2] Python decorators/dynamic imports/monkey patch thiếu type info | Syntax/typed/unknown riêng; không import hoặc execute target |
+| C058 | P0 | [R2] Notebook cells/venv/config chưa đủ metadata hoặc chứa side effect | Không chạy cell/startup hook; versions/boundary và no source mutation |
+| C059 | P0 | [R2] MySQL dialect/engine, dynamic SQL, procedure/view/trigger/migration | Lineage có evidence, unsupported giữ gap; không kết luận deployed schema |
+| C060 | P0 | [R2] OAS/schema/proto ref remote/cycle/version mismatch và handlers chưa có | No network; bounded local resolution; declared != implemented |
+| C061 | P0 | [R2] Events same topic khác broker/env, wildcard, retry/ack/replay | Không false bridge/exactly-once claim; boundary còn nguyên |
+| C062 | P0 | [R2] State machine/guard/action/hierarchy + proposed/approved/stale rule và false instruction | Machine state scope đúng; guards không execute; chỉ approved constraints; source-change invalidation |
+| C063 | P0 | [R2] Cross-repo member stale/denied/missing schema, nhiều namespace | Vector provenance đầy đủ; partial/no leakage; không distributed atomic claim |
+| C064 | P0 | [R2] Semantic diff moved/renamed cùng tên, profile/provider đổi | Không force match; provider delta riêng; missing snapshots explicit |
+| C065 | P0 | [R2] Trading reserve/retry/partial fill/cancel/ledger workflow fixture | Return evidence/gaps/contract obligations; không bịa money precision/finality |
+| C066 | P0 | [R2] Commerce payment webhook duplicate/out-of-order và partial refund | Order/payment/stock states tách, correct known impacted consumers |
+| C067 | P0 | [R2] AI prompt/tokenizer/embedding dimension/dataset/eval drift + checkpoint bẫy | Metadata links đúng, no deserialize/load/LLM call, missed-data gaps |
+| C068 | P1 | [R2] Architecture allowed-dependency rule, exemption, missing provider scope | Violation witness/path chính xác; incomplete không PASS toàn hệ thống |
+| C069 | P1 | [R2] Polyglot multi-domain baseline/full/incremental test cohort | Real vs synthetic riêng; token/failure/recall reports đúng |
+| C070 | P0 | [R3] Runtime export chứa PII/secret, unknown service revision, oversized span | Scrub/reject before persistence; no merge lên HEAD tùy ý |
+| C071 | P0 | [R3] Sampled async spans/links nhiều retries và thiếu instrumentation | Observed-only semantics; missing trace không chứng minh missing edge |
+| C072 | P0 | [R3] Coverage/test report từ revision khác hoặc test pass không assert invariant | Historical/static/executed/asserted tách riêng |
+| C073 | P1 | [R3] Test selection qua change global config/schema/shared package | Rationale/gaps; không auto skip required/full suite |
+| C074 | P0 | [R3] Unsaved buffer divergence, Unicode positions, save/discard và secrets | Buffer session/version/hash nhất quán, no auto-save or mix with disk |
+| C075 | P0 | [R3] Embedding candidate sai binding, tokenizer/index version và policy đổi | Exact resolver bảo vệ; cache invalidated; no secret/model network leak |
+| C076 | P0 | [R3] Fact-set publish/GC crash và multiple partition generation | Atomic manifest pointers; no mixed incompatible facts/orphan references |
+| C077 | P0 | [R3] IaC/config scripts/secret variables và deployed manifest cũ | Static data only, no provider execution/credentials/live-state fiction |
+| C078 | P1 | [R3] XL-V1 count-only/byte-only/combined; partition/scope vượt measured budget | Within effective envelope+admission whole workload published/no unexpected omissions/count+source+fact oracles khớp; cap RESOURCE_LIMIT/deadline TIMEOUT hoặc strict FRESHNESS_UNKNOWN; active/durable preserved, no partial-as-full |
+| C079 | P1 | [R3] Language addon unsupported feature/profile hoặc parser error | Capability verified matrix; no advertise scaffold as support |
+| C080 | P1 | [R3] Extension API/docs/schema/naming/release labels consistency | Only enabled+verified capabilities exposed; no fake tests/gates |
+| C081 | P1 | [U0] Resize hai pane, chọn source/backend/FE node và keyboard focus | Graph luôn trái; right mode đúng; accessible splitter/list; selection không bị mất bởi layout |
+| C082 | P0 | [U0] Registry không có index, index partial và graph real fixture | Không sinh demo graph/UI; empty/partial/error có provenance; source đúng raw bytes |
+| C083 | P0 | [U0] HTTP forged Host/Origin, CSRF, expired token, iframe thử đọc source | Không leak source/registry, không arbitrary URL proxy/shell; loopback only và auth hết hạn đúng |
+| C084 | P0 | [U1] JSX native button có handler local: Inspect click | Anchor đúng binding/file/range; graph trái selected; counter action/fetch/form submit do click =0 |
+| C085 | P0 | [U1] Chọn block/component lồng nhiều tầng | Phân biệt element/render-site/definition; chọn parent có evidence; không gộp Button common thành business owner |
+| C086 | P0 | [U1] 100 instances cùng component, chọn instance thứ 37 | Instance selection giữ riêng; graph definition chung có instance count; không lưu business key/props |
+| C087 | P0 | [U1] Graph→preview→graph liên tục, messages duplicate/out-of-order | Một selection transaction, không echo loop; request cũ không ghi đè selection mới; view ổn định |
+| C088 | P0 | [U1] Graph node chưa mount, virtualized offscreen, route khác, permission khác | Trả not_rendered/not_visible/ambiguous; không auto-click/navigate/login/replay hoặc tạo instance giả |
+| C089 | P0 | [U1] HMR source đổi không commit, reorder source, remount/page reload | Build+anchor epoch đổi; stale mapping blocked; còn graph snapshot cũ chỉ historical |
+| C090 | P0 | [U1] Inspect pointerdown/up/click/dblclick/context menu/touch/Enter/Space/submit và frame focus | Không chuyển input target thuộc supported shield contract; test business counter=0; không gọi synthetic DOM events |
+| C091 | P0 | [U1] Mount effect/polling/WS background và preview trỏ môi trường không được phép | Không gắn nhãn runtime read-only; attach bị chặn khi policy không đạt; chỉ fixture isolated dùng network test |
+| C092 | P0 | [U1] Sai origin/source/nonce, message quá lớn, replay, iframe navigation | Bridge reject; session/bearer không leak; navigation resets pairing; không eval HTML/message |
+| C093 | P0 | [U1] Fragments/multiple DOM roots/portals/HOC/third-party không forward attributes | Phần supported mapping đúng; unsupported grouping có reason; không đọc private React fiber hoặc đoán theo label |
+| C094 | P0 | [U1] CSS transform/zoom/scroll/resize/Shadow DOM closed/canvas | Hit test tọa độ đúng trong supported matrix; unsupported elements không làm false exact mapping |
+| C095 | P0 | [U1] Production bundle/SSR hydration fixture và target source canary | SDK/data attrs/maps private không leak release; development transform bảo toàn semantics đã test; target tree không auto sửa |
+| C096 | P0 | [U1] Manual mapping proposed/approved/revoked, source/profile thay đổi | Lifecycle/approval đúng; nguồn human riêng, không nâng thành type-resolved/observed runtime |
+| C097 | P0 | [U1] Select UI rồi yêu cầu context cho AI, snapshot GC/policy tightening | Pack same source/profile; pending gaps preserved; stale/expired explicit; không auto LLM/API spend |
+| C098 | P1 | [U1] Repo thực được cho phép với build dev và matching index | Report click→source accuracy/bidirectional coverage/latency, artifact source-based; thiếu repo thật ghi NOT_RUN |
+| C099 | P0 | [U2] Click backend route/handler trong graph và click step flow ngược lại | Right flow API/method/source đúng; left graph selection đồng bộ; panel không tự gửi API request |
+| C100 | P0 | [U2] Hai service cùng POST /orders, proxy prefix và missing config | Contract match theo scope, không theo path đơn lẻ; unknown adapter/prefix trả candidate/unresolved |
+| C101 | P0 | [U2] Conditional handler/retry/early return/parallel goroutine | Static flow không giả một chuỗi thực thi duy nhất; branch/call/candidate labels và gap đúng |
+| C102 | P0 | [U2] database/sql literals BEGIN→INSERT→UPDATE→ROLLBACK và dynamic SQL/ORM | Đúng table/op trong supported subset; static chưa phải persisted; unknown SQL giữ boundary |
+| C103 | P0 | [U2] Frontend→API→BE→SQL và click bảng tìm upstream UI | Đúng join IDs/source vectors; one-to-many danh mục; partial instrumentation/unsupported không biến no impact |
+| C104 | P0 | [U2] Queue/outbox/late consumer/transaction boundary | Không nối sync theo timestamp; ack khác commit, code-observed publish khác delivery; no broker/DB execute |
+| C105 | P1 | [U2] 50k indexed nodes nhưng viewport giới hạn + hover 60Hz, cancel navigation | Response/render trong cap; bounded RPC/DOM listeners; stale responses ignored; index không chạy lại mỗi click |
+| C106 | P0 | [U2] Cross-repo member stale/denied + real FE/Go/SQL flow release | Không leak member/source; composite mapping partial; real vs synthetic label và source-mutation=0 |
+| C107 | P0 | [U3] Explicit interaction→fetch traceparent→BE spans có cùng build provenance | Observed overlay chỉ các spans có causality; không biến every function thành observed |
+| C108 | P0 | [U3] Hai click gần nhau, concurrent fetch/cache hit/retry/background request | Không dùng latestClick/time heuristic như proof; unbound request giữ riêng, retry attempts không gộp |
+| C109 | P0 | [U3] SQL span success nhưng transaction rollback hoặc commit thiếu span | Persisted status unknown/rolled_back phù hợp; không khẳng định saved từ SQL success |
+| C110 | P0 | [U3] Cross-origin CORS không allow trace header, CSP frame refusal/COOP opener missing | Không bypass browser policy; explicit unsupported/fallback static/import; không gửi bearer/source tới target |
+| C111 | P0 | [U3] Trace secrets/request body/SQL literals/DOM values và corrupted export | Redact trước persistence, no raw user data; bounded importer; no trace replay/target execution |
+| C112 | P1 | [U3] Session detach/abort/reload nhiều lần, imported build cũ và source mới | Không observer/child/session leak; observed legacy stays historical; report correctness/latency với version evidence |
+| C113 | P0 | [G0] Actor tự đổi architecture/unknown prerequisite hoặc tạo feature trước seal | Ready validator reject; T001–T108 administrative exceptions explicit; no guessed API |
+| C114 | P0 | [G0] API scalar/vector drift, duplicate JSON/unknown fields/op-data mismatch | One schema authority; positive/negative fixtures và operation-bound response |
+| C115 | P0 | [G0/R1] Physical catalog/index/records migration và FK connection settings | Fresh install correct; every pooled connection FK1; target driver proof tại T106 |
+| C116 | P0 | [G0/R1] Child fact tham chiếu symbol của generation khác | Composite FK hoặc authoritative typed validator reject; no mixed evidence |
+| C117 | P0 | [G0/R1] Publish BUILDING/profile mismatch/cancel/rollback | Only legal READY pointer; old active survives failed publication; exact owner CAS |
+| C118 | P0 | [G0/R1] Sửa published facts hoặc append relation vào READY | DDL guard/application tests reject; no quiet mutation |
+| C119 | P0 | [G0/R1] Scope query FTS và GC old generation | Search never leaks generation; triggers sync documents/FTS; active protected |
+| C120 | P0 | [R2/U1] Concurrent record approvals same expected_version | One commit, other conflict; head/history/epoch/receipt atomic; no caller-forged actor |
+| C121 | P0 | [R2/U1] Mutation replay/body/principal mismatch và client actor/status/revision/old-field alias | Same original replay; mismatch reject/no duplicate; closed input rejects extra fields, server actor/effective needs_review derived |
+| C122 | P0 | [R1/R2] Policy/record/group changes mid-query or between pages | Postcheck error/retry bounded; old pack invalid, no stale approved constraint |
+| C123 | P0 | [U1] Build map same bytes/new index generation; source changed/HMR lazy map | Producer map ID stable by content, new binding explicit; mismatch no exact graph/source |
+| C124 | P0 | [U1] SDK reports generation/SymbolRef hoặc API giả instance list | Wire rejects forbidden fields; server anchors vs browser instances separate |
+| C125 | P0 | [U1] READY spoofed/stale nonce hoặc no imported build manifest | No bound/ready; no source capability before handshake+engine binding |
+| C126 | P0 | [U1] Interact MODE_ACK chậm, sau reload/disarm, old command | Shield stays/returns; server ack CAS deadline; old ack cannot arm |
+| C127 | P0 | [U1] Flow/preview selection responses out of order | Current seq+scope only; no echo loop, no reroot from render |
+| C128 | P0 | [G0/R1] MCP text+structured duplication và near-cap envelope | Actual emitted payload counted; valid JSON under limit; no dropping required safety |
+| C129 | P0 | [G0/R1] Go Load type identities và source ParseFile disagreement | No object identity mixing across loads; source mismatch explicit partial/error |
+| C130 | P0 | [R1/U1] GC/quarantine index với approved mappings/records | Records/catalog/source unchanged; historical bindings expire clearly |
+| C131 | P0 | [G0/R1] Source range UTF8/CRLF/empty/no trailing newline | Byte roundtrip correct; invalid boundary/range rejected, display derived |
+| C132 | P0 | [G0/R1] Missing API version, unsupported platform/binary permission | No guessing/download/false support; scoped BLOCKED with evidence |
+| C133 | P0 | [G0/CI] Task schedule missing/duplicate/backward dependency/gate | Validator reject; canonical order covers108 tasks exactly |
+| C134 | P0 | [G0/CI] Cross-layer SQL/HTTP/provider calls or mutable global current_repo | Import-boundary/regression tests fail; composition root only wiring |
+| C135 | P0 | [G0/CI] Document audit PASS being used as product evidence | Product gates remain NOT_RUN until actual code+tests+environment revision evidence |
+| C136 | P0 | [R1/U1] COMMIT result uncertain, process killed, session cancellation | Resolve by job/receipt ID, bounded cleanup, no duplicate publish/permission or source loss |
+| C137 | P0 | [G0/CI] Main spec + docs source aliases, missing/version mismatch/duplicate/line-ending-only | Một spec/ledger; đúng nguồn và trạng thái, không auto replace/delete/nâng bản hoặc false installed |
+| C138 | P0 | [G0/CI] Bootstrap prompt hiện diện khi implement; docs_only được giao nhưng task coding đã có trong tracker | Mode từ assignment; không tự chạy prompt/đổi mode/start coding; chưa có quyền không DONE feature |
+| C139 | P1 | [G0/CI] Tăng dependency/contract ngoài scope hoặc muốn xóa guard để đơn giản; local helper không đổi behavior | Gate đúng phạm vi; giữ baseline/guard, không xin duyệt thừa cho helper hoặc chia đổi contract không nhất quán |
+| C140 | P0 | [G0/Build] Lệnh tên check/dry-run gọi child --write/download; cwd/argv/output chưa rõ | Kiểm tác động/quyền, reject placeholder/unsafe command; không dùng tên làm read-only proof |
+| C141 | P0 | [G0/Build] Low-space, unreadable measurement, negative/overflow/invalid budget và đúng boundary | Fail closed đúng volume; fake meter/disposable fixtures nhỏ, không làm đầy disk thật |
+| C142 | P0 | [G0/Build] Repo/temp/cache khác volume hoặc nhiều paths cùng volume; job khác đã ghi một phần budget | Gộp backing volume; remaining reservation không double-count; unavailable destination chặn workload |
+| C143 | P0 | [R1/Build] Hai job output riêng/cùng output, concurrent admission và unknown external writer | Không global mutex; isolation hoặc lock đúng resource, aggregate chỉ scope đã kiểm chứng; uncertainty rõ |
+| C144 | P0 | [G0/R1/Build] Growth/deadline/cancel, command fail rồi cleanup fail, success rồi finalization fail | Owned writers dừng trước cleanup; giữ exit/result gốc và lỗi phụ, không false success hoặc orphan trong scope đã test. Fresh reconstructible run-created copy đủ TEARDOWN-01 tự teardown; evidence/result giữ đúng, no per-temp approval. H06: fresh synthetic repo .git and temporary test SQLite home/sidecars can teardown after verified stopped writers + retained evidence. |
+| C145 | P0 | [R1/Build] Cleanup gặp fixtures/goldens/deliverable/records/source hoặc path link/replace/unexpected file | Refuse xóa ngoài proven-disposable+authority; marker/gitignore không đủ; platform unsupported báo rõ. Reject source/golden/archive/deliverable, old/shared/other-run/staged content dù marker đúng; no whole-folder assumption. H06: actual/user/linked common-dir/canonical home/golden/sole evidence remain protected even named fixture. |
+| C146 | P0 | [G0/R1/Build] Dry-run, uncatchable crash leftover, cleanup thiếu action-time approval | Report-only không tạo/chỉnh/xóa state hoặc chạy workload; crash không fake cleanup/TTL ownership. Fresh exception không áp crash leftovers hoặc missing baseline/authority; protected permanent delete vẫn action-time approval. H06: fresh fixture authority does not transfer to crash/old/other-run data; missing identity/evidence => leave/report. |
+| C147 | P0 | [R1/UI/Integrate] Input/lockfile/contract/rules đổi sau test hoặc merge; mutation bỏ critical guard | Evidence invalidated theo tác động, test bản kết hợp; mutation non-equivalent phải bị phát hiện, không auto bless expected |
+| C148 | P0 | [G0/Release] Documented policy/fixture PASS/absent reviewer được khai báo thành enforcement hoặc production-ready | Bốn trạng thái đúng scope; required unknown chặn claim, không fake independent review/product DONE/deploy permission |
+| C149 | P0 | [v1.5.0] GC generation có module cha-con 3 tầng, source/package/symbol/FTS/domain/UI binding | Leaf-before-parent→files→packages; generation khác/active/shared blob được giữ; no FK disable |
+| C150 | P0 | [v1.5.0] Inject fault/cancel ở mỗi stage GC trước commit | Rollback cả retired state/deletions; independent profile và records nguyên; rerun idempotent |
+| C151 | P0 | [v1.5.0] Module cycle và report-only GC | Publish reject cycle; gặp corrupt cycle rollback không xóa partial; dry-run không mutate |
+| C152 | P0 | [v1.5.0] Cùng producer/source/profile/policy với hai resolver digest | Binding IDs khác và cả hai insert được; same natural tuple không được tạo binding thứ ba |
+| C153 | P0 | [v1.5.0] Reimport map/binding same ID nhưng changed content và wrong source range | Idempotent exact bytes; mismatch rejected; no replace/update old binding |
+| C154 | P0 | [v1.5.0] POST preview/status nhiều lần, session TTL và permission rev không đổi | Read không renew/bump/approve; payload không nonce/bearer; actor khác denied |
+| C155 | P0 | [v1.5.0] API server sống nhưng SDK mất PONG hoặc wrong origin/replayed reply | SDK riêng bị disarm; server status không substitute target liveness; no event echo |
+| C156 | P0 | [v1.5.0] Permission expiry/revoke, browser hidden/resume, clock rollback, MODE_ACK trễ | Shield/disarm; no TTL extension; rearm explicit; real browser gate riêng reference model |
+| C157 | P0 | [v1.5.0] Permission put/revoke CAS, sai version/actor/attestation và CLI-only routing | Immutable versions + heads, current version checked; invalid refused, no MCP escalation |
+| C158 | P0 | [v1.5.0] Một component có101 hoặc hơn render sites source và nhiều targets | MappingMatch paging giữ đúng cặp anchor/target, enumerate đủ không duplicate, no false unique first page |
+| C159 | P0 | [v1.5.0] Rename1025 edits/đa file, CLI cross-process continuation | LSP computation một lần, immutable spool/result digest, pages đủ; no apply trước full set + validation |
+| C160 | P0 | [v1.5.0] Mapping/rename cursor đổi filters/scope/binding/expiry/evicted spool | Typed error không fallback/recompute; six MCP tools unchanged; nguồn mới không ghép page cũ |
+| C161 | P0 | [v1.5.0] Source mandatory có một dòng dài, tiếng Lào/emoji/CRLF vượt ngân sách | Fragments SourceRef exact liên tiếp; concatenated bytes=parent; invalid UTF8 boundary reject |
+| C162 | P0 | [v1.5.0] Budget minimum/metadata lớn/result cap/empty-progress continuation | Wire cap kể repeated text, required_pending đúng; error có hành động không endless cursor |
+| C163 | P0 | [v1.5.0] Hai member cùng symbol_id, một worktree xuất hiện ở hai services | RefSelector+service+pinned vector chọn đúng; unqualified group selector reject/ambiguous |
+| C164 | P0 | [v1.5.0] Group member chưa index/missing/denied và tất cả unavailable | No dummy generation/hash, availability explicit; denied identities theo policy, no source leak |
+| C165 | P0 | [v1.5.0] Active generation đổi/new member index giữa graph selection và context pages | Pinned source giữ nguyên hoặc expired; không tự upgrade missing member; live query mới explicit |
+| C166 | P0 | [v1.5.0] Pinned vector digest sai/incarnation cũ/group revision mismatch | No cache hit or authorized source from mismatched scope; fail closed |
+| C167 | P1 | [v1.6.2] Runtime/Profile fields/defaults/ranges; nondefault cache/source, manifest/RSS/headroom/shared authority | Reject stale/unknown fields, policy min, configured cap không literal32/384; warning>=reserve>0/bounded monitor; alternate/CLI shared mismatch CONFIG_CONFLICT. Reject rename result>32MiB/total>128MiB, query cache>32MiB/entries>32; source_kind/source_digest null iff absent, ordered effective_sources. H05: whole config replacement validate=set, missing home override resets default; candidate_input layer allowed only validate. |
+| C168 | P0 | [v1.6.2] Setter CAS và old/new process digest/live reservations | One CAS wins/atomic home file, validate no write; old process settles CONFIG_CONFLICT, new digest chỉ empty/recovered journal; no arbitrary alternate config set. CAS source H(runtime-config-source-v1), không effective; unchanged home+CPU/options khác vẫn one winner; no default/CLI implicit persistence. H05: candidate digest vs canonical CAS source stays separate; validate no writes/alternate flag, set one CAS winner without implicit old-home merge. J07: nondefault sqlite busy timeout preview matches actual per-connection setting at driver task. |
+| C169 | P0 | [v1.5.0] Group list >1 page, put/remove/recreate, stale expected revision | Stable listing/version; tombstone no ID/revision reset; mutation không xóa member source |
+| C170 | P0 | [v1.5.0] Record list/read historical source đã GC hoặc changed policy | Metadata durable, needs_review/snapshot_expired; no imaginary source hoặc auto reapproval |
+| C171 | P0 | [v1.5.0] Nhiều process/pool reader và maintenance scoped A, normal operation B | Exclusive gate không vào khi còn shared handles; bounded BUSY; B tiến triển; real OS matrix bắt buộc |
+| C172 | P0 | [v1.5.0] Crash tại PREPARED/REPLACING/VERIFYING restore journal | Không serve half replaced stores; report-only không mutate; authorized recovery verified |
+| C173 | P0 | [v1.5.0] Restore catalog/worktree hoặc rebuild index, numeric epochs trùng trước đó | New incarnation invalidates old tokens/results; records giữ nguyên với index rebuild; no old secret key restore |
+| C174 | P0 | [v1.5.0] MCE-C14N1 Unicode/null/missing/ints/key order/array order/EOL và Go/Node | Exact encoded bytes + SHA256 trùng vectors; reject surrogate/fraction/overflow/duplicate. 20 C14N vectors gồm2 source vectors; MCE-MANIFEST-JSON1 raw full/Unicode goldens byte-identical Python/Node/Go task proof. |
+| C175 | P0 | [v1.6.2] Full capture identity và manifest count/byte boundaries | Parser outputs không đổi capture digest; worktree/profile/policy/provider đổi digest; all statuses count/source-vs-manifest bytes; bounded streaming/ProviderDone đúng manifest. External manifest/raw-vs-logical hash, descriptor<=4 KiB; ref/hash/profile mismatch blocked. Canonical sorted keys/escapes/literal Unicode normalize cùng raw hash/path; same logical digest không false conflict key order; noncanonical worker artifact reject. |
+| C176 | P0 | [v1.6.2] Portable paths/closed Profile/Mapping/Admission schemas | Invalid traversal/UTF8/extra actor/status/old Profile/unknown journal rejected; home+worktree+volume ownership verified, private models no HTTP/MCP dispatch |
+| C177 | P0 | [v1.5.0] Map watcher thấy tmp/partial/oversize/symlink/same ID different body | Chỉ committed immutable artifact đúng hash được import; no network/target exec/source writes |
+| C178 | P0 | [v1.5.0] HMR storm/lazy source map và index writer busy | Queue bounded, latest notification coalesced; shield+pending tới đúng map/source; no auto Interact |
+| C179 | P1 | [v1.5.0] Index rapid generations, pack expiry, long index và mapping review | Record actual expiry/repeated reads/lock wait; no unlimited pin hoặc false speed claim |
+| C180 | P0 | [v1.5.0] Audit closure/progress claim với document proofs và actual implementation state | Schema/DDL/registry/task/cards/cases đồng bộ; document PASS không đổi tasks DONE hoặc product NOT_RUN |
+| C181 | P0 | [Execution/AW-08] Ready tasks/gates và per-task local/GitHub success toàn108 | Tự kiểm→small ordered Vietnamese commits→push→exact-SHA CI→closing HEAD PASS→DONE/auto-next; không user approval;108 TODO ban đầu/denominator giữ; T001 real bootstrap trước delivery. T001 actual eligible credential/event/checkout canary, private-first destination ID verified; plan phases nonempty trước run. H04/H07: each push including closing/retry/resume fresh repository binding; merge-only checks do not require unauthorized queue/merge. |
+| C182 | P0 | [Execution/AW-08] Regression/blueprint/CI fail, push reject/remote advanced | Tự reproduce/fix/ADR theo delegation khi blueprint/dependency incompatibility, invalidate evidence/reopen/rerun affected checks; new ordered fix commits/push/follow new SHA; preserve concurrent work, no force/no bypass/no weaken checks; bounded infrastructure retries, external blocker AW-04. GITHUB_TOKEN push-no-trigger/approval-required/dispatch-ineligible không PASS; actual checked-out SHA mismatch reject. H04: group SHA different head, base/member replacement invalidates merge proof; no dispatch/old head substitute. |
+| C183 | P0 | [v1.6/R1] repo add chưa profile, default roots/executables/denies và CAS policy đã có | Exact policy epoch1; no broad PATH/dependency trust/no index; stable limits/version, default source target bất biến |
+| C184 | P0 | [v1.6/R1] Root/nested .env, ** vs */?, build directory, Unicode/case-sensitive Windows/invalid glob | Bounded matcher đúng declared semantics; builtin deny không override; identity/path case giữ nguyên, invalid reject |
+| C185 | P0 | [v1.6/R1] PEM/credential literal/fake marker, mixed source/.env.example, scanner version thay | Raw marker không DB/FTS/log/output; conservative exclude+gaps; changed rules invalidate policy, unknown detection không complete |
+| C186 | P0 | [v1.6.2] DB/WAL/SHM/spool/maps/freelist/hardlink; configured caps/profiles/materialization/manifest/RSS/reserve | No duplicate/fake reclaim; aggregate retained profiles và actual peak; no publish sau limit/deadline/cancel, active/durable preserve |
+| C187 | P0 | [v1.6.2] Home/cache/durable reserve cùng volume, config drift/crash/lease/containment | Atomic short journal/cache0 durable; volume incl reserve/shared nondefault cap; home-relative no-follow containment; real lease recovery, no TTL/PID steal/paging writer/global mutex |
+| C188 | P0 | [v1.6/G0/OS] Driver module mới nhưng embedded engine chưa vá/unknown patch hoặc runtime checkpoint contention | Gate kiểm sqlite_version/patch provenance+compatibility; bad engine blocked/replaced evidence; multi-process tests trên actual target J07: effective busy_timeout default/nondefault applied to every pooled connection, real driver evidence required. |
+| C189 | P0 | [Evidence/AW-08] Reverse-edge/card/proof hoặc commit/receipt/check-plan drift | Reject missing edges/parity, bad Vietnamese subject/task/priority, scope/order drift, wrong/stale SHA/source, empty/missing checks, skip/neutral-as-tests-PASS; tự dựng proof mới khi ZIP lịch sử thiếu, no fake historical ZIP PASS/no second tracker; fixture validator khác GitHub live observer. Validate closed GIT-DATA schema+semantic evaluator/static-observer parity, unique marker+P parent+ancestry, leaf-only CLOSE-DIFF-01, visibility and eligible events. H01/H03/H04/H07: reject wrong closing phase/task/revision/ref/ordered payload, stale selector/destination; queue-stage binding M≠C valid only verified membership/current group. J01/J02/J03/J06 và L01–L05: complete required evidence, parsed-time latest mapped by native identity, historical P/current C PR, source graph và fresh paginated live collection; no string/flag-only PASS. M01–M04 negatives + valid push/checkpoint, partial rerun, approved PR refs và wrong actual commit task/body/scope cases. V168-01–05 current regression + positive controls, no false DONE/skip/ambiguous resume.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. |
+| C190 | P0 | [Completion/AW-08]107 DONE/deferred/cancelled, required missing/fail/NOT_RUN, stale artifact hoặc pending closing CI | Engineering INCOMPLETE; candidate DONE tính VERIFY cho đến closing HEAD checks đủ PASS; no own-SHA/own-running-CI dependency loop; no missing authorized delta or old SHA substituted for final. No durable archive/ambiguous closing ID/missing parent giữ VERIFY; static CI không own-result wait; observer+archive mới effective DONE. H01/H02/H03: sealed final archive + current selector required; older PASS cannot satisfy reopened revision; no staging-only DONE or magic filename substitution. J01/J04: all required local/check execution PASS and current selection history; relabel old delivery revision cannot close task. L04: final/current live verification phải đúng secured invocation + full paginated collection, không chỉ archive green/remote=C. V168-01–05 current regression + positive controls, no false DONE/skip/ambiguous resume.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. |
+| C191 | P0 | [Resume/AW-08] Compaction/host interruption giữa implement/commit/push/CI/closing | Check actual local+remote refs/run before continue; resume exact pending delivery without duplicate commits or reapproval; failed/pending GitHub không DONE, receipts sanitized/no secrets; không pretend background runner. Recover delivery_id/parent/archive; branch movement không invalidate historical C; no duplicate closing; pending offline UNKNOWN. H02/H03/H07: resume exact planned staging/final paths at each crash boundary, typed checkpoint derived; no duplicate archive/commit or reuse old visibility observation. J04/J05: semantic checkpoint plus exact command lifecycle/pre-post query proof on retry/resume; no stale observation. L06: allocated NOT_STARTED operation giữ identity/ref xuyên interruption, no duplicate preparation. V168-01–05 current regression + positive controls, no false DONE/skip/ambiguous resume.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. |
+| C192 | P0 | [v1.6/R3] Editor bridge live client hai session/unsaved divergence/save-discard/secret/stale buffers | Actual protocol/query correct buffer scope; no disk mutation/cross-session leak; R1 disk_only giữ nguyên |
+| C193 | P0 | [v1.6/R3] Local vectors candidate sai symbol/dimension/model revision/policy và metadata chứa secret | Bounded candidate-only ranking, exact resolver+scope mandatory; reject incompatible/secret; no download/model/API call |
+| C194 | P1 | [v1.6/R3] Rust source fixture với declarations/imports/Unicode và unsupported macro/type binding | Provider baseline source facts đúng independent oracle, offline/no target execution; syntax capability không false typed-complete |
+| C195 | P0 | [Final/AW-06/AW-08] Final package/combined tree/source changes sau checks | Full108 integration core/UI/addons/OS trên packaged source revision: actual FE→BE→DB, schema/provenance/security/recovery/resource oracles; final remote HEAD/required checks fresh, receipts complete; metadata-only closing equivalence explicit, substantive delta rerun; 0 known P0/P1 supported defect, handover một lần/user acceptance pending; no stale package/CI-as-proof. Final live head proof + retained sanitized P/C archives/hash index; GitHub retention expiry không mất historical proof, no archive selfhash cycle. H02: final handover includes validated seal/manifest/member hashes and current live HEAD; final publication before pointer checkpoint recoverable/idempotent. |
+
+C149–C180 thuộc v1.5.0, chia theo task/core/UI/R2 ở S52; foundation chỉ contract/SQL/reference proof, platform/browser/integration phải chạy ở gate thực. Không lấy model proof thay real E2E.
+
+C181–C195 thuộc v1.6.0, chia foundation/policy/quota/driver/execution/R3/final theo task/card. Document validator/reference proof khác actual runtime; các case về auto-advance/negative completion phải kiểm tooling/governance behavior khi có implementation, không nhận chỉ có câu MUST là enforced.
+
+Case applicability: C001–C054 thuộc R1; C055–C069 thuộc R2; C070–C080 thuộc R3; C081–C112 thuộc Explorer U0–U3; C113–C136 theo subcase G0/core/R2/UI ghi trong case. C137–C148 là policy/build-process cases v1.4.0 theo task/subcase S51; synthetic contract proof khác kiểm chứng OS/tooling thực. Foundation chỉ contract proof, không giả đã chạy UI E2E. Case ngoài release đang nghiệm thu là NOT_APPLICABLE_RELEASE, không PASS; khi mở capability phải chạy cả regression R1 có liên quan.
+
+### Verification commands của chính MCE4D
+
+Sau khi bootstrap/code tồn tại, lệnh baseline là `gofmt` cho file đổi, `go test ./...`, `go vet ./...`, `go build ./cmd/mce4d`. Chạy `go test -race ./...` trên platform/toolchain hỗ trợ và ghi yêu cầu cgo/toolchain liên quan nếu có; không tuyên bố pass khi môi trường không chạy được. Fuzz dùng target đã implement, hữu hạn thời gian và không network.
+
+T003 xây `go run ./tools/spec_check` kiểm tra ID/task deps/gate/evidence/tracker. Đây là command dự kiến sau implementation, không command đã chạy khi soạn tài liệu. Không chạy test/build của target repo từ MCP để thỏa verification của MCE4D.
+
+C040 cần client Codex đã cài và root local thật được phép. Nếu môi trường chỉ có MCP test client thì ghi MCP conformance PASS nhưng Codex integration NOT_RUN, không đổi thành “đã hỗ trợ thực tế” toàn host. Release platform chưa test phải loại khỏi supported matrix.
+
+## S18 — Benchmark và tiêu chí tiết kiệm token
+
+### So sánh công bằng
+
+A = cùng AI host/model với công cụ tìm kiếm/đọc/LSP hiện có, không MCE4D. B = A + MCE4D map/query trước tối ưu context. C = A + MCE4D context pack tối ưu. Không dùng source sản phẩm khác làm benchmark oracle; không cần chạy GitNexus/Graphify.
+
+Mỗi task dùng checkout/worktree độc lập cùng starting revision và dependency state. Cùng model/version/reasoning settings/prompt/tool permission/budget hoàn thành; cho baseline dùng công cụ semantic nó vốn có, không cố làm baseline kém. Xáo trộn thứ tự, tối thiểu 3 repeat nếu khả thi; ghi seed khi host hỗ trợ, không giả model deterministic.
+
+Suite khởi đầu: ít nhất 30 task trên ít nhất 3 repo Go đại diện được người dùng cho phép hoặc fixtures tự tạo, gồm local rename, interface/field/type change, behavior bug, contract preservation, dirty worktree, missing dependency, large fanout. Ghi rõ suite synthetic hay real; chưa có user repo thì synthetic gate không được gọi production benchmark.
+
+Không có gọi LLM tự động trong R1 engine. Harness chuẩn bị input/task/evidence và import usage do host cung cấp. Không tự dùng API key/spend tiền để đánh giá; chỉ chạy host/LLM khi được phép. Thiếu token telemetry → báo proxy bytes/reads, không gọi đó là số token tiết kiệm thật.
+
+### Chỉ số
+
+| Metric | Công thức / cách báo |
+|---|---|
+| Task success | Correct implementation + required tests + no unrelated changes; reviewer/oracle independent |
+| Critical omissions | Số reference/contract/invariant bắt buộc bị bỏ qua trong scope tested |
+| False edits | Số thay đổi nhầm binding/scope hoặc vượt constraints |
+| Total input/output tokens | Từ host usage, gồm tool schemas/context/cached input/thử lại; phân loại cached vs uncached nếu có |
+| Tokens per accepted task | Tổng tokens tất cả attempts/failures trong cohort / số task accepted; kèm completion rate, không loại failure |
+| Per-task savings | 1 - C_tokens/A_tokens cho task comparable; median và distribution, không chỉ best case |
+| Context proxy | Tool payload bytes/lines/files/read calls; báo riêng với token measurements |
+| Index cost | Cold/full/no-op/change update time, bytes hashed, storage, peak process-tree memory |
+| Query cost | p50/p95, freshness time riêng, warm/cold, output pending flags |
+| Lifetime amortization | Index/update CPU/disk + các nhiệm vụ, không gộp local reads thành LLM token |
+
+### Gates hiệu quả
+
+Correctness gate: zero known critical omissions/false edits trên acceptance suite được định nghĩa; không có P0 failure; production real-repo success không thấp hơn baseline trong mẫu đã chạy. Đây là điều kiện hữu hạn trên suite, không chứng minh mọi chương trình đều đúng.
+
+Mục tiêu thử nghiệm ban đầu: median total-input-token reduction >=25% cho cohort phù hợp, không tăng false edits/completion failures. Không đạt → tối ưu slicing hoặc giữ optional adoption; không hạ correctness/gaps để đạt số. Sample nhỏ không dùng để tuyên bố ý nghĩa thống kê mạnh.
+
+Performance targets tham khảo cho medium fixture Go <=1000 files và <=20 MiB source trên máy benchmark đã ghi cấu hình: warm locate p95<=500 ms, graph-only pack p95<=1500 ms, full freshness validation p95<=5000 ms. Full index <=120s; update báo content-only/full/selective, không áp một mốc giả cho mọi build/dependency. Mọi số là target chưa đo; T039 phải bổ sung result cùng hardware/filesystem. Nếu phần correctness đạt nhưng performance không đạt, ghi FAIL target hoặc ADR điều chỉnh có dữ liệu, không đổi tên phép đo.
+
+## S19 — Bảng triển khai duy nhất
+
+### Protocol trạng thái
+
+Status enum: TODO, IN_PROGRESS, BLOCKED, VERIFY, DONE, DEFERRED, CANCELLED. Toàn R1/R2/R3/U0–U3 gồm108 task bắt buộc; DEFERRED chỉ cho scope ngoài baseline thêm về sau. R2 prerequisites ưu tiên Explorer theo S39 sau G5, không chờ toàn G6. DONE cần code/test/evidence và per-task Git delivery AW-08; local PASS chưa đủ. Tracker closing commit có thể đề xuất DONE dựa payload đã verified, nhưng khi closing HEAD còn CI pending thì effective state vẫn VERIFY, chưa tính progress/gate/dependency DONE. Chỉ observer xác minh closing HEAD PASS và archive theo S21 GIT-DATA-01/DONE-EVAL-01 mới hoàn tất chuyển trạng thái; S19 vẫn tracker duy nhất. Static CI kiểm proposal, không chờ own CI; S20 gate/DoD/progress và S22 final status đọc effective state này; snapshot proposal không tự mở consumer task. effective counts/dependencies dùng evaluator, không đếm thẳng literal DONE. Tài liệu thiết kế không làm task implementation DONE. R2/R3 không thuộc mẫu số R1 nhưng thuộc toàn sản phẩm108. CANCELLED cần lý do/ADR, không giảm mẫu số baseline.
+
+Luồng: TODO → IN_PROGRESS → VERIFY → DONE. IN_PROGRESS/VERIFY → BLOCKED khi thiếu prerequisite; BLOCKED → TODO/IN_PROGRESS sau resolve có evidence. DONE → TODO khi regression hoặc contract thay đổi; lưu lý do trong changelog. Chỉ claim task khi dependencies DONE và gate trước đã PASS. G1 có dependencies không cùng thứ tự số, nên chọn topological ready task, không chỉ T008 trước T012.
+
+Một agent chỉ một task IN_PROGRESS mặc định. Nhiều agent được làm task độc lập khi paths ownership không chồng; declaration `owner/task/paths/base_commit` trước sửa. File đặc tả do coordinator merge ngắn theo hash/revision, không giữ khóa file trong build/test. Không áp dụng mutex này lên mọi project của máy.
+
+Mỗi cập nhật tracker phải read current revision, patch đúng hàng, kiểm tra không mất cập nhật khác; conflict → merge có review, không last-write-wins. Log build/test và artifacts có thể ngoài file, nhưng ID/hash/kết quả/evidence pointers phải trong S21.
+
+### Progress ban đầu — derived từ các hàng task
+
+- R1: 52 task; DONE=0; IN_PROGRESS=0; BLOCKED=0; VERIFY=0; TODO=52; completion=0/52=0%.
+- R2: 20 task TODO; scope bắt buộc đã mở, không thuộc mẫu số R1.
+- R3: 12 task TODO; scope bắt buộc đã mở, triển khai sau prerequisites.
+- Explorer U0: 4 TODO; U1: 10 TODO; U2: 6 TODO; U3: 4 TODO. TODO không đồng nghĩa prerequisites đã đủ hoặc permission runtime đã có.
+- Toàn sản phẩm đã giao:108 tasks;108 TODO +0 DEFERRED; implementation DONE=0; completion=0/108=0%. R1/R2/R3/U0/U1/U2/U3 tính riêng; không gọi task-count là % effort.
+- Gate hiện tại: G0 chưa PASS. Task tiếp theo: T001. Product build/tests/benchmarks: NOT_RUN.
+
+Tỷ lệ trên là task-count completion, không phải % effort hoặc % độ đúng. Validator tính lại từ S19 và điều kiện delivery AW-08; candidate DONE có closing HEAD CI pending tính VERIFY, không tăng completion. Static validator chỉ kiểm contract/receipt đã có; external observer kiểm GitHub live, không để CI job chờ kết quả của chính run đang thực thi.
+
+
+Requirement↔task là cùng một quan hệ many-to-many hai chiều: cột Task của S01 và cột Req của S19 MUST có tập cạnh bằng nhau. Primary owner nằm trong deliverable/card, không dùng một cột để ngầm chỉ owner còn cột kia chỉ contributor. T003 reject thiếu cạnh ở bất kỳ chiều nào; case/card sets phải match theo expansion của ranges. V1.6.0 bổ sung17 cạnh còn thiếu bằng union quan hệ đã có, không bỏ requirement để làm validator xanh.
+
+### Tracker
+
+Cột Cases là truy vết tới oracle nghiệm thu, không có nghĩa một task nền tảng phải hoàn thành toàn bộ E2E case thuộc feature chưa được triển khai. Task phải chứng minh các subcase thuộc chính deliverable của nó, ghi scope evidence; phần E2E chưa chạy giữ NOT_RUN. T034 và G4 tổng hợp oracle đầy đủ. Không dùng quy tắc này để bỏ integration test nằm ngay trong phạm vi task.
+
+| Task | Gate | Dependencies | Deliverable / định nghĩa hoàn thành | Req | Cases | Status | Owner | Evidence |
+|---|---|---|---|---|---|---|---|---|
+| T001 | G0 | NONE | Site survey + safe private module bootstrap only; preserve existing workspace; no feature code trước T108. Resolve source-policy docs/mode theo S50; ghi actual path/hash, không sửa bản gốc. AW-08: khảo sát Git/remote/branch/identity/hooks/rules, xác định repo+nhánh được phép; bootstrap CI thực cho docs/foundation trước delivery đầu, không job echo PASS hoặc claim product chưa có. Verify stable repository ID/visibility/publication authority; actual credential-event-checkout canary PASS trước closing T001. H04/H07: delivery vs merge-stage plan/canary, fresh destination identity/visibility trước mọi push; archive root/private/owned/staging naming trước first payload. J01/J03/J05/J06 và L01–L04: verified canary/source graph, historical P/live C PR binding, push lifecycle/pre-post, native mapping và fresh live CI collection. M01/M03/M04 bootstrap: actual S51 common records, permitted feature-ref/PR flow, Vietnamese commit metadata/self-review trước first delivery. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R001,R105,R106,R125 | C041,C137,C138,C181,C191 | TODO | UNASSIGNED | NONE |
+| T002 | G0 | T001 | Pin exact toolchain/dependencies/license/API; DEP-01 actual embedded SQLite patch gate+driver/FTS5/pool smoke; S51 preflight trước bounded build. AI tự resolve pins trong BP-04, không @latest. J07: effective sqlite_busy_timeout_ms default5000/nondefault1234 trên mỗi pooled connection. | R001,R036,R108,R109,R128 | C039,C042,C046,C140,C141,C142,C188,C182 | TODO | UNASSIGNED | NONE |
+| T003 | G0 | T001 | Stdlib spec_check IDs/DAG/counts/schedule/gates/evidence, bidirectional R↔T và case/card parity; autonomy108/no fake final status; source hashes/mode/claims. Missing historical proof tự dựng checks hiện hành. AW-08 static validators cho commit/receipt/expected-check plan và observer boundary; mở rộng CI bootstrap, reject stale SHA/empty checks/skip-as-pass, không chờ own running CI. GIT-DATA-01/02 schema+semantic evaluator và CLOSE-DIFF-01 leaf classifier; tests pending/restart/ambiguous/event/privacy/archive, không exempt whole SPEC. H01–H04/H07: relational evaluator rejects four1.6.4 counterexamples; deterministic archive publication/recovery + active selector/checkpoint; phase/queue/destination binding, static/observer parity. J01–J06: complete required evidence/canary, timestamp instant ordering, actual PR parents/current base, selection history/checkpoint semantics, push lifecycle/native API mapping; eight1.6.5 counterexamples phải REJECT/UNKNOWN. L01–L06: implement temporal P/live C, complete native source graph/mapping/collection and invocation-bound live verifier, execution uniqueness và allocated checkpoint; no fixture-generated live evidence inside evaluator. M01–M04: common typed lifecycle+push/resume parity, partial/full job reruns+native attempt history, frozen PR flow và actual Git message/scope guard; no fake enforcement. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R030,R093,R102,R103,R105,R106,R112,R124,R125,R129 | C043,C133,C135,C137,C138,C148,C180,C181,C189,C190,C191 | TODO | UNASSIGNED | NONE |
+| T004 | G1 | T005,T106 | Catalog register/profile/rebind/remove/CAS; SEC-CORE-01 policy epoch1+default allowed roots/executables, no automatic profile/index. RuntimeConfig/group/permission metadata foundations theo CT-07. Home-shared config/admission ports; private tests trước OS adapter, public writes sau T010. source/effective digest tách biệt, CAS canonical source và fixed result hardcaps; provenance response parity. H05: config validate/set same whole-document replacement pure pipeline; candidate_input provenance, missing field defaults, no old-home merge. | R002,R118,R119,R126,R127 | C001,C016,C167,C168,C157,C169,C170,C183,C186,C187,C176 | TODO | UNASSIGNED | NONE |
+| T005 | G1 | T108 | Secure paths/deny policy/secret controls theo SEC-CORE-01; closed bounded glob/scanner/default text allowlist + OS/case/containment tests; no raw persistence before checks. | R013,R014,R110,R126 | C024,C025,C026,C145,C183,C184,C185 | TODO | UNASSIGNED | NONE |
+| T006 | G1 | T005 | Captured bytes/hash/UTF-8 ranges/manifest encoding deterministic. C14N1/capture-vs-parse input contract; shared vectors. Canonical physical manifest JSON goldens và runtime source digest vectors song song C14N. | R005,R121 | C015,C023,C027,C174,C175,C176 | TODO | UNASSIGNED | NONE |
+| T007 | G1 | T004,T006,T106 | Index store/migrations theo S44; same-generation FK/FTS/capture guards, all-connection pragmas; ACC-01 cache meter và shared per-volume reservation journal từ write đầu. Public access sau wired lifecycle+quota adapter T010. J07: every pooled connection respects effective nondefault busy timeout. | R004,R010,R091,R120,R127 | C019,C037,C042,C171,C172,C173,C186,C187,C175 | TODO | UNASSIGNED | NONE |
+| T008 | G1 | T007,T012,T010 | Staging + atomic publish + active profile pointer + consistent reader. | R007,R092,R093 | C019,C020,C117,C136 | TODO | UNASSIGNED | NONE |
+| T009 | G1 | T008,T010 | Crash/cancel recovery generation BUILDING; last published vẫn đọc được. | R007 | C019,C022,C036 | TODO | UNASSIGNED | NONE |
+| T010 | G1 | T004,T007 | OS writer/lifecycle locks per resource, bounded wait/no TTL steal; ACC-01 shared per-volume admission journal + owner recovery; no global build/index mutex. | R003,R120,R127 | C021,C022,C171,C172,C173,C187 | TODO | UNASSIGNED | NONE |
+| T011 | G1 | T008,T010,T012 | Multi-process concurrency test: A/B độc lập, reader/writer và profiles. | R003 | C001,C020,C021 | TODO | UNASSIGNED | NONE |
+| T012 | G1 | T004,T005,T006 | Git inventory tracked/untracked/exclusions/nested/sparse + file map. | R019 | C011,C013,C014,C016 | TODO | UNASSIGNED | NONE |
+| T013 | G2 | T006,T012 | Go AST declarations/scopes/package variants trên captured bytes. | R008 | C002,C003,C004,C010 | TODO | UNASSIGNED | NONE |
+| T014 | G2 | T013,T020 | Typed Defs/Uses/Selections; local fields/params/locals không mất references. | R008,R009,R099 | C003,C004,C005,C009,C129 | TODO | UNASSIGNED | NONE |
+| T015 | G2 | T014,T007 | Directed multirelation graph, direct/interface/candidate/unresolved edges + source sites. | R005,R010,R011 | C006,C007,C008,C045 | TODO | UNASSIGNED | NONE |
+| T016 | G2 | T015 | Coverage/diagnostics/test refs/boundaries; no zero-result overclaim. | R011,R015,R025 | C008,C010,C011,C045 | TODO | UNASSIGNED | NONE |
+| T017 | G2 | T007,T012,T013 | Exact/prefix symbol lookup + bounded FTS5 text search, index plans. | R019 | C002,C042,C045 | TODO | UNASSIGNED | NONE |
+| T018 | G2 | T008,T012,T015 | Dirty/add/delete/rename/config changes; manifest diff/invalidation. | R006,R020 | C013,C014,C015,C016,C017 | TODO | UNASSIGNED | NONE |
+| T019 | G2 | T018,T016 | Strict full-workspace freshness + source preconditions; unknown/failure explicit. | R006,R017,R097 | C013,C015,C023,C122 | TODO | UNASSIGNED | NONE |
+| T020 | G2 | T002,T005,T012 | Offline trusted package loader/profile, controlled env/tool paths; partial fallback. Streaming manifest normalization/hash/count/bytes trên owned spool, no whole-manifest RAM load. Streaming MCE-MANIFEST-JSON1, key-order/escape equivalents same raw bytes; corrupt/noncanonical fail closed. | R014,R032,R099,R121,R127 | C009,C012,C046,C047,C129,C132,C174,C175,C176,C186,C187 | TODO | UNASSIGNED | NONE |
+| T021 | G2 | T018,T020,T019 | No-op/content reuse; full semantic fallback; selective only sau differential tests. | R020,R021 | C017,C018 | TODO | UNASSIGNED | NONE |
+| T022 | G3 | T017,T019,T016 | Context pack target/source/ref/boundary selection deterministic. | R022 | C002,C006,C029 | TODO | UNASSIGNED | NONE |
+| T023 | G3 | T022 | Task slices + trusted rules/constraints + validation-plan data; no invented contracts. | R022,R033 | C025,C026,C033,C045 | TODO | UNASSIGNED | NONE |
+| T024 | G3 | T023 | Mandatory evidence budget, grouped gaps, valid serialization, bounded traversal. | R015,R016,R022,R023,R098 | C028,C029 | TODO | UNASSIGNED | NONE |
+| T025 | G3 | T024 | Signed same-generation cursors/paging/expiry/dedup/source fragments và rename spool primitives; ACC-01 multi-process reservation/growth/quota; no writer lock cho page read. | R016,R023,R097,R116,R123,R127 | C028,C030,C031,C122,C158,C159,C160,C161,C162,C170,C179,C186,C187 | TODO | UNASSIGNED | NONE |
+| T026 | G3 | T024,T025,T051,T052,T107 | Conformance/wiring một schema S43 đã seal: actual DTO/service/envelope parity/cancellation/error mappings; không thiết kế API lần đầu. | R004,R018,R090 | C028,C039 | TODO | UNASSIGNED | NONE |
+| T027 | G3 | T026 | Official SDK MCP adapter; 6 tools only; conformance/stdio framing. | R018,R024,R098 | C039,C041,C128 | TODO | UNASSIGNED | NONE |
+| T028 | G3 | T027 | CLI/doctor/help/example + Codex local integration; preserve existing config. CLI runtime config/policy/profile administration typed, commands only when capability ready. Canonical home config set/effective caps/error help parity. CLI show/source_kind/source_digest/effective_sources; expected_digest CAS source, no implicit persistence override. H05: CLI config action/flag/provenance parity, validate=set replacement preview vs show/start alternate merge. | R018,R024,R031,R118,R127 | C040,C041,C167,C168,C186,C187,C176 | TODO | UNASSIGNED | NONE |
+| T029 | G3 | T014,T019,T020,T025 | gopls version gate/lifecycle/LSP encoding/prepare+rename preview; no apply. RenameInitial/Continue: compute once→bounded spool→pages; final full-scope validate, no rerun LSP per page. | R012,R032,R116 | C027,C032,C034,C035,C158,C159,C160,C161,C162 | TODO | UNASSIGNED | NONE |
+| T030 | G3 | T029,T026 | Preview preconditions/contract constraints/all edits; consumer safe workflow. | R012,R017,R034,R116 | C032,C033,C034,C041,C158,C159,C160,C161,C162 | TODO | UNASSIGNED | NONE |
+| T031 | G3 | T011,T019,T024 | Hoàn thiện telemetry/measurement và redaction; core error/cancel/log primitives đã có từ foundation, không retro-fit behavior. | R027 | C035,C048 | TODO | UNASSIGNED | NONE |
+| T032 | G4 | T027,T030,T031,T051,T052 | Adversarial security suite và network/source-mutation negative tests. | R013,R014,R031,R033,R126 | C024,C025,C026,C034,C041,C046,C047,C183,C184,C185 | TODO | UNASSIGNED | NONE |
+| T033 | G4 | T032,T009 | Fault/resource hardening + measured quotas/cancel/process-tree; primitive limits phải hoạt động từ đầu mỗi use case. Harden build/test output guards bằng tooling hiện có; tools/run_check nhỏ chỉ khi cần; không global cleanup. Routine fresh scratch teardown TEARDOWN-01 exact candidates/proof; protected/old/crash leftovers vẫn refuse. H02/H06: archive flush/no-replace/containment OS proof; fresh synthetic fixture .git/test home DB cleanup, real/linked/old/evidence protected. | R026,R109,R110,R118,R127 | C029,C035,C036,C141,C142,C143,C144,C145,C146,C167,C168,C186,C187 | TODO | UNASSIGNED | NONE |
+| T034 | G4 | T021,T030,T032,T053,T054,T035 | Chạy acceptance R1 C001–C054; oracle independent; release applicability và fixture/repro evidence. Tổng hợp policy/build checks và targeted mutation/evidence reuse đúng applicability. | R025,R034,R111,R113 | C001..C054,C137..C148,C149,C150,C151 | TODO | UNASSIGNED | NONE |
+| T035 | G4 | T033,T007 | GC ownership/active snapshots, backups, migration rollback, schema guards. Giữ source/durable/evidence và quyền cleanup, dry-run không side effect. GC exact FK order/leaf cycle; quiescent backup+restore journal/new incarnations; actual OS proof. H06: disposable synthetic SQLite homes/sidecars vs actual catalog/records/backups ownership distinction and retained failure evidence. | R026,R035,R101,R110,R113,R120,R123,R127 | C036,C037,C038,C119,C130,C145,C146,C149,C150,C151,C171,C172,C173,C160,C170,C179,C186,C187 | TODO | UNASSIGNED | NONE |
+| T036 | G4 | T028,T034,T035 | Linux amd64 + WSL2 test matrix, filesystem/version evidence. | R028,R120,R128 | C019,C020,C021,C024,C035,C040,C171,C172,C173,C188,C195 | TODO | UNASSIGNED | NONE |
+| T037 | G4 | T028,T034,T035 | Windows amd64 native paths/locks/process/ACL/MCP smoke + acceptance. | R028,R120,R128 | C021,C024,C027,C035,C040,C171,C172,C173,C188,C195 | TODO | UNASSIGNED | NONE |
+| T038 | G4 | T026,T034 | Benchmark harness/corpus/usage import; no API spend; baseline fair. | R029 | C044 | TODO | UNASSIGNED | NONE |
+| T039 | G4 | T038,T036,T037,T053,T054 | Benchmark corpus >=30 tasks/>=3 controlled repos/cùng model nếu host được phép; actual correctness/bytes/latency/storage/scale. Host token telemetry thiếu giữ token NOT_RUN, không proxy thành tiết kiệm thật; AI tự tạo fixtures không đợi user repo. | R029,R123 | C018,C042,C044,C160,C170,C179 | TODO | UNASSIGNED | NONE |
+| T040 | G4 | T003,T039,T035 | Spec↔code/API/CLI consistency; tracker/evidence review; record remaining gaps. Spec/docs integration không lệch authority; command/mode/evidence/anti-bypass checks. Audit Git delivery receipts, actual remote refs và terminal GitHub checks đúng SHA theo AW-08; không dùng badge hoặc push accepted làm protection proof. | R030,R093,R100,R102,R105,R107,R111,R112,R124,R129 | C039,C040,C043,C133,C134,C135,C137,C138,C139,C147,C148,C180,C189,C190 | TODO | UNASSIGNED | NONE |
+| T041 | G5 | T040,T002 | License/notices/SBOM/security audit + reproducible release candidate manifest. Production Claim Gate và proof thực của controls, không cấp quyền publish. | R036,R112,R128 | C046,C047,C048,C148,C188,C195 | TODO | UNASSIGNED | NONE |
+| T042 | G5 | T041 | Final gate review: R1 supported matrix, correctness+benchmark, handover/resume state. Handover đúng Verification Ladder/applicability và permission riêng. | R030,R112,R124,R125 | C001..C054,C148,C180,C181,C190 | TODO | UNASSIGNED | NONE |
+| T043 | R2 | T042 | Discovery TS/JS provider độc lập, compiler/language-service license/pin/profile và ADR; không execute scripts. | R037 | C055 | TODO | UNASSIGNED | NONE |
+| T044 | R2 | T043,T055 | TS/JS typed provider + aliases/reexports/scopes/project refs; shared context contract. | R037 | C055 | TODO | UNASSIGNED | NONE |
+| T045 | R2 | T042 | Chốt domain entity/link/contract schema tối thiểu S28; identity/evidence/FK/migration và adapter contracts. | R038,R104,R117 | C059,C060,C061,C114,C163,C164,C165,C166 | TODO | UNASSIGNED | NONE |
+| T046 | R2 | T045 | Declared repo groups + member scopes/policies/snapshot vectors; không same-name auto link. Group get/list/put/remove CAS+tombstones và unavailable member ledger, pinned scope resolver. | R038,R117,R119 | C063,C163,C164,C165,C166,C157,C169,C170 | TODO | UNASSIGNED | NONE |
+| T047 | R2 | T042 | RecordService trên records.sqlite: immutable versions/head CAS/mutation receipts/epoch, approved-vs-effective needs_review; no index-GC loss. Record list/read query/historical source-expired state, no reapproval after GC. Durable reservation/cache0, server actor/effective status. | R039,R094,R097,R119,R123,R127 | C062,C064,C120,C121,C122,C157,C169,C170,C160,C179,C186,C187,C176 | TODO | UNASSIGNED | NONE |
+| T048 | R2 | T044,T046,T047,T068 | R2 release review: Go/TS/Python/contracts/domain/AI metadata matrix; regression/token/limitations và handover. | R040 | C055..C069 | TODO | UNASSIGNED | NONE |
+| T049 | G2 | T012,T013,T017 | Hierarchical workspace/module/package overview; deterministic source-backed summaries và module IDs. | R041 | C049 | TODO | UNASSIGNED | NONE |
+| T050 | G2 | T018,T019,T021 | Partition/input cache và reverse-closure invalidation; worker/memory profiling; full fallback. | R043 | C050,C053 | TODO | UNASSIGNED | NONE |
+| T051 | G3 | T022,T024,T025,T049 | Overview/plan/selectors/topic aliases + task obligations/grouping/cursor progress; spec-only plane. | R041,R042 | C049,C052 | TODO | UNASSIGNED | NONE |
+| T052 | G3 | T019,T025,T050 | analysis_snapshot vs checked_workspace và pre-edit validate; cache không lưu live freshness truth. | R044 | C051 | TODO | UNASSIGNED | NONE |
+| T053 | G4 | T032,T050,T051,T052 | Scale fixtures S/M/L/XL up to 1.000.000 files/32 GiB source, large fanout/multi-worktree + measured RSS/cache/WAL/shared-volume admission; unsupported envelope explicit. XL-V1 finite plan/count-byte oracles/profiles/churn/resource subcases. | R043,R127 | C053,C186,C187 | TODO | UNASSIGNED | NONE |
+| T054 | G4 | T003,T028,T030,T051,T052 | Self-index pinned binary, independent oracle/direct-tool fallback và spec-only onboarding acceptance. | R042,R045 | C052,C054 | TODO | UNASSIGNED | NONE |
+| T055 | R2 | T043 | Minimal LanguageProvider/schema/process adapter + license/version/timeout/no-script conformance. | R037,R046 | C055,C057,C058 | TODO | UNASSIGNED | NONE |
+| T056 | R2 | T044,T055,T045 | Frontend TSX/routes/components/client-to-handler mappings; framework capabilities rõ. | R037,R047 | C056 | TODO | UNASSIGNED | NONE |
+| T057 | R2 | T042 | Python safe AST/import/scope provider discovery+implementation; local profile; không execute target. | R046 | C057,C058 | TODO | UNASSIGNED | NONE |
+| T058 | R2 | T057,T055 | Python typed enrichment adapter khi verified, diagnostics/dynamic gaps + notebook metadata boundaries. | R046 | C057,C058 | TODO | UNASSIGNED | NONE |
+| T059 | R2 | T045 | MySQL-first SQL static lineage/migrations/views/routines/triggers/events, dialect/engine profile. | R038,R048 | C059 | TODO | UNASSIGNED | NONE |
+| T060 | R2 | T045 | OpenAPI/JSON-schema/proto supported subset, versioned fields/local refs và code binding evidence. | R038,R049 | C060 | TODO | UNASSIGNED | NONE |
+| T061 | R2 | T045 | AsyncAPI/event/cache contract producer/consumer/schema/namespace và delivery-control evidence. | R038,R050 | C061 | TODO | UNASSIGNED | NONE |
+| T062 | R2 | T047,T059,T060,T061 | Approved machine/state/transition/guard/action/invariant/vocabulary và failure obligations; supported format gate. | R039,R051 | C062 | TODO | UNASSIGNED | NONE |
+| T063 | R2 | T046,T056,T058,T059,T060,T061 | Federated cross-language/cross-repo flow queries bằng explicit bridge + snapshot vectors/gaps. | R038,R052,R117 | C063,C163,C164,C165,C166 | TODO | UNASSIGNED | NONE |
+| T064 | R2 | T044,T047,T062 | Semantic snapshot diff + source-bound decision drift; ambiguity mapping và provider deltas. | R039,R053 | C064 | TODO | UNASSIGNED | NONE |
+| T065 | R2 | T063,T062 | Trading/commerce context profiles, transactional/state/retry obligations có bằng chứng; no business execution. | R051 | C065,C066 | TODO | UNASSIGNED | NONE |
+| T066 | R2 | T058,T060,T062 | AI/ML/RAG prompt/model/data/eval/serving metadata lineage; no artifact execution/weights ingestion. | R054 | C067 | TODO | UNASSIGNED | NONE |
+| T067 | R2 | T056,T058,T062 | Approved architecture constraints + intended/observed drift report với witness/coverage. | R055 | C068 | TODO | UNASSIGNED | NONE |
+| T068 | R2 | T063,T064,T065,T066,T067 | Polyglot multi-domain acceptance/regression/benchmarks và capability matrices trước T048. | R040,R056 | C055..C069 | TODO | UNASSIGNED | NONE |
+| T069 | R3 | T048 | Secure local runtime export import; redaction/revision/env/sampling/schema controls. Durable import volume reservation/cache0 và atomic artifact. | R057,R127 | C070,C186,C187 | TODO | UNASSIGNED | NONE |
+| T070 | R3 | T069 | Trace/span-link graph enrichment giữ observed-only semantics và partial instrumentation. | R057 | C071 | TODO | UNASSIGNED | NONE |
+| T071 | R3 | T048 | Local test/coverage evidence import theo revision/profile/artifact hash; không chạy target tests. | R058 | C072 | TODO | UNASSIGNED | NONE |
+| T072 | R3 | T071 | Test selection rationale/uncertainty/full-regression fallback; independent recall fixtures. | R058 | C073 | TODO | UNASSIGNED | NONE |
+| T073 | R3 | T048 | Editor buffer bridge session/version/hash + unsaved snapshot isolation/no source mutation. | R059,R130 | C074,C192 | TODO | UNASSIGNED | NONE |
+| T074 | R3 | T048 | Local precomputed-vector import/query theo AW-05: model/tokenizer/dimension/version, bounded cosine candidate ranking+exact resolver, privacy/policy invalidation; no model download/exec/API. | R060,R130 | C075,C193 | TODO | UNASSIGNED | NONE |
+| T075 | R3 | T048,T050,T053 | Immutable partition fact sets+manifest publication/GC/migration theo AW-05; closed schema trước code; measured activation, runtime opt-in nhưng feature code/test thật mandatory. | R061,R130 | C076,C186,C195 | TODO | UNASSIGNED | NONE |
+| T076 | R3 | T048 | Static deployment/config/feature-flag ownership map, source vs observed deploy riêng; no IaC execution. | R062,R130 | C077,C195 | TODO | UNASSIGNED | NONE |
+| T077 | R3 | T075 | S/M/L + XL boundary tới 1.000.000 file và 32 GiB source theo AW-05; chạy full/partition whole-workload khi actual admission đủ; kiểm giới hạn file/byte độc lập và combined, actual count/RSS/time/cache/WAL/volume free/failure evidence; effective cap/admission RESOURCE_LIMIT, elapsed TIMEOUT hoặc strict FRESHNESS_UNKNOWN, OS DISK_FULL; no legacy reject/partial-as-full. XL-V1 whole workload positive + cap/timeout/cancel/disk-negative oracles CT-03. | R061,R127,R130 | C078,C186,C187,C195 | TODO | UNASSIGNED | NONE |
+| T078 | R3 | T064,T076 | Bounded machine-readable change/deployment/architecture reports qua existing application services. | R062 | C077,C080 | TODO | UNASSIGNED | NONE |
+| T079 | R3 | T048 | Rust provider baseline AW-05: verified official parser hoặc local rust-analyzer adapter, declarations/imports/source ranges/capability gaps, independent fixtures; typed only khi proven. | R063,R130 | C079,C194 | TODO | UNASSIGNED | NONE |
+| T080 | R3 | T070,T072,T073,T074,T077,T078,T079,T104 | G7 và final108 closure AW-06 sau tất cả dependencies/T104; final combined package/core/UI/addon/OS/security/recovery regression + artifact/evidence manifest;0 required failures/unknown, handover pending user acceptance một lần. | R064,R125,R130 | C070..C080,C181,C182,C190,C191,C192,C193,C194,C195 | TODO | UNASSIGNED | NONE |
+| T081 | U0 | T042 | Explorer design seal trước UI: pinned deps/browser/tool API; S43 bridge/HTTP schema; permission/state/build binding tests và fixture plan. Chốt command/output/browser artifact budgets S51; không áp core quota thay UI workload budget. Seal v1.5 session-status/permission/pagination/pinned-scope/hash codec before UI feature. | R065,R080,R084,R088,R095,R096,R104,R108,R114,R121,R124 | C081,C082,C123,C124,C125,C126,C140,C141,C142,C152,C153,C174,C175,C176,C180 | TODO | UNASSIGNED | NONE |
+| T082 | U0 | T081 | Loopback Explorer adapter: auth/bootstrap/Host/Origin/CSRF, bounded graph/source API qua app services; không start target. | R081,R115 | C083,C154,C155,C156,C157 | TODO | UNASSIGNED | NONE |
+| T083 | U0 | T082 | React/TS/Vite AppShell: graph trái, source/detail phải, splitter + selection store + keyboard; dùng indexed fixture thật. | R065,R077,R078,R079 | C081,C082 | TODO | UNASSIGNED | NONE |
+| T084 | U0 | T083 | GU0 review: shell+transport+source/scoping/canary, empty states đúng và no simulated graph path. | R065,R080,R081,R086,R088 | C081..C083 | TODO | UNASSIGNED | NONE |
+| T085 | U1 | T084,T044,T056 | Dev AST transform + producer BuildManifest không generation; atomic local import + immutable generation binding; production strip proof. | R068,R069,R071,R084,R095,R114,R121,R122 | C084,C085,C089,C095,C123,C152,C153,C174,C175,C176,C177,C178 | TODO | UNASSIGNED | NONE |
+| T086 | U1 | T085 | Preview SDK DOM instance registry/explicit component boundaries, bounded hit-test/rect lifecycle; không private fiber. | R068,R071,R082 | C085,C086,C093,C094 | TODO | UNASSIGNED | NONE |
+| T087 | U1 | T082,T086 | Attach/CHALLENGE/READY/server-bind/BOUND_ACK bằng strict session/nonce/epochs; no source bearer to SDK, fail-closed readiness. POST preview/status + CLI permission lifecycle/CAS; current head/expiry; PING/PONG SDK riêng. | R070,R072,R082,R095,R096,R115,R119,R122 | C091,C092,C123,C125,C154,C155,C156,C157,C169,C170,C177,C178 | TODO | UNASSIGNED | NONE |
+| T088 | U1 | T087 | Inspect shield/focus; Interact ARMING→MODE_ACK→server CAS trước unshield; disarm shield-first, stale/timeout stays inspect. | R066,R070,R072,R096,R115 | C084,C090,C091,C094,C126,C154,C155,C156,C157 | TODO | UNASSIGNED | NONE |
+| T089 | U1 | T088 | Preview→graph: SDK opaque anchor/instance; server source binding only; browser joins runtime list; selection seq and scoped provenance. | R066,R068,R069,R095 | C084,C085,C086,C087,C124,C127 | TODO | UNASSIGNED | NONE |
+| T090 | U1 | T089 | Graph→preview highlight/instance chooser/scroll permission + source drawer; no auto navigate/execute; event-loop guards. Server MappingMatch continuation khác SDK instance continuation; >100 sites supported by paging. | R067,R077,R116 | C087,C088,C158,C159,C160,C161,C162 | TODO | UNASSIGNED | NONE |
+| T091 | U1 | T090 | Many-instance/ancestor/portal unsupported matrix; route/navigation/HMR build epochs, stale/unmounted transitions. Opt-in local explorer-map watch/atomic artifact import/coalesced HMR and busy-rebind status. | R067,R068,R073,R122 | C086,C088,C089,C093,C094,C177,C178 | TODO | UNASSIGNED | NONE |
+| T092 | U1 | T091,T047 | Manual UI mapping via RecordService/CAS/receipt actor from auth; source drift effective review; owned durable data survives cache GC. | R069,R082,R087,R094,R101,R119,R123 | C096,C120,C121,C130,C157,C169,C170,C160,C179 | TODO | UNASSIGNED | NONE |
+| T093 | U1 | T092,T027 | Selection→existing typed source/entity context pack + copy/export locator; server revalidation, no new write MCP or auto model call. Use selection preserves pinned_vector + RefSelector member/service, no active re-resolution. | R077,R083,R116,R117 | C097,C158,C159,C160,C161,C162,C163,C164,C165,C166 | TODO | UNASSIGNED | NONE |
+| T094 | U1 | T093 | GU1 bidirectional actual React/Vite repository fixture/browser E2E, Inspect action0/HMR/prod strip/security/performance; user private repo UAT cuối, không intermediate prerequisite. | R066,R067,R070,R071,R072,R073,R080,R083,R086,R088,R096,R111,R112,R115,R122,R124 | C084..C098,C123,C124,C125,C126,C127,C147,C148,C154,C155,C156,C157,C177,C178,C180 | TODO | UNASSIGNED | NONE |
+| T095 | U2 | T094,T045,T059,T060 | Static backend flow projection: verified Go net/http route/binding subset + database/sql literal operations; ordered vs call-only labels. | R069,R074,R076,R084 | C099,C101,C102 | TODO | UNASSIGNED | NONE |
+| T096 | U2 | T095,T046 | Scoped FE request→operation→BE contract bridge và reverse reachability; reuse domain/group services; vector of available members. | R069,R075,R117 | C100,C103,C106,C163,C164,C165,C166 | TODO | UNASSIGNED | NONE |
+| T097 | U2 | T096 | Backend flow pane + SQL tables/op cards; graph↔flow/source interactions, return-to-preview bookmark không tự load route. | R074,R075 | C099,C103 | TODO | UNASSIGNED | NONE |
+| T098 | U2 | T097,T061 | Transaction/branch/async edges và unknown persistence; no live DB access; supported event evidence integration. | R076 | C101,C102,C104 | TODO | UNASSIGNED | NONE |
+| T099 | U2 | T098 | Hierarchy/filter/progressive rendering, deterministic layout workers/cancellation + accessibility and per-selection metrics. | R078,R079,R123 | C081,C105,C160,C170,C179 | TODO | UNASSIGNED | NONE |
+| T100 | U2 | T099 | GU2 actual controlled repository FE↔Go BE↔SQL source/static roundtrip, scoping/canary/contracts/performance/regression; actual package fixtures, no user-project/prod claim. | R074,R075,R078,R080,R084,R086,R088,R111,R112,R124 | C099..C106,C147,C148,C180 | TODO | UNASSIGNED | NONE |
+| T101 | U3 | T100,T069,T070 | Observed trace overlay adapter tái dùng runtime importer; exact build/trace/span provenance và gaps. | R076,R085 | C107,C108,C109 | TODO | UNASSIGNED | NONE |
+| T102 | U3 | T101 | Bổ sung Observe arming vào basic Interact của U1; explicit dev action/request correlation; export/import only, trace propagation allowlist; no target start. | R070,R085 | C107,C108,C110 | TODO | UNASSIGNED | NONE |
+| T103 | U3 | T102 | Concurrency/CORS/partial trace/rollback/redaction/session lifecycle fault suite và observer caps. | R076,R085,R086 | C108..C112 | TODO | UNASSIGNED | NONE |
+| T104 | U3 | T103 | GU3 actual isolated FE→Go HTTP backend→temporary test DB observed run, trace/source binding/privacy/concurrency/permission+core regression; controlled fixture label và real runtime evidence, chưa owner acceptance. | R085,R086,R088,R130 | C107..C112,C190,C195 | TODO | UNASSIGNED | NONE |
+| T105 | G0 | T002,T003 | Canonical model/ports/closed schemas+registry, semantic validators và import-boundary tests trước feature code. Ghi Change Budget/Complexity gate cho delta ngoài baseline. Private journal schemas/shared admission digest. | R089,R090,R097,R100,R107,R115,R116,R117,R118,R119,R120,R121,R126,R127 | C113,C114,C122,C131,C134,C139,C154,C155,C156,C157,C158,C159,C160,C161,C162,C163,C164,C165,C166,C167,C168,C169,C170,C171,C172,C173,C174,C175,C176,C183,C184,C185,C186,C187 | TODO | UNASSIGNED | NONE |
+| T106 | G0 | T105 | Trích physical DDL/catalog/index/records, migration/FK/FTS/publish/CAS proof fixtures trên pinned driver; không target data. SQL counterexamples GC/resolver fixed và restore incarnation/permission storage proof. StoredCaptureManifestRef scalar/publication/file-GC/backup parity proof. J07: pooled-connection default/nondefault busy-timeout driver proof, no in-memory-only claim. | R091,R094,R113,R114,R120,R128 | C115,C116,C117,C118,C119,C120,C121,C149,C150,C151,C152,C153,C171,C172,C173,C188,C175 | TODO | UNASSIGNED | NONE |
+| T107 | G0 | T105,T106 | Contract-level flow/serialization/provider/source/state proof, MCP delivery budgets, codegen/extraction parity fixtures. Bổ sung pure command/storage/evidence contract fixtures S51; chưa là OS wrapper proof. New status/paging/scope/config/codec/state positive/negative proofs; no claim OS/browser tested. Full capture vectors/stale fields/config/ownership/quota/error counterexamples. Pure Git-delivery policy fixtures AW-08: message/order/scope, exact-SHA checks, candidate DONE và resume; không coi fixtures là GitHub enforcement. F01–F08 negative proofs và governance static/observer parity, raw manifest/source CAS/hardcaps/fresh-teardown fixtures. H01–H07 current oracle/regression matrix: wrong phase/task/ref/payload list, seal/crash/selector invalidation, queue membership, config replacement, fixture cleanup and per-push visibility. J01–J07 và L01–L06: typed source/execution/local evidence, prior eight regression rejects và six current counterexamples + valid counterparts; historical P/live C, source graph/native mapping/live collection, duplicate-binding và allocated-operation resume fixtures. M01–M04: common typed lifecycle+push/resume parity, partial/full job reruns+native attempt history, frozen PR flow và actual Git message/scope guard; no fake enforcement. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R090,R092,R098,R099,R108,R109,R110,R111,R115,R116,R117,R118,R119,R120,R121,R126,R127,R129 | C114,C117,C128,C129,C132,C136,C140,C141,C142,C143,C144,C145,C146,C154,C155,C156,C157,C158,C159,C160,C161,C162,C163,C164,C165,C166,C167,C168,C169,C170,C171,C172,C173,C174,C175,C176,C181,C182,C183,C184,C185,C186,C187,C189,C190,C191 | TODO | UNASSIGNED | NONE |
+| T108 | G0 | T106,T107 | AI tự design seal G0: canonical contracts/DDL/flow/pins/policy/quota/SQLite gate, proof/cards/traceability + S53 readiness; resolve delegated discrepancy, no user approval checkpoint. Product checks vẫn separate. Seal AW-08 expected-check plan/bootstrap phase applicability/receipt parity; repo enforcement thực có evidence riêng, thiếu quyền không giả PASS. Seal canary/eligible plan đã chứng minh từ T001/T003; closing evaluator+archive replay, không trì hoãn first CI discovery. Seal current typed selection/checkpoint/archive evaluator, reproduced negative proof and bootstrap CI delivery; no own-SHA/result loop. Seal J01–J07 owner/schema/helper parity and retained proof limits trước feature. L01–L06 live/history/native-query/bootstrap conformance seal; actual GitHub NOT_RUN không được che bằng reference proof. M01–M04: common typed lifecycle+push/resume parity, partial/full job reruns+native attempt history, frozen PR flow và actual Git message/scope guard; no fake enforcement. V168-01–05: terminal execution pin, delivery/publication chronology, successful required canary events và common trailer/skip guard parity; actual sources theo GIT-DATA-09.  V169-01–05 theo GIT-DATA-10: current live canary coverage, per-event generation/no-job blockers, secured current command identity, original-phase no-op và all-task owning gate scope; actual decoder/collector integration vẫn bắt buộc. V1610-01–04/GIT-DATA-11: shared receipt/canary chronology, PR acquisition, immutable allocation và retained selection time, archive-before-live protocol regression; actual adapters vẫn phải kiểm. V1611-01–04/GIT-DATA-12: own PR raw source parity, every phase own command UUID, precise lifecycle equality và full pending-first P→C/resume stage protocol; actual adapters/executor vẫn phải kiểm. V1612-01–05/GIT-DATA-13 và S48 QA-06: strict actual retry/rationale/member shapes, optimization-safe manifest và manifest-bound source replay, negative/positive regressions và no input mutation; actual enforcement vẫn phải kiểm. | R089,R092,R093,R100,R102,R103,R104,R106,R107,R112,R124,R125,R129 | C113,C133,C134,C135,C138,C139,C148,C180,C181,C182,C189,C190,C191 | TODO | UNASSIGNED | NONE |
+
+Thứ tự thi công không theo số ID; theo S47. Trạng thái chỉ ở bảng này. T105–T108 ở G0 nên thực hiện trước T004 trở đi; task R2/UI chưa đủ prerequisite không được claim dù TODO.
+
+## S20 — Gates và Definition of Done
+
+| Gate | Phạm vi task | Điều kiện PASS | Status ban đầu |
+|---|---|---|---|
+| G0 — Foundation/design seal | T001–T003,T105–T108 | Site survey, pinned materials, canonical contracts/DDL/flow proofs/import boundaries/order validation; T108 PASS trước feature; mode/nguồn quy tắc/command preflight S50–S51 | NOT_RUN |
+| G1 — Safe storage | T004–T012 | Identity/isolation/path safety/capture/SQLite/publish/recovery; A không khóa B | NOT_RUN |
+| G2 — Correct map | T013–T021,T049,T050 | Go scoped semantics; hierarchy/partition boundaries; strict freshness; full-vs-incremental equivalence | NOT_RUN |
+| G3 — AI context interface | T022–T031,T051,T052 | Context/overview/plan/budgets/cursors; snapshot analysis mode; MCP/CLI; preview-only rename; telemetry | NOT_RUN |
+| G4 — Verification | T032–T040,T053,T054 | C001–C054 + core-applicable C113–C136/fault/security/platform/scale/self-index tests; fair benchmark; spec/code đồng bộ; applicable C137–C148 và no bypass; không P0 failure | NOT_RUN |
+| G5 — R1 release | T041–T042 | License/security/reproducibility + R1 handover; evidence và hạn chế rõ; claims đúng mức | NOT_RUN |
+| G6 — R2 release | T043–T048,T055–T068 | C055–C069 + regression; TS/Python/contracts/domain/AI lineage matrix; T048 review | NOT_RUN |
+| G7 — R3 review | T069–T080 | C070–C080 + regressions áp dụng; verified addon matrix; T080 dependencies DONE trước closure | NOT_RUN |
+| GU0 — Explorer base | T081–T084 | Loopback safety + graph/source split thực từ index; C081–C083 | NOT_RUN |
+| GU1 — Frontend inspect | T085–T094 | C084–C098; click preview↔graph + no Inspect actions + build provenance; framework matrix rõ | NOT_RUN |
+| GU2 — Full-stack static | T095–T100 | C099–C106; FE→operation→BE→DB và reverse links, no execution/persistence overclaim | NOT_RUN |
+| GU3 — Observed overlay | T101–T104 | C107–C112; trace causality/revision/privacy và explicit interaction permission | NOT_RUN |
+
+G0–G5 là gate R1 tuần tự; G6/G7 áp dụng scope R2/R3 đã giao. GU0–GU3 là nhánh Explorer, không là G8 sau toàn bộ R3. GU0 sau G5; GU1 cần GU0 + TS frontend capability tasks; GU2 cần GU1 + contracts/SQL/events/groups subset; GU3 cần GU2 + runtime importer T069/T070. Toàn R2/R3/U3 đã mở scope xây dựng theo S53; subset ưu tiên Explorer theo S39 không loại các task còn lại khỏi108. Chỉ IN_PROGRESS/DONE khi prerequisites và evidence thật đủ. Không có GUI preview trước quyền execution riêng. Các task cùng gate có thể song song theo dependencies/ownership.
+
+Definition of Done một task: invariant/source/API/schema rõ; automated tests, negative/failure cases, lint/build và integration phù hợp PASS trong environment recorded; diff đúng scope/không secret; traceability/evidence đúng revision; commit nhỏ tiếng Việt đúng dependency/priority order, push và eligible GitHub checks đúng SHA cùng closing HEAD PASS, durable archive hợp lệ và effective DONE theo S21 DONE-EVAL-01/AW-08. Static CI chỉ kiểm proposal, không chờ own result; missing archive vẫn VERIFY. Missing delivery/required check giữ VERIFY hoặc BLOCKED; không mark DONE bằng unit mock, file có tồn tại hoặc local green.
+
+R1 nhãn phát hành:
+- `EXPERIMENTAL_LOCAL`: engine chạy nhưng còn gate chưa pass; capability/platform chưa test phải nêu NOT_VERIFIED.
+- `R1_VALIDATED_ON_FIXTURES`: mọi engineering gate liên quan pass trên fixtures, chưa đủ real-repo/usage evidence; không tuyên bố tiết kiệm token thực cho người dùng.
+- `R1_VALIDATED_FOR_PERSONAL_USE`: có real-repo acceptance và host usage evidence theo S18 trên môi trường được nêu; không suy thành mọi project đều đúng.
+
+G5 là checkpoint kỹ thuật nội bộ, không bàn giao cuối hay điểm dừng. T039/T042 đóng engineering scope khi required checks đạt; corpus synthetic/real và host-token availability phải ghi đúng. T094/T100/T104 kiểm repository fixture FE/BE/SQL thực của dự án; user-project UAT do người dùng nghiệm thu một lần sau AW-06, không đặt private repo của người dùng làm prerequisite giữa chừng. Thiếu required OS/browser/runtime checks vẫn chặn100%; thiếu host telemetry không thành token-saving PASS.
+
+Không đặt reviewer người dùng/architect bên ngoài làm prerequisite từng task. AI tự review bằng lượt kiểm riêng dựa source/contracts/regression rồi đóng gate theo S53; không gọi self-review là independent human audit. User acceptance thực hiện một lần ở cuối.
+
+Release artifacts chỉ tạo theo quyền: binary/checksum/version/schema/dep manifest/notices. Không tự publish GitHub release, package registry, merge hoặc deploy. Theo yêu cầu trực tiếp2026-10-15, MCE4D coding assignment được tự commit/push từng task vào repo/nhánh đã được phép theo AW-08; không phải quyền commit/push repository mà engine đang phân tích. Lượt hiện tại docs-only, không tự tạo GitHub repo/remote hoặc coi đã có coding kickoff.
+
+## S21 — ADR, evidence, gaps và lịch sử thực thi
+
+### ADR baseline
+
+Status BASELINE_SPEC là default thiết kế. ACCEPTED_USER chỉ dùng khi có xác nhận cụ thể. ACCEPTED_DELEGATED_AI dùng cho quyết định kỹ thuật AI tự đóng đúng BP-04/S53, có evidence/options/impact/tests; không giả người dùng duyệt riêng quyết định đó. SUPERSEDED cần ADR thay thế.
+
+| ADR | Quyết định | Lý do / trade-off | Status |
+|---|---|---|---|
+| A001 | Sản phẩm độc lập, không kế thừa engine/source tham khảo | Quyền chủ động; phải tự chịu kiểm chứng/bảo trì | ACCEPTED_USER |
+| A002 | Một file đặc tả/tracker cho AI | Không phân mảnh quyết định; cần section routing để tiết kiệm đọc | ACCEPTED_USER |
+| A003 | Go modular monolith | Dùng Go tooling và một binary; không đáp ứng mọi language tự động | BASELINE_SPEC |
+| A004 | SQLite per-worktree, blobs dedup local, generations publish | Không cần graph server; metadata có thể lặp và cần quota/GC | BASELINE_SPEC |
+| A005 | Core CLI + MCP STDIO, không UI/HTTP mặc định R1 | Giữ CLI độc lập; product GUI opt-in được bổ sung bằng A020/A021 | BASELINE_SPEC |
+| A006 | Go typed trước; unsupported languages vẫn có file/text map | Làm chính xác một stack trước; không quảng cáo universal semantics | BASELINE_SPEC |
+| A007 | MCE4D read-only target; rename preview bằng LSP | Giảm rủi ro mutation; host phải apply/verify riêng | BASELINE_SPEC |
+| A008 | Full workspace freshness cho edit tasks | Local I/O cao hơn nhưng không mù với file mới/caller mới | BASELINE_SPEC |
+| A009 | Budget bytes thật + optional tokenizer exact | Không đánh tráo byte estimate thành token; host usage mới đo hiệu quả | BASELINE_SPEC |
+| A010 | Content incremental trước, semantic full fallback | Hy sinh update speed khi chưa chứng minh invalidation đúng | BASELINE_SPEC |
+| A011 | Không global build/index mutex; per-worktree writer | Repo độc lập chạy được; OS vẫn có giới hạn tài nguyên thật | BASELINE_SPEC |
+| A012 | Private first; dependency license gate trước public distribution | Không hứa sạch mọi quyền pháp lý; giữ notices và nguồn gốc | BASELINE_SPEC |
+| A013 | Tên Maps-Context-Engine-4D; mce4d/slug/path đồng bộ | Yêu cầu đổi tên người dùng; chưa có code/release được quan sát | ACCEPTED_USER |
+| A014 | 4D = structure/interactions/behavior/evolution | Tổ chức thông tin có evidence; không là đồ họa 4D hoặc chuẩn bên ngoài | BASELINE_SPEC |
+| A015 | Giữ R1 Go nhưng R2 thêm TS/JS/Python/contracts/domain/AI metadata | Đáp ứng dự án đa dạng; không trì hoãn capability cần thiết như chỉ ý tưởng mơ hồ | BASELINE_SPEC |
+| A016 | Hierarchy/partition + analysis snapshot tách live validation | Giảm lặp I/O/context nhưng giữ full pre-edit check | BASELINE_SPEC |
+| A017 | Intended/observed/approved/runtime evidence tách plane | Dùng cho greenfield và brownfield không bịa code/rule | BASELINE_SPEC |
+| A018 | Self-index pin binary, independent oracle | Dùng engine phát triển engine nhưng không bootstrap circular/self-proof | BASELINE_SPEC |
+| A019 | R3 evidence/editor/search/advanced storage gated | Không over-engineer core; không block R1/R2 vì addon | BASELINE_SPEC |
+| A020 | Code↔UI Explorer: graph trái; preview/flow phải; chọn button/block đồng bộ hai chiều | Yêu cầu mới người dùng; UI là scope thật, không còn FUTURE | ACCEPTED_USER |
+| A021 | Tách index/query core khỏi loopback Explorer và approved target preview | Source read-only không đồng nghĩa runtime không side effect; auth/permission tách | BASELINE_SPEC |
+| A022 | Build anchor + ephemeral instance + evidence resolver; không dựa private React internals hoặc screenshot guessing | Đúng many-to-many, HMR/profile provenance; framework coverage có gate | BASELINE_SPEC |
+| A023 | React/TypeScript/Vite + React Flow và Dagre cho viewport giới hạn | Một renderer cho graph/flow; pin/license/compatibility ở T081; không đổi framework target | BASELINE_SPEC |
+| A024 | U0→U1→U2 theo capability subset trước toàn R2/R3; U3 runtime tùy chọn | Có utility sớm, không chờ Python/ML để chọn React UI; vẫn giữ gates core | BASELINE_SPEC |
+| A025 | Foundation design seal và task work orders trước feature (giữ thứ tự); authority chi tiết được cập nhật A039/A040 | Baseline lịch sử không autonomous architecture; v1.6.0 user giao108 và một lần nghiệm thu cuối | SUPERSEDED |
+| A026 | Canonical schema/physical DDL authority trong cùng spec | Giảm contract drift; generated artifacts parity tests bắt buộc | BASELINE_SPEC |
+| A027 | Durable records.sqlite tách derived index cache | CAS/idempotency/epoch; thêm DB local, không cross-DB atomic claim | BASELINE_SPEC |
+| A028 | Build producer map khác engine generation binding | Cho HMR/lazy modules và multiple identical-source index generations; SDK không claim source IDs | BASELINE_SPEC |
+| A029 | Server bind + BOUND_ACK + arming MODE_ACK | Explicit readiness và permission sequencing; Inspect không sandbox target | BASELINE_SPEC |
+| A030 | MCP delivery compatibility/actual bytes | Không bỏ serialized text mặc định khi host chưa được verify; không giả token savings | BASELINE_SPEC |
+| A031 | Giữ một spec chính; ba nguồn nguyên bản trong docs, tiếp nhận theo vai trò S50 | Người dùng chấp thuận tích hợp và sẽ copy file; không sửa Universal, không tracker thứ hai | ACCEPTED_USER |
+| A032 | Command/storage controls cho phát triển, không global build lock hay quyền xóa ngầm | Bổ sung S51 theo supplement; runtime schema/DDL và thứ tự task giữ nguyên | BASELINE_SPEC |
+| A033 | Verification Ladder + evidence freshness + anti-bypass cụ thể hóa vào task/gate hiện có | Không nhầm docs-only/proof với product test/enforcement/release; không tăng task chỉ để đếm | BASELINE_SPEC |
+| A034 | Khép audit A01–A08 trong file chính, không thay architecture stack hoặc thêm tracker | Người dùng chấp thuận hoàn thiện tài liệu sau báo cáo audit; product chưa chạy | ACCEPTED_USER |
+| A035 | Binding resolver fingerprint riêng và key đồng nhất; capture input không chứa parser output | Sửa counterexample và tách nguồn bằng chứng | BASELINE_SPEC |
+| A036 | Bounded paging/result spool+pinned typed scope+status read/quyền có lifecycle | Đường dùng đầy đủ, six MCP tools giữ nguyên, không partial apply | BASELINE_SPEC |
+| A037 | Store lifecycle shared/exclusive + restore incarnation/journal | Phối hợp reader/writer đúng resource, no global build mutex, restore không hồi sinh token | BASELINE_SPEC |
+| A038 | MCE-C14N1 byte codec/defaults/admin contracts và HMR watch opt-in | Interop không đoán, không tự spawn target hoặc claim runtime proof | BASELINE_SPEC |
+| A039 | Giao toàn bộ 108 task R1/R2/R3/U0–U3, tự chuyển task/gate, owner nghiệm thu một lần cuối | Yêu cầu trực tiếp2026-10-14 và lựa chọn108 thay92; user acceptance tách engineering completion | ACCEPTED_USER |
+| A040 | AI tự đóng chi tiết kỹ thuật/blueprint gaps theo BP-04/S53 trong constraints baseline | User yêu cầu sửa theo ý kiến AI và tự code/tự kiểm/tự hoàn thiện; không xin routine approval, không tự cấp external quyền | ACCEPTED_USER |
+| A041 | Concrete policy/matcher/scanner, quota accounting/admission, SQLite WAL patch gate và bidirectional traceability | Khép review gaps tại owner sections; code và OS evidence vẫn NOT_RUN | BASELINE_SPEC |
+| A042 | Selected R3 baselines AW-05, mandatory code/test/runtime opt-in; Rust và precomputed vectors | Required XL hữu hạn S27, không universal IDE/model/language/XL vô hạn; profiling quyết định activation, không bỏ task | BASELINE_SPEC |
+| A043 | Khép12 review findings1.6.1 theo P1→P2: DTO authority/effective quota/cache-durable journal/bounded manifest-RSS-XL/oracles | User yêu cầu sửa tài liệu trước coding; giữ108/130/195, stack/7 DDL và no routine approval; private schemas/runtime fields và owned backup/manifest rules sửa trước implementation | ACCEPTED_USER |
+| A044 | Mỗi task tự kiểm, commit nhỏ đúng dependencies/priority bằng tiếng Việt, tự push và kiểm GitHub đúng SHA trước DONE/auto-next theo AW-08 | Yêu cầu trực tiếp2026-10-15; áp dụng108 task trong coding assignment, không gom toàn dự án, không bypass hooks/protection hoặc auto merge/deploy; docs-only hiện tại không tạo remote | ACCEPTED_USER |
+| A045 | Khép8 review findings F01–F08 theo P1→P2; closed delivery/evaluator+eligible CI+canonical manifest+caps/provenance+privacy/archive; scoped fresh scratch teardown TEARDOWN-01 | Yêu cầu trực tiếp2026-10-15 giữ108 task/autonomy/per-task delivery/single final acceptance, chưa code; F08 là explicit user exception chỉ fresh reconstructible run-owned disposable copies, không sửa ba source docs hoặc cấp quyền old/protected deletion | ACCEPTED_USER |
+| A046 | Khép7 review findings v1.6.4 P1→P2 + lỗi biên tập; sửa proof relational evaluator, sealed archive/recovery/current selector/checkpoint, merge-stage, whole config replacement, fresh fixture teardown và mỗi-push visibility | Yêu cầu trực tiếp sửa7 điểm, giữ108 task/tự làm liên tục/commit-push-CI từng task/nghiệm thu cuối; chỉ SPEC+proof, chưa code. TEARDOWN-FIXTURE-01 chỉ fresh reconstructible synthetic .git/test SQLite copies, không actual user/canonical history/data | ACCEPTED_USER |
+| A047 | Khép7 review findings v1.6.5 J01–J07 theo P1→P2: complete evidence/canary, instant CI order, actual PR binding, semantic resume, push lifecycle/native mapping và effective SQLite config | User yêu cầu sửa đủ7 điểm, giữ108 task/autonomy/per-task Vietnamese commit-push-CI/single final acceptance; SPEC+proof only, không code sản phẩm/remote/identity/admin/cleanup authority mới | ACCEPTED_USER |
+| A048 | Khép6 findings v1.6.6 L01–L06, P1 rồi P2; temporal PR, native graph/mapping, fresh live verification, unique execution và allocated checkpoint | User yêu cầu sửa6 điểm, giữ108 task/autonomy/per-task Vietnamese commit-push-CI/single final acceptance; chỉ SPEC+reference proof, chưa code sản phẩm | ACCEPTED_USER |
+| A049 | Khép4 review findings1.6.7 M01–M04 theo P1→P2; shared lifecycle/partial rerun/frozen PR flow/commit semantic gate | User yêu cầu sửa đủ4 điểm, giữ108 task/autonomy/Vietnamese commit-push-CI/single final acceptance; SPEC+reference proof only, chưa code sản phẩm | ACCEPTED_USER |
+| A050 | Khép5 findings review1.6.8 V168-01–V168-05 theo P1→P2: execution pin/time order/canary rồi trailer/skip guards | User yêu cầu sửa đủ5 điểm, giữ108 task/autonomy/per-task Vietnamese commit-push-CI/single final acceptance; SPEC+reference proof only, chưa code sản phẩm | ACCEPTED_USER |
+| A051 | Khép5 findings review1.6.9 V169-01–V169-05 theo P1→P2: canary live/per-event rồi current checkpoint/no-op history/owning gate | User yêu cầu sửa đủ5 điểm, đồng bộ SPEC+proof; giữ108 task, AI liên tục, Vietnamese small commits/push/CI từng task, một lần nghiệm thu cuối; chưa code sản phẩm | ACCEPTED_USER |
+| A052 | Khép4 findings review1.6.10 V1610-01–V1610-04 theo P1→P2: canary/PR acquisition rồi selection chronology và closure order | User yêu cầu sửa đủ4, đồng bộ SPEC+proof; giữ108 task, AI liên tục, Vietnamese small commits/push/CI từng task, một lần nghiệm thu cuối; chưa code sản phẩm | ACCEPTED_USER |
+| A053 | Khép4 findings review1.6.11 V1611-01–V1611-04 theo P1→P2: PR source parity, own historical command identity rồi instant equality và full delivery/resume protocol; sửa nhãn phiên bản hiện hành | User yêu cầu sửa dứt4 điểm và kiểm chứng kỹ; giữ108 task, AI liên tục, Vietnamese small commits/push/CI từng task, một lần nghiệm thu cuối; chưa code sản phẩm | ACCEPTED_USER |
+
+| A054 | Khép5 P2 V1612-01–V1612-05 và1 P3 E1612-01: typed retry/rationale/JSON boundaries, optimization-safe manifest và manifest-bound replay source; đồng bộ nhãn hiện hành | User yêu cầu sửa dứt điểm6 lỗi, SPEC+proof+regression, giữ108 task/AI liên tục/Vietnamese small commits-push-CI từng task/một nghiệm thu cuối; chưa code sản phẩm, không thêm remote/identity/admin hoặc cleanup authority | ACCEPTED_USER |
+
+Template ADR mới: `id; problem/evidence; options; decision; constraints preserved; migration/rollback; affected R/T/C; status; date`. Không rewrite ADR cũ mất lịch sử; append supersession gọn.
+
+### Evidence log
+
+Evidence IDs E001,E002,... monotonic unique, cấp khi code thật có run/artifact. E001 là record đầu tiên, không duy nhất hoặc field mọi task bắt buộc. Task có thể nhiều records, record nhiều scoped cases khi evidence rõ. Document audit dùng DV riêng, không product IDs; chưa implementation thì product table trống có chủ ý.
+
+| Evidence ID | Task | Code revision / tree digest | Environment + versions | Command / case | Result | Artifact path + SHA-256 | Checked at UTC |
+|---|---|---|---|---|---|---|---|
+| NONE | NONE | NONE | NONE | NONE | NOT_RUN | NONE | NONE |
+
+Format result: PASS, FAIL, NOT_RUN. NOT_RUN phải có lý do trong record. Hash tree dùng khi chưa commit; không bịa commit SHA. Absolute local paths chỉ trong private evidence khi cần, không publish; log sanitized. File artifact không tồn tại thì không tạo pointer giả. DONE task MUST trỏ >=1 evidence record PASS bao phủ test scope; gate reviewer kiểm tra không chỉ string “PASS”.
+
+### Metadata áp dụng cho task/lệnh — không thêm tracker
+
+Khi có thực thi, ghi trong evidence/ghi chú S21 gắn task S19: `task_mode`, `assignment_ref`, `spec_revision`, `policy_source_refs` (actual path/version/digest/status), `change_budget` (objective/paths/behavior/contracts/exclusions), `verification_plan` (V0–V4 áp dụng + required checks), và `command_record_refs` theo S51. Chỉ lưu delta/locator cần thiết, không sao chép spec hoặc raw logs. Chưa có run thì không tạo record giả. Các metadata này phục vụ governance, không đổi S43/S44 hay mạo nhận policy được thực thi.
+
+Git delivery receipt AW-08 dùng GIT-DATA-01 dưới đây, gắn cùng evidence/task, không task tracker thứ hai; legacy summary để đọc nhanh: `assignment_ref; repository identity; approved remote/ref; task_id; priority; base_sha; ordered commits (actual SHA + subject + scope); verified_payload_sha; local command/result/environment/artifact refs; expected_check_plan_ref; pushed_ref/pushed_sha; observed_remote_sha; workflow/run/job/matrix/event/source_app; check/status context + tested_sha + conclusion + URL; PR head/base/tested_merge_sha binding khi có; protection inspection status; observation UTC; closing_commit_ref; delivery result/remaining blocker`. Không có run/commit thật thì để null/NOT_RUN, không dùng ví dụ làm actual SHA. Raw logs/artifacts sanitized có thể ngoài SPEC; S21 chỉ giữ hashes/locators và kết luận. Observer sau push resolve closing marker+parent+ancestry thành SHA thật theo GIT-DATA-01/DONE-EVAL-01; không ghi SHA của một commit vào chính bytes tạo commit đó. Cơ chế chốt payload→closing→observer ở AW-08/GIT-06 là bắt buộc để tránh self-hash/CI vòng lặp.
+
+### GIT-DATA-01 — Schema governance và evaluator delivery
+
+Đây là schema governance S21, tách khỏi wire/runtime schema S43; không thêm task status/tracker. V1.6.13 giữ nguyên24 closed governance definitions và fields từ1.6.12; typed checkpoint/rationale/member boundaries theo GIT-DATA-13; manifest/source execution rules theo S48 QA-06; source/identity/instant/full-resume guards GIT-DATA-12 áp cho mọi phase và live current PR; GitTaskDeliverySelection thêm allocated_at_utc và chronology/order guards GIT-DATA-11; GIT-DATA-10 bổ sung live/per-event canary, secured current checkpoint context, historical no-op và task-owning gate classifier; GitLiveVerification thêm closed archive_publication, execution/time/canary/trailer/skip semantic guards theo GIT-DATA-09; common command lifecycle/commit scope và fresh live verification/CI collection/native source graph giữ; gồm required local/check source/execution/PR/canary/push-operation evidence bên cạnh archive/selection/checkpoint/queue; format1 vẫn unshipped, actual deployed format nếu discovery có phải forward-migrate theo BP-04. DELIVERY-LINK-01/ARCHIVE-PUBLISH-01/ACTIVE-DELIVERY-01/CHECKPOINT-01/MERGE-BIND-01 là semantic authority đi kèm, không chỉ shape. Mọi record phải validate JSON strict/duplicate-key reject, Draft2020-12 + formats và semantic rules dưới đây. Chưa có thực thi không tạo instance giả; plan/receipt mẫu không là actual evidence. `check_plan_sha256`=SHA256(MCE-MANIFEST-JSON1(plan)); chỉ dùng primitive JSON subset của serializer, không có capture normalization. Pointers là private relative owned evidence locators, không token/absolute user paths; path parser chặn absolute/traversal/link escape. Numeric GitHub repository ID cùng host là identity, owner/name là locator được xác minh.
+
+<!-- BEGIN MCE4D_GIT_GOVERNANCE_SCHEMA_V1 -->
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mce4d:governance:git-delivery:1",
+  "$defs": {
+    "GitRepositoryIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "repository_id",
+        "owner",
+        "name",
+        "visibility",
+        "publication_authority_ref",
+        "remote_name",
+        "remote_url_sanitized",
+        "ref"
+      ],
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "visibility": {
+          "enum": [
+            "private",
+            "internal",
+            "public"
+          ]
+        },
+        "publication_authority_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remote_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "remote_url_sanitized": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "ref": {
+          "type": "string",
+          "pattern": "^refs/heads/.+$"
+        }
+      }
+    },
+    "GitCheckSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "context",
+        "source_app",
+        "workflow_path",
+        "job_name",
+        "matrix",
+        "eligible_events",
+        "checkout_binding",
+        "requirement_origins",
+        "command_refs",
+        "reported_sha_binding"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "kind": {
+          "enum": [
+            "check_run",
+            "commit_status"
+          ]
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "source_app": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "workflow_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "matrix": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "eligible_events": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "enum": [
+              "push",
+              "pull_request",
+              "pull_request_review",
+              "pull_request_target",
+              "deployment",
+              "deployment_status",
+              "merge_group",
+              "external_app"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "checkout_binding": {
+          "enum": [
+            "head",
+            "pr_merge",
+            "merge_group"
+          ]
+        },
+        "requirement_origins": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "enum": [
+              "project",
+              "repository"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "command_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "reported_sha_binding": {
+          "enum": [
+            "subject",
+            "tested"
+          ]
+        }
+      }
+    },
+    "GitCheckPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "phase",
+        "repository",
+        "credential_class",
+        "required_set_status",
+        "canary_ref",
+        "checks",
+        "local_check_refs",
+        "closing_local_reuse_refs",
+        "merge_checks",
+        "pull_request_flow"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "phase": {
+          "enum": [
+            "bootstrap",
+            "foundation",
+            "core",
+            "platform",
+            "explorer",
+            "final"
+          ]
+        },
+        "repository": {
+          "$ref": "#/$defs/GitRepositoryIdentity"
+        },
+        "credential_class": {
+          "enum": [
+            "local_user",
+            "github_app",
+            "pat",
+            "github_token"
+          ]
+        },
+        "required_set_status": {
+          "enum": [
+            "VERIFIED",
+            "NOT_VERIFIED"
+          ]
+        },
+        "canary_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "$ref": "#/$defs/GitCheckSpec"
+          }
+        },
+        "local_check_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "closing_local_reuse_refs": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 512,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "merge_checks": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 512,
+          "items": {
+            "$ref": "#/$defs/GitCheckSpec"
+          }
+        },
+        "pull_request_flow": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "head_repository_id",
+                "head_ref",
+                "base_ref"
+              ],
+              "properties": {
+                "head_repository_id": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "head_ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "base_ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "GitCommit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha",
+        "subject",
+        "scope_ref",
+        "body",
+        "git_evidence_ref"
+      ],
+      "properties": {
+        "sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "scope_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "git_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitDeliveryAttempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "delivery_id",
+        "task_id",
+        "assignment_ref",
+        "priority",
+        "phase",
+        "base_sha",
+        "ordered_commits",
+        "verified_payload_sha",
+        "check_plan_ref",
+        "check_plan_sha256",
+        "local_evidence_refs",
+        "payload_observation_ref",
+        "closing_marker",
+        "closing_parent_sha",
+        "task_revision",
+        "planned_archive_path",
+        "archive_staging_path",
+        "payload_mode",
+        "noop_reason_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "payload_pending",
+            "closing_proposed"
+          ]
+        },
+        "base_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ordered_commits": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/GitCommit"
+          }
+        },
+        "verified_payload_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "check_plan_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "check_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "local_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "payload_observation_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closing_marker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "closing_parent_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "planned_archive_path": {
+          "type": "string",
+          "pattern": "^artifacts/git-delivery/[0-9a-f-]{36}$"
+        },
+        "archive_staging_path": {
+          "type": "string",
+          "pattern": "^artifacts/git-delivery/\\.staging-[0-9a-f-]{36}$"
+        },
+        "payload_mode": {
+          "enum": [
+            "changes",
+            "verified_noop"
+          ]
+        },
+        "noop_reason_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "closing_proposed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verified_payload_sha": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+              },
+              "closing_parent_sha": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+              },
+              "payload_observation_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "ordered_commits": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "GitObservedCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "kind",
+        "context",
+        "source_app",
+        "workflow_path",
+        "job_name",
+        "matrix",
+        "event",
+        "run_id",
+        "job_id",
+        "attempt",
+        "reported_head_sha",
+        "tested_checkout_sha",
+        "pr_head_sha",
+        "pr_base_sha",
+        "tested_merge_sha",
+        "status",
+        "conclusion",
+        "execution_verified",
+        "url",
+        "evidence_refs",
+        "run_created_at_utc",
+        "source_evidence_ref",
+        "execution_evidence_ref"
+      ],
+      "properties": {
+        "check_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "kind": {
+          "enum": [
+            "check_run",
+            "commit_status"
+          ]
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "source_app": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "workflow_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "matrix": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "event": {
+          "enum": [
+            "push",
+            "pull_request",
+            "pull_request_review",
+            "pull_request_target",
+            "deployment",
+            "deployment_status",
+            "merge_group",
+            "external_app",
+            "workflow_dispatch",
+            "repository_dispatch"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reported_head_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "tested_checkout_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "pr_head_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pr_base_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tested_merge_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "in_progress",
+            "waiting",
+            "completed"
+          ]
+        },
+        "conclusion": {
+          "enum": [
+            "success",
+            "failure",
+            "cancelled",
+            "timed_out",
+            "action_required",
+            "skipped",
+            "neutral",
+            "unknown"
+          ]
+        },
+        "execution_verified": {
+          "type": "boolean"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "run_created_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "execution_evidence_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "GitDeliveryObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "delivery_id",
+        "phase",
+        "subject_sha",
+        "parent_sha",
+        "check_plan_sha256",
+        "observed_remote_sha",
+        "observed_at_utc",
+        "binding_verified",
+        "required_set_verified",
+        "checks",
+        "result",
+        "blocker",
+        "merge_group_binding",
+        "destination_observation",
+        "pull_request_binding_ref",
+        "collection_evidence_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "phase": {
+          "enum": [
+            "payload",
+            "closing",
+            "merge"
+          ]
+        },
+        "subject_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "parent_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "check_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observed_remote_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "observed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "binding_verified": {
+          "type": "boolean"
+        },
+        "required_set_verified": {
+          "type": "boolean"
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "$ref": "#/$defs/GitObservedCheck"
+          }
+        },
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "blocker": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "merge_group_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitMergeGroupBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destination_observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitDestinationObservation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pull_request_binding_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "collection_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitEvidenceFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "byte_length",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "GitEvidenceArchive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "delivery_id",
+        "task_id",
+        "verified_payload_sha",
+        "closing_sha",
+        "check_plan_sha256",
+        "payload_observation_ref",
+        "closing_observation_ref",
+        "files",
+        "retention_authority_ref",
+        "created_at_utc",
+        "assignment_ref",
+        "task_revision",
+        "attempt_ref",
+        "selection_ref",
+        "git_evidence_ref",
+        "closing_commit_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "verified_payload_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "closing_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "check_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "payload_observation_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "closing_observation_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "files": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/GitEvidenceFile"
+          }
+        },
+        "retention_authority_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "created_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "attempt_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "selection_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "git_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "closing_commit_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitArchiveSeal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "delivery_id",
+        "task_id",
+        "task_revision",
+        "manifest_sha256",
+        "sealed_at_utc"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sealed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "GitTaskDeliverySelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "assignment_ref",
+        "task_id",
+        "task_revision",
+        "active_delivery_id",
+        "supersedes_delivery_id",
+        "invalidation_refs",
+        "reason_ref",
+        "updated_at_utc",
+        "previous_selection_ref",
+        "allocated_at_utc"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "active_delivery_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supersedes_delivery_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "invalidation_refs": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "reason_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "updated_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "previous_selection_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allocated_at_utc": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "active_delivery_id": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "active_delivery_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "allocated_at_utc": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "allocated_at_utc": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "GitExecutionCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "checkpoint_id",
+        "assignment_ref",
+        "task_id",
+        "task_revision",
+        "delivery_id",
+        "local_branch",
+        "head_sha",
+        "working_tree_digest",
+        "index_digest",
+        "command_record_ref",
+        "operation_id",
+        "command_state",
+        "unfinished_check_refs",
+        "blocker_refs",
+        "next_action_ref",
+        "planned_archive_path",
+        "checkpointed_at_utc"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "checkpoint_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "local_branch": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "working_tree_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "index_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "command_record_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "command_state": {
+          "enum": [
+            "NOT_STARTED",
+            "RUNNING",
+            "SETTLING",
+            "SUCCEEDED",
+            "FAILED",
+            "UNKNOWN"
+          ]
+        },
+        "unfinished_check_refs": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 512,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "blocker_refs": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "next_action_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "planned_archive_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^artifacts/git-delivery/[0-9a-f-]{36}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checkpointed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "GitMergeGroupBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "group_head_sha",
+        "group_base_sha",
+        "group_ref",
+        "target_ref",
+        "repository_id",
+        "source_subject_sha",
+        "member_heads",
+        "membership_evidence_refs",
+        "group_created_at_utc",
+        "authority_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "group_head_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "group_base_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "group_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "target_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "source_subject_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "member_heads": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pull_request_number",
+              "repository_id",
+              "head_sha"
+            ],
+            "properties": {
+              "pull_request_number": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "repository_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "head_sha": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+              }
+            }
+          }
+        },
+        "membership_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "group_created_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "authority_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitDestinationObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "push_operation_id",
+        "candidate_sha",
+        "repository",
+        "local_remote_config_digest",
+        "observed_at_utc",
+        "push_started_at_utc",
+        "identity_verified",
+        "visibility_verified",
+        "operation_evidence_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "push_operation_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "candidate_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "repository": {
+          "$ref": "#/$defs/GitRepositoryIdentity"
+        },
+        "local_remote_config_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "push_started_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "identity_verified": {
+          "type": "boolean"
+        },
+        "visibility_verified": {
+          "type": "boolean"
+        },
+        "operation_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitLocalCheckEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "command_ref",
+        "task_id",
+        "task_revision",
+        "delivery_id",
+        "phase",
+        "revision",
+        "result",
+        "execution_verified",
+        "log_refs",
+        "reused_from_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "local_check"
+        },
+        "command_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "phase": {
+          "enum": [
+            "payload",
+            "closing"
+          ]
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "NOT_RUN",
+            "UNKNOWN"
+          ]
+        },
+        "execution_verified": {
+          "type": "boolean"
+        },
+        "log_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "reused_from_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "GitCheckSourceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "source_kind",
+        "host",
+        "repository_id",
+        "record_id",
+        "run_id",
+        "job_id",
+        "attempt",
+        "created_at_utc",
+        "source_app",
+        "context",
+        "workflow_path",
+        "job_name",
+        "matrix",
+        "event",
+        "reported_head_sha",
+        "native_status",
+        "native_conclusion",
+        "raw_api_ref",
+        "check_suite_id",
+        "workflow_head_sha",
+        "job_head_sha",
+        "job_check_run_url"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "check_source"
+        },
+        "source_kind": {
+          "enum": [
+            "actions_check_run",
+            "external_check_run",
+            "commit_status"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19}$"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attempt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_app": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "workflow_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "matrix": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "event": {
+          "enum": [
+            "push",
+            "pull_request",
+            "pull_request_review",
+            "pull_request_target",
+            "deployment",
+            "deployment_status",
+            "merge_group",
+            "external_app",
+            "workflow_dispatch",
+            "repository_dispatch"
+          ]
+        },
+        "reported_head_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "native_status": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "native_conclusion": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "raw_api_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "check_suite_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workflow_head_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_head_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_check_run_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "GitCheckExecutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "check_id",
+        "subject_sha",
+        "tested_checkout_sha",
+        "source_evidence_ref",
+        "command_results"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "check_execution"
+        },
+        "check_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "subject_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "tested_checkout_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "source_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "command_results": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "command_ref",
+              "revision",
+              "result",
+              "log_ref"
+            ],
+            "properties": {
+              "command_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+              },
+              "result": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "NOT_RUN",
+                  "UNKNOWN"
+                ]
+              },
+              "log_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            }
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "GitPullRequestBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "host",
+        "repository_id",
+        "pull_request_number",
+        "head_ref",
+        "base_ref",
+        "head_sha",
+        "base_sha",
+        "tested_merge_sha",
+        "observed_at_utc",
+        "api_evidence_ref",
+        "head_repository_id"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "pull_request_binding"
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "pull_request_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "head_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "base_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "head_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "base_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "tested_merge_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "observed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "api_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "head_repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "GitCanaryEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "credential_class",
+        "check_plan_ref",
+        "observation_ref",
+        "git_evidence_ref"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "canary"
+        },
+        "credential_class": {
+          "enum": [
+            "local_user",
+            "github_app",
+            "pat",
+            "github_token"
+          ]
+        },
+        "check_plan_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "observation_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "git_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "GitPushOperationEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "push_operation_id",
+        "lifecycle_id",
+        "retry_index",
+        "candidate_sha",
+        "credential_class",
+        "command_record_ref",
+        "lifecycle_started_at_utc",
+        "deadline_at_utc",
+        "push_started_at_utc",
+        "push_completed_at_utc",
+        "intervening_events",
+        "preflight",
+        "postflight"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "push_operation"
+        },
+        "push_operation_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "lifecycle_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "retry_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "candidate_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "credential_class": {
+          "enum": [
+            "local_user",
+            "github_app",
+            "pat",
+            "github_token"
+          ]
+        },
+        "command_record_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "lifecycle_started_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deadline_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "push_started_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "push_completed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "intervening_events": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "enum": [
+              "wait",
+              "interruption",
+              "remote_config_change",
+              "other_push"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "preflight": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "query_id",
+            "lifecycle_id",
+            "retry_index",
+            "candidate_sha",
+            "repository",
+            "remote_config_digest",
+            "started_at_utc",
+            "completed_at_utc",
+            "observed_remote_sha",
+            "raw_api_ref"
+          ],
+          "properties": {
+            "query_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "lifecycle_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "retry_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "candidate_sha": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            "repository": {
+              "$ref": "#/$defs/GitRepositoryIdentity"
+            },
+            "remote_config_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "started_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "completed_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "observed_remote_sha": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "raw_api_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        },
+        "postflight": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "query_id",
+            "lifecycle_id",
+            "retry_index",
+            "candidate_sha",
+            "repository",
+            "remote_config_digest",
+            "started_at_utc",
+            "completed_at_utc",
+            "observed_remote_sha",
+            "raw_api_ref"
+          ],
+          "properties": {
+            "query_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "lifecycle_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "retry_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "candidate_sha": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            "repository": {
+              "$ref": "#/$defs/GitRepositoryIdentity"
+            },
+            "remote_config_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "started_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "completed_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "observed_remote_sha": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "raw_api_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        }
+      }
+    },
+    "GitCICollectionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "collection_id",
+        "host",
+        "repository_id",
+        "subject_sha",
+        "check_plan_sha256",
+        "started_at_utc",
+        "completed_at_utc",
+        "pages"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "ci_collection"
+        },
+        "collection_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "subject_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "check_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "started_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pages": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "query_id",
+              "endpoint",
+              "requested_sha",
+              "page_number",
+              "next_page_number",
+              "raw_page_ref",
+              "workflow_run_id",
+              "workflow_run_attempt"
+            ],
+            "properties": {
+              "query_id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "endpoint": {
+                "enum": [
+                  "check_runs",
+                  "commit_statuses",
+                  "workflow_runs",
+                  "workflow_run_attempt"
+                ]
+              },
+              "requested_sha": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+              },
+              "page_number": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "next_page_number": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 10000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "raw_page_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "workflow_run_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,19}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "workflow_run_attempt": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "GitLiveVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "verification_id",
+        "assignment_ref",
+        "task_id",
+        "task_revision",
+        "delivery_id",
+        "check_plan_sha256",
+        "subject_sha",
+        "observed_remote_sha",
+        "started_at_utc",
+        "completed_at_utc",
+        "closing_observation_ref",
+        "collection_evidence_ref",
+        "git_evidence_ref",
+        "current_pr_ref",
+        "files",
+        "archive_publication"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "live_verification"
+        },
+        "verification_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "check_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "subject_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "observed_remote_sha": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "started_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closing_observation_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "collection_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "git_evidence_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "current_pr_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "files": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/GitEvidenceFile"
+          }
+        },
+        "archive_publication": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "format_version": {
+              "const": 1
+            },
+            "kind": {
+              "const": "archive_publication"
+            },
+            "planned_archive_path": {
+              "type": "string",
+              "pattern": "^artifacts/git-delivery/[0-9a-f-]{36}$"
+            },
+            "archive_manifest_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "archive_seal_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "published_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "readback_completed_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "format_version",
+            "kind",
+            "planned_archive_path",
+            "archive_manifest_sha256",
+            "archive_seal_sha256",
+            "published_at_utc",
+            "readback_completed_at_utc"
+          ]
+        }
+      }
+    },
+    "GitCommandLifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "operation_id",
+        "lifecycle_id",
+        "retry_index",
+        "assignment_ref",
+        "task_id",
+        "task_revision",
+        "delivery_id",
+        "command_state",
+        "contract",
+        "result"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "command_lifecycle"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "lifecycle_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "retry_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "assignment_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+        },
+        "task_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "delivery_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "command_state": {
+          "enum": [
+            "NOT_STARTED",
+            "RUNNING",
+            "SETTLING",
+            "SUCCEEDED",
+            "FAILED",
+            "UNKNOWN"
+          ]
+        },
+        "contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command_id",
+            "task_mode",
+            "owner",
+            "baseline_ref",
+            "executable",
+            "argv",
+            "cwd",
+            "tool_versions",
+            "command_source_ref",
+            "input_refs",
+            "contracts",
+            "fingerprints",
+            "expected_writes",
+            "temporary_roots",
+            "cache_roots",
+            "log_roots",
+            "download_roots",
+            "network_scope",
+            "child_processes",
+            "side_effect_class",
+            "permission_ref",
+            "storage_mode",
+            "volumes",
+            "budget_refs",
+            "retention_ref",
+            "deadline_at_utc",
+            "monitor_interval_ms",
+            "run_id",
+            "output_root",
+            "cleanup_plan_ref",
+            "cleanup_permission_ref"
+          ],
+          "properties": {
+            "command_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "task_mode": {
+              "enum": [
+                "docs_only",
+                "implement",
+                "integrate",
+                "review",
+                "verify"
+              ]
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "baseline_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "executable": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "argv": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 256,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "cwd": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "tool_versions": {
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 32,
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "command_source_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "input_refs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "contracts": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "fingerprints": {
+              "type": "object",
+              "maxProperties": 128,
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "expected_writes": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "temporary_roots": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "cache_roots": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "log_roots": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "download_roots": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "network_scope": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "child_processes": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "side_effect_class": {
+              "enum": [
+                "read_only",
+                "write_temporary",
+                "write_durable",
+                "external_service"
+              ]
+            },
+            "permission_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "storage_mode": {
+              "enum": [
+                "bounded_small",
+                "budgeted"
+              ]
+            },
+            "volumes": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "budget_refs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "retention_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "deadline_at_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "monitor_interval_ms": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "run_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "output_root": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "cleanup_plan_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "cleanup_permission_ref": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "started_at_utc",
+            "completed_at_utc",
+            "command_exit_status",
+            "termination_reason",
+            "cleanup_status",
+            "final_status",
+            "outputs_created",
+            "artifact_refs"
+          ],
+          "properties": {
+            "started_at_utc": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "completed_at_utc": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "command_exit_status": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": -2147483648,
+                  "maximum": 2147483647
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termination_reason": {
+              "enum": [
+                "not_started",
+                "running",
+                "completed",
+                "cancelled",
+                "timeout",
+                "unknown"
+              ]
+            },
+            "cleanup_status": {
+              "enum": [
+                "NOT_REQUIRED",
+                "PENDING",
+                "RUNNING",
+                "SUCCEEDED",
+                "FAILED",
+                "UNKNOWN"
+              ]
+            },
+            "final_status": {
+              "enum": [
+                "NOT_STARTED",
+                "RUNNING",
+                "SETTLING",
+                "SUCCEEDED",
+                "FAILED",
+                "UNKNOWN"
+              ]
+            },
+            "outputs_created": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "artifact_refs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 4096,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            }
+          }
+        }
+      }
+    },
+    "GitCommitScopeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format_version",
+        "kind",
+        "phase",
+        "task_ids",
+        "priority",
+        "priority_reason_ref",
+        "shared_invariant_ref",
+        "breaking_decision_ref",
+        "changed_paths"
+      ],
+      "properties": {
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "commit_scope"
+        },
+        "phase": {
+          "enum": [
+            "payload",
+            "closing"
+          ]
+        },
+        "task_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 108,
+          "items": {
+            "type": "string",
+            "pattern": "^T(?:00[1-9]|0[1-9][0-9]|10[0-8])$"
+          },
+          "uniqueItems": true
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "priority_reason_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shared_invariant_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "breaking_decision_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "changed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
+```
+<!-- END MCE4D_GIT_GOVERNANCE_SCHEMA_V1 -->
+
+Semantic invariants (schema shape PASS chưa đủ): delivery_id unique UUID; closing_marker đúng `MCE4D-Delivery-ID: <delivery_id>`, immutable sau push. closing_proposed có closing_parent_sha=verified_payload_sha=P; payload observation PASS cùng plan/P và artifact thật. Plan IDs và native execution identities theo EVIDENCE-COMPLETE-01 không trùng/nhập nhằng; expected set hợp project+repo, VERIFIED, nonempty, canary_ref resolve actual successful source/execution theo CANARY-LINK-01, không chỉ nonempty; required local/check evidence theo EVIDENCE-COMPLETE-01. T001 first plan được freeze trước P với canary_ref dạng `delivery:<delivery_id>:payload` (locator xác định trước, chưa phải PASS); sau P observer resolve chính canary/payload run thành actual evidence trước C, không đổi plan bytes để chèn run ID. Các task sau trỏ canary đã verified còn compatible credential/event; thay credential/event cần canary mới trong payload attempt và reverify trước C. Không đặt own closing-C result làm prerequisite của plan/static CI. Canary ở plan.canary_ref chứng minh delivery credential/event; không coi nó chứng minh merge_group chưa được phép chạy. Merge-stage trigger/membership checks chỉ thực thi khi queue có authority riêng; không tạo circular prerequisite cho T001/C. Repository/private-public authority và eligible event theo GIT-01/04. Ordered commits liên tục theo approved branch ancestry; ordered_commits trong attempt chỉ payload commits đã biết SHA, không chứa own closing C; no-op dùng actual existing P, không giả commit rỗng. closing C exactly one parent P và unique marker+trailer `MCE4D-Delivery-Phase: closing`, không resolve chỉ bằng mutable ref. Hai C cùng marker hoặc thiếu P/ancestry/evidence => UNKNOWN, không đoán.
+
+`CLOSE-DIFF-01`: parser phân biệt content với metadata, không exempt toàn file .md hoặc cả section. P→C chỉ được đổi đúng hàng task hiện tại S19 cột Status/Owner/Evidence và progress derived; S20 gate status/evidence được chứng minh bởi receipts (proposal pending); S21 scoped evidence/command/delivery records (không ADR, schema/contract/check-plan bytes); S22 derived active/pending/progress/final fields (không scope/authority/denominator). Ngoài các leaf/row whitelist này mọi tracked file byte-identical P, gồm docs sources, source/tests/dependencies/workflows, runtime/gov schemas, DDL, fixtures và artifacts. Validator reject malformed table/YAML/JSON, unknown changed field, payload drift, other-task status rewrite, changed plan hoặc missing baseline. Closing không đổi frontmatter/requirements/cases/design. S22 derived execution_checkpoint và S21 current-task selection metadata được phép trong exact leaf whitelist, phải cùng UUID/task_revision P→C; không đổi authoritative selector sang task/attempt khác dưới closing exemption. Có technical change => payload mới, affected full checks, attempt UUID mới. Classifier phải có positive/negative fixtures và checker parity static/observer tại T003/T107; không blanket file/path exemption. Proof v1.6.4 chỉ kiểm pure decision/reference fixtures; parser/diff classifier và live observer sản phẩm chưa triển khai, phải xây và kiểm trên actual Git trees tại T003 trước claim enforcement.
+
+`DONE-EVAL-01`: static CI kiểm receipt P, immutable plan, declared proposal counts và CLOSE-DIFF-01; không query/wait own running CI. External observer theo DELIVERY-ORDER-01: resolve unique C từ marker+P+approved ancestry → validate retained P/C receipts/local/static/CI/source/plan/selector/PR bindings và repository binding đúng thời điểm → write/flush/seal/publish/readback archive hợp lệ theo ARCHIVE-PUBLISH-01 → pin publication projection trong secured caller context → lấy fresh GitLiveVerification độc lập theo LIVE-CI-01, latest eligible execution/actual checkout và current remote C/PR/canary → retain/flush/hash/readback live record → mới effective DONE/auto-next. P/C observations dùng dựng archive khác final live invocation; không chạy final verifier trước publication. Candidate S19 DONE thiếu bất kỳ bước nào effective VERIFY; fail/unknown không tăng progress/gate/dependency. Offline chỉ historical PASS của exact sealed archive theo current selector, không final/current live PASS; pending/staging-only không DONE. Branch đi tiếp không làm historical C mất hiệu lực. Source/contract regression reopen task và invalidate affected evidence theo S19/AW-03. S22 chỉ derived cache. Missing/invalid phase/task/revision/ref/ordered ancestry/claim/acquisition chronology theo DELIVERY-LINK-01/GIT-DATA-11 => VERIFY/UNKNOWN; không fallback archive cũ cho reopened task hoặc giả archived observation là fresh API read. All phase command identity và every PR source (kể cả current_pr_ref có api_evidence_ref riêng) phải qua GIT-DATA-12; full P→C/resume order theo DELIVERY-FLOW-01, không coi close-only stage order là đủ.
+
+
+### GIT-DATA-05 — Required evidence, CI ordering và PR binding (v1.6.6)
+
+`EVIDENCE-COMPLETE-01`: local_evidence_refs resolve TOÀN BỘ GitLocalCheckEvidence; đối chiếu đúng tập plan.local_check_refs cho từng phase payload(P)/closing(C), không chỉ record đầu. Mỗi required command có đúng một kết quả PASS, execution_verified=true, đúng task/revision/delivery/source SHA và nonempty retained logs; missing/duplicate/FAIL/NOT_RUN/UNKNOWN/wrong kind đều chưa DONE. Closing reuse chỉ cho command_ref nằm trong closing_local_reuse_refs đã freeze, reused_from_ref trỏ đúng payload record PASS, log_refs giữ đúng original payload logs và actual CLOSE-DIFF-01 equivalence; record reuse giữ revision=P và không giả đã execute tại C. Khi không reuse, closing command phải thực chạy trên C. Không dùng allowlist reuse để bỏ required GitHub jobs ở C.
+
+GitObservedCheck.source_evidence_ref trỏ GitCheckSourceEvidence và raw_api_ref tới sanitized API snapshot; execution_evidence_ref trỏ GitCheckExecutionEvidence khi có actual execution; null khi chưa chạy/không còn execution proof, execution_verified=false, không dựng placeholder record. Native source ID/app/context/event/workflow/job/matrix/reported SHA/order phải khớp actual retained source; Selected latest required success có command_results khớp đủ command_refs của GitCheckSpec, PASS trên tested_checkout_sha, logs resolve members. Older fail/nonterminal candidates giữ native source summaries và actual partial execution nếu có; không bắt old failure PASS hoặc invent execution cho queued run để cho latest repaired success tiếp tục. Với selected PASS, evidence_refs chứa đúng hai typed refs cùng logs/source cần tái kiểm; nonterminal source-only giữ source/raw refs, không fake execution; hash đúng của plan.json không thay execution evidence. Không tin execution_verified/binding_verified/result flags một mình. Plan unique IDs VÀ unique native execution identity(kind,context,source_app,workflow,job,matrix,event); checkout/reported binding là điều kiện kiểm chứng, không tạo identity mới; expand event sets để reject overlapping duplicate identities, không dùng hai IDs cho cùng job execution hoặc collapse check-run và commit-status cùng tên.
+
+`CANARY-LINK-01`: T001 bootstrap canary_ref bắt buộc delivery:<current UUID>:payload, resolve chính payload observation đã retained và kiểm eligible source/execution thật; credential_class lấy từ actual push operation evidence. Các task sau có thể dùng locator này cho fresh canary trong current P, hoặc private member ref tới GitCanaryEvidence + retained immutable source plan/observation/Git ancestry qua git_evidence_ref (PR canary giữ parent proof). Generic historical canary không trỏ current attempt/plan để tạo cyclic prerequisite; current fresh canary dùng delivery:<UUID>:payload. Kiểm host/repository/credential và selected successful required delivery events compatible cả P/C theo CANARY-EVENT-01; missing/wrong kind/cyclic/self-closing ref hoặc canary chưa successful => UNKNOWN. Không sửa plan bytes sau run để chèn result, không coi string khác rỗng là successful canary. Queue-only canary không thay delivery stage. Historical canary command MUST khớp delivery_id của chính canary receipt theo PHASE-COMMAND-IDENTITY-01; không mượn command của current delivery hoặc ép historical UUID bằng UUID task hiện tại.
+
+`CI-ORDER-01`: parse RFC3339 có timezone thành instant UTC trước ordering, giữ fractional precision; NATIVE-MAP-01/native parity chạy trước grouping/max; KHÔNG so raw timestamp strings. Actions chọn newest(run created instant, numeric workflow run ID), rồi max actual job run_attempt RIÊNG mỗi check identity theo JOB-ATTEMPT-01; external check-run chọn newest(check creation instant, numeric check ID), commit status newest(status creation instant, numeric status ID) theo đúng source/context. run_id normalized là decimal workflow-run/check/status ID theo source_kind, không tự chế Actions run cho external/status. Validate input candidates trước max; malformed/unknown/incomplete pagination hay ambiguous source => UNKNOWN, không drop để reuse green. Same generation có conflicting run-created data hoặc duplicate identity/attempt khác result => UNKNOWN. Latest nonterminal/fail/skipped/neutral/unknown luôn chặn required PASS. Timestamp offset tương đương phải so bằng instant; primitive source decoding không tự làm tròn mất phần thập phân.
+
+`PR-BIND-01`: observations có delivery check checkout_binding=pr_merge bắt buộc pull_request_binding_ref tới GitPullRequestBinding của đúng phase; head_sha=subject P hoặc C, host/repo/PR/head_ref/base_ref/base_sha/tested_merge_sha từ actual API snapshot ở api_evidence_ref. Actual Git ancestry evidence MUST chứa synthetic M với đúng ordered parents [base_sha,head_sha], và selected latest required pr_merge check phải tested_checkout_sha=tested_merge_sha=M/pr_head_sha=head/pr_base_sha=base. Không dùng cùng selected M cho hai head khác nhau. Older candidate của same subject với base/merge cũ được giữ làm historical source evidence, không dùng nó thay selected current binding hoặc buộc nó khớp base mới. P được kiểm bằng retained snapshot/parents đúng thời điểm payload và PR-ACQUISITION-TIME-01; sau push C không đòi current PR quay lại head P. Live observer chỉ đối chiếu current PR head/base/ref/merge của C với live closing observation; current C binding đổi thì stale/UNKNOWN và chạy lại affected checks, giữ P historical. Không truyền hai trạng thái hiện hành P/C cho cùng PR hoặc đổi nhãn retained P thành current. Offline historical archive dùng retained snapshot+parents đúng revision, không giả current merge-ready. Head-only và merge-group observation pull_request_binding_ref=null; merge_group dùng MERGE-BIND-01 riêng. Cờ binding_verified không thay parent/currentness proof. T003/T107 có positive PR P/C hai M đúng, wrong parent/base/head/repo/ref/current snapshot/missing proof và stale reopen negatives. Mỗi GitPullRequestBinding, gồm distinct current_pr_ref, tự resolve/validate api_evidence_ref của chính nó theo PR-SOURCE-PARITY-01; nguồn của closing binding không thay nguồn của current PR snapshot.
+
+### GIT-DATA-02 — Evidence archive bền vững trước auto-next
+
+Mỗi delivery MUST có owned private sanitized archive theo GitEvidenceArchive, lưu ngoài closing commit C trước effective DONE/auto-next: attempt+immutable plan, actual P/C, payload/closing observations, run/job/attempt IDs/event/app/context/actual checkout bindings, terminal summaries, local commands/environment/results và log/artifact subset đủ tái kiểm assertions. Giữ failure summary/seed liên quan; không chỉ URLs hoặc badge. Files tồn tại, byte_length/SHA256 verify, relative paths unique/contained; manifest liệt kê SHA256 của từng member nhưng KHÔNG liệt kê/hash chính manifest hoặc enclosing archive trong chính nó. Hash archive/manifest được ghi bởi external handover hoặc ordinary next-task commit. Không secret/raw private source vượt quyền; hash là integrity, không giả chữ ký/attestation. Payload/closing observation lưu destination_observation thực của chính push đã verify, candidate_sha=subject_sha và repository/remote/ref khớp plan, không null. Merge observation không thực hiện push thì destination_observation=null; không mượn quyền delivery để enqueue/merge. Fresh read là điều kiện trước gửi, không bảo đảm admin không đổi visibility sau quan sát. GIT-DATA-01 schema+semantic validation áp dụng archive/observations; bad/missing archive giữ VERIFY dù CI xanh.
+
+Plan/payload/closing observations liên kết cùng delivery_id/check_plan_sha256; closing observation subject_sha=C,parent_sha=P,result=PASS, binding_verified/required_set_verified=true và observed_remote_sha=C tại delivery. Payload observation subject_sha=P và remote=P khi verify payload. attempt_ref/selection_ref/git_evidence_ref và các member refs phải thuộc files, resolve đúng typed attempt/selection/actual Git ancestry evidence; check evidence refs resolve đúng typed source/execution/log members theo EVIDENCE-COMPLETE-01; unique IDs/context không collapse missing check. Reconstruct evaluator từ archive phải ra cùng conclusion; failed/unknown/nonterminal không archive thành PASS. `DELIVERY-LINK-01` bắt buộc đồng thời: attempt/selection/archive cùng assignment_ref, task_id, task_revision, delivery_id; active selector đúng hàng S19; phase closing CHỈ nhận closing observation, phase payload CHỈ payload observation; ordered_commits cuối là verified_payload_sha=P và ancestry liên tục từ base_sha; payload_mode=changes cho normal chain, verified_noop chỉ một existing P/base_sha=P có fresh checks, không invent commit. closing_parent_sha=P, C có đúng parent P và marker/trailers. payload_observation_ref và closing_observation_ref khác nhau, resolve đúng member được manifest hash, parse strict+canonical, không hardcode filename; check_plan_ref/local_evidence_refs/check evidence refs phải resolve trong archive. Không tin flags/result một mình: kiểm schema+liên kết+actual Git/CI/static scope và retained source evidence. Mỗi ref phải trỏ đúng kind/phase/revision, không dùng hash đúng của object sai loại. T003/T107 phải có bốn regression negatives v1.6.4 (wrong closing phase, wrong task, swapped pointer, ordered payload mismatch), cộng wrong assignment/revision/ID/plan/path/hash/ancestry. Document proof không được dùng evaluator bỏ các điều kiện này làm oracle PASS. Budget retention trước run, cap/sanitize logs, preserve evidence cần nghiệm thu; archive delivery không disposable test scratch.
+
+GitHub logs/artifacts/checks có retention và có thể bị xóa [REF65]; không dựa retention mặc định để giữ proof toàn dự án. Retain owned archive đến final acceptance/handover và retention authority đã thỏa thuận, không tự xóa bằng TTL. Default authority A045/assignment giữ evidence ít nhất đến final user acceptance và sau đó không tự xóa; không cần hỏi lịch retention để đi tiếp. Dời/xóa archive sau bàn giao phải có authority riêng và bảo toàn copy cần thiết. Historical PASS chỉ chứng minh revision lúc quan sát, không là live proof current final HEAD. Trước bàn giao kiểm live latest HEAD+expected checks và transfer archive/index hashes trong quyền; không mutate org retention/admin, publish release hoặc tăng raw log vô hạn. Final observer archive ngoài Git tránh own-result commit loop; S21 nhận locator/hash ở ordinary next commit hoặc final handover, S19 vẫn tracker duy nhất.
+
+### GIT-DATA-03 — Archive publication và khôi phục không phụ thuộc phiên trước
+
+Trước payload P, attempt ghi planned_archive_path=`artifacts/git-delivery/<delivery_id>` và archive_staging_path=`artifacts/git-delivery/.staging-<delivery_id>`, workspace-relative, UUID lowercase khớp delivery_id. Đây là planned locators, KHÔNG artifact/evidence đã tồn tại hoặc PASS. T001 tạo root private/owned, gitignored; Scope dữ liệu delivery archive/command evidence được giữ ngoài tracked payload theo S21, không là authorized source delta bị bỏ sót; metadata pointer/hash vẫn ordinary next commit/final handover. không dùng OS temp/TTL cache cho retained delivery evidence. Secure handle/identity/volume/containment, scoped publication ownership và budget S51 áp dụng; không source/credential/remote upload. Chưa có coding kickoff không tạo actual delivery dirs/receipts.
+
+`ARCHIVE-PUBLISH-01`: (1) tạo exclusive staging dir đúng UUID dưới root đã verify; (2) ghi từng member bounded, flush/fsync theo adapter đã kiểm, hash actual bytes, giữ plan immutable; (3) DELIVERY-LINK-01 và checks P/C PASS, ghi canonical GitEvidenceArchive vào `manifest.json` rồi flush; (4) ghi canonical GitArchiveSeal vào `seal.json` với SHA256 raw manifest bytes rồi flush; (5) xác minh lại all members/seal và publish staging→planned final directory bằng same-volume atomic rename/no replacement dưới delivery-scoped ownership; directory durability chỉ claim theo actual OS/filesystem proof; (6) secure-open/readback final seal+manifest/members thành công mới effective DONE/auto-next. Manifest files KHÔNG gồm manifest.json, seal.json hoặc enclosing archive; seal chỉ hash manifest, không hash chính seal; outer hash được ghi ordinary next commit/final handover. Không selfhash cycle.
+
+Final directory tồn tại: validate exact delivery/task/revision/P/C/plan/member hashes và seal; đúng thì idempotent reuse, khác thì integrity conflict, không overwrite. Staging chưa publish không DONE dù đủ file hoặc đã có seal. Crash trước bất kỳ bước nào giữ VERIFY/UNKNOWN; resume derive exact hai paths từ current attempt/UUID, không scan toàn ổ hoặc dựa S22 cache. Revalidate actual Git/CI và staging inputs; đủ retained receipts + valid seal thì hoàn tất publication trong quyền, partial/ambiguous thì giữ evidence và khôi phục missing steps hoặc ghi exact blocker. Nếu final published hợp lệ nhưng chưa lưu pointer vào task kế, resume dùng deterministic path công nhận historical receipt đúng selector, không duplicate commit/archive. Final latest HEAD vẫn live checks theo AW-06 và cross-record/publication chronology DELIVERY-TIME-01.
+
+Không tự xóa crash leftovers hoặc steal lease bằng TTL/PID; staged invalid/unknown giữ nguyên/report-only. Người viết cuối release archive ownership sau writers dừng. T003 bootstrap publication/decoder có bounded local positive/crash-boundary fixtures; T107 contract negatives; T033/OS tasks verify actual flush/rename/containment. Reference document proof có thể chạy small owned file/process-exit simulation, không nhận là power-loss durability hoặc GitHub enforcement.
+
+### GIT-DATA-04 — Attempt hiện hành, invalidation và checkpoint
+
+`ACTIVE-DELIVERY-01`: S19 vẫn giữ status duy nhất. Cột Evidence khi thực thi giữ `E###;task_revision=<n>;delivery=<UUID|NONE>`, E### trỏ GitTaskDeliverySelection cùng task/assignment/revision ở S21. Selection chỉ identity/evidence metadata, không status tracker khác. First attempt revision1; allocated_at_utc/updated_at_utc theo SELECTION-TIME-01, first allocation không là snapshot refresh; technical/plan change hoặc supersede attempt tăng revision đúng1, UUID mới, supersedes_delivery_id trỏ attempt trước và reason/invalidation refs thật. Transient rerun cùng immutable P/C không đổi revision/UUID. Reopen regression cập nhật S19 TODO/VERIFY đúng phase + revision mới/active_delivery_id=null trước side effects mới; assign new UUID trong revision đó khi bắt đầu attempt. Selection history append-only và RESUME-LINK-01 bắt buộc, previous_selection_ref trỏ đúng record revision trước (null chỉ revision1), current pointer theo đúng S19 Evidence, không theo UUID lexical/timestamp/MAX hoặc S22.
+
+Mỗi attempt, archive/seal và closing proposal cùng task_revision+assignment+delivery. Static CI reject row↔selection↔attempt mismatch; Payload VERIFY và C candidate DONE phải giữ cùng current selector/task_revision; chỉ metadata evidence tăng thêm được phép, đổi selector/revision là new payload. observer chỉ đánh giá active selector. Archive cũ vẫn historical nhưng không làm revision mới DONE. Interrupted revision2 pending trong khi revision1 PASS => effective VERIFY; không fallback old green. Không biết current selector, duplicate/conflicting selectors hoặc thiếu invalidation linkage => UNKNOWN/VERIFY, resolve theo source/Git trước tiếp. Không nâng revision để hạ test hoặc xóa failure. Các task/gates/evidence bị ảnh hưởng regression phải reopen theo AW-03; giữ denominator108.
+
+`CHECKPOINT-01`: S22.execution_checkpoint=null khi chưa thực thi; sau đó là GitExecutionCheckpoint, summary derived từ current S19/S21 và actual Git/tree/index/command identity. Lưu command_record_ref thay raw argv/secrets, operation_id liên kết S51, unfinished checks/blockers/next action hữu hạn; no chain-of-thought. command_state=UNKNOWN khi mất process result; không biến crash thành success. Null delivery chỉ khi chưa có active attempt; task/revision/ID phải đồng bộ selector, planned path đúng UUID. Checkpoint có digest của observed code/index excluding derived checkpoint bytes để tránh selfhash; không hardcode SHA của commit vào chính commit đó. C có thể mang proposal checkpoint, actual C/hash/result ghi external/ordinary next update. Tree digest recipe tại T003 chỉ loại subtree S22.execution_checkpoint khỏi bytes/structured projection của SPEC để tránh selfhash, không loại leaf khác/source/contract/tests hoặc cả SPEC; index digest dùng cùng projection trên staged tree đã quan sát. T003 phải pin encoding/path order/mode/source-scope recipe trước hashing; chỉ known task-owned inputs, không follow arbitrary links. Checkpoint stale không là lý do reset/clean/stash hoặc ghi đè user changes.
+
+Resume: re-read authority/source → current S19 selector → local commits/remote/plan/CI cùng UUID+revision → deterministic staging/final archive → settle owned command bằng verified process identity → tiếp đúng next action; S22 mismatch theo CHECKPOINT-CURRENT-01 thì re-read secured current command rồi rebuild derived checkpoint, không đổi authoritative selector theo cache. Chưa có selector/new fields không đoán DONE hoặc reapprove assignment; resolve bằng preserved rows/evidence/Git hay exact blocker AW-04. CLOSE-DIFF-01 cho phép đúng derived checkpoint leaves ở S22 và scoped selection/evidence record của task ở S21; schema/authority/scope changes vẫn payload.
+
+### GIT-DATA-06 — Resume semantics, push freshness và native API mapping (v1.6.6)
+
+`RESUME-LINK-01`: closure phải reconstruct current selection history từ previous_selection_ref (private archived member/S21 locator có actual retained copy), không chỉ so vài fields của current records. Revision1 previous/supersedes=null và invalidation_refs rỗng; mỗi revision sau tăng đúng1, previous cùng task/assignment, old active UUID khác current UUID, supersedes_delivery_id=old active UUID và ít nhất một invalidation ref resolve retained reason evidence. Chain thiếu/loop/duplicate UUID/self-supersede/jump hoặc inconsistent timestamps => UNKNOWN. Current revision active=null khi reopened chưa claim không DONE; claim UUID mới cùng revision không tăng revision lần hai. Transient same immutable attempt giữ revision/UUID; không tái nhãn archive cũ thành revision mới. Archive giữ copies của chain/invalidations dùng để kiểm, budget bounded; vượt budget thì block rõ, không cắt chain rồi PASS.
+
+CHECKPOINT-01 bổ sung semantic oracle `checkpoint ↔ current selector ↔ actual command`: task/revision/delivery/planned path đúng current selection; active task không được bỏ UUID đang có. RUNNING/SETTLING/SUCCEEDED/FAILED cần command_record_ref+operation_id resolve đúng typed common GitCommandLifecycle/S51 theo COMMAND-LIFECYCLE-01 và actual command_state; UNKNOWN giữ operation identity nếu đã có command, không suy exit. NOT_STARTED chỉ null command identity khi chưa có command. Idle(task=null) không mang task revision/delivery/path hoặc running command. Observed branch/head/tree/index fingerprints phải khớp context đã secured-read; mismatch là stale checkpoint cần derive lại, không sửa authoritative selector/reset user tree. T003 pin digest recipe và T107 có cross-field/state positives/negatives; shape-required-fields PASS riêng chưa là semantic PASS. Checkpoint trước/giữa/sau commit/push/CI/archive recheck actual state theo GIT-06/CHECKPOINT-ALLOC-01, không bỏ allocated operation hoặc auto-repeat side effects.
+
+`PUSH-FRESH-01`: destination_observation.operation_evidence_ref resolve GitPushOperationEvidence + typed common GitCommandLifecycle/S51 command_record_ref theo COMMAND-LIFECYCLE-01. Mỗi push/retry/resume có operation/lifecycle/query identities thực; retry_index và lifecycle_id khớp current command. preflight query phải thuộc chính lifecycle/retry/candidate/remote config/repository, completed sau lifecycle start và trước push_start; observed_at của destination observation bằng actual preflight completion, push_started_at bằng actual push start. Không wait/interruption/config-change/other-push giữa read và gửi: có sự kiện thì bỏ observation cũ, query mới trong retry/lifecycle mới rồi mới gửi. Parse instants; không chỉ kiểm observed_at<=push_start hoặc bịa TTL để gọi fresh. Command deadline hữu hạn đã xác minh, mọi phase trong deadline. Postflight là query ID khác, sau push completion, cùng lifecycle/retry/repo/ref/config và observed_remote_sha=subject; fresh visibility/identity phải khớp immutable plan và authority. Raw sanitized query snapshots và command lifecycle trace retained; flags không thay evidence. Unknown/missing/read failure giữ source/evidence và chưa push/DONE. History validation không giả atomic chống admin visibility race. T003/T107 kiểm old-year read, retry/resume/lifecycle/query/config/repo mismatch và valid pre/post pair.
+
+`API-NORMALIZE-01`: GitObservedCheck là normalized record; GitCheckSourceEvidence giữ native status/conclusion và sanitized raw API subset với source identity/hash [REF68,REF69]. source_app baseline format=<host>:app:<numeric App ID> cho check-run hoặc <host>:creator:<numeric creator ID> cho commit status; verify against native app.id/creator.id, không display name. Sanitized source envelope tách actual API record/run/job subsets và runner_matrix metadata có execution artifact proof; không nhận matrix/actual checkout là field REST tự có. Actual adapter MUST pin API/version/field mapping tại T001/T003, verify canary, không điền workflow/run/attempt giả cho nguồn không có. Normalize theo bảng dưới; unknown giữ record để latest candidate chặn PASS, không filter bỏ. Collector pagination terminal+nonterminal đầy đủ là prerequisite binding_verified/required_set_verified; partial/error/ambiguous source => UNKNOWN. Source record và raw_api_ref phải resolve đúng kind/host/repository/record ID/app/creator/context/event/reported SHA/timestamps và NATIVE-GRAPH-01 linkage; values do client tự khai không là actual API proof. Fixtures normalized nguồn giả chỉ reference proof, không GitHub enforcement.
+
+| Native source | Identity / ordering / fields | Normalized state |
+|---|---|---|
+| Actions check-run + workflow run/job | run_id=actual decimal workflow run ID, attempt=actual run_attempt, created_at=workflow run created_at; check record_id riêng, job/workflow/matrix từ actual job+workflow evidence | queued→queued; in_progress→in_progress; waiting/pending/requested→waiting; conclusion=null của nonterminal→unknown. completed giữ supported conclusion; stale/null/unknown conclusion→unknown, không success |
+| External App check-run | run_id=actual decimal check ID, attempt=1 (không invent workflow attempt); created_at=check created_at; workflow/job/job_id=null trong baseline normalized external source, event=external_app | Cùng check-run mapping; source_app=verified host+App ID, execution logs/source proof riêng vẫn bắt buộc |
+| Commit status | run_id=actual decimal status ID, attempt=1; created_at=status created_at; workflow/job/job_id=null trong baseline normalized status source, creator ID verified; context case-insensitive theo provider API | success→completed/success; failure hoặc error→completed/failure; pending→waiting/unknown; unknown→waiting/unknown. Không coi target_url/badge là command execution |
+
+UTC parsing giữ precision/offset; IDs/order dùng đúng source namespace, không so attempt của run cũ với run mới. Required check-run và commit-status cùng context là hai identities, cả hai phải đạt. Nonterminal native conclusion không null bất thường, unsupported event/source/contradictory fields => UNKNOWN. Native snapshots có thể chứa extra API metadata được sanitize tại collection; normalized closed governance records không accept unknown fields.
+
+### GIT-DATA-07 — Temporal PR, native graph và fresh live CI (v1.6.7, L01–L06)
+
+`PR-TIME-01` (L01/P1): archived payload P là bằng chứng lịch sử của thời điểm P; archived closing C cũng immutable. Evaluator kiểm retained P/C snapshot+actual ordered parents, không yêu cầu live PR vẫn head=P sau C. Một lần live verification chỉ có current PR snapshot của head C theo frozen PR-FLOW-01; host/repo/PR/head_ref/base_ref/head/base/tested merge phải khớp live closing observation và actual parents. Base/head/merge đổi sau archive: query/check lại current C bằng verification mới; không rewrite sealed P/C archive hoặc buộc P chạy dưới head C. Current PR object được retained qua current_pr_ref, không phase-map chứa hai head hiện hành cho cùng PR. current_pr_ref là full sourced GitPullRequestBinding, phải kiểm own raw API parity/acquisition riêng theo PR-SOURCE-PARITY-01 dù observed fields bằng live C binding; không đồng nhất hai ref để bỏ nhánh kiểm nguồn.
+
+`NATIVE-GRAPH-01` (L02/P1): GitCheckSourceEvidence Actions giữ check_suite_id, workflow_head_sha, job_head_sha, job_check_run_url cùng raw record/run/job projection. Verify check.check_suite.id=run.check_suite_id; job.run_id=actual run.id; job_query_scope.run_attempt=actual run_attempt và job membership được chứng minh qua specific-attempt jobs endpoint; job.check_run_url resolve đúng pinned API host/repository/check ID. Run head và job head phải thuộc đúng subject hoặc verified PR tested merge theo provider mapping đã canary tại T001/T003; head-only chỉ subject. Không ép actual checkout bằng REST head field: actual checkout vẫn execution artifact. Cross-record ledger keyed host+numeric repo+source namespace+record/run/job ID: cùng ID không được đổi immutable SHA/run/job/attempt/app/context/workflow/event identity giữa P/C/live/history; status/conclusion có thể đổi qua lần quan sát, không coi chúng immutable; execution checkout/command/log subset đã terminal pin thêm EXECUTION-PIN-01. External/status có linkage fields=null, không dựng Actions fields. Native API subset phải giữ các liên kết này; strings/IDs được khai riêng không thay edge proof [REF68,REF70,REF71]. job_query_scope là normalized request context của actual `/actions/runs/{run_id}/attempts/{attempt}/jobs` và retained membership response, không giả run_attempt là native field luôn có trên REST job. Unknown attempt/job membership => UNKNOWN; actual adapter pin query/response provenance tại T001/T003.
+
+`NATIVE-MAP-01` (L03/P1): trước latest selection, map TẤT CẢ candidate bằng native execution identity(kind, context casefold chỉ commit status, app/creator, workflow, job, matrix, eligible event). Exactly one expected match thì check_id phải đúng ID đó; known ID trỏ native identity khác, overlapping matches hoặc same required native identity mang ID lạ => UNKNOWN. Unrelated native identity có thể giữ source-only, không được giả logical ID required. Kiểm native source/raw/observed parity của mọi candidate kể cả unrelated trước mapping/grouping/max; không filter newest queued/fail vì logical ID sai. CI-ORDER-01 áp dụng sau mapping.
+
+`LIVE-CI-01` (L04/P1): historical archive validation và live verification là hai đầu vào riêng. Offline chỉ historical PASS theo current selector, KHÔNG final/current live PASS. Online closure/auto-next/resume final cần GitLiveVerification + bounded private live evidence files riêng: assignment/task/revision/delivery/plan/C, fresh observed remote C, live closing observation, GitCICollectionEvidence, actual Git ancestry và current PR ref khi applicable. Caller cấp verification_id, thời điểm bắt đầu của lần query hiện tại và archive_publication_sha256 lấy từ actual publication/readback projection trong secured observer context;  evaluator đối chiếu đúng invocation, không tự tạo fresh proof từ archived observation hoặc chỉ so remote=C. Mọi API read/observation nằm trong interval query. Default private gitignored live root=`artifacts/git-live/<delivery_id>/<verification_id>/`, ngoài sealed archive và OS temp/TTL cache; giữ actual members+verification record, flush/hash/readback trước live PASS, record không hash chính nó. Crash partial => UNKNOWN và query lại với fresh invocation, không push/commit lại mù quáng. Repeated verification mới giữ archive cũ bytes/hash/seal nguyên, append live verification record ngoài archive và giữ đến handover. Không push/commit thêm chỉ để refresh CI. Every live binding/current_pr_ref tự resolve exact API source của nó theo PR-SOURCE-PARITY-01, không chỉ typed shape/current fields và không dùng valid source của binding để bù missing current_pr_ref source.
+
+GitCICollectionEvidence pin host/repo/subject/plan, start/end và ordered query pages; mỗi payload/closing observation giữ collection_evidence_ref tới collection đúng thời điểm phase, gồm archived P/C và fresh live C. GitLiveVerification.files là manifest SHA256/byte_length của đúng live member set, không hash chính verification record hoặc enclosing output; verify readback/containment và retain riêng, no selfhash. Query check-runs VÀ commit statuses cho subject và current bound synthetic merge SHA khi applicable, workflow runs cho các SHA này khi required Actions. Old merge candidates giữ historical source summaries, không bắt query lại ephemeral merge ref đã hết hiệu lực; current collection phải đủ candidates của current binding. Mỗi endpoint+SHA có query_id riêng, pages bắt đầu1, liên tục theo actual pagination link đến terminal null, raw_page_ref giữ sanitized raw page envelope/items với thời điểm read trong query interval, source/run creation không được ở tương lai so với read; không success-only/latest-only filter hoặc bỏ nonterminal. Check/status page items phải khớp đúng tập native snapshots được normalized; extra/missing/swapped source hay incomplete pages => UNKNOWN. Workflow run pages giữ run_id/run_attempt/head_sha/path/event/created_at/status/conclusion và job_source_refs; evaluator theo JOB-ATTEMPT-01 chọn newest workflow generation rồi latest execution riêng cho mỗi required job/matrix; không ép mọi job thuộc workflow.run_attempt mới nhất. New queued run chưa có job là unresolved/blocking, không dựng job_id rồi PASS hoặc bỏ run. Discovery pagination errors/API caps/ambiguous provider mapping phải giữ UNKNOWN; flags verified không thay collection proof. T001/T003 pin API/version/raw projection/field mapping và query sources thực; reference fixtures chỉ synthetic subset, không chứng minh collector đã gọi GitHub.
+
+`NATIVE-UNIQUE-01` (L05/P2): native execution identity không chứa checkout_binding/reported_sha_binding, logical ID hoặc requirement origins. Hai slots cùng native execution/event dù đổi subject↔tested/head↔pr_merge vẫn duplicate/ambiguous; reject plan, không nhân đôi coverage. Một actual check phục vụ nhiều requirements thì gộp requirement_origins/command_refs vào một slot. Delivery/merge stage vẫn phân biệt actual eligible event, không làm queue-only gate cho delivery.
+
+`CHECKPOINT-ALLOC-01` (L06/P2): đối chiếu presence và value actual operation_id trước command_state, gồm NOT_STARTED. Actual operation đã cấp thì checkpoint phải giữ operation_id + command_record_ref đúng lifecycle ngay cả chưa execute; null identity chỉ khi actual chưa cấp operation/command. Không bỏ allocated operation vì chưa có process hoặc state NOT_STARTED, không tự cấp ID mới khi resume. Idle vẫn không được có operation. T003/T107 có positive allocated-NOT_STARTED, thật sự chưa allocate, và negative forgotten/swapped ID/ref/state.
+
+### GIT-DATA-08 — Common lifecycle, per-job rerun và commit/ref gates (v1.6.8, M01–M04)
+
+`COMMAND-LIFECYCLE-01` (M01/P1): GitPushOperationEvidence.command_record_ref và GitExecutionCheckpoint.command_record_ref cùng trỏ một GitCommandLifecycle kind=command_lifecycle của chính operation; không tạo record kind push_command_lifecycle cạnh tranh. Envelope pin operation/lifecycle/retry, assignment/task/revision/delivery; contract giữ actual S51 executable/argv/cwd/version/source/input/fingerprint/output/network/authority/budget/deadline/retention/cleanup, result giữ state/start/end/original exit/termination/cleanup/final/artifacts. Fields closed theo schema, không dùng object tối thiểu sáu fields làm full S51 proof. NOT_STARTED đã allocate vẫn giữ ID/ref; RUNNING/SETTLING/UNKNOWN checkpoint được common record đúng state, push chưa đủ postflight giữ pending, không fake successful operation record. Khi push hoàn tất SUCCEEDED, cùng common record/ref phải qua cả destination và checkpoint evaluator; archive retain immutable terminal snapshot, không rewrite snapshot đang được historical archive hash. Mutable current lifecycle khi command còn chạy có publication/readback theo S51; resume secure-read actual state, không dùng historical SUCCEEDED snapshot thay process hiện hành. Source policy và quyền vẫn S50/S51; schema/projection không tự cấp executable/argv/network/cleanup authority. Common command identity áp mọi phase receipt kể cả historical canary: command.delivery_id bằng chính receipt.delivery_id theo PHASE-COMMAND-IDENTITY-01; current P/C tiếp tục full current assignment/task/revision guards, historical fields khác phải có own retained provenance trước đối chiếu. Temporal start/deadline equality dùng UTC instants theo LIFECYCLE-INSTANT-01; raw bytes vẫn giữ để hash/source parity.
+
+Push checker resolve typed common lifecycle: operation/lifecycle/retry và deadline bằng GitPushOperationEvidence; command state SUCCEEDED, original exit0, cleanup NOT_REQUIRED/SUCCEEDED và final SUCCEEDED; lifecycle start<=preflight<=push<=postflight<=command completion<=deadline. contract executable Git đã pin; argv đúng normal push tới frozen remote/ref với explicit non-force refspec (branch ref hoặc candidate SHA đã đối chiếu subject), không --force/--force-with-lease/+refspec/--all/--mirror/delete/tags/skip hooks. Case actual wrapper có launcher khác phải pin command_source_ref + nested Git argv trong owner contract trước dùng; không đoán shell string. Archive per-task và checkpoint đối chiếu assignment/task/revision/delivery từ common envelope với active attempt/selector. S51 generic command khác push vẫn dùng common state semantics; deadline hữu hạn, cleanup fail không success. Actual failed/timeout finalization có thể hoàn tất sau deadline: giữ timestamp/exit gốc và FAILED/UNKNOWN đúng căn cứ, checkpoint đọc được để resume; completion sau deadline không bao giờ SUCCEEDED/push PASS. Reference không thực chạy Git/process.
+
+`JOB-ATTEMPT-01` (M02/P1): newest workflow generation=(created instant, numeric run ID); trong generation đó, newest attempt chọn RIÊNG theo check/job/matrix identity. Workflow.run_attempt là attempt mới nhất của run, không nghĩa mọi job đã rerun. A success attempt1 và B rerun success attempt2 trên cùng immutable subject có thể PASS khi actual per-job history đủ và latest workflow attempt terminal/known; latest required B queued/fail/missing vẫn chặn. Không ép A phải chạy lại chỉ để có attempt2. Nếu selected job còn ở older attempt và latest workflow attempt chưa terminal/coverage chưa rõ, UNKNOWN; không suy job không xuất hiện là đã không rerun. New workflow generation chưa có required jobs vẫn blocking, không reuse job của generation cũ.
+
+Native workflow_runs pages giữ một current row cho mỗi run ID, có status/conclusion thật và job_source_refs thuộc đúng attempt của row; không tổng hợp nhiều historical attempt rows rồi gọi chúng là cùng native list response. Older attempt dùng endpoint workflow_run_attempt với workflow_run_id/workflow_run_attempt selectors, retained exact request scope `/actions/runs/{id}/attempts/{attempt}` và job membership qua specific-attempt jobs endpoint/verified all-jobs history. Endpoint selectors=null với check/status/workflow_runs, bắt buộc với workflow_run_attempt; detail một row, page1/next=null, immutable metadata trùng run hiện hành, 1<=old attempt<latest. Mỗi required old job source được nối đúng retained attempt detail. Query/snapshot provenance thật phải pin tại T001/T003, follow pagination và provider caps; không invent attempt records. Status/conclusion workflow native không thay per-check execution. Failed/specific-job reruns được GitHub hỗ trợ [REF73,REF74]; tests có partial/full rerun, latest-only list + old job history, pending attempt/no jobs và current repaired success.
+
+`PR-FLOW-01` (M03/P2): plan.pull_request_flow=null khi không có delivery pr_merge check. Nếu có, freeze head_repository_id/head_ref/base_ref trước P: baseline cùng approved repository, head_repository_id=plan.repository.repository_id, head_ref=approved pushed repository.ref và base_ref khác head_ref. PR number actual có thể resolve sau first P bằng flow này, không invent hoặc cần đổi plan để chèn number; archived P/C/live bindings đều đối chiếu frozen flow và actual API head repository ID. Current PR SHA/base merge vẫn PR-TIME-01/PR-BIND-01. Self-consistent PR refs khác flow không đủ; đổi source/destination/target flow => new payload/plan/revision theo authority hiện có. Cross-repo/fork hoặc alias flow ngoài baseline cần explicit destination authority + closed contract trước dùng, không silent accept same SHA từ nhánh khác. Branch protection cần feature branch thì T001 chọn permitted feature ref/PR target trước freeze; không giữ plan push main trong khi PR head task branch.
+
+`COMMIT-GATE-01` (M04/P2): GitCommit giữ actual sha/subject/body/scope_ref/git_evidence_ref, không chỉ subject nonempty. scope_ref resolve GitCommitScopeEvidence; git_evidence_ref giữ closed sanitized Git snapshot kind=git_commit_snapshot với sha/parents/subject/body/changed_paths từ actual Git tree/log decoder đã pin tại T003. Wrapper messages/paths/parents phải bằng snapshot, ordered commit cuối=P và ancestry hiện hành như DELIVERY-LINK-01. Archive.closing_commit_ref resolve actual GitCommit của C ngoài C bytes; C exactly child P, changed_paths chỉ Maps-Context-Engine-4D_SPEC.md và actual leaf diff qua CLOSE-DIFF-01, docs(progress) subject, correct task/priority và matching closing UUID/phase trailers trong actual body. Không ghi own SHA/result vào chính C.
+
+Verified_noop reuse P giữ nguyên actual subject/body/scope/task IDs lịch sử; không relabel thành current task. attempt.noop_reason_ref bắt buộc retained kind=verified_noop_reason (assignment/task/delivery/verified_payload_sha/reason) đúng active attempt, payload_mode=changes giữ null. C mới vẫn đúng current task/priority/trailers và local/CI/no-op evidence đầy đủ; không empty payload commit chỉ đổi message.
+
+Mechanical gate kiểm Conventional Commit type/scope syntax, [P0..P3][Txxx] có current task, UTF-8/NFC và dấu tiếng Việt trong subject/body. Body chuẩn gồm `Mục đích:`, `Thay đổi:`, `Kiểm tra:` có nội dung; breaking marker cần BREAKING CHANGE + retained approved breaking decision, không dùng marker trang trí. Current task/phase/scope paths phải match typed scope, actual diff paths và change budget. Priority khác attempt có retained priority rationale đúng task/priority; multi-task chỉ một shared invariant có retained justification/allowed task IDs theo GIT-03, không gộp nhiều delivery. Scope/rationale/missing Git evidence/wrong messages reject tại static CI VÀ observer; guard không chỉ search câu quy định trong SPEC. Mechanical Unicode/header checks không chứng minh ngôn ngữ/chất lượng nội dung; AI self-review riêng phải xác nhận tiếng Việt đúng nghĩa, mục đích/checks/giới hạn thật, không fake PASS/signoff/signature. DCO/signature theo actual repo policy GIT-03/T001, không tự ký hoặc suy metadata projection là cryptographic proof. Actual Git parser/CI enforcement vẫn T003, document/reference fixture không task DONE. Actual trailer uniqueness và skip directives áp TRAILER-PARSE-01/NO-SKIP-01, không chỉ đếm expected lines.
+
+### GIT-DATA-09 — Khóa execution, thứ tự delivery và commit parser (v1.6.9, V168-01–V168-05)
+
+P1 trước P2. Các rules dưới bổ sung owner contracts hiện có; không thay phạm vi108 task, không runtime wire field mới, không tự cấp quyền hoặc claim actual GitHub/OS enforcement.
+
+`EXECUTION-PIN-01` (V168-01/P1): Cross-query ledger NATIVE-GRAPH-01 giữ native identities và thêm pin cho execution đã terminal có retained execution evidence. Key=(host, numeric repository ID, source kind, native record ID; Actions thêm actual run/attempt/job ID). Với cùng execution key, actual tested_checkout_sha, PR head/base/tested_merge_sha nếu applicable, job matrix và command_ref/revision/result + digest của retained command log subset bất biến giữa archived P/C/canary/live. So digest theo nội dung/command identity, không theo tên member/ref có thể đổi khi archive; source wrapper phải match actual decoder/artifact. Một execution đã hoàn tất không được relabel checkout hoặc thêm/đổi command để chứng minh merge/plan mới. Ledger nhận observations theo historical→current secured query order; clock ticks bằng nhau vẫn có thể có pending read trước completion. Command result đã thực chạy và pin không được đổi; native provider status/conclusion có thể cập nhật. Queued→running→completed và lần đầu có execution evidence vẫn hợp lệ; không pin pending absence thành kết quả terminal hoặc đòi rerun mọi job. Evidence của completed execution đã pin không được rút đi rồi gọi unknown như cách che conflict. Base/merge đổi cần actual applicable execution mới; rerun phải có native attempt/job identity hợp lệ và đúng input, không giả reuse job cũ. GitHub rerun giữ event SHA/ref gốc [REF73]; dynamic checkout chỉ theo plan/actual execution đã pin. T003/T107 kiểm same-ID checkout/command/log/matrix drift, valid pending completion, stable readback/ref rename, fresh execution sau PR base repair và partial job rerun; current document fixtures không actual collector/parser proof.
+
+`DELIVERY-TIME-01` (V168-02/P1): Parse UTC instants giữ fractional precision như CI-ORDER-01; equality được phép khi clock resolution bằng nhau. Mỗi phase P/C: operation preflight→push→postflight và common lifecycle completion vẫn COMMAND-LIFECYCLE-01; phase receipt observed_at_utc phải >= postflight.completed_at_utc và terminal command result.completed_at_utc. P receipt hoàn tất trước/same C lifecycle start (C proposal/static proof chỉ dựa P đã verified). Closing receipt<=archive.created_at_utc<=seal.sealed_at_utc<=actual publication instant<=successful readback completion<=fresh live verification.started_at_utc<=completed_at_utc. Archive/seal/phase/time thiếu hoặc sai order => VERIFY/UNKNOWN, không đoán hoặc sửa timestamp cho xanh. CI job hoặc API collection có thể chạy song song push/postflight; không ép job.created_at hay collection start phải sau postflight, nhất là no-op/rerun. Điều kiện là receipt/publication/final verdict được chốt khi bằng chứng phụ thuộc đã hoàn tất thật. Không lấy thời điểm ghi file thay thời điểm quan sát nguồn. Lifecycle start/deadline equality cũng parse instant như ordering, không so chuỗi timestamp; legal timezone/fractional representations của cùng instant không làm checkpoint/destination/resume fail theo LIFECYCLE-INSTANT-01.
+
+GitLiveVerification.archive_publication là closed inline projection của actual ARCHIVE-PUBLISH-01 writer+secure readback: format_version1/kind=archive_publication, planned_archive_path đúng active UUID, archive_manifest_sha256 và archive_seal_sha256 của raw canonical manifest/seal đã readback, published_at_utc và readback_completed_at_utc thật. Không field trong sealed manifest để ghi own publication tương lai. Writer retain projection ngoài sealed archive; live descriptor giữ copy này, lặp fresh verification reuse exact immutable publication facts, không tạo publication mới chỉ để refresh query. Reference đối chiếu path/hashes với actual ar/seal input cùng task/UUID và published=true từ secured caller; boolean/time strings riêng không OS proof. Secured observer context giữ archive_publication_sha256 của actual retained writer/readback projection; evaluator đối chiếu với SHA256 canonical inline projection, không tự lấy digest từ input không tin cậy để gọi trusted. Caller pin publication facts trước query; thiếu/mismatch context => UNKNOWN. Inline projection không hash chính live descriptor hoặc enclosing ZIP. T003/OS adapters phải lấy timestamps/hashes từ actual publish/readback, secure containment/durability theo ARCHIVE-PUBLISH-01; current reference chỉ synthetic. Offline chỉ historical archive validation (gồm phase/manifest/seal chronology), không final/live PASS hoặc suy publication time từ archive.created_at.
+
+`CANARY-EVENT-01` (V168-03/P1): Canary successful observation không nghĩa mọi event trong candidate list đã successful. Chọn newest native execution riêng theo required check identity + eligible event (parse generation/attempt theo JOB-ATTEMPT-01), chỉ event có selected terminal success + actual command execution PASS, đúng subject/checkout/PR binding + source evidence trong canary required set mới proven. Unrelated, wrong mapping, queued/failed/skipped/neutral/unknown hoặc missing execution không chứng minh credential/event compatibility. Events hiện dùng của P/C cũng chỉ từ selected required checks thật, không lấy unrelated source-only events làm prerequisite giả. Historical canary receipt phải qua PHASE-RECEIPT-TIME-01 của chính push canary và observed trước/same current P receipt; source của event proof chưa tồn tại lúc chốt P không đủ. Fixture T002 dùng đúng task-scoped CLOSE-DIFF-01 leaves, không hardcode T001 để gọi positive. Required canary set/collector vẫn validate đầy đủ trước selection, không filter bỏ newest failed để lấy old green; historical plan/credential/host/repo/ancestry theo CANARY-LINK-01. Newest failed attempt của event e không cho old successful e làm canary dù một event khác của same check đã success. T001 canary trong P không vòng lặp own-C CI; T002+ có positive successful historical PR canary và negative push-only + unrelated queued PR. Current synthetic source graph không bằng actual permission/canary run.
+
+`TRAILER-PARSE-01` (V168-04/P2): T003 pin actual Git message decoder và dùng cùng parser delivery trailers cho static validator, observer candidate decoder và resume/archive validation. Baseline trailer subset: actual C body có final trailer paragraph, cách body bằng blank line, reserved keys canonical đúng `MCE4D-Delivery-ID: <lowercase UUID>` và `MCE4D-Delivery-Phase: closing`, mỗi key đúng một lần trên toàn body. Không folded/multiline value, alternate separator/casing/leading whitespace, UUID thứ hai, phase payload thứ hai, unknown reserved MCE4D-Delivery-* key hoặc reserved line ngoài final paragraph. Other ordinary single-line trailer keys dạng ASCII key: value (ví dụ Signed-off-by khi repo yêu cầu) trong closed baseline subset [REF76] được giữ; không áp trailer aliases/dedup hay cấu hình Git ngầm. Patch divider --- trong body bị reject vì có thể đổi message/trailer boundary; subset không triển khai mọi Git option. Không drop duplicate từ raw body trước kiểm. Trong subset này không coi signoff là chữ ký mật mã. Parser có thể normalize CRLF thành LF cho parsing view, raw body/hash vẫn bytes gốc; lone CR/NUL/unsupported syntax fail closed. Final paragraph chỉ valid trailer lines; không append prose/code fence sau reserved trailers. Payload không mang reserved delivery trailers. Abstract candidate marker/phase do decoder trả không thay kiểm actual C subject/body: một expected line cộng conflicting line vẫn reject. Reference dùng cùng pure parser tại commit guard, archive/resume gọi lại guard; actual Git decoder/CI wiring vẫn T003, chưa thực thi. T003/T107 có valid optional signoff/CRLF, duplicate/conflicting/malformed keys/values/block và parser parity, không dùng count(expected line)==1 làm đủ unique identity.
+
+`NO-SKIP-01` (V168-05/P2): Commit gate scan toàn actual subject+body trước commit/push; reject `[skip ci]`, `[ci skip]`, `[no ci]`, `[skip actions]`, `[actions skip]` và skip-checks:true/skip-checks: true trailer [REF75]. MCE4D policy scan case-insensitive và reject true colon-form skip-checks line dù blank-line cleanup không chuẩn, tránh phụ thuộc cleanup để lách. Quoted/code-form exact skip strings vẫn reject vì nằm trong actual message; ghi diễn giải không chứa trigger literal. Chỉ single-line colon-form skip-checks:false được phép; empty/folded/alternate-separator/unknown value fail closed theo MCE4D policy. Không chặn câu tiếng Việt mô tả kiểm CI thông thường. Không rewrite published message/amend để gỡ: tạo ordinary new fix commit/attempt đúng authority khi cần. Missing check sau push vẫn VERIFY, cấm bypass hooks/threshold/expected set giữ GIT-03. Reference scan không chứng minh hosted CI đã enforce; T001 bootstrap self-review áp trước delivery đầu, T003/T107 pin static/observer parity + negative tests cho subject/body/trailer, valid counterparts vẫn PASS.
+
+### GIT-DATA-10 — Canary live/per-event, current command và historical no-op (v1.6.10, V169-01–V169-05)
+
+P1 trước P2; owner contracts dưới bổ sung GIT-DATA-01–09, không thêm runtime wire field/task hoặc quyền Git/GitHub. Reference proof vẫn tách khỏi actual decoder/collector/OS enforcement tại T001/T003/T107/T108.
+
+`CANARY-LIVE-01` (V169-01/P1): CANARY-EVENT-01 áp cho cả retained P/C và selected required checks của fresh live C, gồm resume/final/repeated verification. Dùng cùng predicate coverage; archive phase lấy canary từ archived files, live phase thêm current observation+live files thật, không lấy events từ archived C thay current C. Current events chỉ từ required slots đã qua mapping/source/execution/collection guards; unrelated candidates không tạo prerequisite. Thêm native ledger canary→P→C→current để giữ EXECUTION-PIN-01 và historical→current order. Canary missing event hiện dùng => VERIFY/UNKNOWN dù current CI green; không tự tạo canary từ live observation hoặc suy token có quyền là liveness. Historical canary vẫn phải tồn tại trước/same P receipt theo CANARY-EVENT-01; sau archive không rewrite/add canary vào sealed bytes. Muốn dùng event mới chưa có retained compatible canary phải tạo/verify canary có quyền trong payload/attempt mới rồi P/C/archive/live đầy đủ; nếu canary đã được retain hợp lệ thì fresh query cùng immutable attempt không cần duplicate push/commit. T003/T107 có push archive→live PR thiếu canary reject, có retained actual successful PR canary positive, repeated query giữ archive immutable và unrelated live event positive.
+
+`CANARY-GENERATION-01` (V169-02/P1): trước chọn canary job, đọc complete collection đã validate, chọn newest workflow generation riêng theo workflow identity+eligible event bằng (created instant,numeric run ID). Không chỉ nhìn observation.checks vì newest workflow có thể chưa tạo job. Trong generation được chọn, chọn latest actual attempt riêng mỗi required job/matrix theo JOB-ATTEMPT-01; older inherited job chỉ dùng khi latest workflow attempt terminal/coverage đã biết và retained attempt history đầy đủ. Newest generation queued/running/no required job/missing execution/failed required result không proven event; một push generation success mới hơn không che PR generation chưa giải quyết, và ngược lại. Workflow native terminal không tự làm required job PASS; command/source/checkout/PR bindings vẫn kiểm đầy đủ. External App/status không có workflow thì dùng native creation/ID selection của đúng event/source, không invent workflow. Collector/map/parity chạy trước selection; missing/incomplete/invalid collection vẫn UNKNOWN. T003/T107 giữ positive PR success, PR queued-no-job mới + newer push reject, PR repaired bằng execution thật positive, full/partial rerun và offset/fractional ordering; không filter newest row để lấy old green.
+
+`CHECKPOINT-CURRENT-01` (V169-03/P2): checkpoint là cache, actual current command context do secured caller đọc riêng từ S51 operation/lifecycle registry+actual process/result state, trước khi đọc/đối chiếu checkpoint. Ngoài actual assignment/branch/head/tree/index/state/operation_id, context bắt buộc có command_record_ref, command_record_sha256 (raw canonical current snapshot), lifecycle_id, retry_index và push_operation_ref nullable. Chưa allocate operation thì cả năm trường null; allocated NOT_STARTED/RUNNING/SETTLING/SUCCEEDED/FAILED/UNKNOWN giữ exact command ref/digest/lifecycle/retry. Không derive actual context từ checkpoint hoặc candidate record đang cần kiểm; thiếu fields/current read không thành null/0 mặc định. Resolve command và đối chiếu cả ref, raw digest, operation/lifecycle/retry với context, rồi envelope/task/revision/delivery/state và lifecycle semantics theo CHECKPOINT-01. Push operation khi có retained current operation record phải qua push_operation_ref đúng command_record_ref/operation/lifecycle/retry; không mượn operation snapshot khác. Chưa đủ terminal push record thì push_operation_ref=null, giữ pending common command và actual identity; không tạo successful postflight giả. Digest đổi khi command snapshot đổi là dữ kiện của actual secure read mới, không repair checkpoint; historical terminal archive snapshot giữ nguyên bytes. Context mismatch => stale/UNKNOWN, re-read/settle exact owned operation trước side effect, không allocate operation mới hoặc tự repeat push. T003/T107 có original exact record positive; swapped lifecycle/retry/ref/digest/missing context/push-operation mismatch rejects; NOT_STARTED/RUNNING/UNKNOWN và failed timeout finalization vẫn đọc được đúng scope.
+
+`NOOP-HISTORY-01` (V169-04/P2): verified_noop có đúng một existing P=base_sha và fresh current local/CI/destination/receipt/reason như DELIVERY-LINK-01; ordered_commits giữ actual historical GitCommit subject/body/scope/parents và không coi reused P là newly authored payload. Validate raw Git snapshot/scope unchanged trước chọn nhánh original phase. Historical payload đi qua payload message/scope/trailer guard; historical closing đi qua closing guard với original single task/priority, original UUID đọc bằng TRAILER-PARSE-01, exact one actual parent và docs(progress)/metadata-only scope. Original UUID phải khác active delivery UUID; actual parent không self-cycle. Original validation context chỉ là dữ kiện đối chiếu từ immutable Git metadata, không tạo command/CI proof, không đổi active selector và không công nhận task trước DONE chỉ từ message. C mới vẫn đúng current task/priority/UUID, direct child P, CLOSE-DIFF-01 và toàn current checks. Normal payload_mode=changes vẫn reject reserved delivery trailers, scope closing hoặc metadata relabel; không mở ngoại lệ chung để che invalid message. Missing/ambiguous historical snapshot/phase/parent/trailers => UNKNOWN; không empty payload commit/amend để đổi message. T003/T107 có ordinary reused payload và valid prior closing HEAD positive; wrong raw scope/parent/UUID/duplicate trailer/new C identity hoặc normal payload dùng prior closing negative.
+
+`CLOSE-GATE-01` (V169-05/P2): CLOSE-DIFF-01 derive owning gate từ task identity/track ở S19 và explicit membership/ranges đã ghi tại S20; một task phải thuộc đúng một gate. S19 R2/R3 là track labels tương ứng G6/G7, U0–U3 tương ứng GU0–GU3; không coi chúng là literal gate IDs. Core G0–G5 phải khớp cả S19/S20; missing/overlapping membership hoặc track/gate mismatch fail closed. Ngoài task-scoped S19/S21 và derived S22 leaves, chỉ S20/<owning_gate>/status hoặc evidence có receipt chứng minh mới được đổi ở C, proposal vẫn pending theo DONE-EVAL-01. Không literal G0 cho mọi task, không infer gate từ số task hoặc mở wildcard toàn S20. Unknown task/gate, wrong task/gate, content/schema/ADR/requirement/dependency/order delta không metadata-only. T080 own gate=G7; final108 summary/evidence đi qua S22 derived final và S21/T080, không sửa mọi historical gate bằng closure whitelist rộng. Regression ảnh hưởng gate khác phải reopen/verify đúng owned task/gate theo AW-03. Reference leaf classifier chỉ chứng minh membership/diff equivalence trên abstract leaves; T003 actual parser MUST verify actual receipt-derived values, source byte equality và all gate/dependency effective states, không coi list tên leaf là full Git/receipt proof. T003/T107 thử đúng owning gate cho cả108 task, core G1–G7/Explorer GU0–GU3, wrong gate và unknown paths; task count/dependencies/order không đổi.
+
+### GIT-DATA-11 — Chronology của nguồn và thứ tự đóng delivery (v1.6.11, V1610-01–V1610-04)
+
+P1 trước P2; các rules này bổ sung owner contracts GIT-DATA-01–10, không đổi108 task/runtime wire/defaults/DDL hoặc quyền Git/GitHub. T001/T003/T107/T108 phải triển khai actual acquisition/allocator/decoder/collector và retain sources; current document proof vẫn synthetic reference, không product/GitHub enforcement.
+
+`PHASE-RECEIPT-TIME-01` (V1610-01/P1): dùng cùng predicate thời gian cho mọi delivery phase receipt được dùng làm prerequisite, gồm current P, current C và historical/current payload canary. Resolve chính destination operation + common command của receipt, kiểm existing destination/identity/lifecycle guards rồi yêu cầu max(postflight.completed_at_utc, command.result.completed_at_utc)<=receipt.observed_at_utc. Với canary còn phải canary receipt<=current P receipt. Không chỉ so canary.observed<=P rồi bỏ chronology của chính canary; current archive/live không PASS khi canary push còn ở tương lai so với receipt đó. Native checks/collection có thể overlap push như DELIVERY-TIME-01; không ép CI job start sau push và không yêu cầu historical canary C/archive khác ngoài retained proof đã định nghĩa. Parse UTC giữ precision, equality của cùng tick được phép. Missing/unknown/bad typed source/time giữ VERIFY/UNKNOWN; evaluator không sửa timestamps hoặc tạo successful command. Shared predicate áp cả archive reconstruction/offline history và fresh online closure; T003/T107 kiểm late canary postflight/common command riêng, legal completed/equal/offset canary và current P/C parity. Shared prerequisite kiểm thêm PHASE-COMMAND-IDENTITY-01 cho UUID của chính receipt; thời gian đúng không bù command thuộc delivery khác.
+
+`PR-ACQUISITION-TIME-01` (V1610-02/P1): GitPullRequestBinding.observed_at_utc là actual collector acquisition completion của API snapshot tại api_evidence_ref, không source creation hoặc file-write time. Mỗi binding dùng trong retained P/C/canary receipt phải observed<=receipt.observed_at_utc; raw sanitized API projection giữ exact acquisition parity. Nguồn chỉ được quan sát sau receipt hoặc archive/seal không chứng minh receipt cũ. Live C binding và current_pr_ref acquisitions đều nằm trong secured live interval, live binding<=live closing receipt<=live.completed; cùng head/base/ref/merge/parents vẫn chưa đủ nếu acquisition sai thời điểm. Immutable Git parents có thể tái dùng theo provenance, không gọi old API observation là fresh read. P vẫn historical theo PR-TIME-01; không query current PR quay lại P, không rewrite sealed P/C để gỡ temporal failure. Head-only observations vẫn binding=null, không invent PR. T003/T107 có future archived P/C/canary snapshots reject, old binding reused as live reject, fresh live positive, source parity/offset/fractional boundaries và repeated verification giữ archive nguyên bytes. PR-SOURCE-PARITY-01 bắt buộc source kind/fields/acquisition của từng binding và current_pr_ref được kiểm độc lập; equal displayed fields không cho phép bỏ own source.
+
+`SELECTION-TIME-01` (V1610-03/P2): GitTaskDeliverySelection thêm required allocated_at_utc, thuộc governance S21, không wire S43. Đây là actual first allocation time của active UUID trong task revision, durable trước side effects của delivery; immutable qua P/C/retry/resume và metadata refresh, không backfill từ updated_at hoặc archive timestamp. active_delivery_id=null khi reopened chưa claim thì allocated_at_utc=null; active UUID thì nonnull valid UTC và allocated<=updated. Allocate cùng revision khi claim, không tăng revision lần hai; supersede vẫn new revision/UUID/history theo ACTIVE-DELIVERY-01. Previous retained selection.updated<=current allocated; current allocation<=current P push lifecycle start và mọi actual owned task command có side effect được allocator/decoder T003 đối chiếu. Current và mọi retained history snapshot.updated<=enclosing archive.created<=seal; không chỉ so timestamps giữa hai revisions rồi nhận snapshot tương lai trong archive.
+
+updated_at là thời điểm của chính selection snapshot, có thể sau P khi cập nhật metadata hợp lệ nhưng trước archive; không áp updated<=P cho mọi refresh. Không dùng allocated time thay active selector authority, không thêm status tracker. Archive copies/actual P/C selection identity phải giữ cùng allocation field; đổi allocation đã publish không là metadata-only closing, phải resolve immutable claim/source hoặc UNKNOWN. Checkpoint đọc selection allocation/null semantics cùng CHECKPOINT-CURRENT-01, không tự cấp UUID hoặc lấy timestamp từ cache để bù. T003 actual allocator retains claim/source provenance và verifies first allocation trước command; current reference chỉ dùng supplied synthetic allocation facts, không chứng minh OS writer/real command chronology. Format1 governance chưa shipped, 24 definitions giữ; existing deployed format nếu discovery gặp phải forward-migrate theo BP-04, thiếu actual claim time không fake backfill hoặc rewrite historical archives. Historical proof ZIPs dùng embedded schema gốc, giữ nguyên bytes. T003/T107 có current/history future snapshot, missing/null/inverted/late allocation rejects; pending unclaimed/null và valid refresh after P positive.
+
+`DELIVERY-ORDER-01` (V1610-04/P2): đây là đoạn đóng sau P/C của full DELIVERY-FLOW-01; sau khi P/C đã đủ prerequisite, thứ tự duy nhất cho lần đầu và resume là validate retained P/C receipts/source/plan/selector/ancestry/local/CI→write/flush/seal/publish/readback archive→pin actual publication projection trong secured caller context→fresh GitLiveVerification/query→retain/flush/hash/readback live record→effective DONE/auto-next. P/C CI observations dùng dựng archive khác fresh GitLiveVerification cuối; không đòi final live verifier chạy trước khi archive tồn tại để lấy publication digest. Existing exact sealed archive có thể idempotent reuse; staging-only hoặc partial live không DONE, fresh query lại trong quyền. Static CI kiểm proposal/P receipt/equivalence đến phase applicable, không wait own running CI; không commit thêm own SHA/result. DONE-EVAL-01, ARCHIVE-PUBLISH-01, LIVE-CI-01, DELIVERY-TIME-01, GIT-06 và S22 checklist cùng thứ tự này. T003/T107 dùng shared explicit protocol sequence và negative stage permutations/first-publication/resume fixtures, không chỉ kiểm presence của tên rules trong prose; actual adapter MUST execute stages theo sequence đã pin và không tự coi symbolic sequence là physical I/O proof.
+
+Canonical governance stage order cho DELIVERY-ORDER-01 (không task tracker hoặc runtime operation mới):
+
+<!-- BEGIN MCE4D_DELIVERY_PROTOCOL_V1 -->
+```json
+{
+  "format_version": 1,
+  "kind": "delivery_close_protocol",
+  "stages": [
+    "validate_retained_receipts",
+    "archive_publish_or_reuse_readback",
+    "pin_publication_context",
+    "query_live_verification",
+    "retain_live_readback",
+    "effective_done"
+  ],
+  "delivery_stages": [
+    "resolve_pending_or_claim",
+    "payload_local_checks",
+    "payload_commit",
+    "payload_push",
+    "payload_ci",
+    "closing_proposal",
+    "closing_commit",
+    "closing_push",
+    "closing_ci",
+    "validate_retained_receipts",
+    "archive_publish_or_reuse_readback",
+    "pin_publication_context",
+    "query_live_verification",
+    "retain_live_readback",
+    "effective_done"
+  ],
+  "resume_next_stage": {
+    "no_pending": "resolve_pending_or_claim",
+    "allocated": "payload_local_checks",
+    "after_payload_local_checks": "payload_commit",
+    "after_payload_commit": "payload_push",
+    "payload_push_inflight": "reconcile_payload_push",
+    "payload_ci_pending": "payload_ci",
+    "after_payload_ci": "closing_proposal",
+    "after_closing_proposal": "closing_commit",
+    "after_closing_commit": "closing_push",
+    "closing_push_inflight": "reconcile_closing_push",
+    "closing_ci_pending": "closing_ci",
+    "after_closing_ci": "validate_retained_receipts",
+    "archive_incomplete": "archive_publish_or_reuse_readback",
+    "after_archive_readback": "pin_publication_context",
+    "live_incomplete": "pin_publication_context",
+    "after_live_readback": "effective_done",
+    "after_effective_done": "resolve_pending_or_claim",
+    "suspended_external_blocker": "resolve_independent_ready"
+  }
+}
+```
+<!-- END MCE4D_DELIVERY_PROTOCOL_V1 -->
+
+### GIT-DATA-12 — Nguồn PR, identity mọi phase và full delivery/resume (v1.6.12, V1611-01–V1611-04)
+
+P1 trước P2; dùng chung predicates tại archive/offline/current live/checkpoint, không vá riêng expected của một fixture. Giữ24 governance definitions/fields và runtime schema/defaults/DDL; chỉ mở rộng canonical governance protocol đã có. T001/T003/T107/T108 phải kiểm actual decoder/collector/command/allocator/executor bằng retained sources trước claim enforcement; document proof vẫn synthetic reference.
+
+`PR-SOURCE-PARITY-01` (V1611-01/P1): MỌI GitPullRequestBinding dùng để quyết định receipt/archive/live PASS, gồm retained P/C/canary, live C binding và GitLiveVerification.current_pr_ref, phải tự resolve api_evidence_ref của chính object đó từ member set đang kiểm. Shared validator kiểm exact retained source kind=pull_request_api_snapshot, host/numeric repository identity, PR/head repository/head_ref/base_ref/head/base/tested merge và acquisition observed_at_utc parity với normalized object; exact fields VÀ JSON types theo canonical projection, không chỉ shape hoặc binding_verified. Shared source-projection comparator dùng canonical C14N bytes hoặc equivalent strict JSON-type equality; không dùng host-language dict equality có thể coi true=1/false=0. Quy tắc exact source parity này áp cùng cho retained PR/destination API, native source graph và CI page envelopes của PUSH-FRESH-01/NATIVE-GRAPH-01/LIVE-CI-01; normalized integer IDs/attempts/page numbers không được chấp nhận raw booleans. Canonical key order tương đương vẫn hợp lệ; không sửa raw bytes/source trong evaluator. Current PR source có thể distinct với source của live binding dù cùng displayed PR fields: kiểm cả hai; valid source của object này không bù source missing/wrong-kind/drift/future của object kia. Acquisition của live current snapshot nằm trong secured invocation interval trước completed verdict; live C binding phải không sau own live closing receipt, current_pr_ref có thể được query sau receipt đó trong cùng interval và phải được kiểm trước verdict; retained snapshot phải không sau owning phase receipt theo PR-ACQUISITION-TIME-01. Required member missing/read/parse/parity failure => VERIFY/UNKNOWN, không fallback alias/current ref khác, không tự dựng raw source hoặc sửa source trong evaluator. T003/T107 có distinct-source positive; missing/wrong-kind/wrong host/repo/head/ref/merge/acquisition và hash-valid mutated source negatives; helper/composed guards cùng kết quả.
+
+`PHASE-COMMAND-IDENTITY-01` (V1611-02/P1): với MỌI phase receipt dùng làm prerequisite, resolve destination operation và GitCommandLifecycle của chính receipt; common command.delivery_id MUST bằng receipt.delivery_id trước khi nhận destination/time/CI PASS. Áp cho current P/C và historical/current payload canary, không chỉ top-level current envelopes. Historical canary được phép UUID khác current task; nó chỉ được dùng khi command UUID khớp own retained canary receipt UUID. Không ép historical canary dùng current UUID, không bỏ source/credential/event/ancestry checks đã có. Current assignment/task/revision vẫn phải khớp full current delivery guards; các historical identity fields khác chỉ đối chiếu khi retain actual own provenance, không đoán expected từ current task. Fixture positive phải có own identity nhất quán trước freeze/hash; negative chỉ đổi wrong-delivery field và rehash đúng metadata để cô lập guard, không đổi oracle sang accept fixture sai. Shared predicate không mutate/bù command/source. Actual historical decoder/source provenance vẫn T003, không gọi synthetic equality là Git command proof.
+
+`LIFECYCLE-INSTANT-01` (V1611-03/P2): mọi temporal equality/order trong destination/common command/checkpoint/resume đều dùng parsed RFC3339 UTC instant giữ fractional precision. Cụ thể contract.deadline_at_utc và operation.deadline_at_utc phải cùng instant; result.started_at_utc và operation.lifecycle_started_at_utc phải cùng instant. Z, explicit offset hoặc fractional representation tương đương không bị reject vì raw strings khác nhau; khác instant thật, thiếu timezone, invalid calendar/offset/unknown value phải VERIFY/UNKNOWN. Retain original bytes/strings cho file hash và exact raw source projection parity; semantic instant comparison không rewrite/normalize bytes trong evidence đã publish. T003/T107 kiểm Z↔+07:00/negative offset/fractional equal controls và one-tick drift/malformed negatives qua destination, checkpoint và composed DONE/resume guards.
+
+`DELIVERY-FLOW-01` (V1611-04/P2): full delivery order là resolve pending hoặc claim hợp lệ→P local checks/self-review→ordered Vietnamese P commit(s)→fresh destination/normal P push→P GitHub checks PASS→C proposal/tracker/derived resume→C commit→fresh destination/normal C push→C GitHub checks PASS→DELIVERY-ORDER-01 sáu close stages→effective DONE→mới next Ready. Không observe C trước khi tạo/push C; C không chứa own SHA/result, static C CI không wait own running result. delivery_stages trong MCE4D_DELIVERY_PROTOCOL_V1 là full sequence, stages giữ nguyên six close-stage suffix cho compatibility; không thêm state tracker. Stage payload_commit là commit(s) thật khi payload_mode=changes; với verified_noop, stage này resolve/revalidate existing actual P theo NOOP-HISTORY-01, không tạo empty commit hoặc đổi metadata lịch sử. Stage payload_push vẫn kiểm actual approved ref/preflight/postflight và fresh applicable CI cho reused P; sequence không cấp quyền duplicate side effect khi resume.
+
+Mỗi phiên bắt đầu secured-read actual S19/S21 selector + command context + Git/remote refs/runs/archive, derive exact pending boundary trước chọn task mới. Có pending active UUID/revision thì resume chính identity đó, không thay identity của attempt, duplicate P/C commits hoặc chạy lại push mù. Chỉ ngoại lệ AW-04: task bị external blocker đã được suspend an toàn mới được làm Ready task độc lập với UUID riêng; giữ nguyên selection/operation/evidence của task bị chặn, không coi nó DONE. resume_next_stage là read-only action selection: actual secured facts boundary/delivery_id/task_revision/effective_done phải khớp pending identity/boundary với types đóng: boundary/UUID là string hợp lệ, task_revision là integer dương (không bool/float), effective_done/operation_settled là boolean và suspension_ref là private member locator string khi applicable; unknown/mismatch => UNKNOWN/reconcile. no_pending chỉ được claim khi actual UUID/revision đều null; after_effective_done chỉ auto-next khi actual effective_done=true; mọi active boundary còn lại effective_done=false. suspended_external_blocker chỉ trả resolve_independent_ready khi secured actual suspension_ref nonempty và operation_settled=true: không có inflight/unknown side effect, S19 task giữ BLOCKED và S21 retain exact selector/operation/state/blocker/remaining checks; S22 chỉ derived current slot, không tracker thứ hai. Pending/actual UUID/revision của suspended task vẫn khớp; không discard/replace selector, duplicate work hoặc dùng new task để giả đóng task bị chặn. Extra secured suspension fields chỉ áp boundary này; thiếu/sai evidence hoặc unsettled operation thì UNKNOWN/reconcile, không suy từ chữ BLOCKED. payload/closing_push_inflight trả reconcile_payload_push/reconcile_closing_push: re-read actual command/postflight/result dưới cùng operation identity trước quyết định retry hữu hạn theo PUSH-FRESH-01; không là quyền gửi lại push. payload_ci_pending/closing_ci_pending giữ phase/SHA và observe same eligible checks; after_payload_ci mới tạo C; after_closing_ci mới validate/đóng archive. Archive incomplete dùng deterministic staging/final discovery/readback và exact sealed reuse; live_incomplete quay lại pin_publication_context rồi fresh secured invocation/query, không reuse old invocation hoặc rewrite sealed archive. after_live_readback mới xét effective DONE.
+
+T003/T107 phải kiểm full sequence thiếu/đảo/lặp P/C stages, pending/new-claim guard và mọi resume mapping, đặc biệt sau P/trước C/sau C/CI pending/inflight push/live partial. Source/time/identity/sequence guards phải cùng đúng; một ordered symbolic block hoặc pure reducer không chứng nhận OS/Git/network I/O đã xảy ra. Actual adapters/executor T003 phải execute/reconcile stages theo secured state và retain actual commands/API/archive/readback proof; không gọi fixture constructors trong normative evaluator.
+
+### GIT-DATA-13 — Typed checkpoint, rationale và retained JSON boundaries (v1.6.13, V1612-01–V1612-03)
+
+Ba guards dưới đây dùng chung tại checkpoint/static/observer/archive/current live và composed evaluators theo phạm vi áp dụng; giữ24 governance definitions/fields, runtime schema/defaults/DDL và nguyên raw evidence. Validation thất bại phải trả False hoặc UNKNOWN/VERIFY theo interface đang có, không văng AttributeError hoặc tự tạo dữ liệu bù. T003 thực hiện actual secured reader/decoder; reference fixtures chưa chứng minh executor thật.
+
+`CHECKPOINT-TYPE-01` (V1612-01/P2): trước equality trong CHECKPOINT-CURRENT-01, secured actual.retry_index phải là JSON integer trong [0,9007199254740991], cùng miền với GitCommandLifecycle.retry_index; bool, float kể cả0.0, string, null khi allocated, âm và vượt safe integer đều reject/UNKNOWN. Python implementation dùng exact integer type hoặc explicit bool/float rejection; không để host-language False=0 hoặc0.0=0 thay typed identity. Chưa allocate operation vẫn áp existing all-null context rule, không biến null thành retry0. So sánh exact retry với typed canonical command sau type/range validation, cùng ref/digest/operation/lifecycle/current state; evaluator không sửa secured context/checkpoint. Regression có actual False/0.0/'0'/âm/overflow/missing/null với allocated record, wrong integer retry và valid matching integer0/boundaries theo contract.
+
+`RATIONALE-TEXT-01` (V1612-02/P2): priority rationale, shared invariant, breaking decision và verified_noop reason phải resolve retained JSON object đúng kind/owning identity theo COMMIT-GATE-01/GIT-03/NOOP-HISTORY-01. Mọi required reason phải là string và có ít nhất một ký tự không phải whitespace sau strip(); true, số, collection, null, chuỗi rỗng hoặc toàn whitespace không là lý do. Dùng cùng text predicate cho các nhánh, không chỉ truthiness; giữ actual Git message/scope và approved decision semantics đang có, không tự thêm approval model hoặc sửa rationale trong evaluator. Mechanical guard chỉ chứng minh có văn bản; AI self-review vẫn xác nhận nội dung tiếng Việt đúng nghĩa và đúng nguồn. Regression phải phủ cả ba ngoại lệ commit và no-op, reason wrong types/blank/missing cùng valid Vietnamese reason controls, qua helper và composed evaluator.
+
+`MEMBER-SHAPE-01` (V1612-03/P2): strict canonical JSON/duplicate-key/hash PASS chưa chứng minh expected semantic shape. Trước mọi field access của retained raw CI page, priority rationale, shared invariant, breaking decision, verified_noop reason và raw Git parents projection, loader/caller phải xác nhận root là object rồi mới kiểm expected kind/fields/member value types và identity. Array, boolean, number, null hoặc string root, missing/wrong typed fields, unresolved source hay malformed member => False/UNKNOWN theo interface, giữ task VERIFY khi chưa đủ actual evidence. Không xử lý sai shape bằng truthiness/coercion hoặc blanket AttributeError catch; không sửa/reseal input tại evaluator. Giữ valid canonical objects và source/time/ancestry guards; không nới shape để cứu historical fixture sai. T003/T107 phải có six member roles × five wrong-root types, valid counterparts, input immutability checks và composed no-crash rejection.
+
+### Known gaps / discovery register
+
+| Gap | Tác động | Cách resolve | Owner task | Ban đầu |
+|---|---|---|---|---|
+| K001 | Chưa có repository/module path/toolchain thực tế | Khảo sát workspace, pin chỉ sau xác minh | T001,T002 | OPEN |
+| K002 | Chưa pin/test dependency bundle | Smoke compatibility + license artifact review | T002 | OPEN |
+| K003 | Chưa có host token telemetry hoặc user-project UAT | AI tự xây corpus >=3 controlled repos/>=30 tasks theo S18; private UAT cuối do user; bytes proxy khác token usage | T038,T039 | OPEN_MEASUREMENT |
+| K004 | Chưa verify Windows/WSL filesystem/ACL/LSP thực | Matrix tests; giới hạn supported label theo evidence | T036,T037 | OPEN |
+| K005 | Không có editor unsaved-buffer ingestion R1 | Disk-only warning; R3 editor bridge có gate, không fake freshness | T073 | KNOWN_LIMIT |
+| K006 | Dynamic runtime/cross-service/unsupported languages chưa đầy đủ | Boundary diagnostics; R2 provider/contract gates | T043–T048 | KNOWN_LIMIT |
+| K007 | Chưa kiểm tra nhãn hiệu/sáng chế/quyền phát hành riêng | Không public claim; legal/license review trước distribution | T041 | OPEN |
+| K008 | Chưa có bằng chứng scale M/L/XL hay token savings thực | Fixture scope/config/resources rõ; không tăng supported label trước đo | T053,T039,T077 | OPEN |
+| K009 | Chưa có concrete TS/Python/contract provider API/schema pins | Discovery chính thức/license/fixtures; không lấy implementation tham khảo | T043,T045,T055,T057 | OPEN |
+| K010 | Chưa có actual frontend fixture/URL/build metadata | T081 tự tạo/verify FE+Go+SQL controlled repository fixture, external user target optional cuối | T081 | OPEN_IMPLEMENTATION |
+| K011 | Chưa có actual test-profile/effect-isolation proof | T087/T088/T102 tự tạo isolated fixture permission/attestation đúng verified environment; không production endpoints | T087,T088,T102 | OPEN_IMPLEMENTATION |
+| K012 | Không có mapping phổ quát cho RSC/SSR/closed shadow/canvas/third-party runtime | Capability matrix/unresolved; chỉ thêm adapter sau test, không Fiber heuristic | T085,T091,T095 | KNOWN_LIMIT |
+| K013 | Ba nguồn docs trong checkout đã raw-hash verify3/3; host instruction loading và guard vẫn chưa verify | Coding kickoff recheck source và host mechanism, không false enforcement | T001,T003 | RESOLVED_SOURCE_HOST_PENDING |
+| K014 | Chưa có actual command/output-volume budget hoặc build guard đã kiểm trong project | Preflight nhỏ T002, proof T107, tooling/OS integration T033; chặn workload thiếu điều kiện | T002,T107,T033 | OPEN |
+| K015 | Git initialized main/unborn/no HEAD; no remote/author identity; destination visibility, credentials và GitHub checks/protection chưa verify | T001 survey identity/private-first approved destination và canary real eligible CI; T003/T108 seal actual plan; không tạo remote/identity hoặc giả CI PASS | T001,T003,T108 | OPEN_GIT_DELIVERY |
+
+OPEN không mặc định là câu hỏi bắt người dùng trả lời; agent tự resolve bằng tài liệu chính thức/môi trường khi có thể. Chỉ yêu cầu thông tin/quyền khi không thể suy ra an toàn; không tự chọn private repos để thử hoặc gọi API trả phí.
+
+### Change log của đặc tả
+
+| Revision | Date | Change | Product evidence |
+|---|---|---|---|
+| 1.0.0 | 2026-10-13 | Baseline trước đổi tên; requirements, architecture, schema, API, tasks, acceptance | NONE; implementation NOT_STARTED |
+| 1.1.0 | 2026-10-13 | Đổi tên toàn diện; S26–S33; overview/scale/analysis mode/spec-only/self-index; R2 đa stack/contracts/state machines/domain/AI; R3 evidence/editor/storage; toolchain/protocol pin tại discovery; 80 tasks/64 requirements/80 cases | DOC_ONLY; implementation NOT_STARTED, product tests NOT_RUN |
+| 1.2.0 | 2026-10-13 | Tích hợp Code↔UI Explorer S34–S40; two-way selection, build/instance mapping, static backend flow, permission boundary, loopback API; U0–U3 track; 104 tasks/88 requirements/112 cases; core chưa triển khai | DOC_ONLY; product build/tests/benchmarks NOT_RUN |
+| 1.3.0 | 2026-10-13 | Construction blueprint S41–S49; early design seals; normalized contract/DDL; catalog-record-index ownership; build binding and session ACK flows; precise schedule/work cards; 108 tasks/104 requirements/136 cases | DOC_ONLY; product NOT_RUN |
+| 1.4.0 | 2026-10-13 | Tiếp nhận có chọn lọc ba nguồn docs; S50 authority/version/mode, S51 command/storage/cleanup; Change Budget/Verification Ladder/evidence guard; 112 requirements/148 cases, giữ 108 task và contracts/DDL/order | DOC_ONLY; nguồn attachment giữ nguyên; project installation/enforcement/product NOT_VERIFIED/NOT_RUN |
+| 1.5.0 | 2026-10-14 | Khép audit A01–A08; GC FK tree, resolver identity, status+permission admin, paging/source fragments, pinned group scope, RuntimeConfig, lifecycle/restore incarnation, codec vectors/capture separation; HMR/record retention follow-through; 53 sections,124 requirements,108 tasks,180 cases | DOC_ONLY; current document proofs S48/S52; product/driver/browser/real-repo NOT_RUN |
+| 1.6.0 | 2026-10-14 | User mở toàn bộ 108 task gồm R3/U3; S53 auto-execution/delegated decisions/self-gates/single final acceptance; policy/quota/SQLite pins,17 traceability edge repairs, selected addon scopes;54 sections/130 requirements/195 cases | DOC_ONLY; policy files3/3 verified raw hashes; product NOT_STARTED/NOT_RUN, coding chưa bắt đầu |
+| 1.6.1 | 2026-10-14 | Chốt capacity target repo lớn: 1.000.000 files, 32 GiB source/snapshot, 384 GiB derived cache/worktree; tăng CaptureManifest/CoreRuntimeLimits hard cap, thêm shared per-volume admission theo MCE4D_HOME, mở XL vào acceptance R1/R3; chưa có benchmark sản phẩm | DOC_ONLY; sizing assumptions phải được T053/T077 đo; product NOT_STARTED/NOT_RUN |
+| 1.6.2 | 2026-10-14 | Khép12 review findings: Profile/Mapping authority, effective/shared quotas, cache+durable admission, profile sizing, bounded manifest/RSS/headroom, XL finite oracles, error taxonomy/full capture vectors/current metadata | DOC_ONLY; private schema/runtime fields trước code;54/130/108/195 giữ; product NOT_STARTED/NOT_RUN |
+| 1.6.3 | 2026-10-15 | Quy định bắt buộc per-task automated checks→commit nhỏ dependency/priority order, tiếng Việt→push→GitHub checks exact SHA→DONE/auto-next; đồng bộ bootstrap CI, receipts/resume/DoD/final và chống CI self-reference | DOC_ONLY;54/130/108/195; Git chưa cấu hình, GitHub/product NOT_RUN; không code kickoff |
+| 1.6.4 | 2026-10-15 | Khép8 findings F01–F08 P1→P2: durable closing identity/conditional evaluator, live eligible bootstrap CI, canonical raw manifest, result hardcaps, source CAS provenance, private-first push, durable archives, scoped routine teardown; đồng bộ owner schema/oracles/resume | DOC_ONLY;54/130/108/195 giữ; current Git initialized main/unborn/no remote/identity; product/GitHub NOT_RUN; chưa coding kickoff |
+| 1.6.5 | 2026-10-15 | Khép7 findings H01–H07 và editorial H08; relational proof negatives, deterministic sealed archive/crash resume, current selector/checkpoint, merge-group binding stage, validate=set whole replacement, synthetic fixture teardown và fresh destination mỗi push | DOC_ONLY;54/130/108/195 giữ; product/GitHub NOT_RUN; actual remote/identity chưa có, không coding kickoff |
+| 1.6.6 | 2026-10-15 | Khép7 findings J01–J07 P1→P2; typed complete delivery evidence/canary/source/execution/PR, instant latest-run, history/checkpoint lifecycle, fresh push pre/post và native API mapping, effective pooled SQLite timeout; preserve108 task | DOC_ONLY; previous438 assertions passed but8 new semantic counterexamples accepted in1.6.5; regressions now required rejects, actual product/GitHub NOT_RUN |
+| 1.6.7 | 2026-10-15 | Khép6 findings L01–L06 P1 rồi P2: historical P/live C PR, native source graph/candidate mapping, separate fresh live CI collection, unique execution và allocated-operation checkpoint; giữ108 task | DOC_ONLY; prior581 assertions không phủ6 phản ví dụ mới, current regressions + controls required; product/GitHub NOT_RUN |
+| 1.6.8 | 2026-10-15 | Khép4 findings M01–M04: common S51 lifecycle, per-job rerun/native attempt provenance, frozen PR refs/head repo và actual commit metadata gates; giữ108 | DOC_ONLY; prior671 passed nhưng7 counterexamples thuộc4 groups còn lệch; current regression proof không actual product/GitHub enforcement |
+| 1.6.9 | 2026-10-15 | Khép5 review1.6.8 findings, P1 execution/time/canary trước P2 trailer/skip; đồng bộ publication metadata và reference regressions, giữ108 task | DOC_ONLY; prior798 assertions migrate, nine incorrect acceptances phải reject và valid controls giữ; product/GitHub NOT_RUN |
+| 1.6.10 | 2026-10-15 | Khép5 review1.6.9 findings P1→P2; canary current/per-event, current command binding, reused closing history và gate scope; giữ108 task | DOC_ONLY; prior926 assertions migrate;16 independent probes gồm7 sai phải corrected,9 controls giữ; product/GitHub NOT_RUN |
+| 1.6.11 | 2026-10-15 | Khép4 review1.6.10 findings P1→P2; shared phase receipt/PR acquisition, allocation versus snapshot time và single archive→live order; giữ108 task | DOC_ONLY; prior1232 assertions migrate,12 prior probes gồm4 sai+8 controls phải đúng expected; product/GitHub NOT_RUN |
+| 1.6.12 | 2026-10-15 | Khép4 review1.6.11 findings P1→P2; shared own PR sources, historical phase command UUID, UTC instant equality và full P→C/resume protocol; sửa current/historical labels; giữ108 task | DOC_ONLY; prior1337 assertions migrate,18 retained review probes gồm8 sai+10 controls phải đúng expected; product/GitHub NOT_RUN |
+| 1.6.13 | 2026-10-15 | Khép5 P2 V1612-01–V1612-05 và1 P3 E1612-01: strict actual retry, textual rationale, typed retained JSON, optimization-safe manifest và exact manifest-bound audit sources; sửa current S40 labels; giữ108 task | DOC_ONLY; prior1810 assertions migrate; retained141 review probes gồm43 lệch phải corrected,98 controls giữ; product/GitHub NOT_RUN |
+
+Changelog sau này chỉ ghi thay đổi có ảnh hưởng contract/scope/gate và task đã verify. Không ghi hàng dài về mỗi file nhỏ; không duplicate source diff.
+
+Discrepancy register (điền khi có bằng chứng về docs/source/policy/environment/implementation, ghi đúng lớp):
+
+| ID | Task | Category | Evidence | Affected contracts/tasks | Resolution/authority | Status |
+|---|---|---|---|---|---|---|
+| D001 | T106 | spec_conflict | Audit A01 v1.4.0; current closure/proofs S52/S48 | R113 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D002 | T085 | spec_conflict | Audit A02 v1.4.0; current closure/proofs S52/S48 | R114 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D003 | T087 | spec_conflict | Audit A03 v1.4.0; current closure/proofs S52/S48 | R115 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D004 | T025 | spec_conflict | Audit A04 v1.4.0; current closure/proofs S52/S48 | R116 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D005 | T045 | spec_conflict | Audit A05 v1.4.0; current closure/proofs S52/S48 | R117 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D006 | T004 | spec_conflict | Audit A06 v1.4.0; current closure/proofs S52/S48 | R118,R119 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D007 | T035 | spec_conflict | Audit A07 v1.4.0; current closure/proofs S52/S48 | R120 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D008 | T105 | spec_conflict | Audit A08 v1.4.0; current closure/proofs S52/S48 | R121 và owner tasks S52 | User-approved revision1.5.0; sửa owner contract, không implementation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D009 | T004 | spec_conflict | Review1.6.1 N01 Profile authority | T004,T020,T028,T105,T107; C167,C176 | User-authorized1.6.2; S13,S43 CT-07/EffectiveProfile | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D010 | T047 | spec_conflict | Review1.6.1 N02 Mapping input/server record | T047,T105,T107; C121,C170,C176 | User-authorized1.6.2; S35,S42 DF15,S43 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D011 | T004 | spec_conflict | Review1.6.1 N03 Default/effective/shared caps | T004,T028,T010,T105,T107; C167,C168,C186,C187 | User-authorized1.6.2; S15,S43 CT-07 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D012 | T004 | spec_conflict | Review1.6.1 N04 Durable/home reservation | T004,T007,T010,T047,T069; C186,C187 | User-authorized1.6.2; S15 ACC-01,S43 private journal | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D013 | T035 | spec_conflict | Review1.6.1 N05 Profiles/materialization sizing | T035,T053,T075,T077; C053,C078,C186 | User-authorized1.6.2; S15,S27,S45 AL-01 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D014 | T010 | spec_conflict | Review1.6.1 N06 XL/RSS/reconcile plan | T010,T033,T053,T077; C053,C078,C186 | User-authorized1.6.2; S15,S27 XL-V1,S45 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D015 | T025 | spec_conflict | Review1.6.1 N07 Error taxonomy | T025,T028,T033,T053,T077; C053,C078,C186 | User-authorized1.6.2; S42 DF20,S43 CT-03 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D016 | T020 | spec_conflict | Review1.6.1 N08 Manifest count/bytes/stream | T007,T020,T035,T053,T077,T105,T106,T107; C175,C176,C186 | User-authorized1.6.2; S08,S43,S45 AL-01 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D017 | T053 | spec_conflict | Review1.6.1 N09 XL positive-negative oracles | T053,T077; C053,C078 | User-authorized1.6.2; S17 C053/C078,S27,S53 AW-05 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D018 | T010 | spec_conflict | Review1.6.1 N10 Reserve/owned paths | T010,T033,T035,T105,T107; C176,C186,C187 | User-authorized1.6.2; S15,S43 CT-07/private journal | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D019 | T006 | spec_conflict | Review1.6.1 N11 Full capture recipe | T006,T020,T105,T107; C174,C175 | User-authorized1.6.2; S43 CT-04/vectors | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D020 | T003 | spec_conflict | Review1.6.1 N12 Version/evidence/authority | T003,T108; C180,C189,C191 | User-authorized1.6.2; S21,S22,S40,S41,S53 | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D021 | T003 | spec_conflict | Review1.6.3 F01 | S19/S21 GIT-DATA-01,S53 GIT-06; C189,C190,C191 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D022 | T001 | spec_conflict | Review1.6.3 F02 | S21 GIT-DATA-01,S53 GIT-04/05; C181,C182,C189 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D023 | T020 | spec_conflict | Review1.6.3 F03 | S43 CT-04,S45 AL-01; C174,C175 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D024 | T004 | spec_conflict | Review1.6.3 F04 | S43 CoreRuntimeLimits/CT-07; C167 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D025 | T004 | spec_conflict | Review1.6.3 F05 | S13,S43 CT-04/CT-07/RuntimeConfigData; C167,C168,C174 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D026 | T001 | spec_conflict | Review1.6.3 F06 | S14 IP-04,S53 GIT-01; C181,C189 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D027 | T003 | spec_conflict | Review1.6.3 F07 | S21 GIT-DATA-02,S53 GIT-06/07; C190,C191,C195 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D028 | T033 | spec_conflict | Review1.6.3 F08 | S50,S51 TEARDOWN-01,S53 AW-04/07; C144,C145,C146 | User-authorized1.6.4/A045; owner contract + negative proofs; no implementation claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D029 | T003 | spec_conflict | Review1.6.4 H01/P1 | S21 DELIVERY-LINK-01/reference proof; C189,C190,C191 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D030 | T003 | spec_conflict | Review1.6.4 H02/P1 | S21 GIT-DATA-03 ARCHIVE-PUBLISH-01; C190,C191,C195 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D031 | T003 | spec_conflict | Review1.6.4 H03/P2 | S19/S21 GIT-DATA-04/S22 CHECKPOINT-01; C189,C190,C191 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D032 | T001 | spec_conflict | Review1.6.4 H04/P2 | S21 GitMergeGroupBinding,S53 MERGE-BIND-01; C181,C182,C189 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D033 | T004 | spec_conflict | Review1.6.4 H05/P2 | S13/S43 CT-07 CONFIG-REPLACE-01; C167,C168 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D034 | T033 | spec_conflict | Review1.6.4 H06/P2 | S50/S51 TEARDOWN-FIXTURE-01/A046; C144,C145,C146 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D035 | T001 | spec_conflict | Review1.6.4 H07/P2 | S21 GitDestinationObservation,S53 GIT-01; C181,C189,C191 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D036 | T003 | spec_conflict | Review1.6.4 H08/P3 | S52 CLOSE-03 historical/current vector count; C180 | User-authorized1.6.5/A046; owner+reference regressions, no product PASS | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D037 | T003 | spec_conflict | Review1.6.5 J01/P1 | EVIDENCE-COMPLETE-01/CANARY-LINK-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D038 | T003 | spec_conflict | Review1.6.5 J02/P1 | CI-ORDER-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D039 | T003 | spec_conflict | Review1.6.5 J03/P1 | PR-BIND-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D040 | T003 | spec_conflict | Review1.6.5 J04/P2 | RESUME-LINK-01/CHECKPOINT-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D041 | T001 | spec_conflict | Review1.6.5 J05/P2 | PUSH-FRESH-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D042 | T003 | spec_conflict | Review1.6.5 J06/P2 | API-NORMALIZE-01; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D043 | T002 | spec_conflict | Review1.6.5 J07/P2 | S43 CT-07/S44 DB-02 pooled effective timeout; T003/T106/T107 verification theo scope | User-authorized1.6.6/A047; owner+reference regression proof, actual GitHub/driver/product NOT_RUN | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D044 | T003,T107 | spec_conflict | Review1.6.6 L01; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Temporal PR P/C | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D045 | T003,T107 | spec_conflict | Review1.6.6 L02; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Native check/run/job graph | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D046 | T003,T107 | spec_conflict | Review1.6.6 L03; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Native candidate mapping | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D047 | T003,T107 | spec_conflict | Review1.6.6 L04; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Fresh live CI separate archive | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D048 | T003,T107 | spec_conflict | Review1.6.6 L05; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Duplicate equivalent binding | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D049 | T003,T107 | spec_conflict | Review1.6.6 L06; retained counterexample+control | S21/S53; T001,T003,T107,T108 | User-approved1.6.7; Allocated NOT_STARTED operation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D050 | T003,T107 | spec_conflict | Review1.6.7 M01; retained counterexamples+controls | S21/S51/S53; T001,T003,T107,T108 | User-authorized1.6.8/A049; Common push/checkpoint lifecycle | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D051 | T003,T107 | spec_conflict | Review1.6.7 M02; retained counterexamples+controls | S21/S51/S53; T001,T003,T107,T108 | User-authorized1.6.8/A049; Per-job native rerun and attempt provenance | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D052 | T003,T107 | spec_conflict | Review1.6.7 M03; retained counterexamples+controls | S21/S51/S53; T001,T003,T107,T108 | User-authorized1.6.8/A049; Frozen approved PR flow | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D053 | T003,T107 | spec_conflict | Review1.6.7 M04; retained counterexamples+controls | S21/S51/S53; T001,T003,T107,T108 | User-authorized1.6.8/A049; Actual commit metadata semantic gate | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D054 | T003,T107 | spec_conflict | Review1.6.8 V168-01; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.9/A050; Completed execution input pin | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D055 | T003,T107 | spec_conflict | Review1.6.8 V168-02; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.9/A050; Cross-record delivery/publication chronology | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D056 | T003,T107 | spec_conflict | Review1.6.8 V168-03; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.9/A050; Selected successful canary events | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D057 | T003,T107 | spec_conflict | Review1.6.8 V168-04; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.9/A050; Single actual trailer parser | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D058 | T003,T107 | spec_conflict | Review1.6.8 V168-05; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.9/A050; Actual message skip-CI rejection | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D059 | T003,T107 | spec_conflict | Review1.6.9 V169-01; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.10/A051; Live C canary event coverage | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D060 | T003,T107 | spec_conflict | Review1.6.9 V169-02; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.10/A051; Canary newest generation per event including no-job rows | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D061 | T003,T107 | spec_conflict | Review1.6.9 V169-03; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.10/A051; Secured current command lifecycle/retry/ref/digest | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D062 | T003,T107 | spec_conflict | Review1.6.9 V169-04; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.10/A051; Historical closing commit reused by verified_noop | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D063 | T003,T107 | spec_conflict | Review1.6.9 V169-05; retained counterexamples+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.10/A051; Task owning gate metadata classifier | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D064 | T003,T107 | spec_conflict | Review1.6.10 V1610-01; retained probes+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.11/A052; Shared receipt chronology for current P/C and canary | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D065 | T003,T107 | spec_conflict | Review1.6.10 V1610-02; retained probes+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.11/A052; PR acquisition bounded by phase receipt and live invocation | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D066 | T003,T107 | spec_conflict | Review1.6.10 V1610-03; retained probes+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.11/A052; Immutable allocation versus retained selection snapshot update | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D067 | T003,T107 | spec_conflict | Review1.6.10 V1610-04; retained probes+controls | S21/S53; T001,T003,T107,T108 | User-authorized1.6.11/A052; Archive publication precedes final fresh live verification | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D068 | T003,T107 | spec_conflict | Review1.6.11 V1611-01; retained distinct-current-source probes+controls | S21 GIT-DATA-12/S53; T001,T003,T107,T108 | User-authorized1.6.12/A053; Shared PR source parity includes own current_pr_ref raw source | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D069 | T003,T107 | spec_conflict | Review1.6.11 V1611-02; retained own-canary command probes+controls | S21 GIT-DATA-12/S53; T001,T003,T107,T108 | User-authorized1.6.12/A053; Every phase command UUID matches its own receipt including history | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D070 | T003,T107 | spec_conflict | Review1.6.11 V1611-03; retained timestamp probes+controls | S21 GIT-DATA-12/S53; T001,T003,T107,T108 | User-authorized1.6.12/A053; Temporal equality uses precise UTC instant, evidence bytes remain raw | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D071 | T003,T107 | spec_conflict | Review1.6.11 V1611-04; S22/GIT-06 order+resume review | S21 GIT-DATA-12/S22/S53; T001,T003,T107,T108 | User-authorized1.6.12/A053; Full P-C-close sequence and identity-bound pending resume before new claim | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+
+| D072 | T003,T107 | spec_conflict | Review1.6.12 V1612-01; bool/float retry alias counterexamples+controls | S21 GIT-DATA-13 CHECKPOINT-TYPE-01/S22/S53; C189,C190,C191 | User-authorized1.6.13/A054; Strict secured actual retry type/range before identity equality | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D073 | T003,T107 | spec_conflict | Review1.6.12 V1612-02; three rationale roles × truthy nontext/blank probes | S21 GIT-DATA-13 RATIONALE-TEXT-01/S53 GIT-03; C189,C190 | User-authorized1.6.13/A054; Retained rationale has typed nonblank reason, no evaluator backfill | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D074 | T003,T107 | spec_conflict | Review1.6.12 V1612-03; six retained roles × five wrong JSON roots | S21 GIT-DATA-13 MEMBER-SHAPE-01/S48; C189,C190,C191 | User-authorized1.6.13/A054; Expected object shape before field access, False/UNKNOWN without uncaught exception | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D075 | T003,T107 | spec_conflict | Review1.6.12 V1612-04; tampered member default/optimized execution | S48 QA-06 MANIFEST-CHECK-01; C180,C189,C190 | User-authorized1.6.13/A054; Explicit validation remains active under Python optimization | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+| D076 | T003,T107 | spec_conflict | Review1.6.12 V1612-05; unlisted child source sentinel with valid root manifest | S48 QA-06 PROOF-SOURCE-01; C180,C189,C190 | User-authorized1.6.13/A054; Audit loads only explicitly verified manifest-bound root sources | RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED |
+
+## S22 — Trạng thái tiếp tục cho phiên AI sau
+
+```yaml
+resume:
+  spec_version: 1.6.13
+  implementation_revision: null
+  release_label: NOT_BUILT
+  gate: G0
+  design_seal: NOT_RUN
+  construction_plan: S47
+  policy_registry: S50
+  command_storage_policy: S51
+  audit_closure: S52
+  audit_baseline: 1.4.0
+  latest_review_baseline: 1.6.12
+  latest_review_closure: S52_CLOSE_13
+  canonical_codec: MCE-C14N1
+  remaining_scope_gate: ACTUAL_TOOLCHAIN_OS_BROWSER_AND_REAL_REPO_VERIFICATION
+  policy_adoption_status: ACCEPTED_SCOPED
+  project_policy_files_status: VERIFIED_RAW_HASHES_3_OF_3_2026_10_14
+  policy_runtime_enforcement: NOT_IMPLEMENTED
+  last_request_mode: docs_only
+  next_task_mode: implement_on_coding_kickoff
+  authorized_build_scope: [R1, R2, R3, U0, U1, U2, U3]
+  autonomous_contract: S53
+  git_delivery_policy: S53_AW_08
+  git_delivery:
+    repository_status: INITIALIZED_UNBORN_NO_REMOTE
+    local_branch: main
+    local_head_sha: null
+    author_identity_status: NOT_CONFIGURED
+    approved_remote: null
+    approved_branch: null
+    last_verified_payload_sha: null
+    closing_commit_ref: null # legacy summary; actual locator is delivery_id + parent + approved ancestry
+    pending_delivery_id: null
+    active_delivery_id: null # derived from S19/S21 selection, never authority
+    task_revision: null
+    planned_archive_path: null
+    closing_parent_sha: null
+    durable_archive_ref: null
+    observed_remote_sha: null
+    expected_check_plan_ref: null
+    last_ci_result: NOT_RUN
+    last_live_verification_ref: null # LIVE-CI-01, external evidence, not sealed history
+    last_live_verification_id: null
+    last_ci_collection_ref: null
+    pending_delivery_task: null
+    last_delivery_evidence_ref: null
+  auto_advance_tasks: true
+  auto_close_internal_gates: true
+  intermediate_user_approval: false
+  final_user_acceptance: once_after_engineering_complete
+  assignment_start_status: NOT_STARTED_SPEC_EDIT_ONLY
+  final_engineering_status: NOT_STARTED
+  completed_scope_tasks: 0
+  required_scope_tasks: 108
+  required_check_failures: null
+  required_check_not_run: null
+  foundation_sequence: [T001, T002, T003, T105, T106, T107, T108]
+  next_task: T001
+  active_task: null
+  execution_checkpoint: null # GitExecutionCheckpoint after actual execution; GIT-DATA-04/CHECKPOINT-CURRENT-01
+  active_owner: null
+  done_r1_tasks: 0
+  total_r1_tasks: 52
+  deferred_r2_tasks: 0
+  todo_r2_tasks: 20
+  deferred_r3_tasks: 0
+  todo_r3_tasks: 12
+  explorer_requested_tracks: [U0, U1, U2, U3]
+  explorer_active_gate: null
+  explorer_u0_todo: 4
+  explorer_u1_todo: 10
+  explorer_u2_todo: 6
+  explorer_u3_deferred: 0
+  explorer_u3_todo: 4
+  explorer_implementation_status: NOT_STARTED
+  preview_execution_permission: OWN_ISOLATED_FIXTURES_ON_CODING_ASSIGNMENT_ONLY
+  total_roadmap_tasks: 108
+  product_build: NOT_RUN
+  product_tests: NOT_RUN
+  product_benchmark: NOT_RUN
+  blocking_user_decision: null
+  discovery_gaps: [K001, K002, K003, K004, K007, K008, K009, K010, K011, K014, K015]
+  known_limits: [K005, K006, K012]
+  last_evidence_id: null
+  last_checked_at_utc: null
+```
+
+MUST cập nhật resume chỉ sau khi tracker/evidence nhất quán; current command ref/digest/lifecycle/retry lấy từ secured actual context CHECKPOINT-CURRENT-01, không từ checkpoint cache; current attempt selector/revision và execution_checkpoint theo GIT-DATA-04, planned path khác actual archive pointer; là summary derived, không nguồn thay thế task rows. Coding assignment108 và ủy quyền còn hiệu lực xuyên task/compaction/phiên tiếp tục đến completion hoặc user stop/revoke; kiểm hiện trạng mà không yêu cầu cấp lại cùng quyền. Không lưu chain-of-thought vào tài liệu. Chỉ lưu quyết định, bằng chứng, lỗi tái hiện được và hành động tiếp theo.
+
+Checklist mỗi phiên: theo DELIVERY-FLOW-01, validate spec → inspect actual Git/remote refs/modules/S19/S21 selection/checkpoint/pending delivery → secured derive pending boundary. Có pending active thì resume exact UUID/revision/phase theo resume_next_stage, settle command/CI/archive/live đang dở trước; không thay UUID hoặc claim lại chính task. Chỉ khi không pending, pending đã đóng hợp lệ theo DONE-EVAL-01, hoặc suspended_external_blocker được secured-verify operation_settled/suspension evidence đúng AW-04 mới chọn Ready task độc lập; giữ selector/evidence task bị chặn nguyên. Với delivery được chọn: đọc source/policy → ownership/actual allocation → implement → P automated local checks/self-review → ordered Vietnamese P commits → fresh destination/normal P push → P GitHub checks đúng SHA PASS → C proposal/tracker/derived resume → C commit → fresh destination/normal C push → C GitHub checks đúng SHA PASS → validate retained receipts → archive publish/reuse/readback → pin secured publication context → fresh live verification → retain live/readback → effective DONE → tự next Ready. Pending/fail/unknown không DONE; interrupted push phải reconcile actual operation trước retry. Khi interruption/thiếu quyền ghi exact state/commands/checks còn NOT_RUN; không hứa chạy nền.
+
+Điều kiện kết thúc tự nguyện: AW-06 đạt108/108 và gói bàn giao cuối đã kiểm. Lỗi implementation/test, dependency pin, addon schema chưa seal hoặc gate chưa PASS là việc AI tự giải quyết, không điểm xin nghiệm thu. Blocker ngoài quyền/không thể tự khắc phục xử lý AW-04 sau khi làm hết việc độc lập; user stop hoặc host hard limit thì checkpoint AW-07. Không dừng vì vừa xong task/phase/project lớn và không fake DONE.
+
+## S23 — Nguồn kỹ thuật và pháp lý tham khảo
+
+Kiểm tra web khi soạn baseline:2026-10-13; bổ sung Git/GitHub governance REF60–REF63 được đối chiếu2026-10-15. URL là tài liệu chính thức/metadata, không source implementation tham khảo. Facts/version có thể đổi: kiểm lại actual pins/API/rules khi dùng. Quy định tiếng Việt, P0/P1/P2, per-task delivery và no-skip-as-test-PASS là tiêu chuẩn riêng MCE4D; không gán thành yêu cầu của Conventional Commits hoặc GitHub.
+
+| Ref | Nguồn | Phạm vi fact được dùng |
+|---|---|---|
+| REF01 | `https://go.dev/doc/devel/release` | Release history và supported-release policy; không pin phiên bản chỉ từ kết quả tìm kiếm |
+| REF02 | `https://go.sdk.modelcontextprotocol.io/` | Official Go SDK; không tự bịa API SDK |
+| REF03 | `https://modelcontextprotocol.io/specification/latest/server/tools` | Tool protocol/structured output; negotiate version với SDK/client thực |
+| REF04 | `https://www.sqlite.org/wal.html` | WAL/read snapshot/single-writer và filesystem constraints |
+| REF05 | `https://www.sqlite.org/pragma.html` | Foreign-key/pragma configuration; xác minh trên từng connection |
+| REF06 | `https://www.sqlite.org/fts5.html` | FTS5; lexical/full-text search không phải semantic binding |
+| REF07 | `https://pkg.go.dev/golang.org/x/tools/go/packages` | Go package loading, build driver, test variants và overlays |
+| REF08 | `https://go.dev/gopls/features/navigation` | Definitions/references/call hierarchy và giới hạn build/dynamic calls |
+| REF09 | `https://go.dev/gopls/features/transformation` | Rename safeguards và giới hạn runtime/reflection |
+| REF10 | `https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/` | Position encodings, text edits và LSP request contracts; verify negotiated version |
+| REF11 | `https://pkg.go.dev/modernc.org/sqlite` | Driver/package/license metadata; không mặc định mọi bundled artifact cùng license |
+| REF12 | `https://pkg.go.dev/github.com/modelcontextprotocol/go-sdk` | Module/version compatibility và nhiều license thành phần |
+| REF13 | `https://pkg.go.dev/golang.org/x/tools/gopls` | Module/tool version/license metadata cho gopls |
+| REF14 | `https://www.sqlite.org/backup.html` | Backup API; không copy DB đang live tùy tiện |
+| REF15 | `https://www.copyright.gov/help/faq/faq-protect.html` | Tham khảo nguyên tắc ý tưởng so với biểu đạt; không thay tư vấn luật áp dụng |
+| REF16 | `https://www.apache.org/licenses/LICENSE-2.0` | Ví dụ nghĩa vụ license/notices; phải audit dependency cụ thể |
+| REF17 | `https://git-scm.com/docs/git-ls-files` | Tracked/untracked/ignore và NUL-delimited file listing |
+| REF18 | `https://developers.openai.com/codex/mcp` | Codex local STDIO và cấu hình; verify host version/environment |
+| REF19 | `https://www.typescriptlang.org/docs/handbook/project-references.html` | Project references, compiler scope và module boundaries; không phải universal graph extraction |
+| REF20 | `https://www.typescriptlang.org/tsconfig/incremental.html` | Incremental compiler metadata; không tự dùng internal format làm storage contract |
+| REF21 | `https://docs.python.org/3/library/ast.html` | Python AST syntax và giới hạn; parsing không chứng minh runtime bindings |
+| REF22 | `https://spec.openapis.org/oas/` | Versioned OpenAPI specs; chọn supported versions qua adapter fixtures |
+| REF23 | `https://www.asyncapi.com/docs/concepts/asyncapi-document/structure` | Channels/messages/operations; versioned direction và namespaces |
+| REF24 | `https://docs.nats.io/learn/jetstream/pull-consumers` | Consumer/ack/redelivery controls; không suy business exactly-once |
+| REF25 | `https://dev.mysql.com/doc/refman/8.4/en/stored-objects.html` | Views/routines/triggers/events; dùng đúng dialect/version của target, không ép 8.4 |
+| REF26 | `https://mlflow.org/docs/latest/ml/dataset/` | Metadata lineage/schema/digest/split; không bắt buộc dependency MLflow |
+| REF27 | `https://docs.pytorch.org/docs/stable/generated/torch.load` | Unpickling warning; engine không load checkpoint để phân tích |
+| REF28 | `https://opentelemetry.io/docs/concepts/signals/traces/` | Spans/links và observed runtime evidence; không bắt buộc telemetry service |
+| REF29 | `https://www.sqlite.org/whentouse.html` | Embedded app/local storage suitability và concurrency constraints; benchmark trước thay storage |
+| REF30 | `https://www.w3.org/TR/scxml/` | State/transition/guard/hierarchy/parallel concepts; không bắt buộc implement SCXML runtime |
+| REF31 | `https://vite.dev/guide/api-plugin` | Plugin transform/HMR hooks; API/version pinned; không mặc định mapping DOM có sẵn |
+| REF32 | `https://tc39.es/ecma426/` | Source maps generated→original locations; không chứa component runtime identity |
+| REF33 | `https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage` | Cross-origin messages; exact targetOrigin/origin/source validation |
+| REF34 | `https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy` | Iframe origin isolation; parent không tự đọc DOM cross-origin |
+| REF35 | `https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors` | Embedding policy; không bypass bằng proxy stripping |
+| REF36 | `https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint` | Hit test trong document/viewport; cross-origin iframe needs local bridge |
+| REF37 | `https://react.dev/reference/react-dom/createPortal` | Portal DOM location khác React ownership/events |
+| REF38 | `https://react.dev/reference/react/Children` | Children API không cho full rendered ownership tree |
+| REF39 | `https://reactflow.dev/learn/advanced-use/performance` | Controlled rendering/performance; không chứng minh unlimited graph scale |
+| REF40 | `https://github.com/xyflow/xyflow/blob/main/LICENSE` | React Flow core MIT; audit artifact/version/dependency; paid examples terms riêng |
+| REF41 | `https://github.com/dagrejs/dagre` | Directed layout và MIT; dùng package hiện được maintainer chỉ định, pin ở T081 |
+| REF42 | `https://www.w3.org/TR/trace-context/` | traceparent/tracestate interoperability và privacy; không tự map span→source |
+| REF43 | `https://opentelemetry.io/docs/concepts/context-propagation/` | Causal cross-service context; instrumentation từng boundary |
+| REF44 | `https://opentelemetry.io/docs/specs/semconv/db/database-spans/` | Database spans/table info có điều kiện; sanitized metadata; không mặc định commit proof |
+| REF45 | `https://playwright.dev/docs/network` | Browser network fixtures/isolation tests; service worker visibility caveat |
+| REF46 | `https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/` | Keyboard accessible split pane; kiểm thử accessibility thực, không self-certify |
+| REF47 | `https://opentelemetry.io/docs/languages/js/getting-started/browser/` | Browser instrumentation examples và status; pin runtime capability qua tests |
+| REF48 | `https://go.dev/doc/database/execute-transactions` | Statement trong transaction khác Commit/Rollback; source không là bằng chứng persisted runtime |
+| REF49 | `https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation` | Propagation/default behavior là hai vấn đề; không chỉ stopPropagation để hứa Inspect no action |
+
+Không lấy mô tả marketing, số stars hoặc tool name làm evidence correctness. Không tái tạo license text dài trong spec; khi phân phối dependency phải ship thông báo được yêu cầu dưới file pháp lý thích hợp, dù đây vẫn là tài liệu thiết kế duy nhất.
+
+Nguồn bổ sung khi rà soát v1.3.0 (không phải dependency đã pin/test trên target):
+
+| Ref | Nguồn | Phạm vi |
+|---|---|---|
+| REF50 | `https://www.sqlite.org/foreignkeys.html` | Composite FK/connection settings; checked for physical schema design |
+| REF51 | `https://www.sqlite.org/pragma.html#pragma_secure_delete` | Deletion/secure_delete limits, including FTS traces; no forensic erase guarantee |
+| REF52 | `https://www.sqlite.org/fts5.html#the_secure_delete_configuration_option` | FTS secure-delete compatibility must be pin-tested, not inferred from DELETE |
+| REF53 | `https://go.dev/src/os/root.go` | Root containment does not replace no-follow/device/mount policy; verify APIs |
+| REF54 | `https://go.dev/doc/database/execute-transactions` | database/sql Tx ownership, Commit/Rollback and error semantics |
+| REF55 | `https://json-schema.org/draft/2020-12/schema` | JSON Schema dialect for canonical closed wire records; semantic validators additional |
+| REF56 | `https://www.sqlite.org/pragma.html#pragma_freelist_count` | Free/reusable pages khác file length/quota bytes; driver version verify |
+| REF57 | `https://www.sqlite.org/lang_vacuum.html` | Compaction là maintenance có space/lifecycle requirements, không free-space claim từ DELETE |
+| REF58 | https://sqlite.org/limits.html | Actual SQLite string/BLOB/row cap khác file artifact cap; verify driver limits, no giant manifest SQL cell |
+| REF59 | https://python-jsonschema.readthedocs.io/en/stable/validate/ | Document-only Draft202012Validator/check_schema API; verification helper không product dependency |
+| REF60 | https://www.conventionalcommits.org/en/v1.0.0/ | Commit syntax type(scope): description, body/trailers; tiếng Việt/priority/task refs là policy MCE4D |
+| REF61 | https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks | Latest commit, check/status source và test merge commit; GitHub accepted skipped/neutral không chứng minh tests đã chạy |
+| REF62 | https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets | Actual ruleset/protection cần survey, không thay admin policy hoặc suy enforce từ file workflow |
+| REF63 | https://docs.github.com/en/actions/reference/security/secure-use | Actions pin full SHA, least privilege và untrusted input/secrets boundaries |
+| REF64 | https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow | GITHUB_TOKEN event suppression/approval-required PR và authenticated bootstrap canary; kiểm lại official docs lúc kickoff |
+| REF65 | https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization | GitHub retention của logs/artifacts/checks; owned archive không chỉ remote URLs |
+| REF66 | https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#merge_group | Merge group có SHA/ref riêng; membership/base proof khác delivery head/PR stage |
+| REF67 | https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility | Repository visibility có thể đổi dù destination URL/ID giữ; fresh check trước mỗi push, không tự đổi setting |
+| REF68 | https://docs.github.com/en/rest/checks/runs | Native check states/conclusions/nulls/App identity; retain sanitized source, normalized mapping và execution proof riêng |
+| REF69 | https://docs.github.com/en/rest/commits/statuses | Native status error/failure/pending/success, actual IDs/creation ordering/context source; không invent Actions run |
+| REF70 | https://docs.github.com/en/rest/actions/workflow-jobs | Job run_id/head_sha/check_run_url và specific-attempt job membership; không giả REST job luôn có run_attempt |
+| REF71 | https://docs.github.com/en/rest/actions/workflow-runs | Actual workflow run/head/attempt/check-suite identity; correlate retained check/run/job graph |
+| REF72 | https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api | Follow actual pagination links đến terminal, retain pages/queries; partial/API caps không PASS |
+| REF73 | https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs | Workflow/failed-job/specific-job rerun, original SHA/ref retained; partial attempt không ép mọi job rerun |
+| REF74 | https://docs.github.com/en/rest/actions/workflow-runs#get-a-workflow-run-attempt | Actual historical attempt detail request scope; không gọi synthetic old rows là native workflow list |
+| REF75 | https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs | Official skip message strings và skip-checks trailer; MCE4D cấm actual directives trước commit/push |
+| REF76 | https://git-scm.com/docs/git-interpret-trailers | Official trailer block/key/value/divider rules; MCE4D pin closed single-line delivery subset, không tự áp aliases/dedup |
+
+### Xác minh kỹ thuật cho v1.5.0 — 2026-10-14
+
+Đối chiếu lại REF04/REF05/REF14 về WAL/FK/backup và REF33 về postMessage tại tài liệu chính thức. Quy trình bảo trì, codec và contracts ở v1.5.0 là thiết kế riêng, không tính năng do các nguồn này cung cấp. Các version dependency thực tế vẫn được pin/test tại T002/T081; không nâng version chỉ vì ngày soạn mới. Không tra hoặc kế thừa source implementation GitNexus/Graphify trong bản cập nhật này.
+
+## S24 — Roadmap mở rộng có gate
+
+Explorer U0–U2 = T081–T100; U3 = T101–T104; cả hai là scope bắt buộc đã mở trong 108 task. Isolated fixture execution theo S53 khác quyền chạy external target.
+
+R2 = T043–T048,T055–T068: TS/JS, Python, frontend, HTTP/schema/proto, SQL, events, cross-repo vectors, approved state/decision/architecture, semantic diff và AI metadata lineage. Thiết kế/contract ở S28–S30/S32; tự bắt đầu sau G5 theo scope đã mở. Task T048 chỉ review sau T068 và các dependencies DONE.
+
+R3 = T069–T080: local runtime/test artifacts, editor buffers, local semantic retrieval, measured storage scale, deployment metadata và một provider bổ sung theo AW-05. Tất cả bắt buộc xây/kiểm; runtime activation vẫn opt-in. Theo S27/S31/S32/AW-05, không hỏi mở scope lại.
+
+Mọi extension phải có schema/DTO/capability acceptance trước code, giữ source/policy/snapshot invariants và cập nhật requirement/task/case trong cùng tài liệu. Core không gọi LLM, network, arbitrary scripts, production DB hoặc target test để tự “khám phá”. U0–U2 mở GUI local và U1 attach preview đã chạy khi người dùng cho phép; tải preview là thực thi target trong browser, không thuộc bảo đảm offline/read-only-runtime của indexer. Permission S37 tách riêng. Distributed indexing/3D vẫn FUTURE, GUI 2D không còn FUTURE.
+
+## S25 — Lệnh khởi động dành cho AI thực hiện tài liệu
+
+Đọc S00/S53 và resume S22. Kiểm tra repository hiện có. Bắt đầu T001; thứ tự S47, foundation T001/T002/T003/T105/T106/T107/T108 trước feature. Không chọn task chỉ theo số ID. Dùng đặc tả này làm nguồn yêu cầu duy nhất; giữ implementation độc lập; không tải source sản phẩm tham khảo. Triển khai lát cắt nhỏ, test thật, cập nhật tracker/evidence trong cùng file. Chưa có evidence thì giữ NOT_RUN/TODO/VERIFY đúng thực tế. Không tự mở rộng ngoài track/capability đã mở, không auto-write target hay thay stack ngoài quy trình ADR. Cả108 task đã được yêu cầu; tự nhận theo prerequisites/S53. Isolated fixture execution thuộc coding assignment; external target/production quyền riêng.
+
+## S26 — 4D, bản đồ phân cấp và dự án chưa có code
+
+### Quy ước sản phẩm
+
+Tên sản phẩm do người dùng chọn: `Maps-Context-Engine-4D`; project/module local slug `maps-context-engine-4d`; CLI `mce4d`; prefix MCP `mce4d_`; state env `MCE4D_HOME`. Chưa có binary/repository deployment được kiểm chứng. Không mặc định tên đã được clearance nhãn hiệu. Không cần tương thích alias tên cũ khi chưa có implementation được phát hành; nếu discovery thấy bản cũ đã chạy, dừng migration tự động và lập ADR/rebind riêng.
+
+`4D` là tổ chức thông tin do bản đặc tả đề xuất, không là thuật ngữ chuẩn, hệ tọa độ đồ họa, cam kết mô phỏng hay graph có bốn dimensions toán học:
+
+| Chiều | Dữ liệu cần biểu diễn | Câu hỏi hỗ trợ | Release |
+|---|---|---|---|
+| D1 Structure | workspace/module/file/scope/symbol, ownership và boundary | Thành phần ở đâu, thuộc module nào? | R1 |
+| D2 Interactions & Data | calls/refs, API/event/SQL/schema, source-to-consumer links | Thành phần nào dùng dữ liệu này; thay đổi lan tới đâu? | R1 code; R2 contracts |
+| D3 Behavior & Constraints | trạng thái/chuyển trạng thái, business invariant được duyệt, failure/recovery obligations | Hành vi nào và điều kiện nào phải được giữ? | R2; runtime evidence R3 |
+| D4 Evolution & Evidence | snapshot/profile, changed facts, quyết định có version, test/run evidence | Điều gì đổi, bằng chứng thuộc phiên bản nào, quyết định nào cần xem lại? | R1 snapshots; R2 diff; R3 observed runs |
+
+Không đổi tên capability R1 thành “4D complete”. Runtime status trả coverage từng chiều. D3/D4 chưa implement phải là `not_available` hoặc `partial`, không trường rỗng mang nghĩa đầy đủ.
+
+### Bản đồ phân cấp
+
+H01 Hierarchy: repository → declared system/module → package/file → symbol/source range. Module discovery dùng manifest/workspace boundary được parse an toàn; folder convention chỉ là candidate. Một module có thể chứa nhiều package; shared package không được tự gán riêng cho consumer đầu tiên. Mọi child count/pagination đều scoped generation/profile/policy.
+
+H02 Overview deterministic gồm ngôn ngữ/phạm vi đã phát hiện, entry points có bằng chứng, dependency giữa module, tài liệu trusted, test roots, known gaps, scale statistics. Tóm tắt bằng template từ facts; không cần LLM. Không bịa mô tả nghiệp vụ từ tên folder. Dùng overview để chọn scope, không thay source cần review.
+
+H03 Mọi cạnh bị gom ở module view phải có `expand_ref` truy về các edge/source sites trong cùng generation; giữ loại hướng và evidence. Cluster/topic summary không là proof liên thông execution. Shared/hub symbol trả danh mục consumer theo nhóm + continuation; không cắt caller hiếm chỉ vì ít centrality.
+
+H04 Vocabulary được khai báo/trusted có thể nối từ nghiệp vụ Việt/Lào/Anh với entity ID/source anchors: “số dư khả dụng”, “available balance”, “available_balance”. Alias chỉ dùng tìm ứng viên, không tự tạo CALLS/READS/WRITES hoặc gộp entity. Cùng một từ có nhiều nghĩa phải trả ambiguity. R1 dùng explicit aliases trong approved config; record lifecycle đầy đủ ở T062.
+
+### Greenfield / spec-only / brownfield
+
+G01 Git repository chưa commit hoặc chỉ có tài liệu được phép có overview: `project_stage=spec_only|mixed|implemented_scope`, `implementation_evidence=none|partial|observed`. Engine không tự `git init`, tạo source hay bootstrap target. Chưa có git root hợp lệ thì thông báo prerequisite; AI xây target thực hiện ngoài quyền read-only engine.
+
+G02 Planned component lấy từ tài liệu được khai báo, giữ `plane=intended` và anchor/hash. Component từ code có `plane=observed_static`. Runtime import dùng `plane=observed_runtime`. Chỉ có tài liệu “PaymentService” không được tạo symbol implementation hoặc CALLS thật. Mapping intended↔observed cần source/explicit link; chưa map là `unmapped`, không phải missing implementation được chứng minh.
+
+G03 `task_kind=plan` và workspace/module/document selector trả mục tiêu, constraints trích nguồn, thành phần đã có và gaps; không tự thiết kế requirement mới. ADR/state records chỉ thành ràng buộc khi approved theo S30. Repo đang phát triển giữ source/rules hiện hữu; onboarding không thay convention.
+
+### Tự dùng công cụ để phát triển chính công cụ
+
+Bootstrap T001–T042/T049–T054 không yêu cầu `mce4d` đã tồn tại. Sau khi có candidate binary được build/test, có thể index source của chính engine bằng binary pin tại một revision đã biết, state ở ngoài target. Binary đang chạy không bị overwrite giữa job; source revision và analyzer revision ghi riêng.
+
+T054 so sánh thao tác self-index với oracle độc lập và công cụ nền không dùng engine. Output engine không tự làm oracle/golden. Lỗi engine phải có đường fallback đọc source/LSP/test trực tiếp; không tạo vòng phụ thuộc “phải dùng engine hỏng mới sửa được engine”. Sau nâng cấp provider phải invalidate đúng cache, không reuse fact chỉ vì source target không đổi.
+
+## S27 — Kiến trúc tối ưu cho repository lớn
+
+### Những chi phí phải đo riêng
+
+`T_total = inventory + capture/hash + parse/type + graph_write + query + context_pack + consumer_verification`. Local I/O/CPU không phải LLM token. Báo warm/cold, tree size, excluded bytes, external metadata, peak memory toàn cây process và write amplification. Không dùng graph-only latency để quảng cáo edit latency đã bao gồm strict freshness.
+
+| Rủi ro thiết kế cũ | Thiết kế giữ tính đúng | Task |
+|---|---|---|
+| Duyệt graph toàn repo trước mọi câu hỏi | Overview → module → symbol; SQL adjacency có index, traversal bounded | T049,T051 |
+| Hash toàn workspace cho từng lượt tra cứu trong một cuộc điều tra | Cho phép truy vấn analysis trên generation bất biến; xác minh live riêng trước edit | T052 |
+| Parse lại nhiều file không đổi | Cache syntax theo bytes/provider; semantic reuse phải gồm dependency/profile fingerprint | T050 |
+| AST/type graph toàn repo giữ cùng lúc | Xử lý từng scope có dependency closure; giới hạn workers; provider không stream được phải có scope/resource diagnostic | T050,T053 |
+| Vô số refs vượt context | Catalog refs đầy đủ phía máy, chia nhóm/obligations theo task, source quan trọng theo evidence | T051 |
+| Sao chép facts giữa nhiều generations tốn đĩa | R1 đo quota/retention; R3 immutable package fact sets khi profiling chứng minh cần | T075,T077 |
+| Cursor lặp graph walk từ đầu | Stable ordered ID/keyset cho lists; bounded in-memory result cache keyed snapshot/query; graph continuation có progress test | T025,T051 |
+
+### Hai chế độ độ mới, không đánh tráo bảo đảm
+
+F01 `freshness_mode=checked_workspace` là default cho edit-oriented pack và rename preview: giữ full manifest/hash check S08; query vượt deadline trả unknown. `freshness_mode=analysis_snapshot` là lựa chọn explicit để đọc nhanh source/facts bất biến của generation; `freshness.scope=none`, `status=not_checked`, `readiness=needs_context`, `edit_precondition_validated=false`. Có thể nêu indexed_at và drift hint, không báo live-current dựa vào cached flag.
+
+F02 Các trang của cùng analysis pack không full-scan lại mỗi lượt. `mce4d_validate_pack` kiểm tra live workspace/config/membership trước edit, rồi host kiểm tra expected hashes ngay trước apply. Validation là quan sát tại thời điểm kiểm tra, không là khóa hoặc token cho phép sửa mãi mãi. Profile/policy thay đổi làm token invalid. Historical source phải mang `source_view=indexed_snapshot`, không hiển thị như working copy hiện tại.
+
+F03 Watcher/stat/Merkle hierarchy chỉ tăng tốc phát hiện và tính digest; không chứng minh không có file mới/bytes bị đổi khi tín hiệu bị mất. Không bỏ full validation trong baseline vì “watch không báo”. Optimization bỏ scan chỉ được mở sau chứng minh input closure + mutation source có kiểm soát + full-rebuild equivalence; chưa có chứng minh thì S08 là fallback.
+
+### Partition và invalidation
+
+P01 Logical partition theo build unit/module/package variant, không tùy tiện chia N file. Reverse dependency được lưu; package membership/config/exported signature và unresolved boundary đều là input. Scope có cycle xử lý theo strongly connected component, nếu chưa chứng minh boundary → rebuild closure bảo thủ. File không đổi nhưng kiểu được import đổi vẫn phải được resolve lại.
+
+P02 Cache key gồm source digest, language/provider/version, compiler configuration, dependency exported input fingerprints, policy, interpretation/schema version. Cache syntax không được tái sử dụng làm semantic facts. Negative lookup cache cũng bị invalidation khi thêm file/package/implementation; không cache “không có caller” qua generation.
+
+P03 R1 vẫn SQLite/worktree và atomic active pointer. Không shard vật lý hoặc thêm graph server trước benchmark. Nếu provider phải load dependency closure lớn hơn memory budget, trả `RESOURCE_LIMIT`/partial capability, không chỉ index nửa closure rồi gọi complete. `.tsbuildinfo` hay artifact compiler chỉ được dùng qua adapter được kiểm chứng; không tự đọc format nội bộ không ổn định hoặc ghi vào target [REF19,REF20].
+
+P04 R3 có thể dedup immutable fact sets theo partition; generation manifest tham chiếu các set/version đầy đủ và bridge edges tương ứng. Publish atomically manifest đã validate; reader không trộn partition cũ/mới không tương thích. Refcount/GC xét mọi generation/profile còn giữ. Cross-worktree/global dedup là ngoài baseline vì isolation/policy/recovery phức tạp hơn.
+
+### Context ngân sách lớn và high fanout
+
+B01 `required_for_review` là obligation theo thay đổi, không đồng nghĩa đưa toàn thân mọi caller vào LLM. Rename cơ học: full reference/preview inventory được máy giữ và phân trang; AI cần đúng target/type/conflict/contract evidence. Đổi hành vi/type: caller tiêu thụ semantic khác nhau và failure paths có thể bắt buộc đọc. Không dùng heuristic sampling để âm thầm tuyên bố các consumer đã review.
+
+B02 Nếu mọi nghĩa vụ không vừa context, trả batched review plan: scope IDs, unresolved obligations, constraint boundaries, source hashes và proposed validation; không áp patch. Review các batch phải cùng baseline hoặc được revalidate sau mỗi patch. Aggregate report phân biệt `machine_checked`, `source_reviewed`, `test_evidence`, `not_checked`; engine không tự điền trạng thái của host.
+
+B03 Cache result chỉ lưu facts/rendered items cho cùng gen/profile/policy; không cache freshness như sự thật hiện tại và không cache “AI đã nhớ”. Cache in-memory bounded trước; persistent pack cache cần ADR, privacy/expiry/GC tests. Không giữ DB read transaction suốt cuộc hội thoại. Cursor stale phải lỗi rõ, không tái trỏ live snapshot.
+
+### Scale acceptance, không cam kết vô hạn
+
+| Cohort | Workload định nghĩa | Điều kiện test |
+|---|---|---|
+| S | <=1.000 source files, <=20 MiB source | Giữ S18 targets, đo strict freshness |
+| M | khoảng 10.000 files, <=200 MiB, nhiều build units | Báo cold/update/query/RSS/disk/pending; không tự tuyên bố đạt trước đo |
+| L | <=100.000 files, <=4 GiB source | Nằm trong defaults v1.6.1; T053/T077 đo end-to-end, không suy performance từ file count |
+| XL | <=1.000.000 inventory/manifest entries và <=32 GiB captured source, single effective profile; multiple-profile retention resource subcase riêng | Full-workload index/partition khi effective caps/actual peak/finite deadline đủ; support chỉ sau T053/T077 |
+
+XL-V1 isolated verification config do AI tự tạo trước full run: max_indexed_files1000000, effective source34359738368, cache412316860416, manifest34359738368, query_timeout_ms900000(15 phút), index_timeout_ms7200000(2 giờ), rename_timeout_ms900000, RSS8589934592, volume reserve/warning2/4 GiB, monitor250ms. Finite benchmark starting profile, không measured latency hoặc đổi interactive defaults10s/10min. Record CPU/RAM/OS/filesystem/storage/actual available/RSS và bounded sample trước heavy run S51; actual peak+reserve đủ, không phải free384 GiB. Insufficient host giữ exact NOT_RUN/blocker, no fake benchmark.
+T053/T077 tách inventory+capture/lexical và Go/TS supported semantic build-unit fixtures, fanout/SCC/dependencies/multi-profile/churn; independent fixture truth. Strict hash không bỏ vì timeout. Analysis snapshot giữ not_checked; checked-workspace deadline FRESHNESS_UNKNOWN, generic job TIMEOUT. Bounded sample chứng minh plan thiếu thì AI tự ghi finite revised config/reason trước rerun, giữ original FAIL/NOT_RUN và whole-workload rerun; no infinite deadline/denominator-oracle change/default-latency claim từ XL config. Final hardware/config hashes/phase/time/RSS/storage/errors là release evidence.
+Watch full_reconcile_interval_ms là scheduling interval, không deadline; một reconciliation/worktree/watch owner tại một thời điểm. Tick khi job còn chạy coalesce một pending tick, no overlap/fan-out; bounded cancellation qua config, deadline freshness unknown. T033/T053 repeated ticks/long scans, stat-only không mark current.
+
+Cohorts theo inventory count/source bytes: count-only, byte-only và combined XL; semantic coverage/capability riêng, không metadata/unsupported-as-typed. Supported single-profile fixtures không unexpected omitted/failed files: input/manifest/capture/provider-done/published counts và independent seeded source/fact/reference oracles khớp. Denied/oversized/unsupported là expected boundary fixtures riêng. Comments/padding density phải báo, không suy semantic stress từ bytes. Mọi active profile/retention ảnh hưởng admission; multi-profile có admit/reject cases, không silent prune. Render/BuildManifest hard caps riêng, không đòi triệu nodes onscreen.
+
+## S28 — Đa ngôn ngữ và bản đồ contract
+
+### Thứ tự hỗ trợ thực tế
+
+| Provider | Release | Fact được ưu tiên | Giới hạn |
+|---|---|---|---|
+| Go | R1 | Defs/Uses/Selections, scopes, direct/interface/candidate refs | S04/S09 |
+| TypeScript/JavaScript/TSX/JSX | R2 ưu tiên đầu | Compiler/language-service symbol graph; imports/reexports/path alias/project references | `any`, dynamic import/runtime framework cần gaps |
+| Python | R2, trước nhãn dùng cho AI projects | AST declarations/imports; typed facts khi provider/version/profile được xác minh | Không hứa full binding cho monkey patch/dynamic imports/decorators |
+| HTTP/JSON Schema/Protobuf | R2 | Contract declaration, schema field, provider/consumer binding explicit | Không biến spec thành proof handler đã triển khai |
+| SQL MySQL trước | R2 | Static SQL/migration/table/column/view/procedure/trigger/event; dialect/engine profile | Dynamic SQL/catalog ngoài source không được tự biết |
+| AsyncAPI/message/cache contracts | R2 | Channel/message/send/receive/serialization và code binding có bằng chứng | Wildcard/env/routing/retention/ack cần cấu hình tương ứng |
+| Rust/Java/C#/khác | R3 demand gate | Discovery provider từ compiler/LSP thích hợp | Không tự chọn mọi ngôn ngữ hoặc copy extractor sản phẩm tham khảo |
+
+Ngôn ngữ của engine là Go, không giới hạn ngôn ngữ được index. Nhưng đa ngôn ngữ không tự xuất hiện nhờ parse tree hay MCP. Một `LanguageProvider` tối thiểu chỉ tổng quát hóa sau Go và TS thực tế; DTO có source bytes/ranges, profile, capabilities, symbols, relations, diagnostics. Process adapter qua bounded framed JSON có schema, timeout và whitelist; không plugin loader tùy ý.
+
+TS parser/compiler adapter không execute project scripts, transformers/plugins hoặc auto-install dependency; config extends/path references phải resolve trong allowlist. Có thể dùng local Node interpreter được pin; “một binary Go” không được hiểu là TS/Python tooling không có runtime dependency. Python analyzer không import/exec module mục tiêu, chạy notebook, eval annotations hoặc deserialize model. AST chỉ chứng minh cú pháp, không phải toàn bộ runtime binding [REF19,REF21].
+
+### Contract identity và liên kết xuyên tầng
+
+Contract key bắt buộc gồm service/repo scope, environment/profile, protocol/dialect, namespace/server binding không chứa secrets, contract identifier/version và source hash. Hai endpoint cùng path ở hai service hoặc hai topic cùng tên ở hai broker không tự liên kết. Data mapping giữ type/nullability/units/currency/precision khi có khai báo; không tự gán đơn vị từ tên biến.
+
+HTTP: OpenAPI paths/operations/schemas và handler/client binding có nguồn; route prefix/method/server/version/auth policy phải xem xét. `$ref` chỉ đọc local allowlisted; URL ngoài trả unresolved, không fetch. Không giả mọi version OAS tương thích; parser matrix pin minor version và unsupported keyword phải báo [REF22]. WebSocket events cần declaration/subscription/message codec tương ứng, không coi chúng là HTTP handler thường.
+
+Events: AsyncAPI channel address/messages/operations riêng; `send`/`receive` direction phải theo version. Topic wildcard, queue group, stream/consumer, schema version, retry/ack/DLQ/outbox/inbox nếu code/config có bằng chứng. Ack hoặc dedup khai báo không chứng minh exactly-once business processing; link transfer và side effect là hai lớp riêng [REF23,REF24].
+
+SQL: nguồn ưu tiên schema/migrations đã lưu và query literals/ORM mapping được provider hỗ trợ. `CREATE TABLE` không đủ mô tả trigger, view, routine, event; phải giữ những object này trong phạm vi SQL provider hoặc ghi unsupported. MySQL/NDB/InnoDB engine assumptions không được gộp. Snapshot migration source không chứng nhận database production đang cùng version. Không tự chạy migration/introspect DB/EXPLAIN/query trên target [REF25].
+
+Frontend: route/page/component → API client → operation → handler/service links; auth guard, state store, server/client boundary và generated client origins khi có source evidence. React/TSX baseline; Vue/Svelte/Angular và framework-specific conventions chỉ gắn verified sau fixture riêng. CSS/UI style map không ưu tiên hơn API/permission/state correctness.
+
+### Logical schema R2: phải chốt trước code qua T045/T055/T062
+
+| Record | Identity tối thiểu | Invariant |
+|---|---|---|
+| `domain_entities` | generation_id, entity_id, kind, qualified_key, plane, source_ref | Same-name != same-entity; source_ref có hash/range hoặc approved record version |
+| `contract_fields` | entity_id, field_path, declaration/version | Direction-sensitive compatibility; preserve units/precision nếu có |
+| `entity_links` | generation_id, link_id, typed endpoints, kind, evidence/site | Endpoint XOR symbol/entity, composite FK hoặc validator transactional tương đương; không dangling refs |
+| `state_transitions` | entity_id, transition_id, from/to/guard/effect refs | Declared vs statically inferred vs observed riêng |
+| `approved_records` | record_id, version, scope, approval, source_refs, invalidation | Mutable review status không sửa historical source facts |
+| `snapshot_comparisons` | left/right immutable scope vector, mapping_version | Không nối symbol đổi vị trí chỉ bằng name |
+
+Đây là logical overview; S43/S44 giữ physical/schema authority. Không tạo EAV/plugin DSL. Mỗi typed payload extension phải có schema+oracle và blueprint revision tại provider seal trước feature, không để implementer tự bổ sung columns/FKs ngoài bản vẽ. UUID/entity kinds bổ sung không được ép vào `symbols.kind=Function` giả. Migration giữ S07/S15. Cross-repo federation dùng member snapshot vector; không giữ long transaction/lock nhiều DB hoặc hứa atomic distributed snapshot. Policy mỗi member được kiểm tra trước tạo cầu nối.
+
+## S29 — Hồ sơ nghiệp vụ: trading, thương mại điện tử và AI
+
+Hồ sơ là read-only context policy và bộ câu hỏi kiểm tra; không là rule engine đặt lệnh, thanh toán, quản trị hàng hay đào tạo model. Không kết luận repo người dùng đã có những thành phần dưới đây. Template chỉ kích hoạt khi task/scope đã xác định; marker từ text đơn lẻ là candidate.
+
+### Máy trạng thái và workflow engine
+
+Cần model definition có bằng chứng gồm: state identity theo machine/scope, initial/final state, event, transition, guard, action/side effect, entry/exit hook, timer/timeout, retry/cancel/compensation; hierarchical hoặc parallel states chỉ khi provider/schema được hỗ trợ. Tên `pending` ở hai machine không được gộp. Một status enum không đủ chứng minh transition graph. Machine definition và machine instance state/runtime observation là entity khác nhau [REF30].
+
+T062 phải chốt supported declarative format/source patterns qua discovery và fixture trước parser; không tự triển khai simulator hoặc SCXML interpreter. Guard expression lưu source/ref và analysis status, không execute/eval. Structural checks trong subset được hỗ trợ có thể phát hiện target state không khai báo, không có initial state, guard ref thiếu; reachability phụ thuộc guard/runtime inputs thì phải báo unknown, không kết luận dead state bằng graph walk đơn giản.
+
+Với yêu cầu đổi một transition, context cần incoming/outgoing transition, event producers/consumers, guard/action source, persistence/status contract, timeout/retry path và tests liên quan. Không được đổi field/status value trong database hoặc message contract chỉ vì tên state nội bộ đổi. Trace một lần chỉ cho biết transition đã quan sát, không chứng minh mọi state/event đều đã được phủ.
+
+### Trading / tài khoản / wallet
+
+Cần tìm khi có evidence: order/trade/position/account/ledger, balance available/locked/pending, fee/commission, price/quantity precision, risk checks, market data, settlement, websocket/API, retry/reconcile và custody/blockchain adapter. Mọi tiền tệ, token decimals, chain/network, atomic unit, rounding và status enum phải lấy từ đúng code/schema/profile; không hardcode số lẻ/giới hạn tiền/độ finality.
+
+Ví dụ review obligations (không phải business rule đã được duyệt): lệnh retry có tạo side effect lặp; idempotency key thuộc owner/scope nào; reserve/release tiền hoặc hàng có transaction boundary nào; partial fill/cancel/timeout/late receipt có đường xử lý nào; ledger invariant lấy từ đâu; reconcile chạy khi crash ở bước nào; permission và audit có ở boundary nào. Mỗi obligation trả `evidence|unknown|not_applicable_with_reason`; `found_lock` không là bằng chứng race-free.
+
+Luồng minh họa: request → validation/auth → order/risk → reserve → execution → ledger/fees → event → projection/UI. Đối với blockchain, broadcast/receipt/confirmation/reorg là các state có nguồn riêng; không suy finality từ tx_hash. Các nhánh lỗi/cancel/rollback/retry phải có khoảng trống được nêu, không chỉ happy path. Engine không kết nối ví/sàn hoặc gửi transaction.
+
+### Thương mại điện tử
+
+Cần tìm khi có evidence: product/variant/SKU, price/tax/promotion, stock/reservation, cart/order/payment, fulfillment/shipping, cancellation/refund/return, seller/tenant/warehouse, invoice/accounting và notification. Phân biệt product stock với reservation/available, trạng thái order với payment, partial refund với full refund, currency/unit với số lượng.
+
+Ví dụ obligations: hai request cạnh tranh cùng SKU; webhook bị gửi lại/đến sai thứ tự; thanh toán thành công nhưng response timeout; hoàn tiền từng phần; giao hàng trước khi event projection đồng bộ; access boundary tenant/shop. Schema và source phải xác định policy oversell, stock decrement timing, retry và compensation; template không tự chọn business rule.
+
+### Module AI / ML / RAG / agent
+
+Cần lập chuỗi metadata khi có nguồn: dataset/schema/split/version → preprocessing/features → training config → model artifact reference → inference/pre/postprocessing → evaluation → serving; hoặc prompt/template → tokenizer/chunker/embedding → retrieval/index schema → reranker → model invocation → tool/output validation → eval/fallback. Pipeline khai báo có thể khác runtime; thể hiện rõ.
+
+Fields ưu tiên: model/provider identifier và revision đã pin, prompt/template hash, input/output schema, embedding dimension/distance metric, tokenizer/version/chunking config, dataset digest và train/validation/test role, metric definition/eval threshold, feature names/order, retry/timeout, approved tool scopes. Unversioned remote model chỉ có observed/requested identifier; không bịa nội dung weights hoặc kiến trúc.
+
+Artifact policy: chỉ đọc source/config/manifest và metadata exports được phép; dataset rows, embeddings bulk, checkpoints/weights, notebook outputs không ingest mặc định. Không `torch.load`, pickle/joblib load, import training module, execute notebook, tải model hay gọi model để “hiểu nó”. Checkpoint không tin cậy có nguy cơ thực thi code qua unpickling; metadata riêng là boundary an toàn hơn nhưng vẫn validate size/path [REF26,REF27].
+
+Thay embedding dimension phải làm nổi nghĩa vụ kiểm tra vector schema/index/query consumers nếu evidence có; đổi tokenizer/feature ordering/prompt schema cần tìm cache invalidation và eval tương ứng. Engine không chứng minh model thông minh hơn, không phát hiện mọi data leakage/bias và không bảo đảm chất lượng ML từ code graph. Theo dõi lineage không phải lưu toàn bộ dữ liệu huấn luyện.
+
+## S30 — Evolution, quyết định và kiến trúc dự kiến/thực tế
+
+E01 `snapshot_diff(left,right)` so sánh hai scope vectors bất biến, cùng provider semantics hoặc báo provider/profile delta riêng. Trả added/removed/changed symbols/relations/contracts, changed constraints và affected known consumers; không đồng nhất diff dòng với diff hành vi. So sánh chỉ khi snapshot còn được giữ; thiếu snapshot → explicit error, không tự checkout hoặc dựng lịch sử Git vô hạn.
+
+E02 `symbol_id` vẫn generation-scoped S06. Cross-generation matching dùng nhiều evidence (qualified declaration, owner, signature/range/content lineage), đánh dấu exact/probable/unmatched; probable không đủ tự rename/migrate/edit. Same-name hoặc Git rename heuristic không là identity proof. Profile/provider change có thể làm graph khác dù code không đổi; báo riêng để tránh false regression.
+
+E03 Decision/invariant record: id/version/scope/plane/statement/approval/source_refs+hashes/invalidation triggers/replaced_by. Chỉ approved record thành constraint; stale source → needs_review. R1 trusted excerpt không tự trở thành approved persistent memory. Human/user authority được giữ; không tự “học” output AI thành chân lý.
+
+E04 Intended architecture có thể mô tả module ownership, allowed dependency direction, tenant/data boundary, contract owner và forbidden write paths. Checks chạy trên supported observed evidence và quy tắc được duyệt: mỗi violation có witness path/source, severity category + rationale, exemption ID/expiry khi có. Incomplete graph → check incomplete, không PASS toàn kiến trúc. Không tạo điểm số risk phần trăm không có calibration.
+
+E05 `implemented`, `planned`, `observed_in_run`, `unsupported`, `not_seen` tách riêng; một intended component không thấy mapping không đồng nghĩa chắc chắn chưa tồn tại. T067 tạo drift report trong scope; không tự refactor, chuyển module, thay schema hoặc viết business requirement.
+
+## S31 — Runtime/test evidence và boundary của AI host
+
+RT01 R3 chỉ import file export local được user cho phép. Explorer U3 tái dùng importer này; SDK trong preview chỉ xuất metadata approved theo S36–S38, không biến core thành collector/target launcher. Runtime trace phải kèm application/service identity, deployed revision/build digest nếu có, environment không secrets, time window, sampling/collector metadata và instrumentation version. Không map trace production lên HEAD mới chỉ vì cùng tên function. Thiếu revision mapping → unbound runtime observation, không merge vào static exact graph.
+
+RT02 OpenTelemetry spans/links có thể hỗ trợ theo dõi chuỗi asynchronous; một trace là bằng chứng một execution đã quan sát, không là danh sách mọi execution. Các lần retry, duplicate delivery, batch fan-in/out có quan hệ riêng; order thời gian không tự là data dependency. Import sai định dạng/PII/payload quá lớn bị từ chối/che trước persistence. Không bật agent instrumentation hoặc kết nối collector/prod tự động [REF28].
+
+TE01 Test evidence record: test ID/file, source revision/digest, test environment/profile, command supplied by host, result, coverage scope, artifact hash, time. Static TEST_REF != runtime covered != assertion checked invariant. Coverage hit không chứng minh behavior đúng; test pass thuộc phiên bản cũ là historical.
+
+TE02 Suggested test selection là danh sách có rationale/coverage gaps, không quyền bỏ regression suite. Khi thay schema/global config/shared core hoặc evidence không đủ, gợi ý broaden/full suite của repo nếu đã biết command. Engine không chạy target tests. Host permission/execution/reporting tách riêng.
+
+ED01 Unsaved buffer bridge chỉ R3: editor session ID/version, base disk hash, buffer bytes, scope và lifecycle explicit; snapshots buffer không lẫn disk snapshot. Model/analyzer không được tự ghi buffer ra file. Multi-editor divergence, save/reload/delete, secret policy, UTF-16 conversions và cache invalidation phải có test trước bật capability.
+
+IR01 Semantic search R3 bắt buộc implement theo AW-05, runtime opt-in và chỉ hỗ trợ candidate discovery. Bằng chứng symbol/contract vẫn cần resolver/source. Không dùng vector similarity tạo edge exact hoặc bỏ lexical hit. Model/tokenizer/license/version/index dimensions được pin; embeddings cũng có thể chứa thông tin nhạy cảm, subject to same policy. Không auto network/LLM spend. Mặc định exact/FTS + vocabulary + graph đủ đường fallback.
+
+DP01 Deployment/config map R3 đọc static manifests/config schema được phép: service/config/feature flag/version/port/permissions boundary, manifest source vs deployed state riêng. Không đọc secret values để biết variable name; không chạy Terraform providers/Helm plugins/Kubernetes commands/Docker build. Entry deployment evidence chưa có → environment unknown; không bịa production inventory.
+
+## S32 — Hợp đồng extension và phân chia release
+
+### Canonical contract routing
+
+S43 hợp nhất former S11/S32/S38 DTO fields: overview/plan/selectors/topic modes và analysis_snapshot/checked_workspace có cùng requests/schema. Core sáu tools không đổi. View flow/state/contract/change/architecture/ai_lineage và observed chỉ expose sau respective capability/task/fixtures. Schema acceptance không đồng nghĩa implementation đã tồn tại. T026 conformance không tự bổ sung fields sau implementation.
+
+### Release applicability
+
+| Release | Task set | Gate/điều kiện | Case set |
+|---|---|---|---|
+| R1 | T001–T042 + T049–T054 + T105–T108 (52 tasks) | G0–G5; nền Go/local safety + hierarchy/scale baseline; không Go-only universal claim | C001–C054 |
+| R2 | T043–T048 + T055–T068 (20 tasks) | Sau G5, scope đã mở; web/polyglot/contracts/domain/AI metadata; T048 kết luận matrix | C055–C069 + regression R1 |
+| R3 | T069–T080 (12 tasks) | Scope đã mở, theo capability gate sau R2; runtime/tests/editor/search/scale extensions, không block R1/R2 | C070–C080 + regression áp dụng |
+| U0 | T081–T084 (4 tasks) | GU0 sau G5: graph/source UI thực | C081–C083 |
+| U1 | T085–T094 (10 tasks) | GU1 sau GU0 + T044/T056/T047: React preview↔graph | C084–C098 |
+| U2 | T095–T100 (6 tasks) | GU2 sau GU1 + contract/SQL/event/group tasks: frontend↔backend flow | C099–C106 |
+| U3 | T101–T104 (4 tasks) | GU3 bắt buộc sau GU2 + T069/T070: observed run | C107–C112 |
+
+R2/R3 và U0–U3 đều bắt buộc trong 108 task. Capability/gate từng phần là checkpoint AI tự đóng; T080 cần tất cả dependencies và G7 evidence. Hoàn tất R1/GUI static không hoàn tất assignment. Runtime opt-in không cho bỏ implementation/test của task. FUTURE ngoài108 vẫn ngoài scope.
+
+## S33 — Quyết định tối ưu và giới hạn lời hứa
+
+### Phân tích thiết kế của bản 1.1.0
+
+| Nhận định | Quyết định | Trade-off thực tế |
+|---|---|---|
+| Go-only không đủ web/AI đa dạng | Giữ R1 core nhỏ; làm TS/JS + Python và contracts ở R2 | Có utility sớm nhưng personal-use đa stack cần chờ capability qua test |
+| Graph hàm/file không đủ lỗi xuyên service/state | D2 contracts + D3 approved constraints/failure obligations | Phải khai báo gaps/manual links khi không có evidence |
+| Snapshot cũ có thể làm AI tự tin sai | Immutable analysis mode tách live validation | Giảm repeated I/O khi tìm hiểu, vẫn tốn strict validation trước edit |
+| Graph lớn không nên gửi hết model | Hierarchy + task obligations + item paging | Có nhiệm vụ cần nhiều batch; không bảo đảm số token cố định |
+| Distributed infra làm tăng bảo trì cá nhân | Modular monolith, SQLite/worktree, provider adapter bounded | Một build unit rất lớn vẫn có giới hạn RAM; benchmark trước đổi storage |
+| Dự án mới chỉ có ý tưởng/spec | Intended plane riêng, planning context có provenance | Không thay người dùng định nghĩa business rules |
+| Decision memory có thể lỗi thời | Approved/source-bound/invalidation, temporal diff | Có bước review; không tự học vô điều kiện |
+| Cần tự dùng engine phát triển engine | Pinned previous binary + independent oracle + fallback | Không có self-proof hoặc bootstrap circular dependency |
+
+Không dùng số lượng node/edge/star/tool như quality score. Nghiệm thu theo missing-critical-dependency rate, false edits, freshness/source match, task success, tokens/accepted task, resource envelope và reproduce được.
+
+Không triển khai ngay: 3D/4D visualization, graph server cluster, auto-fix/auto-trade, executable rules DSL, hàng chục provider scaffold, model training, embeddings mặc định, telemetry gửi cloud, scan production databases, GPU/weights inspection. GUI 2D Code↔UI Explorer được mở scope ở S34–S40, không thuộc danh sách trì hoãn này. Những mục này không làm core hiểu đúng code hơn nếu chưa giải quyết evidence/provider/freshness.
+
+Tài liệu này vẫn là một nguồn đặc tả; thực thi bằng section/task routing. Thêm tính năng phải nối requirement→task→case→evidence; phần mở rộng không biến thành nhiều PRD/roadmap mâu thuẫn. `maps-context-engine-4d` là công cụ trợ giúp phát triển, không bảo chứng mọi hệ thống tài chính, thương mại hoặc AI đều đúng chỉ vì được lập bản đồ.
+
+## S34 — Code↔UI Explorer: mục tiêu và hợp đồng tương tác
+
+### UX-01 — Bố cục chuẩn, không mơ hồ trái/phải
+
+Yêu cầu người dùng: graph nằm BÊN TRÁI; BÊN PHẢI hiển thị frontend preview khi chọn frontend, hoặc sơ đồ luồng khi chọn backend. Click nút/element hoặc chọn block/component ở preview PHẢI đồng bộ selection đến graph TRÁI. Chọn node graph TRÁI phải đồng bộ về preview/flow PHẢI. Cụm “graph bên phải” trong một câu của yêu cầu không thay bố cục tổng thể; dùng bố cục trái/phải này thống nhất.
+
+Đây là Code↔UI Explorer cho người lập trình và AI context, không là công cụ sinh giao diện từ source summary. Cùng core facts S06–S11/S28; graph trái và flow phải là hai projection của cùng evidence, không hai nguồn chân lý. Scope GUI đã được người dùng yêu cầu; không mặc định đã có implementation.
+
+Layout desktop: toolbar workspace/profile/generation + trạng thái map; pane trái mặc định 45%, pane phải 55%, splitter điều chỉnh 30–70% nếu viewport đủ rộng. Inspector/source drawer nằm trong vùng phải hoặc dưới pane, không chuyển graph sang phải. Trên viewport hẹp có thể switch pane giữ selection; desktop là baseline. Dark theme là baseline của Explorer; không đổi theme/CSS của app preview. Các tỉ lệ là default thiết kế, không được giữ cứng làm source/toolbar bị cắt.
+
+Pane trái: hierarchy repository/module/frontend/backend/database/contracts; search/filter/evidence legend; focus neighborhood; expand/collapse, fit current selection, back/forward. Pane phải có modes `source`, `frontend_preview`, `backend_flow`; có tab source/evidence và static/observed switch khi supported. `AUTO` theo node loại; người dùng có thể pin mode rồi đổi selection; pin không được bỏ cảnh báo mapping khác scope.
+
+### UX-02 — Ma trận selection hai chiều bắt buộc
+
+| Người dùng thực hiện | Kết quả bắt buộc | Không được làm |
+|---|---|---|
+| Hover trong Inspect trên button/element preview | Highlight outline + tag/type/anchor status, không commit selection | Không gọi model hoặc tải lại graph mỗi pixel |
+| Click button/element preview trong Inspect | Chọn runtime instance + element source-site; focus node graph trái; kèm owning component/event handler nếu có evidence | Không kích hoạt onClick/onSubmit/business API |
+| Chọn block/component | Cho chọn ancestor boundary qua breadcrumb; nhóm các DOM roots đã đăng ký; graph chọn component definition/render-site tương ứng | Không coi DOM parent mặc định là React owner |
+| Click frontend graph node | Resolve live instances trong session; highlight instance khi unique; nếu nhiều thì chooser/group highlight có count | Không tự gọi click, mở modal, đổi route để làm component xuất hiện |
+| Click backend/operation graph node | Giữ graph trái; pane phải đổi `backend_flow` rooted tại operation hoặc caller được chọn | Không giữ một preview không liên quan mà giấu việc mode chưa đổi |
+| Click bước flow phải | Select canonical graph entity/node trái + mở source evidence của bước | Không tạo node source mới để khớp layout |
+| Click bảng DB | Flow cho operations/transaction boundary và upstream consumers có bằng chứng; frontend candidates danh mục theo scope | Không đọc dữ liệu bảng hoặc tự truy vấn DB |
+| Mở source | Hiển thị source của indexed snapshot + hash/range; clipboard locator hoặc editor link explicit có kiểm tra | Không shell arbitrary path hoặc hiển thị source hiện tại dưới hash cũ |
+| Back/forward | Khôi phục selection/view/filter; live preview target chỉ khôi phục nếu session còn valid | Không replay business actions |
+
+Không đồng nhất `selected` (commit intent) với `hovered` (transient). Block selection không bắt buộc rectangle lasso UI lần đầu: pick element + ancestor chooser là baseline đơn giản và xác định. Lasso sau này phải khai báo multi-select union, không đoán một logical component duy nhất.
+
+Khi đổi pane phải sang backend_flow, preview đã approved có thể giữ tối đa một iframe mounted để bảo toàn session, nhưng phải disarm Interact, duy trì shield và báo rõ `preview_running_hidden`; target có thể vẫn polling. Không gọi việc ẩn iframe là pause runtime. Người dùng có nút Detach rõ, hoặc policy chọn detach khi ẩn; không tự khởi động lại app/route khi quay về preview.
+
+Frontend component definition có thể dùng ở nhiều page. Node hàm không render DOM có thể chỉ trả source/handler link; không ép mọi symbol có hình trên màn hình. Khi nhiều matching instances, UI giữ explicit instance đã chọn và hiển thị count, không tự lấy first DOM match. Chọn code node không cấp quyền điều khiển UI nghiệp vụ.
+
+### UX-03 — Trạng thái UI và giới hạn
+
+`preview_status = detached | awaiting_approval | loading | pairing | ready | stale | blocked | unsupported | disconnected | error`.
+`mapping_status = exact_in_supported_scope | candidate | ambiguous | ancestor_fallback | unmapped | stale | unsupported`.
+`instance_status = visible | mounted_offscreen | hidden | not_rendered | detached | unknown`.
+
+Không đánh đồng not_rendered với missing code. Route hiện tại, auth role, responsive breakpoint, feature flags, virtualization hoặc conditional rendering có thể chưa hiển thị component; metadata chỉ giữ những điều đã khai báo/được phép. Nêu lựa chọn “mở route được duyệt” riêng, không navigation trong handler selection. Việc cuộn cũng có thể kích hoạt lazy load; auto-scroll mặc định tắt khi preview safety chưa chứng minh, cho nút `Locate on preview` explicit.
+
+Preview chưa chạy/không có SDK/không matching build → status cụ thể + source/static graph hữu ích. Không dựng trang giống target bằng dữ liệu demo hoặc screenshot để giả live mapping. Test fixtures được phép nhưng phải index source fixture thật; render preview từ build của fixture đó; label `synthetic_fixture`, không dùng graph hand-written làm integration oracle.
+
+Accessibility baseline: splitter focusable có keyboard controls/value; graph có tree/list representation và source links truy cập bằng bàn phím; focus không nhảy giữa pane khi hover; Enter chọn node, Escape thoát pick/clear theo scope; reduced-motion tắt pan/zoom animation. Badges/line patterns/text thể hiện evidence, không chỉ màu. Không tuyên bố WCAG conformance khi chưa test [REF46].
+
+## S35 — Mapping frontend: build anchor, source graph và DOM instance
+
+### MAP-01 — Các identity không được nhập làm một
+
+| Identity | Scope và nguồn | Invariant |
+|---|---|---|
+| `symbol_ref` | worktree/profile/generation/symbol_id của core | Definition theo ngữ nghĩa source; không chứa DOM instance |
+| `source_anchor_id` | hash versioned từ original path/content_hash/byte_range/anchor_kind/provider; nằm trong build manifest | Anchor thay khi nội dung/vị trí/provider không còn tương đương; không đoán ổn định vĩnh viễn |
+| `anchor_kind` | element_site, component_definition, component_render_site, event_binding_site | JSX sử dụng `<Button>` khác definition Button và khác handler được truyền |
+| `build_map_id` | Producer manifest digest theo original source hashes/compiler/provider; KHÔNG generation/symbol IDs | Same source artifact không đổi chỉ vì index mới; loaded-module coverage explicit |
+| `binding_id` | Engine kết nối build_map với published generation/profile/policy sau hash/range validation | Immutable binding riêng; source mismatch không bind |
+| `preview_session_id` | UUID + approved origin + worktree allowlist của một lần attach | Không tái dùng qua unapproved navigation/origin hoặc tab khác |
+| `document_epoch` / `hmr_epoch` | monotonic/session-local metadata do cooperative SDK cung cấp, engine verify bindings | Epoch cũ không ghi đè epoch mới; không là bằng chứng source mới tự cập nhật index |
+| `instance_id` | UUID/counter random-session trong WeakMap/registry của DOM element hoặc component boundary | Ephemeral, không dùng props/customer/order IDs; 100 instances có 100 IDs |
+| `selection_id` | Explorer session + monotonic sequence và origin of selection | Một hành động commit có một transaction; chống echo/out-of-order |
+
+BuildManifest ghi original path/hash/range và owner anchors; engine tạo SourceRef/component/event candidates lúc bind. Producer không chứa engine generation/symbol claims. DOM SDK chỉ báo anchor/instance/rect, không được tự khẳng định symbol trong repository khác. Resolver engine đối chiếu source hash/profile/build map với generation trước khi bind. Một anchor có thể trỏ nhiều candidate handlers, một definition có nhiều render sites và nhiều instances; tất cả là one-to-many/many-to-many có loại quan hệ.
+
+### MAP-02 — Các nguồn bằng chứng và quyền suy luận
+
+`evidence_origin = static_analyzer | build_instrumentation | runtime_observation | manual_approved | ai_proposal` bổ sung metadata cho evidence_kind của core; không thay `type_resolved` bằng cùng một mức “confidence”. `resolution_status` riêng với origin. Manual approved có giá trị điều hướng nhưng không trở thành compiler proof hoặc observed execution; ai_proposal không auto approve/không tham gia exact impact.
+
+Link display phải nêu `relation_kind`, source/hash/range, scope vector, build/session khi có, evidence origin/status, limitation và provenance chain. Đường xuyên tầng có một cạnh candidate/unresolved phải giữ gap tương ứng; không lấy average confidence làm exact path. Build map chứng minh nguồn của phần tử được instrument trong phạm vi đã test, không chứng minh runtime handler hoặc DB persistence.
+
+CSS selector, text label, class name, filename giống nhau và vị trí ảnh chỉ là lookup hints. Không dùng screenshot/LLM vision làm identity mặc định. Source maps mô tả vị trí generated code về original source; source maps riêng không giải quyết DOM instance→logical component→handler. Phải thêm build/SDK binding [REF31,REF32].
+
+### MAP-03 — Instrumentation MVP React+Vite
+
+T085 xây adapter phát triển riêng của MCE4D dựa official plugin/compiler interfaces được pin. Chỉ chạy sau người dùng chủ động cấu hình development/test build. Không copy source/extractor từ sản phẩm tham khảo. Không chạy config/build plugins của target từ indexer để “discover”; build target là tiến trình người dùng chạy đã được cho phép.
+
+Pipeline: parse TSX/JSX original bằng provider hợp lệ → tạo anchor cho native DOM JSX sites và render/event declarations → transform development artifacts để gắn opaque `data-mce4d-anchor` trên host elements được hỗ trợ → export build manifest → SDK register live instances. Mapping private path/source nằm phía engine hoặc artifact được phép; DOM attrs chỉ opaque ID, không absolute path/raw source.
+
+Không chèn DOM wrappers làm thay layout. Không wrap toàn handler để đổi `this`, args, equality/ref, hook order hoặc error behavior. Baseline xác định event-binding từ source/static symbols, không tự thực thi handler. Custom component không forward attributes/ref được coi là boundary; không ép prop forwarding làm thay contract. Instrument host JSX trong source component nội bộ để lấy definition/element site; muốn map callsite/owner chain chính xác qua HOC/render props cần explicit SDK boundary hoặc adapter được test. Không dùng private React Fiber fields, DevTools private hook hoặc duyệt `Children` để giả một ownership tree đầy đủ [REF37,REF38].
+
+SDK API do dự án cần định nghĩa, không phải thư viện upstream đã có: `registerBoundary` nhận opaque anchor do build adapter tạo, DOM handles (một hoặc nhiều), parent-instance nếu caller biết; registry không tự claim engine binding; trả unregister callback. Ordinary host element instances có thể discovery lazy từ opaque attrs. Registry dùng WeakMap + cleanup/delta; không lưu raw props/React key/DOM text/input value/cookie/token. Explicit boundary là opt-in source change do người dùng/AI host áp dụng theo task riêng; engine không tự patch target.
+
+Vite dev tải module lazily: manifest có thể chỉ bao phủ transformed modules, phải có `module_coverage` và source hashes cho các anchor được trả; chưa load module không có runtime instance. Thêm module vào manifest tạo build-map revision/epoch mới nhưng không buộc re-index source unchanged; resolver rebind chỉ phần khớp generation bằng evidence. Source map từ nhiều transform phải compose tới original bytes; unresolved/missing map không được đoán offset. Transform order/compiler version là profile đã pin.
+
+Development guard phải kiểm tra effective build mode + explicit inspector flag; env variable tên dev nhưng build release vẫn phải strip SDK/attrs/private manifest. C095 là case bắt buộc: so source/production assets/behavior giữa bản instrument và baseline; không tuyên bố transformation semantics tương đương chỉ từ compile pass. SSR/RSC/Next.js/Vue/Svelte/Angular không kế thừa tự động compatibility của Vite React CSR; ở MVP trả unsupported hoặc static source-only.
+
+### MAP-04 — Picker và đồng bộ selection
+
+Mặc định Inspect dùng transparent input shield thuộc Explorer nằm trên iframe. Click không đi vào DOM của target. Shield gửi tọa độ đã quy đổi viewport cho SDK; SDK hit-test bằng DOM APIs trong document của chính nó rồi trả anchor/instance + candidate ancestor boundaries. Không dispatch `MouseEvent`, `PointerEvent`, `KeyboardEvent`, gọi `.click()` hoặc `.submit()` trên target. Parent không đọc DOM cross-origin trực tiếp [REF33,REF34,REF36].
+
+Origin → flow của một selection:
+1. Capture click/keyboard trong shield; tạo `selection_id`, source=`preview`; tách hover không commit.
+2. `PICK_AT` qua bridge; SDK trả `PICK_RESULT` với session/build/epoch/request ID, instance/anchor, rects và mapping status.
+3. Explorer bỏ reply cũ/out-of-order; gọi engine resolve anchor; engine kiểm tra policy/profile/source/generation.
+4. Unique valid mapping → set selection canonical và focus node graph trái; ambiguity → chooser với evidence, không chọn tùy ý.
+5. Các pane subscribe selection store; render không phát một selection event mới. Echo ack chứa original selection ID, không tái phát click.
+6. Graph-origin selection → resolve instances trong SDK, `HIGHLIGHT` outlines; không truyền hành vi nghiệp vụ. Preview reply chỉ ack/highlight result.
+
+Selection state S45 chứa selection_seq/session+scope+ref/instance/occurrence; fields wire của messages ở S43, không tự serialize một object tùy ý. Cùng state machine sử dụng cho graph/preview/flow/source. `occurrence_ref` giữ step/callsite hiện tại khi một symbol xuất hiện nhiều lần trong flow. Flow-origin selection chỉ highlight graph/source, không re-root/rebuild flow. Graph-origin click chỉ re-root khi người dùng chọn operation mới hoặc lệnh explicit; nếu node đã có trong flow hiện tại thì chọn đúng occurrence hoặc đưa chooser, không tự reset camera/root. `AbortController`/equivalent cancel queries cũ; server result cần request ID và generation; stale reply không repaint lựa chọn hiện tại.
+
+Hit-test/outline cần xử lý scroll container, resize, CSS transforms được hỗ trợ, zoom, device pixel ratio và viewport offset. Dùng CSS pixels trên wire; pixel conversion chỉ adapter; range code vẫn bytes S06. Open shadow roots chỉ khi capability có test; closed shadow, cross-origin nested frame, canvas/WebGL/SVG custom widget không map arbitrary subparts bằng coordinate guessing. Trả boundary/ancestor_fallback có tên rõ. Multiple DOM roots cần nhiều rectangles, không lấy bounding-box bao trùm rồi giả toàn vùng thuộc component.
+
+### MAP-05 — HMR, lịch sử và mapping sửa tay
+
+HMR đổi source hash hoặc adapter/build config → build_map epoch mới; giữ graph generation bất biến. Session `stale` đến khi source/build/generation mapping khớp. UI có thể tiếp tục xem historical source riêng, không dùng vị trí mới dưới ID cũ. SDK HMR phải dispose listeners/observers và register lại; route navigation đổi document/instance state, không ép rebuild code graph khi source unchanged.
+
+Manual mapping input chỉ MappingProposeRequest S43: optional scope, source_ref, destination_ref, rationale, client_mutation_id; extra actor/revision/status/target_anchor_or_selector/source_refs/reason bị UNEXPECTED_FIELD, không alias. Actor lấy authenticated server principal DF15; record_id/version/head/declared_status do RecordService quản lý; approved/revoked qua request/CAS riêng. effective_status=needs_review/provenance_status suy ra khi đọc, không client input. Không kéo dây graph để sinh CALLS exact; annotation giữ source/hash/build, content đổi phải review/revalidate và không xóa gap.
+
+## S36 — Backend flow và cầu nối full-stack
+
+### FLOW-01 — Hai projection, ba ngữ nghĩa
+
+Graph trái là bản đồ quan hệ; flow phải trình bày các bước/phân nhánh gắn root operation được chọn. Không biến layout graph thành bằng chứng thứ tự thực thi.
+
+`flow_mode = static | observed`; manual/intended có filter riêng, không nhúng mặc định vào static exact flow. `order_semantics = source_sequence | control_flow_supported | call_relationship_only | causal_trace | unknown`. Static caller→callee không đủ chứng minh tất cả các callees chạy theo thứ tự hiển thị. Một flow có thể chỉ là call/dependency view và phải gắn label đó.
+
+Khi chọn handler không biết entry operation: hiển thị caller/route candidates và source; không bịa API. Một handler có nhiều routes → chooser. Chọn service/table cũng có thể có nhiều upstream roots; scope/kết quả phân trang không bị gọi đầy đủ khi đang truncated.
+
+### FLOW-02 — Nội dung backend pane
+
+Trong supported subset: `HTTP method + route/service/profile` → middleware/auth/validation khi có binding nguồn → handler → service/direct calls → data-access operation → table/view/procedure/cache/event boundary → response/known consumer. Mỗi step có source_ref, graph_ref(s), evidence, description deterministic và expand_ref. Không dùng LLM tự sinh đường happy-path cho node thiếu source.
+
+Branches/guards/early returns/loop/cancellation/retry/compensation chỉ biểu diễn khi analyzer chứng minh pattern hoặc có approved definition. Direct static calls Go phục vụ baseline; deep interprocedural control/data flow là capability khác, không tự có chỉ vì R1 lưu CALLS. `go func`/async task không tự nối serial với câu lệnh tiếp theo. Recursive/cyclic flow collapse theo explicit container có expand, không xóa cycle để layout đẹp.
+
+MVP T095: Go `net/http` đăng ký handler theo pattern/literal được pin với Go profile và tested parser; routes động, third-party router/framework chưa có adapter giữ unresolved. Không coi mọi URL literal là route. Database MVP: `database/sql` calls có literal SQL và source type binding, MySQL dialect profile theo T059; wrappers chỉ xuyên qua được khi resolver chứng minh target. ORM/raw query builder/dynamic SQL phải khai báo capability riêng. Không bắt user đổi backend sang net/http nếu actual repo dùng framework khác; T081/T095 chọn adapter tiếp theo sau khảo sát, giữ status chưa hỗ trợ khi chưa làm.
+
+### FLOW-03 — Nối frontend với backend
+
+Chuỗi minh họa, KHÔNG là graph hardcoded: element-site → component/event binding → frontend API-client callsite → operation contract → route registration/handler → service → query site → table. Có thể component chỉ đổi local state mà không gọi API; không được chèn node backend cho đủ chuỗi.
+
+Match key tối thiểu: member/service ID, protocol, method, normalized route template theo rules của framework, environment/baseURL/proxy namespace, version/operation identity và source refs. `/orders/123` không tự suy ra `/orders/{id}` nếu không có route matcher/contract phù hợp. Query string và record IDs không lưu raw mặc định. Hai services cùng path không merge. Reverse proxy/BFF/gateway và rewrite prefix cần static config/approved mapping hoặc trace; thiếu config hiển thị boundary.
+
+Cùng monorepo có thể nhiều service IDs; nhiều repos dùng T046 declared group + scope vector. T096 tái dùng domain/contract/group services từ T045/T046/T059/T060; chưa cần Python hoặc toàn T063, nhưng không xây một bridge store trùng lặp. T063 mở rộng generic federation sau này phải reuse. Một member stale/denied/missing → path partial; không spill source từ repo ngoài allowlist.
+
+API success frontend không chứng minh mọi data writes backend. Chọn DB table truy ngược ra frontend trả danh mục paths/candidates phân nhóm, không khẳng định một bảng chỉ thuộc một màn hình. Không có dependency UI không có nghĩa table unused; có job/webhook/queue/CLI khác.
+
+### FLOW-04 — Data operations và transaction
+
+DB cards: dialect/engine/schema namespace từ profile; table/column khi chứng minh; operation READ/INSERT/UPDATE/DELETE/CALL; SQL source site, parameterized template/hash hoặc sanitized summary; transaction-group evidence; constraints/index/migration anchors khi có. Không credentials, row data, bind values, SQL literal có PII hoặc production schema lookup.
+
+Tách `declared_operation`, `statically_possible`, `attempt_observed`, `statement_success_observed`, `commit_observed`, `rollback_observed`, `outcome_unknown`. Đây là observation statuses, không fallback boolean `saved=true`. `Tx.Exec` thành công chưa đủ cho transaction commit. Ngay cả commit span thành công cũng chỉ là kết quả client/instrumentation thấy trong run đó, không tự chứng minh business invariant hoặc replication/finality toàn hệ thống [REF44,REF48].
+
+Query chứa nhiều table/joins hoặc trigger/procedure side effects cần parse/evidence thích hợp; thuộc tính table name đơn lẻ của trace không được suy ra tất cả bảng touched. ORM metadata declared table khác actual physical shard/runtime table. Outbox write, message publish, broker delivery, consumer ack và consumer DB commit là các sự kiện khác nhau; không nối như một transaction atomic xuyên hệ thống khi chưa có chứng cứ.
+
+### FLOW-05 — Observed overlay U3, không là điều kiện để Inspect
+
+U1 click Inspect không tạo request nghiệp vụ hoặc trace. U2 hiển thị static possible flow từ code/contracts. U3 dùng explicit Interact run trong isolated test app + imported export theo T069/T070. Không cần chạy app backend để xem static flow; cần instrumentation nếu muốn biết flow của một lần chạy cụ thể.
+
+Runtime data: interaction_id khi explicit context binding có, trace_id/span_id/parent/links, service/build/revision/profile, operation/timestamps/duration/status, sampling/instrumentation gaps. W3C trace context và OTel context propagation cung cấp cách nối các boundary có instrument; chúng không tự gắn tất cả internal functions vào source graph [REF42,REF43,REF47]. Exact span→source cần build manifest/source anchor hoặc symbol mapping được verify; chỉ có span name giống method thì candidate.
+
+Không đặt biến global `lastClickedElement` rồi gán mọi fetch tiếp theo cho nó. Hai thao tác đồng thời, debounce, cached queries, event queues, retries và background polling phá giả định đó. Context explicit ở handler/request adapter/trace boundaries hoặc known instrumentation mới được gọi causal; timestamp/window correlation chỉ `candidate`, không exact. Không wrap mọi callback tùy ý để giữ context nếu chưa kiểm thử semantics.
+
+Chỉ thêm trace headers vào dev destinations được allowlist và user cho phép; preserve compatible context, không overwrite tùy ý `traceparent/tracestate`, không gửi engine token. Cross-origin propagation cần app/server CORS configuration tương ứng; không mở CORS=* để chữa lỗi. Request bodies/cookies/form values/header secrets và raw SQL params không đưa vào export. Runtime span missing phải nhìn thấy, không nối một đường hoàn chỉnh giả. Observed flow có thể kết thúc tại HTTP/DB spans, không có mọi service method.
+
+## S37 — Explorer security và ranh giới execution
+
+### SEC-UI-01 — Bốn quyền tách riêng
+
+| Quyền | Cho phép | Không suy ra |
+|---|---|---|
+| Read source/index | Core inventory/query trên roots approved | Không chạy target app/test/config scripts |
+| Start Explorer | Chạy server/UI của MCE4D trên loopback và đọc index đã được phép | Không mở mạng public, không attach URL bất kỳ |
+| Attach Preview | Browser tải app development/test đã chạy, đúng origin/build/session được duyệt | Không được coi runtime read-only; không production credentials/endpoints |
+| Interact/Observe | Thao tác thật trong test environment được duyệt riêng và thu metadata opt-in | Không đặt lệnh/giao dịch/thanh toán production; không tự chạy lại action để tìm trace |
+
+Mặc định CLI/MCP/index giữ safety R1. Explorer command không `npm install`, `npm run dev`, Docker compose up, chạy Go server hoặc eval config target. Người dùng/AI host có task và quyền riêng mới cài integration/build/start app. Go core không spawn Node để phục vụ production assets của Explorer; web assets đã build của chính MCE4D được bundle/serve. Node chỉ cần lúc build Explorer/instrument target khi được phép.
+
+### SEC-UI-02 — Inspect chỉ kiểm soát input, không sandbox target
+
+Input shield phải active trước iframe có thể nhận pointer. Inspect giữ focus ở Explorer, target iframe không tham gia tab order và SDK hỗ trợ focus/input guard cho supported cooperative app. Pointer/keyboard/submit không được forward; unsupported input modality phải disable interactive picker thay vì hứa an toàn. Không dựa duy nhất `stopPropagation()` trong target: nó không tự chặn mọi default action/handler; exact prevention do shield + supported SDK + tests [REF49].
+
+Tải trang có thể chạy mount effects, auth refresh, timers, websockets, analytics, hoặc gửi request không cần click. Cuộn/navigate có thể kích hoạt lazy load. `GET` cũng không phải cơ chế sandbox. Bởi vậy UI phải nói rõ “Inspect không kích hoạt action từ lựa chọn; app preview vẫn đang chạy”. Không dùng CSS overlay, monkey-patch fetch hoặc Service Worker làm bảo đảm không có mutation tuyệt đối.
+
+Trước attach yêu cầu dev/test profile với dữ liệu/tài khoản riêng, backend/db/broker/payment/trading endpoints test-only hoặc mock của app, không keys production. Graph vẫn dựa code thật; mock test data phải có nhãn `mock_runtime`, không giả execution backend thật. Khi không thể xác minh môi trường cho phép, không auto-load preview; cho graph/source/static flow. Browser/OS network isolation hoặc app safe-preview mode là cơ chế riêng có evidence; MCE4D không chứng nhận toàn sandbox. Local app vẫn có thể proxy tới prod; loopback URL một mình không chứng minh safety.
+
+Baseline U1 có Inspect và explicit approved navigation để vào trạng thái UI mong muốn; Interact phải có nút arm rõ, badge liên tục, disarm khi reload/origin/build đổi, không bật từ graph selection/MCP. U3 thêm observed context/export, không tự tăng permission tương tác. Source mutation của engine vẫn zero dù target application có thể thay test data trong Interact; đo hai loại side effect riêng.
+
+### SEC-UI-03 — Iframe, origin và message
+
+Explorer assets/API và target preview phải khác origin; parent không đòi DOM access cross-origin. SDK trong iframe dùng `postMessage` với exact targetOrigin; parent verify event.origin, event.source===current iframe.contentWindow, session, nonce, protocol schema, sequence và payload size. MessagePort sau handshake là tùy chọn, không bỏ initial origin verification. Nonce chỉ chống stale/unpaired messages, không chứng minh target app không độc hại. Frame navigation detach session và yêu cầu pairing lại [REF33,REF34].
+
+Iframe không nhận full source graph, engine API bearer, filesystem paths, session bootstrap token hoặc tool quyền ghi. Payload allowed chỉ IDs, rectangles, capability/status của preview và các bounded control messages cho inspect/highlight. Cấm `eval`, arbitrary JS selectors executable, HTML injection, open URL/file command hoặc API-call relay trong bridge. Schema explicit allowlist, rate cap, timeout, sanitized diagnostics.
+
+`frame-ancestors`/X-Frame-Options có thể chặn embed; CORS không cấp quyền iframe DOM. Không reverse proxy hoặc strip CSP/XFO để bypass. User có thể cấu hình dev server của mình allow exact Explorer origin bằng task riêng. External-tab mode chỉ là fallback khi cooperative opener/pairing có thể verify và được cho phép; nếu COOP/opener hoặc browser policy không hỗ trợ thì source/static view, không tự cài browser extension [REF35].
+
+Iframe sandbox dùng quyền tối thiểu sau capability tests; không trình bày `sandbox` attribute như bảo đảm an toàn cho target đã cho scripts/origin. Không ghép target và Explorer cùng origin để “dễ đọc DOM”. Không dùng engine auth cookies vì cookies không cách ly theo port; bearer riêng trong memory của Explorer, không chia qua preview. Auth browser profile/cookies của target thuộc quyền người dùng; tài khoản test biệt lập.
+
+### SEC-UI-04 — Loopback API, secrets và data minimization
+
+Bind explicit 127.0.0.1, port cấp bởi OS; ::1 chỉ khi adapter test. U1/U2 preview default cũng là loopback development origin đã được duyệt; remote staging cần policy/compatibility gate riêng, production preview không thuộc baseline. Không bind 0.0.0.0 hoặc remote URL mặc định. Verify actual Host/Origin allowlist chống cross-site localhost requests/DNS rebinding; không CORS rộng. API đọc source cần bearer opaque, TTL/scoped roots/profile + policy check mỗi request. Browser stores bearer trong memory, không URL/query/localStorage/log. Bootstrap code một lần do local CLI cung cấp trực tiếp cho người dùng, exchange endpoint có Origin/Host/rate/TTL; T082 test implementation, không in credential trong telemetry. UI controls thay mapping/session cần same-origin anti-CSRF validation và explicit action; GET không mutation. Process/browser reload làm bearer expired hoặc yêu cầu re-auth; malware cùng OS user ngoài bảo đảm này.
+
+API không proxy arbitrary URL/fetch source map từ Internet, không đọc arbitrary path, không cung cấp terminal. URL preview input chỉ approved http(s) development origin/path, reject credentials/schemes/file/data/javascript; redaction query/fragment secrets. Attach tải browser document có permission, không là server-side fetch capability. TLS/profile bất thường trả lỗi không bỏ certificate validation.
+
+DOM text, props, input values, auth tokens, cookies, headers, request/response bodies, screenshot, trace payload không thu mặc định. Button labels có thể chứa customer data; UI label lấy từ source metadata được phép, không scrape DOM để lưu. Rect/instance chỉ memory bounded. Source preview và build maps nhạy cảm như repo: auth, Cache-Control no-store cho source/API, no third-party analytics/CDN/runtime script/fonts. Export source/context chỉ khi user yêu cầu và policy cho phép. Logs giữ IDs/counts/error codes, không nguyên messages.
+
+Exact nonce/bind/mode CAS/ack order, bearer/bootstrap/command TTL và fail-closed state theo S43/S45. Không tự chọn implementation khác với contract bằng câu “nonce chỉ là gợi ý”. DOM message là untrusted data, không authority. Parent/SDK validators cùng schema nhưng independent runtime permissions.
+
+## S38 — Kiến trúc, storage và API Explorer
+
+### ARCH-UI-01 — Giữ một engine, thêm adapters
+
+```text
+Source repos -> Core indexers/providers -> published source graph/snapshots
+Approved target dev build -> MCE4D build map -> validated source-anchor bindings
+User-started target dev app <-> Preview SDK (instance IDs/hit-test only)
+                                   ^ exact-origin message bridge
+Browser Explorer: [Graph left] <-> Selection store <-> [Preview or Flow right]
+                 | auth read API / typed user-controlled mutations
+Go Explorer adapter -> existing app/query/context/flow services -> same core stores
+R3 local trace import -> observed evidence -> optional U3 overlay (not static rewrite)
+```
+
+React+TypeScript strict+Vite cho Explorer, không làm target đổi stack. Baseline graph/flow renderer dùng React Flow core `@xyflow/react`; layout `@dagrejs/dagre` cho bounded directed projection, preserve cycle edges/semantics. Core libraries có MIT source tham khảo REF40/REF41; pin đúng artifact/transitive notices ở T081; không copy paid Pro examples dưới giả định cùng license. Không thêm Cytoscape/WebGL renderer/Electron/Tauri hoặc state library thứ hai trước benchmark. Có thể đổi renderer qua ADR nếu viewport tests thất bại; graph business DTO độc lập renderer [REF39–REF41].
+
+Selection store nhỏ bằng React reducer/external-store hợp lệ; normalize node IDs/reference store, tách selection state khỏi full nodes array. ReactFlow state không là graph database. Manual node dragging chỉ đổi layout, không sửa business relation. Layout worker bounded, deterministic input/order, cancel khi scope đổi. Đọc source bằng code drawer read-only cơ bản trước; không nhúng IDE đầy đủ chỉ để đọc 20 dòng. Editor link optional client-open theo local allowlisted scheme + escaped/validated locator; server không spawn arbitrary editor/shell.
+
+Cấu trúc bổ sung (chỉ tạo module khi task cần):
+```text
+internal/explorer/          # loopback session/auth/routes; adapter, không duplicate analyzers
+internal/uimap/             # build anchors, resolver, metadata lifecycle
+internal/flowview/          # projections of core static/observed evidence
+web/explorer/              # React/TS/Vite AppShell; graph/preview/flow/source features
+  src/features/{graph,preview,flow,source}/
+  src/state/selection.*
+  src/api/                 # generated/validated DTO clients
+packages/preview-sdk/      # dev browser bridge/DOM registry; framework neutral base
+packages/vite-inspector/   # development-only TSX/JSX transform + manifest producer
+packages/react-inspector/  # explicit supported component boundary adapter
+ test files colocated; acceptance fixtures under testdata + browser harness
+```
+
+Không tạo `docs/UI_SPEC.md` thứ hai; contract/schema files máy đọc/máy sinh được phép nhưng phải trace tới section này. `go build ./cmd/mce4d` core phải chạy được không cài Node/GUI deps. Explorer release asset build riêng, embed hoặc bundled artifact có hash/version; core-only binary trả `EXPLORER_ASSETS_UNAVAILABLE` thay vì tải assets Internet. Các UI tests không tự chạy repo user; fixture app được kiểm soát mới thuộc test harness của MCE4D.
+
+### ARCH-UI-02 — Storage/ownership và transport authority
+
+S44 physical storage/S43 schemas là authority. Producer `ui_build_maps` và `ui_source_anchors` không chứa source generation/symbol claims. `ui_build_bindings` nối map/profile/policy tới published source generation; `ui_anchor_links` giữ nhiều links của binding. Mọi import/binding atomic dưới worktree writer, không sửa static published facts. Source generation GC làm binding expire, không tự rebase.
+
+`records.sqlite` giữ approved records/manual links và sanitized evidence; không cùng lifetime index cache. Browser SDK giữ instance registry/rectangles bằng memory; server `mapping/resolve` trả các MappingMatch (anchor/target/source/evidence) và cursor, **không live DOM instances**. Explorer nối kết quả server với LIST_INSTANCES từ SDK. No server request nào đòi đọc iframe DOM hoặc source từ SDK.
+
+API prefix `/api/explorer/v1`, operation registry đầy đủ ở S43: core graph/source/context, attach/bind/mode/ack/invalidate/detach + POST preview/status, records list/read và manual propose/review. CLI-only administrative entries tuyệt đối không dispatch qua HTTP hoặc MCP. Authenticated actor lấy từ server session, không client actor field. Closed schema/CAS/idempotency và state rules ở S43–S45. Mapping/session controls chỉ explicit user permission, MCP không tự gọi. GET workspace là no-body read.
+
+Pairing: parent CHALLENGE → SDK READY → server preview/bind → parent BOUND → SDK BOUND_ACK. Interact: server ARMING → SDK MODE_ACK → server preview/ack → unshield; revoke/disarm shield-first. Không ready/interact từ timeout, no stale ACK. Bridge payload chỉ DOMAnchorRef opaque IDs/rects/capabilities; typed directions/version/limits S43/S45. Không copy SourceRef/engine bearer vào messages.
+
+Manifest import CLI: `mce4d explorer-map import --worktree-id <id> --manifest <approved-local-file>`; artifacts phải local/approved và output ngoài target tree mặc định. Không server fetch map URL. Start `mce4d explorer --worktree-id <id> --profile-id <id> --listen 127.0.0.1:0`; stop own process/sessions không kill target app. No placeholder execution.
+
+`Use selection as AI context` lấy typed GraphRef resolver đã kiểm tra → core PackRequest{scope:{pinned_vector},selector:{kind:"ref",ref,service_id},task_kind,constraints}. Với source_position dùng đúng member single scope pinned; không bỏ vector rồi resolve active mới. Không gửi full graph/DOM/screenshot, không auto model call, không thêm write MCP. Hover/highlight không dùng LLM. Copy/export source/context chỉ explicit policy permission. Core edit preconditions S12 vẫn áp dụng.
+
+## S39 — Lộ trình khả thi, acceptance và giới hạn hỗ trợ
+
+### PLAN-UI-01 — Ưu tiên theo một lát cắt thật, không dựng demo thay sản phẩm
+
+1. Hoàn thành core R1 G0–G5 theo tracker; không yêu cầu UI để bootstrap engine.
+2. U0 T081–T084: graph trái từ index thật, source pane phải, loopback/auth/selection; preview chưa ready phải disabled.
+3. Mở R2 subset cần cho U1: T043,T055,T044,T056,T047, không phải toàn Python/ML. Làm U1 T085–T094 cho React+Vite CSR verified; đi đến click button/block phải ↔ node trái với source thật và Inspect action count=0.
+4. U2 T095–T100 cùng prerequisites T045,T046,T059,T060,T061: static operation/service/SQL flow và bridge FE→BE có namespace + vectors. Không chờ toàn T063/Python để làm supported pair React↔Go; reuse service để federation sau không duplicate.
+5. Sau GU2 có thể dùng Explorer static ở các repo thuộc verified matrix. Tiếp tục R2 đa domain riêng. U3 chỉ khi T069/T070 và runtime permission đủ; không block utility U1/U2 vì chưa có traces.
+
+Số task là theo dõi công việc, không ước lượng thời gian hoặc % độ khó. User request này mở scope GUI nhưng không tự cấp quyền chạy một target repo/app/DB cụ thể. Nếu discovery không có real repo được phép, xây/test fixtures tự tạo trước và label fixture-validated; không hỏi lại quyết định bố cục đã được chốt.
+
+### PLAN-UI-02 — Capability matrix thực tế
+
+| Đối tượng | Baseline | Hành vi khi chưa hỗ trợ |
+|---|---|---|
+| React + TypeScript + Vite client-rendered, source/build/map có sẵn | U1 target đầu tiên; native elements + explicit block boundaries | Gate T085/T094; không fake support trước tests |
+| Shared component nhiều instance; portal/fragment có anchors/boundaries được test | U1 scoped | Thiếu owner/render-site metadata -> candidate/ancestor_fallback |
+| Frontend chỉ CSS/text/image không có source hoặc SDK | Hiển thị static source khi có, không interactive mapping | NO_BRIDGE/UNMAPPED; screenshot không thay source |
+| Next.js SSR/RSC, Vue/Svelte/Angular, microfrontend | Chưa MVP; source-static subset nếu provider có | Adapter/pin/fixtures riêng, không dùng React Vite transform một cách mù |
+| Canvas/WebGL/chart library/private shadow internals | Logical widget boundary explicit nếu SDK biết | Không map mỗi pixel/nút chart về source bằng đoán |
+| Backend Go net/http + database/sql literals | U2 first verified subset | Dynamic registration/router/ORM cần adapter hoặc unresolved |
+| Python/Java/other backend | Static provider capability đã có hoặc source-only | Không tự suy endpoint/data lineage từ method name |
+| App production/minified không metadata, remote source không khớp | Không live Inspect baseline | Không bypass, không request credentials; static/source-bound report |
+
+C082/C084/C086/C087/C088/C089/C090/C095/C099/C102/C103/C106 là critical path, không được bỏ để gọi MVP xong. C095 SSR fixture là negative support/consistency test nếu SSR chưa supported, không buộc triển khai toàn SSR. Bộ integration có ít nhất một repository fixture FE+BE+SQL do dự án tạo, index từ bytes, build frontend từ chính bytes đó; expected bindings lập độc lập. Test có fixture mock backend phải label runtime mock, không giả relation xuất phát từ request thật tới BE.
+
+### PLAN-UI-03 — Performance objectives, chưa đo
+
+Default graph viewport 200 nodes/500 edges; hard per-view cap 500/1500 (cấu hình chỉ tăng sau profiling); backend flow default <=100 steps/300 edges; full source graph giữ ở core, không tải toàn bộ vào browser. Khi chạm cap hiển thị counts/unknown/pagination/gap, không nói không có thêm dependency. Collapsing là projection và expand_ref giữ original edges. Không render 50.000 nodes rồi ẩn bằng CSS.
+
+Hover picker tối đa 15 hit-tests/giây, coalesce theo frame/latest pointer, không backend RPC trên mỗi hover; selection click resolve tách, tối đa một active resolution/request-type mỗi panel, cancel previous. UI cache key scope-vector+build+policy+query; layout key subgraph digest, hover không relayout. DOM registry discovery lazy + bounded MutationObserver/ResizeObserver chỉ active/selected boundary; full document scan mỗi mousemove bị cấm.
+
+Target test machine được ghi rõ: local outline feedback p95 <=100ms; click→matched selected node/source p95 <=500ms sau ready/warm index; graph-only initial slice p95 <=1500ms. Không tính cold app load/type index vào warm metric; report riêng. p95 fail giữ fail hoặc ADR số liệu, không quảng cáo instant. Source graph scale M/L theo S27 độc lập render cap; mới target, chưa measurement.
+
+### PLAN-UI-04 — Verification và release labels
+
+T084/T094/T100/T104 cần build frontend, TypeScript strict check, lint theo config đã pin, unit/component tests, browser E2E (Playwright candidate, pin/license kiểm tra), Go test/vet/build/race nơi hỗ trợ, API/schema contract, inspect input/network/canary tests và CSP/origin adversarial cases. Version/browser/OS/filesystem và artifacts hashes ghi S21. Network test routing có giới hạn service-worker coverage; kiểm soát browser context và ghi rõ policy, không gọi mock interception là OS isolation [REF45].
+
+Đo precision/recall trên expected supported mappings, ambiguity count, not_rendered đúng, stale false match=0 trên suite, side-effect counter trong Inspect=0, source mutation=0 bởi engine, cross-scope disclosure=0, latency/RSS/leaked observer counts. Ghi denominator bao gồm unsupported/failed parse, không loại difficult cases để tăng “coverage”. Full graph business correctness vẫn dùng source/test oracle; UI edge count không là metric chất lượng.
+
+Labels: `U0_GRAPH_SOURCE_VALIDATED`, `U1_REACT_INSPECT_FIXTURE_VALIDATED`, `U1_REACT_INSPECT_REAL_REPO_VALIDATED`, `U2_FULL_STACK_STATIC_VALIDATED`, `U3_OBSERVED_RUN_VALIDATED`, luôn kèm capability/framework/provider/browser/version và evidence scope. Fixture pass không thành user project pass. Hoàn thành core R1/G5 không hoàn thành Explorer; còn missing UI tasks thì không tuyên bố đã có click mapping.
+
+## S40 — Hợp đồng bàn giao cho AI coding Explorer
+
+Đọc S00/S22 và các task ready trong S19; giữ một tài liệu này là source of truth. Hạng mục mới là Code↔UI Explorer, không fork hoặc gọi engine tham khảo. Graph TRÁI; pane PHẢI là target frontend preview hoặc backend flow theo selection. Implement thật cả preview→graph và graph→preview/flow→graph. Click Inspect button/block phải map đúng source anchor và runtime instance nhưng không chạy action nghiệp vụ. Chưa có preview/mapping/provenance thì trả gap, không thay bằng demo UI hay synthetic edges trong đường chạy thực.
+
+Trước UI code phải có shared DTO/snapshot source contract và loopback security; trước frontend picker phải có dev-only build map/SDK được duyệt; trước full-stack flow phải có route/contract/SQL evidence; observed execution cần trace/build binding riêng. Không sửa renderer code để bịa một edge mà core không trả. Không dispatch click để “tìm API mà nút gọi”. Dùng static analysis hoặc explicit test-mode observed run có permission.
+
+MVP theo U0→U1→U2, mở đúng R2 prerequisite subset; các feature chưa verified disabled và hiện lý do. Source remains read-only bởi engine. UI reading/preview permissions không cấp target install/run/test/production write permissions. Sau mỗi task chạy test scope, kiểm tra canary/diff, ghi artifact/version/result ở S21, cập nhật tracker/resume và next ready task; không claim đã code/test khi mới có tài liệu.
+
+Bản hiện tại1.6.13 gồm54 sections S00–S53,130 requirements R001–R130,108 tasks T001–T108,195 acceptance cases C001–C195. R1/R2/R3=52/20/12; U0/U1/U2/U3=4/10/6/4. Scope108 đã giao;108 TODO/0 DONE; product build/tests/benchmark NOT_RUN. Document checks S48 riêng runtime; final user acceptance một lần S53.
+
+V1.6.13 routing S00/S53/S22→S19/S47→owner S41–S45/S50/S51 và closure S52. Resource/manifest/XL/error authority S15/S27/S43/S45; T081 seal trước T082; AI tự resolve BP-04/S53, không routine approval/external permission.
+
+## S41 — Bản vẽ thi công: quyền quyết định, khóa thiết kế và sai lệch
+
+### BP-01 — Hợp đồng với AI triển khai
+
+Đặc tả v1.6.13 là bản vẽ/hợp đồng thi công tự chủ108 task hiện hành. DESIGN_BASELINE là thiết kế, không code/dependency verified. Không zero bug/zero rework; giữ invariants/authority/order, tự sửa defect/regression S53. Reconcile owner contracts trước consumer, không chọn đoạn thuận tiện hoặc xin phase approval.
+
+AI giữ stack/ownership/security/freshness/thứ tự đã chốt; được tự hoàn thiện chi tiết kỹ thuật, closed addon schemas và sửa thiếu sót blueprint theo BP-04/S53 bằng ADR/evidence trước code phụ thuộc. Private helper/tên biến/test/error context không cần duyệt riêng. Không tự tăng external quyền/FUTURE scope hoặc bịa nghiệp vụ target.
+
+`S19` là tracker mutable DUY NHẤT. S47 chỉ định thứ tự/phiếu thi công, không có trạng thái cạnh tranh. S43 là wire/schema authority; S44 là physical storage authority; S42/S45 là luồng và state authority. S50 là nơi tiếp nhận nguồn policy/mode; S51 là command/storage policy của hoạt động phát triển, không thêm authority về kiến trúc sản phẩm. S01–S40 giữ mục tiêu, giới hạn và cách dùng; mọi mục đã cập nhật phải dẫn về đúng authority, không để hai định nghĩa cùng tên khác nghĩa. Nếu vẫn tìm thấy mâu thuẫn: ghi discrepancy, chặn đúng task phụ thuộc; không chọn đoạn thuận tiện hoặc “section mới luôn thắng” mà không reconcile.
+
+### BP-02 — Các cổng trước dòng feature code đầu tiên
+
+| Mốc | Cho phép | Bắt buộc trước bước tiếp |
+|---|---|---|
+| T001: site survey | Read workspace, lưu digest/status và verify docs policies/mode S50; xác định empty/existing; tạo module/private bootstrap tối thiểu chỉ trong assignment implement | Không ghi đè repo cũ, không tạo parser/server/GUI sản phẩm |
+| T002: vật tư | Kiểm tra official API/version/license; pin dependency tương thích; preflight command/volume/budget S51 trước bounded smoke tests có quyền | Ledger có version/hash/source/license/tool API result; thiếu mạng/dependency là BLOCKED, không bịa version |
+| T003: kiểm bản vẽ | Tạo spec_check stdlib và test validator; đọc task/req/case/plan + policy/mode/claim metadata S50 | Validator phát hiện missing/duplicate/cycle/DONE không evidence; không giả code validator đã tồn tại trước bootstrap |
+| T105: model/ownership | Chép contract S43 thành schema và value types có validation; dependency boundary tests | Không cho SQL, HTTP, React state trở thành domain model |
+| T106: storage contract proof | Trích SQL S44, chạy migration/positive/negative/rollback fixture trên driver đã pin | Tất cả schema cần cho core đúng FK/state/ownership; chưa chạy trên target user |
+| T107: protocol/flow proof | Tạo fake adapters và deterministic reducer tests cho S42–S45; validate requests/responses | Contract được kiểm tra trước implement handler thật; không dùng fake adapter trong runtime |
+| T108: design seal G0 | Đối chiếu S41–S49, dependency pins, module DAG, fixtures, source tree revision | Chỉ sau PASS mới bắt đầu feature T005/T004/...; không skip vì muốn có UI nhanh |
+
+Explorer có seal riêng tại T081 trước T082: Node/npm/compiler/React/Vite/React Flow/Dagre/browser pins + manifest/bridge/state schema + threat fixture. R2 contract/provider có seal tại T043/T045/T055/T057; chỉ đóng những capability được định nghĩa. Một version đã chọn không phải quyền thêm framework/plugin mới. Dependency install/build chỉ cho workspace MCE4D/fixture được phép; không cho indexer chạy scripts của target.
+
+### BP-03 — Quyết định đóng và dữ kiện môi trường còn phải đo
+
+| Chủ đề | Thiết kế cố định | Dữ kiện được discovery, không tự đổi kiến trúc |
+|---|---|---|
+| Runtime/core | Go modular monolith; CLI/MCP độc lập GUI | Exact Go/dependency versions, executable paths, local module path |
+| Storage | Catalog + per-worktree index + per-worktree records; SQLite; không server DB/ORM | Driver pragma/FTS/backup/platform support và file permissions |
+| Explorer | React/TS strict/Vite; React Flow + Dagre; native CSS/CSS Modules; một reducer selection; read-only code drawer | Versions compatible; browser/OS matrix; measured viewport envelope |
+| JS workspace | npm workspaces + package-lock.json; private packages; `npm ci`, không trộn yarn/pnpm lockfiles | Node LTS đang supported và npm bundled compatible tại T081, pin exact |
+| Provider TS | Official TypeScript compiler API qua local Node bounded worker, không target plugins | Supported compiler version và tsconfig features thực tế |
+| Preview | Cooperative React CSR build mapping, opaque DOM anchors, exact-origin bridge; không Fiber private | Build profile/approved origin/fixture behavior; repo target không phù hợp thì unsupported |
+| Backend MVP | Go net/http static supported registration, database/sql literal SQL; MySQL dialect | Actual routing syntax/DB dialect của target; không ép target đổi stack |
+| Python baseline | stdlib AST parse-only trong isolated tool worker; no import/exec target | Python version và scope/type-enrichment compatibility; typed enrichment chưa proven thì partial |
+| R3/U3 đã giao | Xây addon AW-05; core không auto mở model/network/runtime collector | AI tự seal closed schemas/fixtures/pins trước feature; không cần mở scope lại; distributed indexing vẫn FUTURE |
+
+Bất kỳ schema record của R2/R3 còn `payload_json` phải có closed typed schema theo kind trước task feature ghi record đó. Đây là kho chứa JSON đã validate, không plugin DSL/EAV tùy ý. Capability chưa có schema+oracle không được expose, và không được làm trễ core vì addon chưa được chọn.
+
+### BP-04 — Discrepancy procedure
+
+Dùng record S21: `Dxxx; task; category=spec_conflict|upstream_api|environment|security|missing_requirement; evidence; affected contracts/tasks; bounded resolution; authority_ref; approval_required; status`. Trong108 task, AI tự đóng chi tiết thiếu/conflict/schema/DDL chưa phát hành và version/dependency tương đương khi baseline không qua compatibility/security gate; ghi options+minimum change+compatibility/rollback+tests, sửa owner section/ADR ACCEPTED_DELEGATED_AI trước code. Không đổi contract/test chỉ để xanh. Giữ Go/SQLite/modular monolith/React-Vite, target read-only, offline runtime, provenance/permission và evidence. Đổi mục tiêu/FUTURE/production/external quyền hoặc destructive dữ liệu hiện hữu ngoài assignment cần authority thật theo AW-04. Có consumer/store đã phát hành thì giữ compatibility hoặc migration có proof, không overwrite baseline.
+
+Mode/nguồn docs/command preconditions theo S50/S51 là điều kiện áp dụng, không mặc nhiên chặn mọi task. Nếu một prerequisite không kiểm chứng được, task phụ thuộc giữ BLOCKED; task độc lập tự tiếp tục khi dependency DAG/ownership cho phép; ghi deviation khỏi linear schedule do blocker, không vượt missing prerequisite. Không đặt stub trả success/empty để vượt prerequisite. Không hỏi lại bố cục, tên sản phẩm hoặc quyết định đã có. Không tự điền biến môi trường, business schema hay endpoint người dùng chưa cung cấp.
+
+### BP-05 — Các thiếu sót v1.2.0 được khép lại ở bản này
+
+| Audit | Điểm cần làm rõ/sửa | Quyết định v1.3.0 |
+|---|---|---|
+| AU01 | Schema/API được chốt sau implementation | T105–T108 foundation; T026 chỉ conformance/wiring |
+| AU02 | Registration đi trước physical catalog schema; publish chưa phụ thuộc lock | Physical migrations trước feature; T004 sau T005; T008 sau T010 |
+| AU03 | Tổng nghiệm thu có thể trước GC/migration code | T034 sau T035 và fault prerequisites |
+| AU04 | Source scope đơn và Explorer vector chưa một contract | ScopeVector + policy/binding/record/group revisions S43 |
+| AU05 | Approved records có thể lẫn cache | records.sqlite durable tách index cache; CAS/idempotency/epoch |
+| AU06 | Build artifact tự phụ thuộc index generation | BuildManifest content-based; engine Binding độc lập, không producer tự claim symbol |
+| AU07 | Server mapping biết DOM instances khi chưa nhận dữ liệu | Server chỉ resolve anchors/source; browser SDK giữ live registry |
+| AU08 | Pairing/HMR/mode transition thiếu bước commit/ack | Attach→challenge→ready→bind→bound_ack; arming + fresh MODE_ACK trước bỏ shield |
+| AU09 | Budget có thể bỏ qua phần MCP lặp | Delivery mode explicit, serialize whole tool-visible result; compatibility default |
+| AU10 | Cache chưa theo đổi approved record/policy/group | Scope vector epochs + optimistic before/after checks; revoke không giả zero in-flight bytes |
+| AU11 | Logical schema/invariants thiếu executable blueprint | DDL/schema registry trong cùng file, document-level tests; app validators riêng |
+| AU12 | Thứ tự task và đầu vào từng task chưa tuyệt đối | S47 một thứ tự chính xác + read/write/flow cards, gate closures và no fake DONE |
+
+## S42 — Luồng dữ liệu end-to-end và quyền sở hữu
+
+### DF-00 — Mô hình chung
+
+Source target là dữ liệu người dùng; chỉ CLI quản trị explicit mới đổi registration/policy, không sửa source. Core index chỉ sản xuất facts có provenance. Query, MCP và Explorer không gọi index ngầm. Browser là renderer, không analyzer; Preview SDK là observable-instance adapter, không filesystem client. Mọi input qua parse/limits/authorization trước I/O. Mọi response chứa ScopeVector đã dùng hoặc null khi chưa resolve. Build artifact, static source, approved record và runtime observation là bốn nguồn khác nhau, không nhập thành một sự thật.
+
+| Flow | Trigger → thứ tự thực hiện | Writes / điểm công bố | Failure và nơi tiếp tục |
+|---|---|---|---|
+| DF01 Register/profile | CLI args → safe root identity → read Git metadata sanitized → validate profile/policy → canonical IDs/digests → catalog transaction | Catalog only; COMMIT trả IDs/revision. State dirs chỉ owner-marked, không source | Conflict/path/tool error: no half registration; orphan empty owned dir được recovery, không tự remap root |
+| DF02 Index | policy/version → writer OS lock → inventory → deny → capture/hash → manifest → provider closure/type → normalize facts → BUILDING batches → full revalidate → integrity → publish | Index only; active pointer+READY trong cùng transaction. Parse/LLM/network không trong SQL transaction | Error trước commit: previous active nguyên; new generation FAILED/CANCELLED. Ownership lost: worker không publish |
+| DF03 Locate/overview | bounded input → authorize → resolve vector/active once → short read snapshot → exact/scope/FTS → evidence/gaps → policy/record epochs check → serialize | Không write source/index; bounded caches memory | Ambiguous/missing/partial giữ trạng thái; không fallback repo/name hoặc bỏ lỗi provider |
+| DF04 Context pack | selector→resolve → task obligations → generation facts + approved records at record_epoch → merge source ranges → deterministic rank → meaningful-item budget → cursor | Không durable write cần thiết; pack descriptor MAC riêng mục đích | Required evidence chưa đủ: needs_context+cursor; không trả safe_to_edit. Scope changed: new pack |
+| DF05 Expand | verify token version/signature/expiry/purpose → exact scope/epochs → keyset traversal page → source from captured bytes → budget | Không chuyển sang active generation mới | GC → SNAPSHOT_EXPIRED; policy/record changed → explicit invalid. Cursor phải tiến triển hoặc trả limit error |
+| DF06 Validate | token scope → policy/record precheck → full inventory/hash/config/profile → compare capture manifest → postcheck revisions → result | Không khóa source; chỉ quan sát kiểm tra | New/untracked/deleted file cũng mismatch; unknown không current. Host check patch hashes lại trước apply |
+| DF07 Rename preview | positional selector+hash → DF06 → gopls pinned profile/captured buffers → prepareRename/rename → reject apply/commands → validate all edits/ranges/contracts → full revalidate | No source mutation. gopls scratch/cache chỉ approved state | Không type info/changed source/contract risk: blocked; không global regex fallback. Timeout kill children |
+| DF08 Watch | explicit process → bounded stat hints → scheduled inventory/hash reconciliation → enqueue max một index yêu cầu mới cho worktree → DF02 | Chỉ index writer qua same use case; không daemon/global job lock | Event storm coalesce; cancel waits child workers; dropped hints không proof fresh |
+| DF09 Manifest import/bind | explicit local artifact → path/secret/schema/digest validation → writer lock → verify anchors and loaded coverage → transaction import entire immutable producer map → resolve against a published source generation → publish binding | Index metadata separate from static facts; manifest không cần generation; binding cần gen/source hashes/policy | Import unchanged idempotent; same ID/different bytes reject. Stale source: imported-but-unbound, no fabricated links |
+| DF10 Explorer start | explicit CLI→loopback listen→own embedded assets→one-time bootstrap exchange→scoped in-memory bearer→query app service | Runtime memory only, no target launch, no arbitrary file HTTP | Missing assets/auth/host/origin: reject; core CLI vẫn chạy. Stop server không kill user app |
+| DF11 Preview attach/pair | permission profile+read scope → server attach → shield before load → exact-origin CHALLENGE → SDK READY → server bind → BOUND → SDK BOUND_ACK | Session bound state in server; browser readiness only sau matching ack. Metadata identity separate from DOM IDs | Canceled/reload/HMR/policy fail: shield, disarm, stale/detach; no ready-by-timeout fallback |
+| DF12 Preview→graph | shield pick → seq/epoch → SDK hit-test opaque anchor+instance → browser stale-filter → mapping/resolve server → source/binding check → canonical selection → graph focus + source drawer | Selection browser memory; no static edges created from click | N>1 chooser; missing source fallback explicit; old reply must not repaint |
+| DF13 Graph→preview | user graph selection → source/anchor resolve → LIST_INSTANCES opaque IDs → user instance choice → HIGHLIGHT → ACK | SDK/browser live memory only; server doesn't invent DOM list | Unmounted/hidden return status; no synthetic click/navigation/login. Flow selection never recursively re-roots itself |
+| DF14 Static flow | root selector→same graph/contract query→bounded occurrence graph→known branch/call/SQL/transaction metadata→projection | Derived memory cache only, includes vector/record/provider revisions | Unknown route/SQL preserved boundary; layout isn't execution order; no request/database command |
+| DF15 Manual mapping/decision | authenticated explicit action → request/schema/source validate → owner writer lock → CAS records transaction → version+head+receipt+epoch commit → invalidate read caches | records.sqlite only. Actor from server principal; client mutation id exact replay | Same id+same principal/hash returns original result; changed body/principal rejects. Stale version rollback and conflict |
+| DF16 Observed import | approved local artifact→size/schema/redaction→source build binding or unbound→atomic artifact/items write→observed projection | records.sqlite evidence storage; immutable imported items not static graph rewrite | Secret or malformed data reject before persistence; unmatched revision remains unbound. No replay/execute |
+| DF17 Retention/recovery | explicit/owned quota→worktree lock→choose non-active generations→short tx retire/delete dependents→blob orphan GC→checkpoint policy | Index/cache only; never records/catalog/source. Backup records separately | Active/source-bound reader snapshot retains semantics; next page may expire. DELETE doesn't promise forensic erase |
+| DF18 Consumer change | export bounded pack→host validates+patches with own permission→host build/tests→record evidence→explicit reindex | Host owns source mutation, not MCP/Explorer | Partial filesystem patch no claim atomic; preserve user's other changes; old pack invalid |
+
+### DF-19 — Catalog / policy / records coherence
+
+Không SQL JOIN/transaction cross database. Một query lấy catalog binding/profile/policy/group revisions, records record_epoch và published generation trong những read transaction ngắn. Sau khi đọc data, kiểm tra lại các revisions có ảnh hưởng trước serialize. Nếu khác: discard response data, retry read tối đa một lần trong deadline, hoặc POLICY_CHANGED/RECORD_CHANGED/PROFILE_MISMATCH. Đây là optimistic stable observation, không atomic distributed snapshot và không thu hồi được bytes đã gửi trước thời điểm revoke.
+
+Pack/query cache key = schema + operation + normalized query + complete scope vector + provider/ranking versions + build binding hoặc artifact nếu có. `record_epoch` thay khi record head thay; proposed/revoked metadata không làm mất lịch sử, effective approved phụ thuộc hash/version hiện tại. Group membership sửa phải tăng group revision cùng transaction; policy/profile head CAS tăng epoch/revision; không chỉ update JSON cùng digest.
+
+Nếu profile hash đổi, không tự giữ old name để giả same profile. policy stricter có thể cấm cả historical blobs: kiểm tra policy hiện tại trước đọc/xuất mọi snapshot. Response bị chặn khi policy không đo được; fail-open chỉ dành hiển thị metadata đã sanitize không cần quyền source và phải ghi unknown.
+
+### DF-20 — Chuẩn mutation, retry, timeout, cancellation
+
+Read retries: tối đa 1 retry sau initial attempt, trong deadline gốc, chỉ cho lỗi transient đã phân loại. Bounded index capture: tối đa 2 file recaptures; snapshot instability retry toàn job tối đa 1. Không retry operation đối với lỗi semantic/authorization. `retryable=true` không tự cấp quyền thực thi.
+
+SQL statement retry không được replay từng nửa transaction. Rollback transaction trước retry toàn use case có idempotency contract. Nếu COMMIT báo lỗi/timeout khiến kết quả chưa chắc chắn: đọc lại theo generation/job/receipt identity sau kiểm tra integrity; không insert duplicate hoặc báo success chỉ từ “không nhận error lần trước”.
+
+Lock order: catalog transaction được đóng trước worktree lock. Một process không giữ hai worktree writer locks đồng thời. `records` mutation và `index` mutation cùng worktree dùng cùng writer lock; SQL tx mỗi lần chỉ một DB. Federation đọc từng scope vector, không distributed writer. UI sessions/hover không giữ lock. Goroutine cancellation phải join/terminate trước release writer ownership; context deadline gốc xuyên suốt provider/store/transport.
+
+Default cancellation settling tối đa 5s cho cooperative worker; child vượt graceful 2s thì terminate/kill process tree trong tổng 5s và log sanitized. Giá trị là blueprint default cần test OS, không bằng chứng đã enforce hard memory/time với arbitrary executable. Không xóa lock file khi owner còn sống hoặc dựa PID/TTL một mình.
+Error taxonomy CT-03: file/source/manifest/cache/coordination/RSS admission → RESOURCE_LIMIT; elapsed generic deadline → TIMEOUT; incomplete checked_workspace verification → FRESHNESS_UNKNOWN; OS ENOSPC/volume-quota failure after admission → DISK_FULL; caller cancel → CANCELLED; lock deadline → WORKTREE_BUSY; stale admission config → CONFIG_CONFLICT. Error details bounded Gap schema, dimension/reason trong sanitized text, không field wire mới. Cleanup secondary không đổi primary code. Benchmark giữ failed phase/count/code, no blanket RESOURCE_LIMIT.
+
+## S43 — Contract duy nhất: model, wire schema và registry
+
+### CT-01 — Authority và sinh mã
+
+Block `MCE4D_CONTRACT_SCHEMA_V1` bên dưới là JSON Schema Draft 2020-12 duy nhất cho wire/value records baseline. Block `MCE4D_OPERATION_REGISTRY_V1` ràng buộc request và `data` response. Core DTO không còn thêm “optional fields” nằm rải rác ở S11/S32/S38. Additive extension chưa implement trả UNSUPPORTED_CAPABILITY; không accept rồi trả object rỗng.
+
+Wire schema_version=1 và bridge protocol_version=1 ở đây là baseline CHƯA PHÁT HÀNH. V1.5.0 thay fields so với bản vẽ1.4, không tuyên bố backward-compatible với consumer đã được triển khai. T001 nếu phát hiện client/store phiên bản cũ đã chạy: giữ dữ liệu/consumer, mở compatibility discrepancy và forward version/migration có test trước thay; không sửa baseline1 trực tiếp trong sản phẩm đã phát hành.
+
+T105 trích block vào `contracts/mce4d.v1.schema.json` và `contracts/operations.v1.json`, commit như artifact được phép. `tools/spec_check` so SHA-256 normalized JSON với block; thay generated file một mình là lỗi. Go/TS validators phải implement đúng schema + CT-02; không `as any`, không `Record<string,any>` chứa domain facts. Có thể tạo Go/TS types thủ công theo schema để không thêm codegen dependency, nhưng phải có contract tests đồng thời trên fixtures positive/negative; đó là code thực thi, không tài liệu thứ hai.
+
+Một SourceRef canonical chứa byte offsets/hash; line/column display derive từ captured bytes. ScopeVector authority CT-06: single có đúng một resolved member, group fields null; federated có group/version, resolved members và unavailable_members tách riêng; có thể zero resolved member nhưng không tạo dummy generation. Pre-index status dùng registered_scopes, scope=null. Incarnations từ trusted stores, không client tự cấp. Vector digest theo CT-04, không chứa query time.
+
+Registry operation ràng buộc Response.data, không chỉ chấp nhận bất kỳ member ResponseData. Bootstrap/error chưa có source dùng scope=null, freshness not_checked, coverage unknown, readiness blocked. Không expose SourceRef hoặc registry ngoài authorization trước bootstrap.
+
+### CT-02 — Semantic validation bắt buộc ngoài JSON Schema
+
+| Rule | Kiểm tra |
+|---|---|
+| SV01 | UTF-8 hợp lệ, không duplicate JSON member ở mọi object; reject trailing JSON, unknown fields, non-finite numbers, size/depth > policy; decode không coercion |
+| SV02 | ByteRange: 0<=start<=end<=actual captured length, position nằm trên UTF-8 boundary; SourceRef hash bằng bytes, file thuộc gen/vector/policy; line/end được derive |
+| SV03 | ScopeRequest bound default chỉ khi server có đúng một explicit binding. Group selector XOR single selector; không name fallback; single lookup cần profile có thật |
+| SV04 | Locate: position XOR query; cursor continuation không được đổi filters/scope/order; defaults mode=symbol, limit=20. Status chỉ verify none/workspace, không returned_files khi chưa có result files |
+| SV05 | Pack: default view=symbol cho symbol/position, overview cho workspace/module/doc; entity/flow chỉ capability đã qua gate. Task rename yêu cầu resolved positional/symbol target; ambiguous không auto chọn |
+| SV06 | Default checked_workspace cho rename/type/behavior/contract/debug; explore/plan default analysis_snapshot. Analysis data luôn needs_context/not_checked cho edit; validate live không đổi historical graph |
+| SV07 | ScopeVector group/revision/member source consistency; policy_epoch/binding_revision/record_epoch hiện tại được so trước/sau. Records mismatch làm new pack, không giấu thay đổi rule |
+| SV08 | Response status error/blocked cần error object, readiness blocked; data null trừ partial result được operation contract cho phép. status ok không có error nhưng vẫn được coverage partial+gaps; không ok khi schema invalid |
+| SV09 | Pagination: truncated iff còn known/unknown pending hoặc traversal incomplete. Unknown count=null; cursor progress verified; no pending zero khi enumeration chưa hoàn tất |
+| SV10 | Graph edges endpoints trong visible node slice hoặc explicit boundary node có evidence. Flow steps occurrence IDs không gộp canonical symbols; FlowEdge không tự sinh từ layout |
+| SV11 | DOMAnchorRef chỉ opaque build_map_id/anchor_id. SDK không được gửi SymbolRef/SourceRef/engine generation để tự claim ownership. Bound AnchorRef của engine cần binding_id thực |
+| SV12 | BuildManifest digest exclude chính build_map_id; source array unique/sorted, anchor range trong source hash, owner refs cùng manifest, không cyclic owner. Coverage lazy != toàn repo |
+| SV13 | Preview URL canonical origin scheme/host/port exact, approved path prefix và credential/query/fragment policy; no proxy/fetch. localhost/127.0.0.1 không interchangeable silently |
+| SV14 | Ready/bind/mode/click results session+document+HMR+revision+nonce/command khớp. Delayed/duplicate/wrong direction messages không tăng quyền hoặc commit selection |
+| SV15 | Manual actor từ authenticated principal; expected version CAS; client mutation id bound principal+request_hash; same id different request -> RECORD_CONFLICT |
+| SV16 | capability/edge/node/rule kind strings là registry extensibility keys, không quyền nhận giá trị tùy ý: registry closed cho enabled provider. Unknown -> UNSUPPORTED_CAPABILITY, không generic parse |
+| SV17 | Instance UUIDs ephemeral, rects finite CSS pixels và bounded; DOM text/props/values/keys/secrets không ở wire. Source read không thành arbitrary path read |
+| SV18 | observed flow requires imported sanitized artifact_id và verified/unbound source status; static mode không accept trace như compiler fact. No query success→commit inference |
+| SV19 | Budget tính sau envelope/warnings/cursor; no Unicode/JSON/code-range truncation. Constraints enum không được tự bổ sung business rule; explicit doc/record source cho constraint khác |
+| SV21 | Evidence origin/kind matrix: static_analyzer dùng syntax/type/text/unresolved; build_instrumentation dùng build_anchored/unresolved; runtime_observation dùng runtime_observed/unresolved; manual_approved dùng manual_declared; ai_proposal dùng proposed. Không đổi origin thành compiler proof. FileRef cho inventory/text-only, hash=null chỉ metadata, không mở source hoặc rename. |
+| SV20 | Profile identity hash lấy canonical effective config với tool digests; field `profile_id` không tự nằm trong preimage. Source CaptureManifest snapshot_digest tương tự; UTF-8 length-prefixed canonical encoding S06, arrays sort theo defined order |
+
+GraphRef/Selector chỉ được dùng ở scope đã resolve. Runtime authorization không dựa tool annotation. Positive JSON schema match không bỏ qua SV01–SV21; không tuyên bố schema validation bằng chứng access control.
+VolumeAdmissionJournal/Entry/AdmissionOwnedPath/StoredCaptureManifestRef là PRIVATE_STORAGE_CONTRACTS để extraction/parity, không request/data hoặc registry operation. Semantic checks: home/worktree/kind/path/volume>=cache/unique operation IDs/header identity/raw UTF-8 byte cap ACC-01. Owned locator UTF-8 length<=256 bytes ngoài schema character limit; directory roots dùng stable owned IDs, không user source filename. Format1 revise trước implementation, không claim old-runtime compatibility; released format change sau này cần version/migration/recovery.
+
+### CT-03 — Transport, lỗi và budget
+
+HTTP `/api/explorer/v1` dùng bearer memory+Host/Origin checks; GET workspace chỉ nhận query verify=none/workspace, không GET body. Core CLI dùng typed JSON stdin/file; CLI control request schemas CT-07, không ghép shell string; MCP tên sáu tools cố định. Child/provider frame không dùng HTTP: Content-Length ASCII + CRLFCRLF + UTF-8 JSON, maximum 16MiB/frame, 64KiB header, deadline/cancel request ID, binary stdout không log. LSP dùng protocol riêng đã pin, không tái sử dụng provider method names.
+
+INVALID_ARGUMENT/DUPLICATE_FIELD/UNEXPECTED_FIELD →HTTP400/CLI2; unauthenticated401; unauthorized403; scope/source/record/mode/config conflict409/CLI3; unknown scope404 sau auth; expired cursor/snapshot410. RESOURCE_LIMIT/RATE_LIMITED →429/CLI4; TIMEOUT và deadline-caused FRESHNESS_UNKNOWN →504/CLI4; other freshness unknown →409/CLI3; WORKTREE_BUSY →409/CLI4; CANCELLED →409/CLI4 hoặc connection closed, no success; DISK_FULL/internal/storage →500/CLI5. Partial typed data →200/CLI6 chỉ owner cho phép. MCP isError đúng SDK, protocol/parse đúng JSON-RPC SDK; no deadline-as-quota.
+
+Bootstrap/session/record controls mỗi request max16KiB; normal core request max32KiB; UI graph/flow max64KiB. Response byte cap core 24KiB default, maximum128KiB; UI graph/flow maximum1MiB. Auth header/token limit trước parse. Bridge max16KiB, arrays theo schema và rate S39. Nếu scalar source dài vượt cap: descriptor+gap, không cắt chuỗi bừa.
+
+MCP delivery default `mcp_dual` cho structured data + serialized text để compatibility theo official protocol [REF03]. Chỉ dùng `mcp_structured_verified` khi host/version fixture chứng minh consumer đọc structuredContent; `mcp_text` cho host không dùng structured output. JSON budget đo cả phần tool-visible bị lặp, không đo wire framing thành token. `serialized_bytes` fixed point: serialize với 0 → đo → cập nhật → serialize lại đến count không đổi, tối đa8 vòng; không hội tụ -> internal serializer error, không gửi vượt cap. Không exact tokenizer thì token_count/tokenizer_id null; byte cap không là token cap.
+
+`pack_token`/cursor/result_token signed separate purpose strings (pack/list/mapping/rename-result/rename-page), version, full scope vector/incarnations, principal+allowed binding, normalized request hash/order_version, result ID/digest nếu có, last_key/position, issued_at/expires_at; HMAC-SHA256 key random32bytes owner-only. Constant-time signature check, reject unknown key/version/expired/cross-scope; key rotation invalidates old tokens. Token không secret content, nhưng không log. List paging keyset; graph paging deterministic bounded expansion với materialized-result ID/cap/TTL theo CT-05 và actual progress. No cache “model already read”.
+
+### CT-04 — MCE-C14N1: mã hóa byte và recipe hash liên ngôn ngữ (A08)
+
+Đây là codec nội bộ cần hiện thực bằng standard library, không thư viện crypto mới hoặc JSON canonicalization được giả định có sẵn. `H(domain,value) = lowercase_hex(SHA256(b"MCE4D\x00C14N1\x00" || E(domain) || E(value)))`. Domain là UTF-8 string chính xác trong bảng; không lowercase/normalize nội dung tùy ý. E chỉ nhận dữ liệu đã schema/semantic-validate; không hash raw serialized JSON để thay thế. Source `content_hash`/download artifact hash luôn SHA-256 raw bytes, KHÔNG E.
+
+| Giá trị | E(value) chính xác |
+|---|---|
+| null | byte ASCII `n` |
+| false / true | byte ASCII `f` / `t` |
+| integer an toàn | ASCII `i` + decimal base10 tối giản + `;`; -0 tương đương0; tuyệt đối <=9007199254740991; không fraction/NaN/Infinity |
+| string | ASCII `s` + số byte UTF-8 dạng decimal + `:` + raw UTF-8; empty là `s0:`; không Unicode normalization hoặc EOL conversion |
+| array | ASCII `a` + số phần tử decimal + `:` + E từng phần tử theo thứ tự đã normalize riêng cho recipe; không delimiter khác |
+| object | ASCII `o` + số member decimal + `:` + E(key),E(value) theo key UTF-8 byte lexicographic tăng; key duy nhất; missing khác key:null |
+
+UTF-8 phải hợp lệ; JS lone surrogate bị từ chối trước Buffer/TextEncoder, Go không thay invalid rune, Python không encode replacement. Identity input chỉ nhận integer token base10, không decimal point/exponent, parse số chính xác trước chuyển sang native JS Number; không float rounding vượt53bit. Producer phải serialize integer đúng kiểu; schema integer có thể chấp nhận1.0 nhưng semantic identity decoder từ chối numeric token đó trước hash. Rectangles/durations float chỉ là dữ liệu hiển thị, không đưa vào identity. Duplicate JSON keys/trailing bytes bị reject TRƯỚC decoder làm mất duplicate. Độ sâu tối đa32, object keys tối đa4096, tổng bytes theo artifact cap; không recursion không giới hạn. E(object) không dựa thứ tự map của Go/JS/Python. Không tự áp generic sort cho mọi array.
+
+| Digest / domain | Exact preimage value và normalize trước E |
+|---|---|
+| `profile_id` / `profile-v1` | EffectiveProfile sau defaults đã chốt; không field profile_id; build_tags/module_roots/dependency_roots/tsconfig_paths sort raw UTF-8, reject duplicates; compiler/tool paths được fingerprint qua digest, không runtime PID/time |
+| `policy_digest` / `policy-v1` | PolicyConfig effective; allowed_roots/dependency_roots/denied_globs sort/reject duplicates; allowed_executables sort(path,sha256); trusted_rule_paths GIỮ thứ tự vì có thể ảnh hưởng rule precedence |
+| `snapshot_digest` / `capture-v1` | CaptureManifest bỏ chính snapshot_digest; files sort(path), unique path; dependency_input_digests sort giữ multiplicity; input closure digest đã ràng buộc module/root identity. Không parse_error/type results/created_at |
+| `source_anchor_id` / `anchor-v1` | object đúng keys `{path,content_hash,kind,start_byte,end_byte,provider_digest}`; original bytes/range, instrumenter fingerprint chứ không display version |
+| `build_map_id` / `build-map-v1` | BuildManifest bỏ build_map_id; sources sort(path), anchors sort(path,range.start_byte,range.end_byte,kind,anchor_id); IDs/path duplicates reject; provider_digest là instrumenter; module_coverage có nghĩa và có trong hash |
+| `binding_id` / `binding-v1` | đúng keys `{build_map_id,source_generation_id,profile_id,policy_digest,resolver_digest}`; resolver_digest gồm binary/version/options fingerprint; tự nhiên unique ở DDL cùng tuple |
+| `vector_digest` / `scope-v1` | ScopeVector bỏ vector_digest; members sort(service_id null trước string,worktree_id,profile_id,generation_id); unavailable_members sort(service_id null trước,worktree_id null trước,status); catalog/store incarnations và group_revision giữ đầy đủ |
+| `target_ref_digest` / `graph-ref-v1` | Toàn GraphRef typed đúng schema; không display label/layout/instance; used cho mapping keyset |
+| `fragment item_id` / `source-fragment-v1` | object `{parent_ref,range}` như CT-05, SourceRef parent đầy đủ và byte range fragment |
+| `resolver_digest` / `resolver-v1` | object `{implementation_artifact_hash,semantic_version,options_digest}`; artifact SHA256 thật và options theo closed adapter schema, không Git branch name |
+| `runtime_config_digest` / `runtime-config-v1` | effective RuntimeConfig sau merge defaults và resolve max_parse_workers=0; runtime resource config KHÔNG tự trở thành semantic profile |
+| `source_digest` / `runtime-config-source-v1` | validated canonical home RuntimeConfig JSON trước defaults/CPU/alternate/CLI; null iff canonical home file absent; config set expected_digest CAS chỉ source này |
+| admission_config_digest / admission-config-v1 | Exact object {schema_version:1,max_worktree_cache_bytes,volume_reserve_bytes,volume_warning_bytes}; canonical home authority, no process override/PID/time; private journal header, no wire operation |
+| `permission_digest` / `preview-permission-v1` | PreviewPermissionProfile đầy đủ version/attestation/expiry; source_worktree_ids/allowed_dev_destinations sort unique; timestamp ở đây là nội dung quyền, không thời điểm hash |
+| `request_hash` / `request-v1` | object `{operation,principal_id,request}` sau defaults/validation; bỏ pagination controls chỉ khi so initial request với continuation; mapping/rename query fingerprint có target/scope/constraints/resolver |
+| `record payload_hash` / `record-payload-v1` | payload typed theo record_kind, raw text không trim; không tự thay tác giả/thời gian khi replay |
+| `result_digest` / `rename-result-v1` | object `{scope,initial_request,provider_digest,file_preconditions,edits,conflicts}`; edits sort(path,start,end,new_text); duplicate identical edits dedup trước digest, overlaps mâu thuẫn reject; conflicts order deterministic |
+| `subgraph_digest` / `subgraph-v1` | object `{scope,nodes,edges}` với nodes sort(node_id), edges sort(edge_id); labels sanitized deterministic; không camera/layout/hover/time |
+
+Các ID content-based khác MUST dùng domain literal versioned + recipe ghi tại adapter seal; không tự ghép strings bằng `|` hoặc `/`. Hash không chứng minh authorization; mọi use vẫn kiểm policy, incarnations, actual rows. Hash collision/same ID different content bị từ chối và báo integrity conflict, không last-write-wins. Do sản phẩm chưa phát hành, C14N1 là codec baseline đầu tiên; không giả tương thích digest từ các bản tài liệu cũ chưa có implementation. T105/T107 kiểm Go/Python reference; T081/T085 kiểm Node cùng vectors; code provider không được bắt đầu trao đổi mapping trước pass.
+
+Capture vs result: ManifestFile.status=`captured` nếu bytes hợp lệ đã chụp, kể cả Go parse lỗi; `files.status` là projection kết quả (indexed/parse_error/...). Parser/diagnostic không được sửa manifest hoặc snapshot_digest. ProviderDone.input_digest phải bằng input ban đầu. NOOP chỉ tái dùng mức capability đã có; config/dependency/provider hoặc retry điều kiện resource thay đổi phải mở lại phần phân tích cần thiết, không giữ partial mãi rồi gọi complete.
+
+Path semantic validator: đường dẫn file relative `/`, không empty, NUL/control, backslash, absolute/drive/UNC, segment `.`/`..`, trailing slash hoặc segment rỗng. `.` chỉ hợp lệ khi trường là module_root của worktree, không SourceRef.path. Regex schema không dùng lookahead mà Go regexp không hỗ trợ; SV02/path adapter kiểm containment/encoding/case theo OS. Filesystem canonicalization không đồng nghĩa normalize source bytes. Các vector cuối S43 là input/output normative cho codec; không là fixture dữ liệu người dùng.
+Vectors giữ document_reference_not_product. capture_manifest_full là full preimage schema hợp lệ khi thêm snapshot_digest=digest; bad.go bytes hex7061636b61676520700d0a(11 bytes), content_hash raw SHA256. capture_changed_* đổi từng worktree/profile/policy/provider, digest MUST khác full; parser outputs/created_at không manifest. Primitive codec vs complete recipe là separate assertions; T006/T020/T105/T107 tái hiện bằng Go/Node+schema/semantic validators.
+
+### CT-05 — Continuation có điểm kết thúc, không cắt im lặng (A04)
+
+**Mapping server:** initial MappingResolveRequest có session/build/doc/hmr/ref, scope pinned khi từ graph, optional limit(default20,max100), max_output_bytes(default24576,max131072). Server resolve binding+resolver một lần, đọc immutable links theo keyset `(anchor_id,target_ref_digest,match_id)`; target_ref_digest=H("graph-ref-v1", typed GraphRef). MappingData.matches là đơn vị page giữ anchor-target-source-evidence đúng cặp; không trả hai mảng độc lập làm mất pairing. Mapping data không có live DOM instances. Browser lấy anchor từ matches rồi LIST_INSTANCES riêng.
+
+Continuation gửi cùng request target/session/scope cùng cursor, chỉ được đổi limit/budget. Cursor purpose=mapping, bound principal/full vector/binding/resolver/map/epoch/query fingerprint/last_key/expiry. Không resolve active source/binding mới khi chuyển page. Global mapping_status chỉ exact unique khi enumerate đủ và đúng một đích; page đầu có một match trong tập chưa hết không được đánh dấu unique. Ambiguity/unsupported/gap vẫn giữ khi budget giảm. Hết TTL, HMR, permission revoke, GC hoặc resolver/binding đổi → error tương ứng, không nối trang khác snapshot. Mọi list còn pending phải có next_cursor khả thi; `pending=0` chỉ khi complete. Một item metadata không vừa max budget → RESULT_TOO_LARGE + descriptor, không cursor tự lặp.
+
+**Rename giữ đúng sáu MCP tools:** `mce4d_rename_preview` nhận RenameInitialRequest HOẶC RenameContinueRequest (oneOf), không trộn. Initial chạy toàn prepareRename/rename và postvalidation trong scope trước page1; validate tất cả edits/conflicts, cap tổng10000 edits và32MiB result (effective config có thể hạ), reject quá cap trước success. Capture `file_preconditions`, result_id(UUID), result_digest và complete edit set; không chạy lại LSP mỗi page. Edits sort(path,start,end,new_text); no partial successful set khi provider bị lỗi. Một page tối đa512 edits nhưng serialized byte budget mới là cap thực.
+
+Kết quả tạm nằm ở `<home>/worktrees/<id>/scratch/rename/<result_id>.json`, tạo exclusive/owner-only rồi atomic rename sau flush, có format/version/hash/header/scope/principal/engine-schema và TTL900s, aggregate cap128MiB/worktree. Chỉ ghi artifact do MCE4D sở hữu; không source/records/catalog. Temp spool dùng shared worktree lifecycle lease, unique result ownership; không lấy index writer cho mỗi page. Secure-open khi đọc, kiểm hash/header/incarnations/policy trước dùng. Result có thể bị quota GC/expiry, trả RESULT_EXPIRED; không tái tính rồi giả cùng result. Snapshot mất → SNAPSHOT_EXPIRED. Page cursor và result_token khác purpose; HMAC kiểm constant-time theo CT-03. Result token không chứa nguyên source/edits. Spool là derived sensitive cache, không chứng nhận secure erase; lỗi ghi/disk full không gửi token thành công.
+
+RenameData.computation_complete=true nghĩa engine đã tính đủ trong scope; preview_complete=true CHỈ page cuối khi edits/conflicts đã deliver đủ. Mỗi page có cùng result_id/result_digest/total_edits; pagination nói rõ remaining. Consumer phải giữ tập pages từ page1, verify continuity/digest/file preconditions và gọi mce4d_validate_pack với result_token (XOR pack_token) trước áp dụng bằng host; không apply từng page. Validate result kiểm toàn original workspace manifest + file hashes + rule/policy/incarnations, không gia hạn result TTL. Last page chỉ có nghĩa giao đủ dữ liệu, không quyền apply hoặc bảo đảm filesystem không đổi sau đó. CLI mới mỗi invocation vẫn đọc được spool cùng principal; restart/lost spool lỗi rõ. Không persist transcript hoặc đánh dấu AI đã review.
+
+**Source lớn:** source_range bắt buộc vượt budget được chia thành `source_range_fragment`. `fragment_of` giữ SourceRef nguyên parent; từng fragment có đúng một SourceRef range nhỏ hơn và content đúng byte slice, cùng file content_hash; nonfragment có fragment_of=null. Ưu tiên newline trong giới hạn; dòng dài chia tại UTF-8 boundary, không thay bytes. Các fragment nối liên tiếp không gap/overlap bao phủ parent range; cursor giữ next byte offset, item_id=H("source-fragment-v1", {parent_ref,range}); tăng budget không đổi nghĩa prefix đã gửi. Signature/constraint cần nguyên khối để giải thích thì đánh dấu obligation chưa đủ, không đưa prefix như toàn bộ. Chỉ hết parent/mandatory evidence mới bỏ required_pending. SourceReadRequest trả range được yêu cầu nếu vừa cap, nếu quá thì RESULT_TOO_LARGE + safe range descriptor; không tự cắt content dưới cùng SourceRef. UI/AI có thể yêu cầu subrange rõ hoặc dùng pack fragment.
+
+Graph/flow/record list dùng keyset hoặc bounded materialized result cache có ID/digest/TTL, max32MiB/process+32 entries; không nhét frontier/visited lớn vào token. Bị evict trả RESULT_EXPIRED; không retry từ đầu rồi trộn page. Graph projection mỗi page có endpoints hoặc boundary nodes, visited progress theo immutable result. Loops, budget nhỏ, page cuối và expiry phải có oracle; không một continuation nào chỉ là lời nhắc “hãy lấy thêm” mà không request được định nghĩa.
+
+### CT-06 — Pinned scope và exact selected root (A05)
+
+ScopeRequest hợp lệ đúng một chế độ: (a) single worktree/profile/optional generation; (b) group_id live exploration; (c) pinned_vector, không thêm các field live. Empty chỉ khi server đã bind đúng một worktree/profile. Pinned vector là dữ liệu request, KHÔNG quyền: server verify digest/incarnations/group revision/source/policy và từng member trước/sau; không thay generation hết hạn bằng active. Policy/incarnation/group mismatch → blocked error; không gửi một phần snapshot khác dưới token cũ.
+
+Group live resolver lấy expected group members từ catalog revision. `ScopeVector.members` chỉ member có generation thật và được quyền source; `unavailable_members` mô tả member expected chưa resolve được (index_missing/unavailable/profile_missing/access_denied). Không fake zero UUID/hash hoặc bỏ silently khỏi coverage. Member không được tiết lộ identity thì worktree/profile/service fields=null, chỉ count/status được group policy cho phép; không được quyền biết group → ACCESS_DENIED trước metadata. Federated vector có thể members=[] khi tất cả không có index; no source operations, readiness blocked. Single status chưa index: scope=null và StatusData.registered_scopes thực, không tạo ScopeMember giả.
+
+Selector.kind=ref mang GraphRef đầy đủ và service_id|null. Trong group, selector symbol/module/entity thiếu member không hợp lệ; trả INVALID_ARGUMENT hoặc AMBIGUOUS_SYMBOL khi locate thực có ứng viên, không tự chọn member đầu tiên. Ref phải khớp đúng một resolved member; nếu cùng worktree/profile xuất hiện ở nhiều services thì service_id bắt buộc. Với typed selection từ Explorer, scope.pinned_vector bắt buộc; node ref trong graph page không tự chuyển thành source_position của active HEAD. UI `Use selection as AI context` giữ nguyên vector+ref+service và task constraints. Operation liên service không dựng SQL JOIN giữa DB; join bằng authorized in-memory refs có snapshot vector.
+
+Pinned vector có missing member sẽ GIỮ gap đó cho cả pack; member về sau có index không được tự bổ sung vào trang tiếp. Người dùng tạo live query mới để resolve vector mới. Scope/policy/root mất quyền giữa các trang → block/new pack, không trả partial lẫn generations. Definition ID không bảo đảm qua rename/move; code bị đổi phải locate lại dựa source. Partial group không được gọi full-system impact.
+
+### CT-07 — Cấu hình và vòng đời quản trị (A06)
+
+RuntimeConfig, PolicyConfig và CommandRecord khác authority. Canonical shared admission source chỉ <MCE4D_HOME>/runtime.json hoặc built-in nếu absent; shared fields=max_worktree_cache_bytes,volume_reserve_bytes,volume_warning_bytes. Runtime start/config show merge defaults→canonical home→approved alternate→CLI PROCESS-resource allowlist overrides, rồi resolve max_parse_workers0=min(4,CPU), ít nhất1. Alternate/CLI shared fields phải bằng canonical home hoặc CONFIG_CONFLICT trước write. --runtime-config alternate chỉ read-only show/start; config validate/set từ chối flag này INVALID_ARGUMENT để không lẫn file candidate với override runtime. Source/file/output effective=min(runtime,policy,schema/capability); không tự tăng quyền/profile.
+
+`CONFIG-REPLACE-01`: RuntimeConfigRequest.config của validate/set là TOÀN BỘ candidate canonical-home document, không patch/merge old home. Missing key nhận built-in default; old-home value không tham gia candidate. Cả hai dùng cùng pure pipeline validate closed shape/lexemes→defaults+candidate+explicit allowed PROCESS overrides của invoking command→CPU resolve→crossfield/hardcap validation. CLI PROCESS-resource allowlist = các properties CoreRuntimeLimits trừ max_worktree_cache_bytes/volume_reserve_bytes/volume_warning_bytes; không CLI override Explorer/security/profile fields, flags chỉ expose khi T028 có typed parser/help. CLI overrides không persist, shared fields không override; candidate shared canonical values được thay bằng authorized CAS khi set, không ép bằng old home. validate chỉ đọc và trả candidate preview, không ghi file/log/run/DB/start workload; set validate cùng candidate trước lấy short lock→re-read canonical source_digest→expected_digest CAS→exclusive temp/flush/atomic rename canonical home. Không implicit persist defaults/CPU/alternate/CLI hoặc sửa target config. Hai setters chỉ một CAS thắng, lỗi giữ file cũ; malformed/unreadable source không giả absent/null.
+
+Ví dụ normative: current home max_indexed_files100, candidate chỉ query_timeout_ms1000 => validate và set restart preview đều max_indexed_files1000000 theo default, KHÔNG100. Muốn giữ100 phải gửi field đó trong whole candidate. config show với alternate chỉ timeout vẫn giữ home100 theo runtime merge. Example này phải là positive/negative oracle C167/C168, không được tự chọn lại merge semantics.
+
+RuntimeConfig sau startup immutable trong process; config_digest=H(runtime-config-v1,effective RuntimeConfig sau merge+CPU resolve). source_kind/source_digest luôn mô tả canonical home source được secured-read tại observation: built_in/null iff absent, canonical_home/H(runtime-config-source-v1,validated source JSON trước defaults/CPU/alternate/CLI) khi có. set response source_digest của file mới, validate/show source_digest của canonical source hiện tại, không dùng candidate digest làm CAS source. restart_required báo difference/cần restart, không giả apply nóng vào process khác.
+
+effective_sources là unique ordered layers THỰC tham gia result, theo operation: show/start ordered subsequence [built_in,canonical_home,approved_alternate,cli_process], luôn built_in, canonical_home iff source present; validate [built_in,candidate_input,cli_process?], TUYỆT ĐỐI không merge canonical_home/approved_alternate dù source_kind đang canonical_home; set [built_in,canonical_home,cli_process?] với canonical mới. candidate_input chỉ validate, không giả approved_alternate. Metadata source và effective layers khác vai trò; no private absolute paths/secrets. CPU/options đổi config_digest không đổi source_digest; source key order không làm CAS conflict.
+
+Shared admission digest S15 là H(admission-config-v1,shared fields), khác source/effective digest. Trước admission/write batch secured-read home digest; mismatch CONFIG_CONFLICT+settle/rollback/restart, không hot merge. config set không user-wait volume lock; release/recovery old entries được phép, header mới chỉ khi entries rỗng+actual sizes recheck ACC-01. validate candidate không chứng minh đang activate được qua live old reservations. All capacities default<=hard; output4096..131072; file<=snapshot; reconcile>=poll>0; rename_result_max_bytes<=rename_results_max_bytes<=cache cap; warning>=reserve>0; manifest1..34359738368; RSS>0/monitor10..5000ms; retention>=2/profile. Fixed maxima: rename_result_max_bytes33554432, rename_results_max_bytes134217728, query_result_cache_bytes33554432, max_retained_query_results32, rename_max_edits10000; smaller allowed, above reject trước allocation, không silent clamp. Source/cache lớn hơn defaults vẫn theo tested-envelope/effective policy rules, không literal32/384 quota.
+
+| CLI explicit, không HTTP/MCP mutation | Hợp đồng |
+|---|---|
+| mce4d config show/validate/set --input-json <file-or-dash> | RuntimeConfigRequest; show không config/CAS, validate cần config/không CAS, set cần config+expected_digest (null iff canonical absent); validate/set whole replacement; show/start mới cho --runtime-config alternate |
+| `mce4d policy set --input-json <file-or-dash>` | PolicyAdminRequest, worktree/expected_epoch CAS, digest/epoch transaction; không query nào gọi thay |
+| `mce4d profile set --worktree-id <id> --input-json <file>` | ProfileAdminRequest; flag/body ID khớp; name+expected_revision CAS, effective profile hashed |
+| `mce4d group get\|list\|put\|remove --input-json <file-or-dash>` | GroupAdminRequest; put config+expected_revision, remove group_id+revision; tombstone/revision tăng, không source deletion |
+| `mce4d preview-permission get\|list\|put\|revoke --input-json <file-or-dash>` | PreviewPermissionAdminRequest; put version=expected+1, revoke reason+CAS; principal từ OS/authority, không tin client attested_by |
+| `mce4d records list\|read --input-json <file-or-dash>` | RecordListRequest/RecordReadRequest; metadata/history explicit version, không overwrite |
+
+Action flag/body khác → INVALID_ARGUMENT. Get cần ID; list không target/config/CAS; mutations thiếu expected version/digest → INVALID_ARGUMENT. Lists default20/max100/cursor, stable catalog/record revision/incarnation và order; filter đổi giữa pages reject. CLI-only registry entries không dispatch qua HTTP/MCP dù shape hợp lệ. Chức năng chưa tới task/gate không expose.
+
+Preview permission immutable versions+heads trong catalog; put/revoke CAS trong transaction, source test authority thật. Reads/status/attach/mode/bind check head trước/sau; version đổi shield/disarm+re-attach. Expiry ở read không renew/background mutation; revoked không sửa JSON tại same version. Attestation không sandbox proof.
+
+Record list/read default head/history explicit; baseline UIMappingPayload closed, kind chưa seal trả metadata+unsupported gap. Effective needs_review/provenance_status derive current policy/hash/store/retained snapshot. Source mất/đổi không auto approve/rebind theo tên; relocation chỉ proposed version mới có review. Không giữ forbidden raw source để duy trì record.
+
+Driver scalar cap [REF58]: T002/T106 verify actual max-length/row/blob/API; captured-file effective=min(runtime,policy,verified capability), oversize metadata_only/gap trước allocate/SQL. Manifest artifact không SQLite scalar, descriptor<=4KiB. T004/T028 implement config pure pipeline/CLI parity; T105/T107 shape/CAS/whole-replacement/provenance proof. Không coi unshipped schema baseline là migration đã chạy.
+
+### CT-08 — Preview status, liveness và quyền hết hạn (A03)
+
+`POST /preview/status` là authenticated READ với PreviewStatusRequest{session_id}; mặc dù HTTP POST, không gia hạn TTL, không authorize mode, không nonce rotation, không tăng revision chỉ vì polling. PreviewStatusData không có bearer/pairing_nonce; trả version quyền hiện tại, effective permission status, binding và interaction_allowed=false khi expired/revoked/stale/maintenance. Detached session còn retention ngắn trả detached; unknown session chỉ lỗi scoped, không expose session khác. scope response là vector pin của phiên đã authorized hoặc null khi unavailable; không lấy active generations mới.
+
+Browser poll bằng cùng session/request sequence, bỏ kết quả revision cũ; timeout2 missed theo polling interval→shield+disarm. Mất quyền hoặc permission version khác phản hồi đã arm→shield ngay khi quan sát, không đợi MODE_ACK. Page hidden→Inspect ngay; foreground chỉ được arm lại qua thao tác explicit. Clock so TTL dùng monotonic elapsed + UTC expiry kiểm tra cả hai; clock rollback không kéo dài permission/session. Offline/runtime sleep không được giữ một lease tương tác vô hạn; resumed page phải kiểm lại status.
+
+Server status không chứng minh SDK/frame alive. Parent PING→SDK PONG dùng probe_id/reply_to/session/doc/hmr và exact origin/source, timeout riêng cùng policy polling; wrong/replayed/late PONG bị bỏ. PONG không tăng quyền/hmr, không là proof source fresh. Browser throttling khiến phát hiện chậm vẫn được ghi giới hạn; Inspect/isolated test environment không bị thay bằng một lời hứa instantaneous revoke. Read status có thể tính expiry hiệu lực, nhưng không dùng GET/POST read để approve/renew. Không gửi SDK credential engine, quyền file hoặc source paths.
+
+
+<!-- BEGIN MCE4D_HASH_VECTORS_V1 -->
+```json
+{
+  "codec": "MCE-C14N1",
+  "scope": "document_reference_not_product",
+  "valid": [
+    {
+      "case": "null",
+      "domain": "codec-test-v1",
+      "value": null,
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76316e",
+      "digest": "9a3a326d97dd4ca8e7648816695f8e2ae848098b19025f76d5bc717987a42ac0"
+    },
+    {
+      "case": "booleans",
+      "domain": "codec-test-v1",
+      "value": [
+        true,
+        false
+      ],
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d763161323a7466",
+      "digest": "94e8da8f0b464b9826d0329d3eb4a26a6abae67cab94f8618052a02ef6526882"
+    },
+    {
+      "case": "unicode_crlf",
+      "domain": "codec-test-v1",
+      "value": "Tiếng Việt | ລາວ | 😀\r\n",
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76317333353a5469e1babf6e67205669e1bb8774207c20e0baa5e0bab2e0baa7207c20f09f98800d0a",
+      "digest": "5f35687ff357cee6a88e37bf8e9e6fc7ab480cdab89b16978b2e846a94b40805"
+    },
+    {
+      "case": "unicode_lf",
+      "domain": "codec-test-v1",
+      "value": "Tiếng Việt | ລາວ | 😀\n",
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76317333343a5469e1babf6e67205669e1bb8774207c20e0baa5e0bab2e0baa7207c20f09f98800a",
+      "digest": "eb18d16c7b112daad67190ad338408b35c420cc197b89b98b6dff9c96d0e2f46"
+    },
+    {
+      "case": "key_order",
+      "domain": "codec-test-v1",
+      "value": {
+        "😀": 1,
+        "": 2,
+        "z": 3,
+        "a": 4
+      },
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76316f343a73313a6169343b73313a7a69333b73333aee808069323b73343af09f988069313b",
+      "digest": "13acc7905d6a88da4a4d6dbf3281f7d36cf6911c820eb1e2a399215245b6b459"
+    },
+    {
+      "case": "integers",
+      "domain": "codec-test-v1",
+      "value": [
+        0,
+        -1,
+        9007199254740991,
+        -9007199254740991
+      ],
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d763161343a69303b692d313b69393030373139393235343734303939313b692d393030373139393235343734303939313b",
+      "digest": "0c0dc14969ef529f60470b134f398710640349b0202d8f3d7bf85d80c4c811e8"
+    },
+    {
+      "case": "order_za",
+      "domain": "codec-test-v1",
+      "value": [
+        "z",
+        "a"
+      ],
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d763161323a73313a7a73313a61",
+      "digest": "90c64846e965c081e8c8c2a1f5fc68fc0c7d58453a5cc4b23b4716a1dec269e3"
+    },
+    {
+      "case": "order_az",
+      "domain": "codec-test-v1",
+      "value": [
+        "a",
+        "z"
+      ],
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d763161323a73313a6173313a7a",
+      "digest": "a61b3d0564f4f0c61d6a7c05192e0f881e8ba0e91d0d58aeda859e8557de8bbc"
+    },
+    {
+      "case": "missing",
+      "domain": "codec-test-v1",
+      "value": {},
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76316f303a",
+      "digest": "d53de2c8b3d21324eb25451a5ebc2e72b81e7499bb7d7e181a65c6d4ba7ca0b4"
+    },
+    {
+      "case": "explicit_null",
+      "domain": "codec-test-v1",
+      "value": {
+        "x": null
+      },
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d76316f313a73313a786e",
+      "digest": "301fdf9fcecbf5c2a6d22d989a4773da38661ef44ae02fb97f4dca12e332508a"
+    },
+    {
+      "case": "empty",
+      "domain": "codec-test-v1",
+      "value": [
+        "",
+        [],
+        {}
+      ],
+      "encoding_hex": "4d43453444004331344e31007331333a636f6465632d746573742d763161333a73303a61303a6f303a",
+      "digest": "22e351613289bcd381db83e037722a63923ef7267140664bd34e7c24806b487c"
+    },
+    {
+      "case": "anchor",
+      "domain": "anchor-v1",
+      "value": {
+        "path": "web/ລາວ/Button.tsx",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "kind": "element_site",
+        "start_byte": 7,
+        "end_byte": 35,
+        "provider_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "encoding_hex": "4d43453444004331344e310073393a616e63686f722d76316f363a7331323a636f6e74656e745f686173687336343a6161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616173383a656e645f627974656933353b73343a6b696e647331323a656c656d656e745f7369746573343a706174687332343a7765622fe0baa5e0bab2e0baa72f427574746f6e2e7473787331353a70726f76696465725f6469676573747336343a626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262627331303a73746172745f6279746569373b",
+      "digest": "b7f67eb9294b0a02242e0070a218c236c22b2a06e3520ff7aa2e36e96f014d49"
+    },
+    {
+      "case": "binding",
+      "domain": "binding-v1",
+      "value": {
+        "build_map_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "source_generation_id": "00000000-0000-4000-8000-000000000001",
+        "profile_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "resolver_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a62696e64696e672d76316f353a7331323a6275696c645f6d61705f69647336343a636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363637331333a706f6c6963795f6469676573747336343a626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262627331303a70726f66696c655f69647336343a616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161617331353a7265736f6c7665725f6469676573747336343a646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464647332303a736f757263655f67656e65726174696f6e5f69647333363a30303030303030302d303030302d343030302d383030302d303030303030303030303031",
+      "digest": "3b352d73b1c13cbcd0ca363aa3baa59b65db0a2d725733fd4613375606cc2b49"
+    },
+    {
+      "case": "capture_manifest_full",
+      "domain": "capture-v1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a636170747572652d76316f373a7332343a646570656e64656e63795f696e7075745f6469676573747361303a73353a66696c657361313a6f353a7331313a627974655f6c656e6774686931313b7331323a636f6e74656e745f686173687336343a6435323566333032343133316663393636633464636363666663616532316537323931393530303439663564333332326332626530653033613039363433316573343a7061746873363a6261642e676f7331313a726561736f6e5f636f64656e73363a73746174757373383a63617074757265647331333a706f6c6963795f6469676573747336343a323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232327331303a70726f66696c655f69647336343a313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131317331353a70726f76696465725f6469676573747336343a333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333337331343a736368656d615f76657273696f6e69313b7331313a776f726b747265655f69647333363a31313131313131312d313131312d313131312d313131312d313131313131313131313131",
+      "digest": "934d99e8d2596e825b0ae6ffb513b80a55f89a128fe8af0ec9777455bfe7d169"
+    },
+    {
+      "case": "capture_changed_worktree_id",
+      "domain": "capture-v1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "22222222-2222-2222-2222-222222222222",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a636170747572652d76316f373a7332343a646570656e64656e63795f696e7075745f6469676573747361303a73353a66696c657361313a6f353a7331313a627974655f6c656e6774686931313b7331323a636f6e74656e745f686173687336343a6435323566333032343133316663393636633464636363666663616532316537323931393530303439663564333332326332626530653033613039363433316573343a7061746873363a6261642e676f7331313a726561736f6e5f636f64656e73363a73746174757373383a63617074757265647331333a706f6c6963795f6469676573747336343a323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232327331303a70726f66696c655f69647336343a313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131317331353a70726f76696465725f6469676573747336343a333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333337331343a736368656d615f76657273696f6e69313b7331313a776f726b747265655f69647333363a32323232323232322d323232322d323232322d323232322d323232323232323232323232",
+      "digest": "767b6b5eb6e6ebbf7bb311648988c7bfd541418e0a051be4148c5f29ae59c434"
+    },
+    {
+      "case": "capture_changed_profile_id",
+      "domain": "capture-v1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "4444444444444444444444444444444444444444444444444444444444444444",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a636170747572652d76316f373a7332343a646570656e64656e63795f696e7075745f6469676573747361303a73353a66696c657361313a6f353a7331313a627974655f6c656e6774686931313b7331323a636f6e74656e745f686173687336343a6435323566333032343133316663393636633464636363666663616532316537323931393530303439663564333332326332626530653033613039363433316573343a7061746873363a6261642e676f7331313a726561736f6e5f636f64656e73363a73746174757373383a63617074757265647331333a706f6c6963795f6469676573747336343a323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232327331303a70726f66696c655f69647336343a343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434347331353a70726f76696465725f6469676573747336343a333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333337331343a736368656d615f76657273696f6e69313b7331313a776f726b747265655f69647333363a31313131313131312d313131312d313131312d313131312d313131313131313131313131",
+      "digest": "943f6a0b05daee1c4c616c1dbff0131826f42fc05205a053acff059a9d60a9b6"
+    },
+    {
+      "case": "capture_changed_policy_digest",
+      "domain": "capture-v1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a636170747572652d76316f373a7332343a646570656e64656e63795f696e7075745f6469676573747361303a73353a66696c657361313a6f353a7331313a627974655f6c656e6774686931313b7331323a636f6e74656e745f686173687336343a6435323566333032343133316663393636633464636363666663616532316537323931393530303439663564333332326332626530653033613039363433316573343a7061746873363a6261642e676f7331313a726561736f6e5f636f64656e73363a73746174757373383a63617074757265647331333a706f6c6963795f6469676573747336343a353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535357331303a70726f66696c655f69647336343a313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131317331353a70726f76696465725f6469676573747336343a333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333337331343a736368656d615f76657273696f6e69313b7331313a776f726b747265655f69647333363a31313131313131312d313131312d313131312d313131312d313131313131313131313131",
+      "digest": "04ba8aee16c638b8c678f922caba95898f7ca4d220fc89fbe4c78b3417612812"
+    },
+    {
+      "case": "capture_changed_provider_digest",
+      "domain": "capture-v1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "6666666666666666666666666666666666666666666666666666666666666666"
+      },
+      "encoding_hex": "4d43453444004331344e31007331303a636170747572652d76316f373a7332343a646570656e64656e63795f696e7075745f6469676573747361303a73353a66696c657361313a6f353a7331313a627974655f6c656e6774686931313b7331323a636f6e74656e745f686173687336343a6435323566333032343133316663393636633464636363666663616532316537323931393530303439663564333332326332626530653033613039363433316573343a7061746873363a6261642e676f7331313a726561736f6e5f636f64656e73363a73746174757373383a63617074757265647331333a706f6c6963795f6469676573747336343a323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232327331303a70726f66696c655f69647336343a313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131317331353a70726f76696465725f6469676573747336343a363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636367331343a736368656d615f76657273696f6e69313b7331313a776f726b747265655f69647333363a31313131313131312d313131312d313131312d313131312d313131313131313131313131",
+      "digest": "a86503081626520f6eb86225caee85d4e283274729cff4082ea73b3f065b51c7"
+    },
+    {
+      "case": "runtime_source_minimal",
+      "domain": "runtime-config-source-v1",
+      "value": {
+        "schema_version": 1
+      },
+      "encoding_hex": "4d43453444004331344e31007332343a72756e74696d652d636f6e6669672d736f757263652d76316f313a7331343a736368656d615f76657273696f6e69313b",
+      "digest": "50269ea1d7b6bde30f433ad03bc378c04c3796f1602e7385e7cf808647b2af26"
+    },
+    {
+      "case": "runtime_source_explicit",
+      "domain": "runtime-config-source-v1",
+      "value": {
+        "schema_version": 1,
+        "core": {
+          "max_parse_workers": 2,
+          "query_result_cache_bytes": 1048576
+        }
+      },
+      "encoding_hex": "4d43453444004331344e31007332343a72756e74696d652d636f6e6669672d736f757263652d76316f323a73343a636f72656f323a7331373a6d61785f70617273655f776f726b65727369323b7332343a71756572795f726573756c745f63616368655f627974657369313034383537363b7331343a736368656d615f76657273696f6e69313b",
+      "digest": "6e8e04ad45e2bad63b51e583d601a65c3dafe19cc12c56b11a2f8376dd4335bc"
+    }
+  ],
+  "reject_identity_values": [
+    "fractional number",
+    "integer magnitude > 9007199254740991",
+    "lone surrogate",
+    "duplicate object keys",
+    "invalid UTF-8",
+    "unknown value type"
+  ],
+  "manifest_serialization": [
+    {
+      "case": "manifest_full_canonical",
+      "format": "MCE-MANIFEST-JSON1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "bad.go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "snapshot_digest": "934d99e8d2596e825b0ae6ffb513b80a55f89a128fe8af0ec9777455bfe7d169"
+      },
+      "utf8_hex": "7b22646570656e64656e63795f696e7075745f64696765737473223a5b5d2c2266696c6573223a5b7b22627974655f6c656e677468223a31312c22636f6e74656e745f68617368223a2264353235663330323431333166633936366334646363636666636165323165373239313935303034396635643333323263326265306530336130393634333165222c2270617468223a226261642e676f222c22726561736f6e5f636f6465223a6e756c6c2c22737461747573223a226361707475726564227d5d2c22706f6c6963795f646967657374223a2232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232222c2270726f66696c655f6964223a2231313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131222c2270726f76696465725f646967657374223a2233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333222c22736368656d615f76657273696f6e223a312c22736e617073686f745f646967657374223a2239333464393965386432353936653832356230616536666662353133623830613535663839613132386665386166306563393737373435356266653764313639222c22776f726b747265655f6964223a2231313131313131312d313131312d313131312d313131312d313131313131313131313131227d",
+      "byte_length": 602,
+      "artifact_sha256": "24e30897011c05b39633f9596fb5aa1e091a6f493f32f7393ae99649c2e68b08"
+    },
+    {
+      "case": "manifest_unicode_canonical",
+      "format": "MCE-MANIFEST-JSON1",
+      "value": {
+        "schema_version": 1,
+        "files": [
+          {
+            "path": "src/tiếng-😀-<>&- .go",
+            "status": "captured",
+            "content_hash": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e",
+            "byte_length": 11,
+            "reason_code": null
+          }
+        ],
+        "dependency_input_digests": [],
+        "worktree_id": "11111111-1111-1111-1111-111111111111",
+        "profile_id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "policy_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provider_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "snapshot_digest": "a224a07a9369ccb5d0f6e609f8e238ed715c11583ce11d6c038a9c2031b90b75"
+      },
+      "utf8_hex": "7b22646570656e64656e63795f696e7075745f64696765737473223a5b5d2c2266696c6573223a5b7b22627974655f6c656e677468223a31312c22636f6e74656e745f68617368223a2264353235663330323431333166633936366334646363636666636165323165373239313935303034396635643333323263326265306530336130393634333165222c2270617468223a227372632f7469e1babf6e672df09f98802d3c3e262d5c75323032382e676f222c22726561736f6e5f636f6465223a6e756c6c2c22737461747573223a226361707475726564227d5d2c22706f6c6963795f646967657374223a2232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232222c2270726f66696c655f6964223a2231313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131222c2270726f76696465725f646967657374223a2233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333222c22736368656d615f76657273696f6e223a312c22736e617073686f745f646967657374223a2261323234613037613933363963636235643066366536303966386532333865643731356331313538336365313164366330333861396332303331623930623735222c22776f726b747265655f6964223a2231313131313131312d313131312d313131312d313131312d313131313131313131313131227d",
+      "byte_length": 626,
+      "artifact_sha256": "c9beba5e7b8d545adfe8ce05c96606676ab18b15b6410e48d3846525c55246f4"
+    }
+  ]
+}
+```
+<!-- END MCE4D_HASH_VECTORS_V1 -->
+
+<!-- BEGIN MCE4D_RUNTIME_DEFAULTS_V1 -->
+```json
+{
+  "schema_version": 1,
+  "core": {
+    "max_file_bytes": 2097152,
+    "max_indexed_files": 1000000,
+    "max_source_bytes_per_snapshot": 34359738368,
+    "max_parallel_index_jobs": 2,
+    "max_parse_workers": 0,
+    "max_lsp_sessions": 1,
+    "sqlite_busy_timeout_ms": 5000,
+    "writer_lock_wait_ms": 5000,
+    "query_timeout_ms": 10000,
+    "lsp_startup_timeout_ms": 30000,
+    "rename_timeout_ms": 30000,
+    "index_timeout_ms": 600000,
+    "watch_poll_interval_ms": 2000,
+    "full_reconcile_interval_ms": 60000,
+    "max_output_bytes": 24576,
+    "max_graph_nodes": 2000,
+    "max_graph_edges": 10000,
+    "max_graph_depth": 8,
+    "keep_generations": 2,
+    "pack_ttl_seconds": 900,
+    "max_worktree_cache_bytes": 412316860416,
+    "log_files": 5,
+    "log_file_bytes": 10485760,
+    "maintenance_wait_ms": 5000,
+    "rename_result_max_bytes": 33554432,
+    "rename_results_max_bytes": 134217728,
+    "rename_result_ttl_seconds": 900,
+    "rename_max_edits": 10000,
+    "result_ttl_seconds": 900,
+    "query_result_cache_bytes": 33554432,
+    "max_retained_query_results": 32,
+    "max_capture_manifest_bytes": 34359738368,
+    "volume_reserve_bytes": 2147483648,
+    "volume_warning_bytes": 4294967296,
+    "process_tree_rss_budget_bytes": 8589934592,
+    "resource_monitor_interval_ms": 250
+  },
+  "explorer": {
+    "graph_default_nodes": 200,
+    "graph_default_edges": 500,
+    "graph_hard_nodes": 500,
+    "graph_hard_edges": 1500,
+    "flow_max_steps": 100,
+    "flow_max_edges": 300,
+    "hover_hz": 15,
+    "session_ttl_seconds": 1800,
+    "bearer_ttl_seconds": 1800,
+    "ack_timeout_ms": 3000,
+    "detach_timeout_ms": 1000,
+    "poll_visible_ms": 2000,
+    "poll_hidden_ms": 5000,
+    "poll_miss_limit": 2,
+    "bridge_message_bytes": 16384,
+    "max_preview_sessions": 4,
+    "map_watch_poll_ms": 2000,
+    "map_artifact_max_bytes": 67108864,
+    "map_pending_max": 1,
+    "map_watch_debounce_ms": 300
+  }
+}
+```
+<!-- END MCE4D_RUNTIME_DEFAULTS_V1 -->
+
+<!-- BEGIN MCE4D_CONTRACT_SCHEMA_V1 -->
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mce4d:contracts:1",
+  "$ref": "#/$defs/Response",
+  "$defs": {
+    "UUID": {"type":"string","pattern":"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"},
+    "Hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "ID": {"type":"string","minLength":1,"maxLength":192},
+    "Token": {"type":"string","minLength":1,"maxLength":32768},
+    "Time": {"type":"string","format":"date-time"},
+    "Count": {"type":"integer","minimum":0,"maximum":9007199254740991},
+    "Path": {"type":"string","minLength":1,"maxLength":4096},
+    "ByteRange": {"type":"object","properties":{"start_byte":{"type":"integer","minimum":0,"maximum":9007199254740991},"end_byte":{"type":"integer","minimum":0,"maximum":9007199254740991}},"required":["start_byte","end_byte"],"additionalProperties":false},
+    "SourceRef": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"path":{"$ref":"#/$defs/Path"},"content_hash":{"$ref":"#/$defs/Hash"},"range":{"$ref":"#/$defs/ByteRange"}},"required":["worktree_id","profile_id","generation_id","path","content_hash","range"],"additionalProperties":false},
+    "ScopeMember": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"snapshot_digest":{"$ref":"#/$defs/Hash"},"policy_digest":{"$ref":"#/$defs/Hash"},"policy_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"binding_revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"record_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"service_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"index_incarnation":{"$ref":"#/$defs/UUID"},"records_incarnation":{"$ref":"#/$defs/UUID"}},"required":["worktree_id","profile_id","generation_id","snapshot_digest","policy_digest","policy_epoch","binding_revision","record_epoch","service_id","index_incarnation","records_incarnation"],"additionalProperties":false},
+    "ScopeVector": {"type":"object","properties":{"kind":{"enum":["single","federated"]},"members":{"type":"array","items":{"$ref":"#/$defs/ScopeMember"},"minItems":0,"maxItems":32},"vector_digest":{"$ref":"#/$defs/Hash"},"group_id":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"group_revision":{"anyOf":[{"type":"integer","minimum":1,"maximum":9007199254740991},{"type":"null"}]},"catalog_incarnation":{"$ref":"#/$defs/UUID"},"unavailable_members":{"type":"array","items":{"$ref":"#/$defs/MemberUnavailable"},"minItems":0,"maxItems":32}},"required":["kind","members","vector_digest","group_id","group_revision","catalog_incarnation","unavailable_members"],"additionalProperties":false},
+    "ScopeRequest": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"group_id":{"$ref":"#/$defs/UUID"},"pinned_vector":{"$ref":"#/$defs/ScopeVector"}},"required":[],"additionalProperties":false},
+    "SymbolRef": {"type":"object","properties":{"kind":{"const":"symbol"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"symbol_id":{"$ref":"#/$defs/ID"}},"required":["kind","worktree_id","profile_id","generation_id","symbol_id"],"additionalProperties":false},
+    "EntityRef": {"type":"object","properties":{"kind":{"const":"entity"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"entity_id":{"$ref":"#/$defs/ID"}},"required":["kind","worktree_id","profile_id","generation_id","entity_id"],"additionalProperties":false},
+    "ModuleRef": {"type":"object","properties":{"kind":{"const":"module"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"module_id":{"$ref":"#/$defs/ID"}},"required":["kind","worktree_id","profile_id","generation_id","module_id"],"additionalProperties":false},
+    "AnchorRef": {"type":"object","properties":{"kind":{"const":"source_anchor"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"build_map_id":{"$ref":"#/$defs/Hash"},"anchor_id":{"$ref":"#/$defs/Hash"},"binding_id":{"$ref":"#/$defs/Hash"}},"required":["kind","worktree_id","profile_id","generation_id","build_map_id","anchor_id","binding_id"],"additionalProperties":false},
+    "GraphRef": {"oneOf":[{"$ref":"#/$defs/SymbolRef"},{"$ref":"#/$defs/EntityRef"},{"$ref":"#/$defs/ModuleRef"},{"$ref":"#/$defs/AnchorRef"},{"$ref":"#/$defs/FileRef"}]},
+    "WorkspaceSelector": {"type":"object","properties":{"kind":{"const":"workspace"}},"required":["kind"],"additionalProperties":false},
+    "SymbolSelector": {"type":"object","properties":{"kind":{"const":"symbol"},"symbol_id":{"$ref":"#/$defs/ID"}},"required":["kind","symbol_id"],"additionalProperties":false},
+    "ModuleSelector": {"type":"object","properties":{"kind":{"const":"module"},"module_id":{"$ref":"#/$defs/ID"}},"required":["kind","module_id"],"additionalProperties":false},
+    "EntitySelector": {"type":"object","properties":{"kind":{"const":"entity"},"entity_id":{"$ref":"#/$defs/ID"}},"required":["kind","entity_id"],"additionalProperties":false},
+    "PositionSelector": {"type":"object","properties":{"kind":{"const":"source_position"},"path":{"$ref":"#/$defs/Path"},"content_hash":{"$ref":"#/$defs/Hash"},"byte_offset":{"type":"integer","minimum":0,"maximum":9007199254740991}},"required":["kind","path","content_hash","byte_offset"],"additionalProperties":false},
+    "DocumentSelector": {"type":"object","properties":{"kind":{"const":"document_anchor"},"path":{"$ref":"#/$defs/Path"},"content_hash":{"$ref":"#/$defs/Hash"},"range":{"$ref":"#/$defs/ByteRange"}},"required":["kind","path","content_hash","range"],"additionalProperties":false},
+    "Selector": {"oneOf":[{"$ref":"#/$defs/WorkspaceSelector"},{"$ref":"#/$defs/SymbolSelector"},{"$ref":"#/$defs/ModuleSelector"},{"$ref":"#/$defs/EntitySelector"},{"$ref":"#/$defs/PositionSelector"},{"$ref":"#/$defs/DocumentSelector"},{"$ref":"#/$defs/RefSelector"}]},
+    "Gap": {"type":"object","properties":{"code":{"$ref":"#/$defs/ID"},"reason":{"type":"string","minLength":1,"maxLength":1024},"count":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16}},"required":["code","reason","count","source_refs"],"additionalProperties":false},
+    "EvidenceRef": {"type":"object","properties":{"evidence_id":{"$ref":"#/$defs/ID"},"origin":{"enum":["static_analyzer","build_instrumentation","runtime_observation","manual_approved","ai_proposal"]},"kind":{"enum":["syntax_exact","type_resolved","type_possible","explicit_document","text_match","unresolved","build_anchored","runtime_observed","manual_declared","proposed"]},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"record_ref":{"anyOf":[{"type":"object","properties":{"record_id":{"$ref":"#/$defs/UUID"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["record_id","version"],"additionalProperties":false},{"type":"null"}]},"artifact_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]}},"required":["evidence_id","origin","kind","source_refs","record_ref","artifact_id"],"additionalProperties":false},
+    "Freshness": {"type":"object","properties":{"status":{"enum":["observed_current","changed","unknown","not_checked"]},"scope":{"enum":["workspace","returned_files","none"]},"checked_at":{"anyOf":[{"$ref":"#/$defs/Time"},{"type":"null"}]},"buffer_scope":{"enum":["disk_only","editor_session"]},"consistency":{"enum":["captured_bytes_with_observed_stability","captured_buffer_version"]},"changed_count":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"source_view":{"enum":["indexed_snapshot","editor_snapshot"]}},"required":["status","scope","checked_at","buffer_scope","consistency","changed_count","source_view"],"additionalProperties":false},
+    "Capability": {"type":"object","properties":{"name":{"$ref":"#/$defs/ID"},"provider_id":{"$ref":"#/$defs/ID"},"provider_version":{"type":"string","minLength":1,"maxLength":128},"status":{"enum":["supported_scope_complete","partial","unsupported","unknown"]}},"required":["name","provider_id","provider_version","status"],"additionalProperties":false},
+    "Coverage": {"type":"object","properties":{"status":{"enum":["supported_scope_complete","partial","unsupported","unknown"]},"capabilities":{"type":"array","items":{"$ref":"#/$defs/Capability"},"minItems":0,"maxItems":128},"gaps":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":64},"scope_description":{"type":"string","minLength":1,"maxLength":1024}},"required":["status","capabilities","gaps","scope_description"],"additionalProperties":false},
+    "Pagination": {"type":"object","properties":{"truncated":{"type":"boolean"},"enumeration_complete":{"type":"boolean"},"returned_count":{"type":"integer","minimum":0,"maximum":9007199254740991},"required_pending":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"optional_pending":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"next_cursor":{"anyOf":[{"$ref":"#/$defs/Token"},{"type":"null"}]},"limit_reason":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]}},"required":["truncated","enumeration_complete","returned_count","required_pending","optional_pending","next_cursor","limit_reason"],"additionalProperties":false},
+    "Budget": {"type":"object","properties":{"max_output_bytes":{"type":"integer","minimum":4096,"maximum":1048576},"serialized_bytes":{"type":"integer","minimum":0,"maximum":9007199254740991},"token_count":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"token_estimate":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"tokenizer_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"estimate_only":{"type":"boolean"},"delivery_mode":{"enum":["http","cli","mcp_text","mcp_dual","mcp_structured_verified"]}},"required":["max_output_bytes","serialized_bytes","token_count","token_estimate","tokenizer_id","estimate_only","delivery_mode"],"additionalProperties":false},
+    "Error": {"type":"object","properties":{"code":{"enum":["INVALID_ARGUMENT","UNSUPPORTED_SCHEMA","UNKNOWN_WORKTREE","ROOT_IDENTITY_CHANGED","ACCESS_DENIED","SECRET_BLOCKED","PATH_ESCAPE","INDEX_MISSING","INDEX_STALE","FRESHNESS_UNKNOWN","WORKTREE_CHANGED_DURING_INDEX","AMBIGUOUS_SYMBOL","UNSUPPORTED_CAPABILITY","DEPENDENCY_UNAVAILABLE","WORKTREE_BUSY","RESOURCE_LIMIT","TIMEOUT","CANCELLED","BUDGET_TOO_SMALL","CONTEXT_INCOMPLETE","CURSOR_INVALID","CURSOR_EXPIRED","SNAPSHOT_EXPIRED","POLICY_CHANGED","PROFILE_MISMATCH","SOURCE_PRECONDITION_FAILED","SCHEMA_TOO_NEW","INDEX_CORRUPT","DISK_FULL","INTERNAL_ERROR","PREVIEW_NOT_APPROVED","PREVIEW_UNAVAILABLE","PREVIEW_EMBED_BLOCKED","PREVIEW_ORIGIN_MISMATCH","PREVIEW_BUILD_MISMATCH","BRIDGE_NOT_READY","BRIDGE_PROTOCOL_MISMATCH","STALE_INSTANCE","AMBIGUOUS_UI_MAPPING","UI_TARGET_NOT_RENDERED","BUILD_MAP_MISSING","BUILD_MAP_EXPIRED","UNSUPPORTED_FRAMEWORK","TRACE_UNBOUND","INTERACTION_NOT_APPROVED","EXPLORER_ASSETS_UNAVAILABLE","RECORD_CONFLICT","RECORD_CHANGED","MODE_ACK_TIMEOUT","AUTH_REQUIRED","AUTH_EXPIRED","AUTH_INVALID","RATE_LIMITED","CONTRACT_NOT_FROZEN","UNEXPECTED_FIELD","DUPLICATE_FIELD","SOURCE_CAPTURE_MISMATCH","RESULT_TOO_LARGE","SOURCE_RANGE_INVALID","RESULT_EXPIRED","STORE_REPLACED","STORE_MAINTENANCE","CONFIG_CONFLICT","PERMISSION_REVOKED","PERMISSION_EXPIRED","STORE_RECOVERY_REQUIRED"]},"message":{"type":"string","minLength":1,"maxLength":1024},"retryable":{"type":"boolean"},"suggested_action":{"enum":["fix_request","reauthenticate","register_scope","explicit_index","recreate_pack","expand","review_candidates","verify_dependency","retry_bounded","review_policy","recover_store","cancel","none"]},"details":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":16}},"required":["code","message","retryable","suggested_action","details"],"additionalProperties":false},
+    "StatusRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"verify":{"enum":["none","workspace"]}},"required":[],"additionalProperties":false},
+    "LocateRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"mode":{"enum":["symbol","file","module","topic","text"]},"query":{"type":"string","minLength":1,"maxLength":512},"position":{"$ref":"#/$defs/PositionSelector"},"kinds":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":16},"package":{"type":"string","minLength":1,"maxLength":512},"limit":{"type":"integer","minimum":1,"maximum":100},"cursor":{"$ref":"#/$defs/Token"}},"required":[],"additionalProperties":false},
+    "PackRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"selector":{"$ref":"#/$defs/Selector"},"view":{"enum":["overview","symbol","flow","state","contract","change","architecture","ai_lineage"]},"task_kind":{"enum":["explore","plan","rename","type_change","behavior_change","contract_change","debug"]},"intent":{"type":"string","minLength":0,"maxLength":2048},"constraints":{"type":"array","items":{"enum":["preserve_json_keys","preserve_db_schema","no_public_api_change","preserve_message_schema","no_source_mutation"]},"minItems":0,"maxItems":16},"freshness_mode":{"enum":["checked_workspace","analysis_snapshot"]},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["selector","task_kind"],"additionalProperties":false},
+    "ExpandRequest": {"type":"object","properties":{"pack_token":{"$ref":"#/$defs/Token"},"next_cursor":{"$ref":"#/$defs/Token"},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["pack_token","next_cursor"],"additionalProperties":false},
+    "ValidateRequest": {"type":"object","properties":{"pack_token":{"$ref":"#/$defs/Token"},"verify":{"const":"workspace"},"result_token":{"$ref":"#/$defs/Token"}},"required":[],"additionalProperties":false,"oneOf":[{"required":["pack_token"],"not":{"required":["result_token"]}},{"required":["result_token"],"not":{"required":["pack_token"]}}]},
+    "RenameRequest": {"oneOf":[{"$ref":"#/$defs/RenameInitialRequest"},{"$ref":"#/$defs/RenameContinueRequest"}]},
+    "EvidenceItem": {"type":"object","properties":{"item_id":{"$ref":"#/$defs/ID"},"kind":{"enum":["source_range","reference_catalog","constraint_excerpt","boundary","overview","validation_obligation","source_range_fragment"]},"required_for_review":{"type":"boolean"},"why_included":{"$ref":"#/$defs/ID"},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"content":{"anyOf":[{"type":"string","minLength":0,"maxLength":131072},{"type":"null"}]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16},"limitations":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":16},"fragment_of":{"anyOf":[{"$ref":"#/$defs/SourceRef"},{"type":"null"}]}},"required":["item_id","kind","required_for_review","why_included","source_refs","content","evidence_refs","limitations","fragment_of"],"additionalProperties":false},
+    "Candidate": {"type":"object","properties":{"ref":{"$ref":"#/$defs/GraphRef"},"name":{"type":"string","minLength":0,"maxLength":512},"qualified_name":{"type":"string","minLength":0,"maxLength":2048},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16}},"required":["ref","name","qualified_name","source_refs","evidence_refs"],"additionalProperties":false},
+    "StatusData": {"type":"object","properties":{"operation":{"const":"status"},"scopes":{"type":"array","items":{"$ref":"#/$defs/ScopeMember"},"minItems":0,"maxItems":32},"capabilities":{"type":"array","items":{"$ref":"#/$defs/Capability"},"minItems":0,"maxItems":128},"project_stage":{"enum":["spec_only","mixed","implemented_scope","unknown"]},"index_state":{"enum":["missing","published","building_with_previous","unavailable"]},"registered_scopes":{"type":"array","items":{"$ref":"#/$defs/RegisteredScopeStatus"},"minItems":0,"maxItems":32}},"required":["operation","scopes","capabilities","project_stage","index_state","registered_scopes"],"additionalProperties":false},
+    "LocateData": {"type":"object","properties":{"operation":{"const":"locate"},"candidates":{"type":"array","items":{"$ref":"#/$defs/Candidate"},"minItems":0,"maxItems":100}},"required":["operation","candidates"],"additionalProperties":false},
+    "PackData": {"type":"object","properties":{"operation":{"enum":["context_pack","expand_pack"]},"pack_token":{"$ref":"#/$defs/Token"},"target_refs":{"type":"array","items":{"$ref":"#/$defs/GraphRef"},"minItems":0,"maxItems":32},"items":{"type":"array","items":{"$ref":"#/$defs/EvidenceItem"},"minItems":0,"maxItems":512},"edit_precondition_validated":{"type":"boolean"}},"required":["operation","pack_token","target_refs","items","edit_precondition_validated"],"additionalProperties":false},
+    "ValidateData": {"type":"object","properties":{"operation":{"const":"validate_pack"},"edit_precondition_validated":{"type":"boolean"},"changed_sources":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":256},"membership_changed":{"type":"boolean"},"configuration_changed":{"type":"boolean"},"record_set_changed":{"type":"boolean"}},"required":["operation","edit_precondition_validated","changed_sources","membership_changed","configuration_changed","record_set_changed"],"additionalProperties":false},
+    "ProposedEdit": {"type":"object","properties":{"source_ref":{"$ref":"#/$defs/SourceRef"},"new_text":{"type":"string","minLength":0,"maxLength":131072}},"required":["source_ref","new_text"],"additionalProperties":false},
+    "RenameData": {"type":"object","properties":{"operation":{"const":"rename_preview"},"applied":{"const":false},"source_mutation_count":{"const":0},"validation_required":{"const":true},"edits":{"type":"array","items":{"$ref":"#/$defs/ProposedEdit"},"minItems":0,"maxItems":512},"conflicts":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":128},"preview_complete":{"type":"boolean"},"result_token":{"$ref":"#/$defs/Token"},"result_id":{"$ref":"#/$defs/UUID"},"result_digest":{"$ref":"#/$defs/Hash"},"total_edits":{"type":"integer","minimum":0,"maximum":10000},"computation_complete":{"const":true}},"required":["operation","applied","source_mutation_count","validation_required","edits","conflicts","preview_complete","result_token","result_id","result_digest","total_edits","computation_complete"],"additionalProperties":false},
+    "GraphNode": {"type":"object","properties":{"node_id":{"$ref":"#/$defs/ID"},"ref":{"$ref":"#/$defs/GraphRef"},"kind":{"$ref":"#/$defs/ID"},"label":{"type":"string","minLength":0,"maxLength":512},"plane":{"enum":["intended","observed_static","observed_runtime","annotation"]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"expandable_count":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]}},"required":["node_id","ref","kind","label","plane","evidence_refs","source_refs","expandable_count"],"additionalProperties":false},
+    "GraphEdge": {"type":"object","properties":{"edge_id":{"$ref":"#/$defs/ID"},"from_node_id":{"$ref":"#/$defs/ID"},"to_node_id":{"$ref":"#/$defs/ID"},"relation_kind":{"$ref":"#/$defs/ID"},"resolution_status":{"enum":["exact_in_supported_scope","candidate","unresolved"]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16},"expand_ref":{"anyOf":[{"$ref":"#/$defs/Token"},{"type":"null"}]}},"required":["edge_id","from_node_id","to_node_id","relation_kind","resolution_status","evidence_refs","expand_ref"],"additionalProperties":false},
+    "GraphQueryRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"root":{"$ref":"#/$defs/Selector"},"depth":{"type":"integer","minimum":0,"maximum":8},"node_limit":{"type":"integer","minimum":1,"maximum":500},"edge_limit":{"type":"integer","minimum":1,"maximum":1500},"kinds":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":32},"cursor":{"$ref":"#/$defs/Token"}},"required":["root"],"additionalProperties":false},
+    "GraphData": {"type":"object","properties":{"operation":{"const":"graph_query"},"nodes":{"type":"array","items":{"$ref":"#/$defs/GraphNode"},"minItems":0,"maxItems":500},"edges":{"type":"array","items":{"$ref":"#/$defs/GraphEdge"},"minItems":0,"maxItems":1500},"subgraph_digest":{"$ref":"#/$defs/Hash"}},"required":["operation","nodes","edges","subgraph_digest"],"additionalProperties":false},
+    "SourceReadRequest": {"type":"object","properties":{"source_ref":{"$ref":"#/$defs/SourceRef"},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["source_ref"],"additionalProperties":false},
+    "SourceData": {"type":"object","properties":{"operation":{"const":"source_read"},"source_ref":{"$ref":"#/$defs/SourceRef"},"content":{"type":"string","minLength":0,"maxLength":131072}},"required":["operation","source_ref","content"],"additionalProperties":false},
+    "InstanceRef": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"instance_id":{"$ref":"#/$defs/ID"}},"required":["session_id","document_epoch","hmr_epoch","instance_id"],"additionalProperties":false},
+    "Rect": {"type":"object","properties":{"x":{"type":"number"},"y":{"type":"number"},"width":{"type":"number","minimum":0},"height":{"type":"number","minimum":0}},"required":["x","y","width","height"],"additionalProperties":false},
+    "MappingResolveRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"session_id":{"$ref":"#/$defs/UUID"},"build_map_id":{"$ref":"#/$defs/Hash"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"ref":{"oneOf":[{"$ref":"#/$defs/GraphRef"},{"$ref":"#/$defs/DOMAnchorRef"}]},"cursor":{"$ref":"#/$defs/Token"},"limit":{"type":"integer","minimum":1,"maximum":100},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["session_id","build_map_id","document_epoch","hmr_epoch","ref"],"additionalProperties":false},
+    "MappingData": {"type":"object","properties":{"operation":{"const":"mapping_resolve"},"requested_ref":{"oneOf":[{"$ref":"#/$defs/GraphRef"},{"$ref":"#/$defs/DOMAnchorRef"}]},"matches":{"type":"array","items":{"$ref":"#/$defs/MappingMatch"},"minItems":0,"maxItems":100},"build_map_id":{"$ref":"#/$defs/Hash"},"binding_id":{"$ref":"#/$defs/Hash"},"resolver_digest":{"$ref":"#/$defs/Hash"},"mapping_status":{"enum":["exact_in_supported_scope","candidate","ambiguous","ancestor_fallback","unmapped","stale","unsupported"]},"why_matched":{"type":"string","minLength":1,"maxLength":1024}},"required":["operation","requested_ref","matches","build_map_id","binding_id","resolver_digest","mapping_status","why_matched"],"additionalProperties":false},
+    "FlowStep": {"type":"object","properties":{"step_id":{"$ref":"#/$defs/ID"},"canonical_refs":{"type":"array","items":{"$ref":"#/$defs/GraphRef"},"minItems":1,"maxItems":16},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"step_kind":{"$ref":"#/$defs/ID"},"order_semantics":{"enum":["source_sequence","control_flow_supported","call_relationship_only","causal_trace","unknown"]},"possible_or_observed":{"enum":["statically_possible","observed"]},"outcome_status":{"enum":["declared_operation","statically_possible","attempt_observed","statement_success_observed","commit_observed","rollback_observed","outcome_unknown"]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16},"limitations":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":16}},"required":["step_id","canonical_refs","source_refs","step_kind","order_semantics","possible_or_observed","outcome_status","evidence_refs","limitations"],"additionalProperties":false},
+    "FlowEdge": {"type":"object","properties":{"edge_id":{"$ref":"#/$defs/ID"},"from_step_id":{"$ref":"#/$defs/ID"},"to_step_id":{"$ref":"#/$defs/ID"},"kind":{"enum":["call","control","return","async","contract","transaction_link","candidate"]},"condition_source_ref":{"anyOf":[{"$ref":"#/$defs/SourceRef"},{"type":"null"}]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16}},"required":["edge_id","from_step_id","to_step_id","kind","condition_source_ref","evidence_refs"],"additionalProperties":false},
+    "FlowQueryRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"root_ref":{"$ref":"#/$defs/GraphRef"},"mode":{"enum":["static","observed"]},"artifact_id":{"$ref":"#/$defs/Hash"},"step_limit":{"type":"integer","minimum":1,"maximum":100},"edge_limit":{"type":"integer","minimum":1,"maximum":300},"cursor":{"$ref":"#/$defs/Token"}},"required":["root_ref"],"additionalProperties":false},
+    "FlowData": {"type":"object","properties":{"operation":{"const":"flow_query"},"projection_id":{"$ref":"#/$defs/Hash"},"root_ref":{"$ref":"#/$defs/GraphRef"},"mode":{"enum":["static","observed"]},"steps":{"type":"array","items":{"$ref":"#/$defs/FlowStep"},"minItems":0,"maxItems":100},"edges":{"type":"array","items":{"$ref":"#/$defs/FlowEdge"},"minItems":0,"maxItems":300}},"required":["operation","projection_id","root_ref","mode","steps","edges"],"additionalProperties":false},
+    "BootstrapRequest": {"type":"object","properties":{"code":{"type":"string","minLength":1,"maxLength":64}},"required":["code"],"additionalProperties":false},
+    "BootstrapData": {"type":"object","properties":{"operation":{"const":"bootstrap"},"bearer":{"type":"string","minLength":1,"maxLength":64},"expires_at":{"$ref":"#/$defs/Time"},"capabilities":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":64}},"required":["operation","bearer","expires_at","capabilities"],"additionalProperties":false},
+    "PreviewAttachRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"origin":{"type":"string","minLength":1,"maxLength":2048},"path":{"type":"string","minLength":1,"maxLength":2048},"build_map_id":{"$ref":"#/$defs/Hash"},"permission_profile_id":{"$ref":"#/$defs/ID"}},"required":["origin","path","build_map_id","permission_profile_id"],"additionalProperties":false},
+    "PreviewBindRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"},"expected_revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"build_map_id":{"$ref":"#/$defs/Hash"},"pairing_nonce":{"type":"string","minLength":1,"maxLength":64},"capabilities":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":64}},"required":["session_id","expected_revision","document_epoch","hmr_epoch","build_map_id","pairing_nonce","capabilities"],"additionalProperties":false},
+    "PreviewModeRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"},"expected_revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"expected_authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"mode":{"enum":["inspect","interact"]},"permission_profile_id":{"$ref":"#/$defs/ID"}},"required":["session_id","expected_revision","expected_authorization_epoch","mode","permission_profile_id"],"additionalProperties":false},
+    "PreviewAckRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"},"expected_revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"command_id":{"$ref":"#/$defs/UUID"},"acknowledged":{"type":"boolean"}},"required":["session_id","expected_revision","authorization_epoch","command_id","acknowledged"],"additionalProperties":false},
+    "PreviewInvalidateRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"},"expected_revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"reason":{"enum":["hmr","navigation","heartbeat_lost","policy_changed","build_changed","client_error"]}},"required":["session_id","expected_revision","reason"],"additionalProperties":false},
+    "PreviewDetachRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"}},"required":["session_id"],"additionalProperties":false},
+    "PreviewData": {"type":"object","properties":{"operation":{"enum":["preview_attach","preview_bind","preview_mode","preview_ack","preview_invalidate","preview_detach"]},"session_id":{"$ref":"#/$defs/UUID"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"state":{"enum":["pairing","bound","stale","detached","blocked"]},"mode_state":{"enum":["inspect","arming","interact","disarming"]},"pairing_nonce":{"anyOf":[{"type":"string","minLength":1,"maxLength":64},{"type":"null"}]},"command_id":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"expires_at":{"$ref":"#/$defs/Time"},"binding_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"permission_version":{"type":"integer","minimum":1,"maximum":9007199254740991},"resolver_digest":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]}},"required":["operation","session_id","revision","document_epoch","hmr_epoch","authorization_epoch","state","mode_state","pairing_nonce","command_id","expires_at","binding_id","permission_version","resolver_digest"],"additionalProperties":false},
+    "MappingProposeRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"source_ref":{"$ref":"#/$defs/SourceRef"},"destination_ref":{"$ref":"#/$defs/GraphRef"},"rationale":{"type":"string","minLength":1,"maxLength":2048},"client_mutation_id":{"$ref":"#/$defs/UUID"}},"required":["source_ref","destination_ref","rationale","client_mutation_id"],"additionalProperties":false},
+    "MappingReviewRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"record_id":{"$ref":"#/$defs/UUID"},"expected_version":{"type":"integer","minimum":1,"maximum":9007199254740991},"action":{"enum":["approve","revoke","supersede"]},"reason":{"type":"string","minLength":1,"maxLength":2048},"client_mutation_id":{"$ref":"#/$defs/UUID"}},"required":["record_id","expected_version","action","reason","client_mutation_id"],"additionalProperties":false},
+    "RecordData": {"type":"object","properties":{"operation":{"enum":["mapping_propose","mapping_review"]},"record_id":{"$ref":"#/$defs/UUID"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991},"record_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"declared_status":{"enum":["proposed","approved","revoked","superseded"]},"effective_status":{"enum":["proposed","approved","revoked","superseded","needs_review"]}},"required":["operation","record_id","version","record_epoch","declared_status","effective_status"],"additionalProperties":false},
+    "ResponseData": {"oneOf":[{"$ref":"#/$defs/StatusData"},{"$ref":"#/$defs/LocateData"},{"$ref":"#/$defs/PackData"},{"$ref":"#/$defs/ValidateData"},{"$ref":"#/$defs/RenameData"},{"$ref":"#/$defs/GraphData"},{"$ref":"#/$defs/SourceData"},{"$ref":"#/$defs/MappingData"},{"$ref":"#/$defs/FlowData"},{"$ref":"#/$defs/BootstrapData"},{"$ref":"#/$defs/PreviewData"},{"$ref":"#/$defs/RecordData"},{"$ref":"#/$defs/PreviewStatusData"},{"$ref":"#/$defs/PreviewPermissionAdminData"},{"$ref":"#/$defs/GroupAdminData"},{"$ref":"#/$defs/RuntimeConfigData"},{"$ref":"#/$defs/RecordListData"},{"$ref":"#/$defs/RecordReadData"},{"$ref":"#/$defs/ProfileAdminData"},{"$ref":"#/$defs/PolicyAdminData"}]},
+    "Response": {"type":"object","properties":{"schema_version":{"const":1},"request_id":{"$ref":"#/$defs/UUID"},"status":{"enum":["ok","partial","blocked","error"]},"scope":{"anyOf":[{"$ref":"#/$defs/ScopeVector"},{"type":"null"}]},"freshness":{"$ref":"#/$defs/Freshness"},"coverage":{"$ref":"#/$defs/Coverage"},"readiness":{"enum":["reviewable","needs_context","blocked"]},"data":{"anyOf":[{"$ref":"#/$defs/ResponseData"},{"type":"null"}]},"pagination":{"$ref":"#/$defs/Pagination"},"budget":{"$ref":"#/$defs/Budget"},"warnings":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":64},"error":{"anyOf":[{"$ref":"#/$defs/Error"},{"type":"null"}]}},"required":["schema_version","request_id","status","scope","freshness","coverage","readiness","data","pagination","budget","warnings","error"],"additionalProperties":false},
+    "ManifestSource": {"type":"object","properties":{"path":{"$ref":"#/$defs/Path"},"content_hash":{"$ref":"#/$defs/Hash"}},"required":["path","content_hash"],"additionalProperties":false},
+    "AnchorEntry": {"type":"object","properties":{"anchor_id":{"$ref":"#/$defs/Hash"},"kind":{"enum":["element_site","component_definition","component_render_site","event_binding_site"]},"path":{"$ref":"#/$defs/Path"},"content_hash":{"$ref":"#/$defs/Hash"},"range":{"$ref":"#/$defs/ByteRange"},"owner_anchor_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]}},"required":["anchor_id","kind","path","content_hash","range","owner_anchor_id"],"additionalProperties":false},
+    "BuildManifest": {"type":"object","properties":{"schema_version":{"const":1},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"build_map_id":{"$ref":"#/$defs/Hash"},"provider_version":{"type":"string","minLength":1,"maxLength":128},"build_config_digest":{"$ref":"#/$defs/Hash"},"input_manifest_digest":{"$ref":"#/$defs/Hash"},"mode":{"enum":["development","test"]},"module_coverage":{"enum":["all_declared_modules","loaded_modules_only","partial"]},"sources":{"type":"array","items":{"$ref":"#/$defs/ManifestSource"},"minItems":0,"maxItems":100000},"anchors":{"type":"array","items":{"$ref":"#/$defs/AnchorEntry"},"minItems":0,"maxItems":100000},"provider_digest":{"$ref":"#/$defs/Hash"}},"required":["schema_version","worktree_id","profile_id","build_map_id","provider_version","build_config_digest","input_manifest_digest","mode","module_coverage","sources","anchors","provider_digest"],"additionalProperties":false},
+    "Bridge_CHALLENGE": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"CHALLENGE"},"payload":{"type":"object","properties":{"nonce":{"type":"string","minLength":1,"maxLength":64},"approved_origin":{"type":"string","minLength":1,"maxLength":2048}},"required":["nonce","approved_origin"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_READY": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"READY"},"payload":{"type":"object","properties":{"nonce":{"type":"string","minLength":1,"maxLength":64},"build_map_id":{"$ref":"#/$defs/Hash"},"capabilities":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":64}},"required":["nonce","build_map_id","capabilities"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_BOUND": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"BOUND"},"payload":{"type":"object","properties":{"build_map_id":{"$ref":"#/$defs/Hash"},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991}},"required":["build_map_id","authorization_epoch"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_BOUND_ACK": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"BOUND_ACK"},"payload":{"type":"object","properties":{"build_map_id":{"$ref":"#/$defs/Hash"},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991}},"required":["build_map_id","authorization_epoch"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_PICK_AT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"PICK_AT"},"payload":{"type":"object","properties":{"x_css":{"type":"number"},"y_css":{"type":"number"},"selection_kind":{"enum":["element","component"]}},"required":["x_css","y_css","selection_kind"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_PICK_RESULT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"PICK_RESULT"},"payload":{"type":"object","properties":{"targets":{"type":"array","items":{"type":"object","properties":{"instance_ref":{"$ref":"#/$defs/InstanceRef"},"anchor_ref":{"$ref":"#/$defs/DOMAnchorRef"},"rects":{"type":"array","items":{"$ref":"#/$defs/Rect"},"minItems":0,"maxItems":16},"parent_instance_ref":{"anyOf":[{"$ref":"#/$defs/InstanceRef"},{"type":"null"}]}},"required":["instance_ref","anchor_ref","rects","parent_instance_ref"],"additionalProperties":false},"minItems":0,"maxItems":32},"status":{"enum":["exact_in_supported_scope","ancestor_fallback","unmapped","unsupported"]}},"required":["targets","status"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_LIST_INSTANCES": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"LIST_INSTANCES"},"payload":{"type":"object","properties":{"anchor_refs":{"type":"array","items":{"$ref":"#/$defs/DOMAnchorRef"},"minItems":0,"maxItems":100},"limit":{"type":"integer","minimum":1,"maximum":100},"cursor":{"anyOf":[{"type":"string","minLength":1,"maxLength":1024},{"type":"null"}]}},"required":["anchor_refs","limit","cursor"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_INSTANCES": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"INSTANCES"},"payload":{"type":"object","properties":{"items":{"type":"array","items":{"type":"object","properties":{"instance_ref":{"$ref":"#/$defs/InstanceRef"},"anchor_ref":{"$ref":"#/$defs/DOMAnchorRef"},"visibility":{"enum":["visible","mounted_offscreen","hidden","not_rendered","detached","unknown"]},"rects":{"type":"array","items":{"$ref":"#/$defs/Rect"},"minItems":0,"maxItems":16}},"required":["instance_ref","anchor_ref","visibility","rects"],"additionalProperties":false},"minItems":0,"maxItems":100},"next_cursor":{"anyOf":[{"type":"string","minLength":1,"maxLength":1024},{"type":"null"}]},"pending":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]}},"required":["items","next_cursor","pending"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_HIGHLIGHT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"HIGHLIGHT"},"payload":{"type":"object","properties":{"instance_refs":{"type":"array","items":{"$ref":"#/$defs/InstanceRef"},"minItems":0,"maxItems":100}},"required":["instance_refs"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_HIGHLIGHT_RESULT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"HIGHLIGHT_RESULT"},"payload":{"type":"object","properties":{"matched":{"type":"array","items":{"$ref":"#/$defs/InstanceRef"},"minItems":0,"maxItems":100},"unavailable":{"type":"array","items":{"$ref":"#/$defs/InstanceRef"},"minItems":0,"maxItems":100}},"required":["matched","unavailable"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_CLEAR_HIGHLIGHT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"CLEAR_HIGHLIGHT"},"payload":{"type":"object","properties":{},"required":[],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_REQUEST_SCROLL": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"REQUEST_SCROLL"},"payload":{"type":"object","properties":{"instance_ref":{"$ref":"#/$defs/InstanceRef"}},"required":["instance_ref"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_SCROLL_RESULT": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"SCROLL_RESULT"},"payload":{"type":"object","properties":{"status":{"enum":["done","not_permitted","not_rendered"]}},"required":["status"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_SET_MODE": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"SET_MODE"},"payload":{"type":"object","properties":{"mode":{"enum":["inspect","interact"]},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"command_id":{"$ref":"#/$defs/UUID"}},"required":["mode","authorization_epoch","command_id"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_MODE_ACK": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"MODE_ACK"},"payload":{"type":"object","properties":{"mode":{"enum":["inspect","interact"]},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"command_id":{"$ref":"#/$defs/UUID"},"accepted":{"type":"boolean"}},"required":["mode","authorization_epoch","command_id","accepted"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_BUILD_CHANGED": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"BUILD_CHANGED"},"payload":{"type":"object","properties":{"build_map_id":{"$ref":"#/$defs/Hash"},"new_hmr_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["build_map_id","new_hmr_epoch"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_INSTANCE_INVALIDATED": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"INSTANCE_INVALIDATED"},"payload":{"type":"object","properties":{"instance_refs":{"type":"array","items":{"$ref":"#/$defs/InstanceRef"},"minItems":0,"maxItems":100}},"required":["instance_refs"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_CAPABILITY_STATUS": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"CAPABILITY_STATUS"},"payload":{"type":"object","properties":{"capabilities":{"type":"array","items":{"$ref":"#/$defs/ID"},"minItems":0,"maxItems":64}},"required":["capabilities"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_ERROR": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"ERROR"},"payload":{"type":"object","properties":{"code":{"$ref":"#/$defs/ID"},"reason":{"type":"string","minLength":1,"maxLength":512}},"required":["code","reason"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_DISPOSE": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"DISPOSE"},"payload":{"type":"object","properties":{},"required":[],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_DISPOSED": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"DISPOSED"},"payload":{"type":"object","properties":{},"required":[],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "BridgeMessage": {"oneOf":[{"$ref":"#/$defs/Bridge_CHALLENGE"},{"$ref":"#/$defs/Bridge_READY"},{"$ref":"#/$defs/Bridge_BOUND"},{"$ref":"#/$defs/Bridge_BOUND_ACK"},{"$ref":"#/$defs/Bridge_PICK_AT"},{"$ref":"#/$defs/Bridge_PICK_RESULT"},{"$ref":"#/$defs/Bridge_LIST_INSTANCES"},{"$ref":"#/$defs/Bridge_INSTANCES"},{"$ref":"#/$defs/Bridge_HIGHLIGHT"},{"$ref":"#/$defs/Bridge_HIGHLIGHT_RESULT"},{"$ref":"#/$defs/Bridge_CLEAR_HIGHLIGHT"},{"$ref":"#/$defs/Bridge_REQUEST_SCROLL"},{"$ref":"#/$defs/Bridge_SCROLL_RESULT"},{"$ref":"#/$defs/Bridge_SET_MODE"},{"$ref":"#/$defs/Bridge_MODE_ACK"},{"$ref":"#/$defs/Bridge_BUILD_CHANGED"},{"$ref":"#/$defs/Bridge_INSTANCE_INVALIDATED"},{"$ref":"#/$defs/Bridge_CAPABILITY_STATUS"},{"$ref":"#/$defs/Bridge_ERROR"},{"$ref":"#/$defs/Bridge_DISPOSE"},{"$ref":"#/$defs/Bridge_DISPOSED"},{"$ref":"#/$defs/Bridge_PING"},{"$ref":"#/$defs/Bridge_PONG"}]},
+    "PolicyConfig": {"type":"object","properties":{"schema_version":{"const":1},"allowed_roots":{"type":"array","items":{"type":"string","minLength":1,"maxLength":4096},"minItems":1,"maxItems":32},"denied_globs":{"type":"array","items":{"type":"string","minLength":1,"maxLength":512},"minItems":0,"maxItems":256},"trusted_rule_paths":{"type":"array","items":{"$ref":"#/$defs/Path"},"minItems":0,"maxItems":128},"dependency_roots":{"type":"array","items":{"type":"string","minLength":1,"maxLength":4096},"minItems":0,"maxItems":128},"allowed_executables":{"type":"array","items":{"type":"object","properties":{"path":{"type":"string","minLength":1,"maxLength":4096},"sha256":{"$ref":"#/$defs/Hash"}},"required":["path","sha256"],"additionalProperties":false},"minItems":0,"maxItems":32},"allow_target_execution":{"const":false},"allow_runtime_download":{"const":false},"max_file_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_source_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072},"secret_rules_version":{"$ref":"#/$defs/ID"}},"required":["schema_version","allowed_roots","denied_globs","trusted_rule_paths","dependency_roots","allowed_executables","allow_target_execution","allow_runtime_download","max_file_bytes","max_source_bytes","max_output_bytes","secret_rules_version"],"additionalProperties":false},
+    "GoProfile": {"type":"object","properties":{"schema_version":{"const":1},"language":{"const":"go"},"goos":{"type":"string","minLength":1,"maxLength":32},"goarch":{"type":"string","minLength":1,"maxLength":32},"build_tags":{"type":"array","items":{"type":"string","minLength":1,"maxLength":128},"minItems":0,"maxItems":128},"cgo_enabled":{"type":"boolean"},"tests_enabled":{"type":"boolean"},"module_roots":{"type":"array","items":{"$ref":"#/$defs/Path"},"minItems":1,"maxItems":64},"toolchain_digest":{"$ref":"#/$defs/Hash"},"provider_digest":{"$ref":"#/$defs/Hash"},"module_mode":{"enum":["readonly","vendor_explicit"]},"analysis_mode":{"enum":["syntax","typed_when_available"]},"dependency_roots":{"type":"array","items":{"type":"string","minLength":1,"maxLength":4096},"minItems":0,"maxItems":128}},"required":["schema_version","language","goos","goarch","build_tags","cgo_enabled","tests_enabled","module_roots","toolchain_digest","provider_digest","module_mode","analysis_mode","dependency_roots"],"additionalProperties":false},
+    "TSProfile": {"type":"object","properties":{"schema_version":{"const":1},"language":{"const":"typescript_javascript"},"tsconfig_paths":{"type":"array","items":{"$ref":"#/$defs/Path"},"minItems":1,"maxItems":64},"compiler_digest":{"$ref":"#/$defs/Hash"},"node_digest":{"$ref":"#/$defs/Hash"},"provider_digest":{"$ref":"#/$defs/Hash"},"allow_project_plugins":{"const":false},"analysis_mode":{"enum":["syntax","typed_when_available"]}},"required":["schema_version","language","tsconfig_paths","compiler_digest","node_digest","provider_digest","allow_project_plugins","analysis_mode"],"additionalProperties":false},
+    "EffectiveProfile": {"oneOf":[{"$ref":"#/$defs/GoProfile"},{"$ref":"#/$defs/TSProfile"}]},
+    "ManifestFile": {"type":"object","properties":{"path":{"$ref":"#/$defs/Path"},"status":{"enum":["captured","metadata_only","excluded","missing","read_error"]},"content_hash":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"byte_length":{"anyOf":[{"type":"integer","minimum":0,"maximum":9007199254740991},{"type":"null"}]},"reason_code":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]}},"required":["path","status","content_hash","byte_length","reason_code"],"additionalProperties":false},
+    "CaptureManifest": {"type":"object","properties":{"schema_version":{"const":1},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"policy_digest":{"$ref":"#/$defs/Hash"},"provider_digest":{"$ref":"#/$defs/Hash"},"files":{"type":"array","items":{"$ref":"#/$defs/ManifestFile"},"minItems":0,"maxItems":1000000},"dependency_input_digests":{"type":"array","items":{"$ref":"#/$defs/Hash"},"minItems":0,"maxItems":1000000},"snapshot_digest":{"$ref":"#/$defs/Hash"}},"required":["schema_version","worktree_id","profile_id","policy_digest","provider_digest","files","dependency_input_digests","snapshot_digest"],"additionalProperties":false},
+    "DOMAnchorRef": {"type":"object","properties":{"build_map_id":{"$ref":"#/$defs/Hash"},"anchor_id":{"$ref":"#/$defs/Hash"}},"required":["build_map_id","anchor_id"],"additionalProperties":false},
+    "PreviewPermissionProfile": {"type":"object","properties":{"schema_version":{"const":1},"profile_id":{"$ref":"#/$defs/ID"},"approved_origin":{"type":"string","minLength":1,"maxLength":2048},"approved_path_prefix":{"type":"string","minLength":1,"maxLength":2048},"target_environment":{"enum":["isolated_test","local_mock"]},"source_worktree_ids":{"type":"array","items":{"$ref":"#/$defs/UUID"},"minItems":1,"maxItems":32},"allow_attach":{"type":"boolean"},"allow_interact":{"type":"boolean"},"allow_scroll":{"type":"boolean"},"allowed_dev_destinations":{"type":"array","items":{"type":"string","minLength":1,"maxLength":2048},"minItems":0,"maxItems":64},"attestation_id":{"$ref":"#/$defs/ID"},"attested_by":{"$ref":"#/$defs/ID"},"attested_at":{"$ref":"#/$defs/Time"},"expires_at":{"$ref":"#/$defs/Time"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["schema_version","profile_id","approved_origin","approved_path_prefix","target_environment","source_worktree_ids","allow_attach","allow_interact","allow_scroll","allowed_dev_destinations","attestation_id","attested_by","attested_at","expires_at","version"],"additionalProperties":false},
+    "SymbolFact": {"type":"object","properties":{"symbol_id":{"$ref":"#/$defs/ID"},"path":{"anyOf":[{"$ref":"#/$defs/Path"},{"type":"null"}]},"package_key":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"kind":{"enum":["file","package","function","method","type","interface","field","variable","parameter","receiver","result","constant","closure","external"]},"name":{"type":"string","minLength":0,"maxLength":512},"qualified_name":{"type":"string","minLength":0,"maxLength":2048},"scope_key":{"$ref":"#/$defs/ID"},"range":{"anyOf":[{"$ref":"#/$defs/ByteRange"},{"type":"null"}]},"signature":{"type":"string","minLength":0,"maxLength":32768},"exported":{"type":"boolean"}},"required":["symbol_id","path","package_key","kind","name","qualified_name","scope_key","range","signature","exported"],"additionalProperties":false},
+    "RelationFact": {"type":"object","properties":{"relation_id":{"$ref":"#/$defs/ID"},"source_symbol_id":{"$ref":"#/$defs/ID"},"target_symbol_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"kind":{"enum":["CONTAINS","IMPORTS","REFERS_TO","READS","WRITES","CALLS_DIRECT","CALLS_INTERFACE","MAY_DISPATCH_TO","UNRESOLVED_REF","UNRESOLVED_CALL","TEST_REF","DOC_LINK"]},"evidence_kind":{"enum":["syntax_exact","type_resolved","type_possible","explicit_document","text_match","unresolved"]},"site_path":{"$ref":"#/$defs/Path"},"range":{"$ref":"#/$defs/ByteRange"},"reason":{"type":"string","minLength":0,"maxLength":1024},"unresolved_label":{"anyOf":[{"type":"string","minLength":1,"maxLength":512},{"type":"null"}]}},"required":["relation_id","source_symbol_id","target_symbol_id","kind","evidence_kind","site_path","range","reason","unresolved_label"],"additionalProperties":false},
+    "PackageFact": {"type":"object","properties":{"package_key":{"$ref":"#/$defs/ID"},"import_path":{"type":"string","minLength":1,"maxLength":2048},"module_key":{"$ref":"#/$defs/ID"},"variant":{"enum":["production","internal_test","external_test","other_supported"]},"input_digest":{"$ref":"#/$defs/Hash"},"semantic_status":{"enum":["complete_in_profile","partial","unsupported","unknown"]}},"required":["package_key","import_path","module_key","variant","input_digest","semantic_status"],"additionalProperties":false},
+    "DiagnosticFact": {"type":"object","properties":{"diagnostic_id":{"$ref":"#/$defs/ID"},"path":{"anyOf":[{"$ref":"#/$defs/Path"},{"type":"null"}]},"package_key":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"code":{"$ref":"#/$defs/ID"},"severity":{"enum":["info","warning","error"]},"message":{"type":"string","minLength":1,"maxLength":1024},"scope_description":{"type":"string","minLength":1,"maxLength":1024}},"required":["diagnostic_id","path","package_key","code","severity","message","scope_description"],"additionalProperties":false},
+    "ProviderStart": {"type":"object","properties":{"provider_protocol":{"const":1},"type":{"const":"analyze_start"},"job_id":{"$ref":"#/$defs/UUID"},"provider_id":{"$ref":"#/$defs/ID"},"provider_digest":{"$ref":"#/$defs/Hash"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"snapshot_root":{"type":"string","minLength":1,"maxLength":4096},"manifest_path":{"type":"string","minLength":1,"maxLength":4096},"manifest_digest":{"$ref":"#/$defs/Hash"},"profile":{"$ref":"#/$defs/EffectiveProfile"},"max_frame_bytes":{"type":"integer","minimum":65536,"maximum":16777216},"deadline_at":{"$ref":"#/$defs/Time"}},"required":["provider_protocol","type","job_id","provider_id","provider_digest","profile_id","generation_id","snapshot_root","manifest_path","manifest_digest","profile","max_frame_bytes","deadline_at"],"additionalProperties":false},
+    "ProviderBatch": {"type":"object","properties":{"provider_protocol":{"const":1},"type":{"const":"analyze_batch"},"job_id":{"$ref":"#/$defs/UUID"},"sequence":{"type":"integer","minimum":1,"maximum":9007199254740991},"packages":{"type":"array","items":{"$ref":"#/$defs/PackageFact"},"minItems":0,"maxItems":512},"symbols":{"type":"array","items":{"$ref":"#/$defs/SymbolFact"},"minItems":0,"maxItems":2048},"relations":{"type":"array","items":{"$ref":"#/$defs/RelationFact"},"minItems":0,"maxItems":4096},"diagnostics":{"type":"array","items":{"$ref":"#/$defs/DiagnosticFact"},"minItems":0,"maxItems":512}},"required":["provider_protocol","type","job_id","sequence","packages","symbols","relations","diagnostics"],"additionalProperties":false},
+    "ProviderDone": {"type":"object","properties":{"provider_protocol":{"const":1},"type":{"const":"analyze_done"},"job_id":{"$ref":"#/$defs/UUID"},"sequence":{"type":"integer","minimum":1,"maximum":9007199254740991},"status":{"enum":["complete_in_supported_scope","partial","failed","cancelled"]},"input_digest":{"$ref":"#/$defs/Hash"},"capabilities":{"type":"array","items":{"$ref":"#/$defs/Capability"},"minItems":0,"maxItems":128},"gaps":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":64},"error":{"anyOf":[{"$ref":"#/$defs/Error"},{"type":"null"}]}},"required":["provider_protocol","type","job_id","sequence","status","input_digest","capabilities","gaps","error"],"additionalProperties":false},
+    "ProviderCancel": {"type":"object","properties":{"provider_protocol":{"const":1},"type":{"const":"cancel"},"job_id":{"$ref":"#/$defs/UUID"}},"required":["provider_protocol","type","job_id"],"additionalProperties":false},
+    "ProviderMessage": {"oneOf":[{"$ref":"#/$defs/ProviderStart"},{"$ref":"#/$defs/ProviderBatch"},{"$ref":"#/$defs/ProviderDone"},{"$ref":"#/$defs/ProviderCancel"}]},
+    "FileRef": {"type":"object","properties":{"kind":{"const":"file"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"generation_id":{"$ref":"#/$defs/UUID"},"path":{"$ref":"#/$defs/Path"},"content_hash":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]}},"required":["kind","worktree_id","profile_id","generation_id","path","content_hash"],"additionalProperties":false},
+    "MemberUnavailable": {"type":"object","properties":{"service_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"worktree_id":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"profile_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"status":{"enum":["index_missing","unavailable","access_denied","profile_missing"]},"reason_code":{"$ref":"#/$defs/ID"}},"required":["service_id","worktree_id","profile_id","status","reason_code"],"additionalProperties":false},
+    "RefSelector": {"type":"object","properties":{"kind":{"const":"ref"},"ref":{"$ref":"#/$defs/GraphRef"},"service_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]}},"required":["kind","ref","service_id"],"additionalProperties":false},
+    "RegisteredScopeStatus": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"root_status":{"enum":["registered","unavailable","removed"]},"index_state":{"enum":["missing","published","building_with_previous","unavailable"]}},"required":["worktree_id","profile_id","root_status","index_state"],"additionalProperties":false},
+    "PreviewStatusRequest": {"type":"object","properties":{"session_id":{"$ref":"#/$defs/UUID"}},"required":["session_id"],"additionalProperties":false},
+    "PreviewStatusData": {"type":"object","properties":{"operation":{"const":"preview_status"},"session_id":{"$ref":"#/$defs/UUID"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"authorization_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"state":{"enum":["pairing","bound","stale","detached","blocked"]},"mode_state":{"enum":["inspect","arming","interact","disarming"]},"binding_id":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"permission_profile_id":{"$ref":"#/$defs/ID"},"permission_version":{"type":"integer","minimum":1,"maximum":9007199254740991},"permission_status":{"enum":["approved","revoked","expired","unavailable"]},"expires_at":{"$ref":"#/$defs/Time"},"server_time":{"$ref":"#/$defs/Time"},"interaction_allowed":{"type":"boolean"}},"required":["operation","session_id","revision","authorization_epoch","document_epoch","hmr_epoch","state","mode_state","binding_id","permission_profile_id","permission_version","permission_status","expires_at","server_time","interaction_allowed"],"additionalProperties":false},
+    "Bridge_PING": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"PING"},"payload":{"type":"object","properties":{"probe_id":{"$ref":"#/$defs/UUID"}},"required":["probe_id"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "Bridge_PONG": {"type":"object","properties":{"protocol_version":{"const":1},"session_id":{"$ref":"#/$defs/UUID"},"document_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991},"hmr_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"message_id":{"$ref":"#/$defs/UUID"},"reply_to":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"selection_id":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]},"seq":{"type":"integer","minimum":1,"maximum":9007199254740991},"type":{"const":"PONG"},"payload":{"type":"object","properties":{"probe_id":{"$ref":"#/$defs/UUID"}},"required":["probe_id"],"additionalProperties":false}},"required":["protocol_version","session_id","document_epoch","hmr_epoch","message_id","reply_to","selection_id","seq","type","payload"],"additionalProperties":false},
+    "MappingMatch": {"type":"object","properties":{"match_id":{"$ref":"#/$defs/Hash"},"anchor_ref":{"$ref":"#/$defs/AnchorRef"},"target_ref":{"anyOf":[{"$ref":"#/$defs/GraphRef"},{"type":"null"}]},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":16},"mapping_status":{"enum":["exact_in_supported_scope","candidate","ancestor_fallback","unmapped","unsupported"]},"evidence_refs":{"type":"array","items":{"$ref":"#/$defs/EvidenceRef"},"minItems":0,"maxItems":16}},"required":["match_id","anchor_ref","target_ref","source_refs","mapping_status","evidence_refs"],"additionalProperties":false},
+    "RenameInitialRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"selector":{"$ref":"#/$defs/PositionSelector"},"new_name":{"type":"string","minLength":1,"maxLength":256},"preserve_contracts":{"type":"boolean"},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["selector","new_name"],"additionalProperties":false},
+    "RenameContinueRequest": {"type":"object","properties":{"result_token":{"$ref":"#/$defs/Token"},"cursor":{"$ref":"#/$defs/Token"},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072}},"required":["result_token","cursor"],"additionalProperties":false},
+    "PreviewPermissionAdminRequest": {"type":"object","properties":{"action":{"enum":["get","list","put","revoke"]},"profile_id":{"$ref":"#/$defs/ID"},"expected_version":{"type":"integer","minimum":0,"maximum":9007199254740991},"profile":{"$ref":"#/$defs/PreviewPermissionProfile"},"reason":{"type":"string","minLength":1,"maxLength":2048},"limit":{"type":"integer","minimum":1,"maximum":100},"cursor":{"$ref":"#/$defs/Token"}},"required":["action"],"additionalProperties":false},
+    "PreviewPermissionSummary": {"type":"object","properties":{"profile_id":{"$ref":"#/$defs/ID"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991},"declared_status":{"enum":["approved","revoked"]},"effective_status":{"enum":["approved","revoked","expired"]},"digest":{"$ref":"#/$defs/Hash"},"profile":{"$ref":"#/$defs/PreviewPermissionProfile"}},"required":["profile_id","version","declared_status","effective_status","digest","profile"],"additionalProperties":false},
+    "PreviewPermissionAdminData": {"type":"object","properties":{"operation":{"const":"preview_permission_admin"},"profiles":{"type":"array","items":{"$ref":"#/$defs/PreviewPermissionSummary"},"minItems":0,"maxItems":100}},"required":["operation","profiles"],"additionalProperties":false},
+    "ServiceNamespace": {"type":"object","properties":{"environment":{"$ref":"#/$defs/ID"},"protocol":{"enum":["http","websocket","event","sql"]},"base_origin":{"anyOf":[{"type":"string","minLength":1,"maxLength":2048},{"type":"null"}]},"route_prefix":{"anyOf":[{"type":"string","minLength":1,"maxLength":1024},{"type":"null"}]},"contract_version":{"anyOf":[{"$ref":"#/$defs/ID"},{"type":"null"}]}},"required":["environment","protocol","base_origin","route_prefix","contract_version"],"additionalProperties":false},
+    "GroupMemberConfig": {"type":"object","properties":{"service_id":{"$ref":"#/$defs/ID"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_id":{"$ref":"#/$defs/Hash"},"namespace":{"$ref":"#/$defs/ServiceNamespace"}},"required":["service_id","worktree_id","profile_id","namespace"],"additionalProperties":false},
+    "GroupConfig": {"type":"object","properties":{"group_id":{"$ref":"#/$defs/UUID"},"name":{"type":"string","minLength":1,"maxLength":256},"members":{"type":"array","items":{"$ref":"#/$defs/GroupMemberConfig"},"minItems":1,"maxItems":32}},"required":["group_id","name","members"],"additionalProperties":false},
+    "GroupAdminRequest": {"type":"object","properties":{"action":{"enum":["get","list","put","remove"]},"group_id":{"$ref":"#/$defs/UUID"},"expected_revision":{"type":"integer","minimum":0,"maximum":9007199254740991},"config":{"$ref":"#/$defs/GroupConfig"},"limit":{"type":"integer","minimum":1,"maximum":100},"cursor":{"$ref":"#/$defs/Token"}},"required":["action"],"additionalProperties":false},
+    "GroupSummary": {"type":"object","properties":{"config":{"$ref":"#/$defs/GroupConfig"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991},"status":{"enum":["active","removed"]}},"required":["config","revision","status"],"additionalProperties":false},
+    "GroupAdminData": {"type":"object","properties":{"operation":{"const":"group_admin"},"groups":{"type":"array","items":{"$ref":"#/$defs/GroupSummary"},"minItems":0,"maxItems":100}},"required":["operation","groups"],"additionalProperties":false},
+    "CoreRuntimeLimits": {"type":"object","properties":{"max_file_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_indexed_files":{"type":"integer","minimum":1,"maximum":1000000},"max_source_bytes_per_snapshot":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_parallel_index_jobs":{"type":"integer","minimum":1,"maximum":16},"max_parse_workers":{"type":"integer","minimum":0,"maximum":64},"max_lsp_sessions":{"type":"integer","minimum":1,"maximum":8},"sqlite_busy_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"writer_lock_wait_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"query_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"lsp_startup_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"rename_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"index_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"watch_poll_interval_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"full_reconcile_interval_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_output_bytes":{"type":"integer","minimum":4096,"maximum":131072},"max_graph_nodes":{"type":"integer","minimum":1,"maximum":100000},"max_graph_edges":{"type":"integer","minimum":1,"maximum":1000000},"max_graph_depth":{"type":"integer","minimum":0,"maximum":8},"keep_generations":{"type":"integer","minimum":2,"maximum":128},"pack_ttl_seconds":{"type":"integer","minimum":1,"maximum":9007199254740991},"max_worktree_cache_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"log_files":{"type":"integer","minimum":1,"maximum":9007199254740991},"log_file_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"maintenance_wait_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"rename_result_max_bytes":{"type":"integer","minimum":1,"maximum":33554432},"rename_results_max_bytes":{"type":"integer","minimum":1,"maximum":134217728},"rename_result_ttl_seconds":{"type":"integer","minimum":1,"maximum":9007199254740991},"rename_max_edits":{"type":"integer","minimum":1,"maximum":10000},"result_ttl_seconds":{"type":"integer","minimum":1,"maximum":9007199254740991},"query_result_cache_bytes":{"type":"integer","minimum":1,"maximum":33554432},"max_retained_query_results":{"type":"integer","minimum":1,"maximum":32},"max_capture_manifest_bytes":{"type":"integer","minimum":1,"maximum":34359738368},"volume_reserve_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"volume_warning_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"process_tree_rss_budget_bytes":{"type":"integer","minimum":1,"maximum":9007199254740991},"resource_monitor_interval_ms":{"type":"integer","minimum":10,"maximum":5000}},"required":[],"additionalProperties":false},
+    "ExplorerRuntimeLimits": {"type":"object","properties":{"graph_default_nodes":{"type":"integer","minimum":1,"maximum":500},"graph_default_edges":{"type":"integer","minimum":1,"maximum":1500},"graph_hard_nodes":{"type":"integer","minimum":1,"maximum":500},"graph_hard_edges":{"type":"integer","minimum":1,"maximum":1500},"flow_max_steps":{"type":"integer","minimum":1,"maximum":100},"flow_max_edges":{"type":"integer","minimum":1,"maximum":300},"hover_hz":{"type":"integer","minimum":1,"maximum":15},"session_ttl_seconds":{"type":"integer","minimum":1,"maximum":1800},"bearer_ttl_seconds":{"type":"integer","minimum":1,"maximum":1800},"ack_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"detach_timeout_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"poll_visible_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"poll_hidden_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"poll_miss_limit":{"type":"integer","minimum":1,"maximum":9007199254740991},"bridge_message_bytes":{"type":"integer","minimum":1024,"maximum":16384},"max_preview_sessions":{"type":"integer","minimum":1,"maximum":16},"map_watch_poll_ms":{"type":"integer","minimum":1,"maximum":9007199254740991},"map_artifact_max_bytes":{"type":"integer","minimum":1,"maximum":67108864},"map_pending_max":{"type":"integer","minimum":1,"maximum":1},"map_watch_debounce_ms":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":[],"additionalProperties":false},
+    "RuntimeConfig": {"type":"object","properties":{"schema_version":{"const":1},"core":{"$ref":"#/$defs/CoreRuntimeLimits"},"explorer":{"$ref":"#/$defs/ExplorerRuntimeLimits"}},"required":["schema_version"],"additionalProperties":false},
+    "RuntimeConfigRequest": {"type":"object","properties":{"action":{"enum":["show","validate","set"]},"config":{"$ref":"#/$defs/RuntimeConfig"},"expected_digest":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]}},"required":["action"],"additionalProperties":false},
+    "RuntimeConfigData": {"type":"object","properties":{"operation":{"const":"runtime_config"},"config":{"$ref":"#/$defs/RuntimeConfig"},"config_digest":{"$ref":"#/$defs/Hash"},"restart_required":{"type":"boolean"},"source_kind":{"enum":["built_in","canonical_home"]},"source_digest":{"anyOf":[{"$ref":"#/$defs/Hash"},{"type":"null"}]},"effective_sources":{"type":"array","minItems":1,"maxItems":4,"uniqueItems":true,"items":{"enum":["built_in","canonical_home","approved_alternate","cli_process","candidate_input"]}}},"required":["operation","config","config_digest","restart_required","source_kind","source_digest","effective_sources"],"additionalProperties":false,"allOf":[{"if":{"properties":{"source_kind":{"const":"built_in"}}},"then":{"properties":{"source_digest":{"type":"null"}}},"else":{"properties":{"source_digest":{"$ref":"#/$defs/Hash"}}}}]},
+    "UIMappingPayload": {"type":"object","properties":{"source_ref":{"$ref":"#/$defs/SourceRef"},"destination_ref":{"$ref":"#/$defs/GraphRef"},"rationale":{"type":"string","minLength":1,"maxLength":2048}},"required":["source_ref","destination_ref","rationale"],"additionalProperties":false},
+    "RecordSummary": {"type":"object","properties":{"record_id":{"$ref":"#/$defs/UUID"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991},"record_kind":{"$ref":"#/$defs/ID"},"declared_status":{"enum":["proposed","approved","revoked","superseded"]},"effective_status":{"enum":["proposed","approved","revoked","superseded","needs_review"]},"provenance_status":{"enum":["retained_snapshot","snapshot_expired","source_changed","access_denied","unverified"]},"source_refs":{"type":"array","items":{"$ref":"#/$defs/SourceRef"},"minItems":0,"maxItems":128}},"required":["record_id","version","record_kind","declared_status","effective_status","provenance_status","source_refs"],"additionalProperties":false},
+    "RecordListRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"record_kind":{"$ref":"#/$defs/ID"},"status":{"enum":["proposed","approved","revoked","superseded","needs_review"]},"limit":{"type":"integer","minimum":1,"maximum":100},"cursor":{"$ref":"#/$defs/Token"}},"required":[],"additionalProperties":false},
+    "RecordListData": {"type":"object","properties":{"operation":{"const":"records_list"},"records":{"type":"array","items":{"$ref":"#/$defs/RecordSummary"},"minItems":0,"maxItems":100}},"required":["operation","records"],"additionalProperties":false},
+    "RecordReadRequest": {"type":"object","properties":{"scope":{"$ref":"#/$defs/ScopeRequest"},"record_id":{"$ref":"#/$defs/UUID"},"version":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["record_id"],"additionalProperties":false},
+    "RecordReadData": {"type":"object","properties":{"operation":{"const":"records_read"},"record":{"$ref":"#/$defs/RecordSummary"},"ui_mapping":{"anyOf":[{"$ref":"#/$defs/UIMappingPayload"},{"type":"null"}]},"limitations":{"type":"array","items":{"$ref":"#/$defs/Gap"},"minItems":0,"maxItems":32}},"required":["operation","record","ui_mapping","limitations"],"additionalProperties":false},
+    "ProfileAdminRequest": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"profile_name":{"type":"string","minLength":1,"maxLength":128},"expected_revision":{"type":"integer","minimum":0,"maximum":9007199254740991},"profile":{"$ref":"#/$defs/EffectiveProfile"}},"required":["worktree_id","profile_name","expected_revision","profile"],"additionalProperties":false},
+    "ProfileAdminData": {"type":"object","properties":{"operation":{"const":"profile_admin"},"worktree_id":{"$ref":"#/$defs/UUID"},"profile_name":{"type":"string","minLength":1,"maxLength":128},"profile_id":{"$ref":"#/$defs/Hash"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["operation","worktree_id","profile_name","profile_id","revision"],"additionalProperties":false},
+    "PolicyAdminRequest": {"type":"object","properties":{"worktree_id":{"$ref":"#/$defs/UUID"},"expected_epoch":{"type":"integer","minimum":0,"maximum":9007199254740991},"policy":{"$ref":"#/$defs/PolicyConfig"}},"required":["worktree_id","expected_epoch","policy"],"additionalProperties":false},
+    "PolicyAdminData": {"type":"object","properties":{"operation":{"const":"policy_admin"},"worktree_id":{"$ref":"#/$defs/UUID"},"policy_digest":{"$ref":"#/$defs/Hash"},"policy_epoch":{"type":"integer","minimum":1,"maximum":9007199254740991}},"required":["operation","worktree_id","policy_digest","policy_epoch"],"additionalProperties":false},
+    "AdmissionOwnedPath": {"allOf":[{"$ref":"#/$defs/Path"},{"maxLength":256}]},
+    "VolumeAdmissionEntry": {"type":"object","properties":{"operation_id":{"$ref":"#/$defs/UUID"},"scope_kind":{"enum":["home","worktree"]},"worktree_id":{"anyOf":[{"$ref":"#/$defs/UUID"},{"type":"null"}]},"owner_identity":{"$ref":"#/$defs/ID"},"ownership_ref":{"$ref":"#/$defs/AdmissionOwnedPath"},"operation_kind":{"enum":["index","map_import","rename_result","partition","maintenance","record_write","evidence_import","catalog_write","config_write","backup","log_write"]},"allowed_paths":{"type":"array","items":{"$ref":"#/$defs/AdmissionOwnedPath"},"minItems":1,"maxItems":8,"uniqueItems":true},"volume_reserved_remaining_bytes":{"type":"integer","minimum":0,"maximum":9007199254740991},"cache_reserved_remaining_bytes":{"type":"integer","minimum":0,"maximum":9007199254740991},"created_at":{"$ref":"#/$defs/Time"}},"required":["operation_id","scope_kind","worktree_id","owner_identity","ownership_ref","operation_kind","allowed_paths","volume_reserved_remaining_bytes","cache_reserved_remaining_bytes","created_at"],"additionalProperties":false,"oneOf":[{"properties":{"scope_kind":{"const":"home"},"worktree_id":{"type":"null"},"cache_reserved_remaining_bytes":{"const":0},"operation_kind":{"enum":["catalog_write","config_write","maintenance","backup"]}}},{"properties":{"scope_kind":{"const":"worktree"},"worktree_id":{"$ref":"#/$defs/UUID"},"operation_kind":{"enum":["index","map_import","rename_result","partition","maintenance","record_write","evidence_import","backup","log_write"]}}}]},
+    "VolumeAdmissionJournal": {"type":"object","properties":{"format_version":{"const":1},"volume_id":{"$ref":"#/$defs/ID"},"home_identity":{"$ref":"#/$defs/ID"},"admission_config_digest":{"$ref":"#/$defs/Hash"},"entries":{"type":"array","items":{"$ref":"#/$defs/VolumeAdmissionEntry"},"minItems":0,"maxItems":256}},"required":["format_version","volume_id","home_identity","admission_config_digest","entries"],"additionalProperties":false},
+    "StoredCaptureManifestRef": {"type":"object","properties":{"format_version":{"const":1},"kind":{"const":"external_capture_manifest"},"path":{"allOf":[{"$ref":"#/$defs/Path"},{"pattern":"^manifests/[0-9a-f]{64}\\.json$"}]},"byte_length":{"type":"integer","minimum":1,"maximum":34359738368},"artifact_sha256":{"$ref":"#/$defs/Hash"},"snapshot_digest":{"$ref":"#/$defs/Hash"}},"required":["format_version","kind","path","byte_length","artifact_sha256","snapshot_digest"],"additionalProperties":false}
+  }
+}
+```
+<!-- END MCE4D_CONTRACT_SCHEMA_V1 -->
+
+<!-- BEGIN MCE4D_OPERATION_REGISTRY_V1 -->
+```json
+{
+  "mce4d_workspace_status": [
+    "StatusRequest",
+    "StatusData"
+  ],
+  "mce4d_locate": [
+    "LocateRequest",
+    "LocateData"
+  ],
+  "mce4d_context_pack": [
+    "PackRequest",
+    "PackData"
+  ],
+  "mce4d_expand_pack": [
+    "ExpandRequest",
+    "PackData"
+  ],
+  "mce4d_validate_pack": [
+    "ValidateRequest",
+    "ValidateData"
+  ],
+  "mce4d_rename_preview": [
+    "RenameRequest",
+    "RenameData"
+  ],
+  "POST /session/bootstrap": [
+    "BootstrapRequest",
+    "BootstrapData"
+  ],
+  "GET /workspace": [
+    "StatusRequest",
+    "StatusData"
+  ],
+  "POST /graph/query": [
+    "GraphQueryRequest",
+    "GraphData"
+  ],
+  "POST /source/read": [
+    "SourceReadRequest",
+    "SourceData"
+  ],
+  "POST /mapping/resolve": [
+    "MappingResolveRequest",
+    "MappingData"
+  ],
+  "POST /flow/query": [
+    "FlowQueryRequest",
+    "FlowData"
+  ],
+  "POST /context/pack": [
+    "PackRequest",
+    "PackData"
+  ],
+  "POST /preview/attach": [
+    "PreviewAttachRequest",
+    "PreviewData"
+  ],
+  "POST /preview/bind": [
+    "PreviewBindRequest",
+    "PreviewData"
+  ],
+  "POST /preview/mode": [
+    "PreviewModeRequest",
+    "PreviewData"
+  ],
+  "POST /preview/ack": [
+    "PreviewAckRequest",
+    "PreviewData"
+  ],
+  "POST /preview/invalidate": [
+    "PreviewInvalidateRequest",
+    "PreviewData"
+  ],
+  "POST /preview/detach": [
+    "PreviewDetachRequest",
+    "PreviewData"
+  ],
+  "POST /mapping/propose": [
+    "MappingProposeRequest",
+    "RecordData"
+  ],
+  "POST /mapping/review": [
+    "MappingReviewRequest",
+    "RecordData"
+  ],
+  "POST /preview/status": [
+    "PreviewStatusRequest",
+    "PreviewStatusData"
+  ],
+  "CLI preview-permission": [
+    "PreviewPermissionAdminRequest",
+    "PreviewPermissionAdminData"
+  ],
+  "CLI group": [
+    "GroupAdminRequest",
+    "GroupAdminData"
+  ],
+  "CLI config": [
+    "RuntimeConfigRequest",
+    "RuntimeConfigData"
+  ],
+  "POST /records/list": [
+    "RecordListRequest",
+    "RecordListData"
+  ],
+  "POST /records/read": [
+    "RecordReadRequest",
+    "RecordReadData"
+  ],
+  "CLI records list": [
+    "RecordListRequest",
+    "RecordListData"
+  ],
+  "CLI records read": [
+    "RecordReadRequest",
+    "RecordReadData"
+  ],
+  "CLI profile set": [
+    "ProfileAdminRequest",
+    "ProfileAdminData"
+  ],
+  "CLI policy set": [
+    "PolicyAdminRequest",
+    "PolicyAdminData"
+  ]
+}
+```
+<!-- END MCE4D_OPERATION_REGISTRY_V1 -->
+
+## S44 — Bản vẽ physical storage, giao dịch và migration
+
+### DB-01 — Database ownership cố định
+
+Physical manifest representation v1.6.2: generations.manifest_json là closed StoredCaptureManifestRef<=4096 UTF-8 bytes; full manifest file do AL-01 publish trước SQL commit và DB-07 reference GC. Store adapter validate descriptor/schema/path/hash on write/read; DDL json_valid chỉ JSON syntax, không filesystem proof. Legacy inline manifest trong actual preexisting store cần explicit version/migration gate BP-04, không decoder any hoặc tự reset. Đây là unshipped baseline hiện hành, không tuyên bố đã migrate dữ liệu.
+
+| DB | Authority / lifecycle | Writer |
+|---|---|---|
+| catalog.sqlite | Registration, profiles/policies immutable + heads/revisions, declared groups; durable configuration | Catalog service; short catalog tx; không parse/index trong tx |
+| worktrees/<id>/index.sqlite | Captured allowed bytes, immutable generations/facts/FTS/module/domain/build maps/bindings; rebuildable | Single IndexWriter giữ worktree OS lock |
+| worktrees/<id>/records.sqlite | Approved/proposed decisions/mappings immutable versions + heads + mutation receipts; imported redacted evidence; **không cache** | RecordService giữ cùng worktree OS writer lock, tx riêng records |
+| process/browser memory | Bearer/session, DOM instances, selection, bounded layout/query caches | Chủ process/browser session; no persistent per-hover rows |
+
+Không `ATTACH` các DB rồi giả atomic transaction toàn hệ thống. Không schema FK qua file DB; validate cross-DB identities trước/sau operation, ghi epochs trong scope. Index reset/purge không xóa records/catalog. Remove/rebind giữ durable records và audit; khôi phục lại không tự approve record stale.
+
+DDL dưới đây là bản vẽ có thể chạy; T106 phải chạy **trên driver/OS của sản phẩm** trước feature. Document audit dùng SQLite test riêng chỉ chứng minh script/fixtures đã chạy ở môi trường đó. SQL guards không thay OS ownership, source hash validators hoặc permissions. `*_json` có json_valid tại DB và closed kind schema ở application; không tự do chứa code/DSL.
+
+### DB-02 — Thứ tự migration và compatibility
+
+Files cần trích khi task bắt đầu: `internal/store/sqlite/migrations/catalog/001.sql`, `index/001.sql`, `index/002.sql`, `records/001.sql`, rồi `index/003.sql` khi R2 domain, `index/004.sql` khi UI maps, `records/002.sql` khi runtime evidence. Không tạo tất cả bảng addon ngay R1. Mỗi DB ghi schema_version/min_reader_version và incarnation; migration hash lưu release manifest, không sửa SQL migration đã phát hành. V1.5.0 được phép cập nhật 7 DDL baseline vì implementation NOT_STARTED và chưa có migration đã phát hành được quan sát. Nếu T001 tìm actual v1.4 DB/binary, MUST dừng bootstrap destructive, giữ file cũ và tạo forward migration được duyệt; không chạy lại CREATE/overwrite trên dữ liệu thật. R1 reader chỉ hỗ trợ index đến2; UI-enabled build đến4; version cao hơn capabilities đã build -> SCHEMA_TOO_NEW, không tự down-migrate.
+
+Mọi connection bật foreign_keys trước transaction; driver initializer thực thi/kiểm chứng WAL, FULL, FK1 và busy_timeout=effective RuntimeConfig.core.sqlite_busy_timeout_ms (default5000ms), không hardcode5000 khi config khác. T002/T106/T007 kiểm nondefault1234ms trên nhiều pooled connections và giữ deadline/cancel semantics; config preview/schema-valid không là driver enforcement proof. Init phải áp cho **mọi pooled connection**, không chỉ db.Exec lần đầu. Read dùng read-only connection/query_only khi đúng supported driver, không cho reader tạo schema. Tests mở nhiều connection chứng minh settings. DB pool giới hạn đọc4/write1 mỗi DB/process; nhiều process vẫn cần OS writer lock. FK/relation/capture guard không dựa SQLite implicit defaults [REF04,REF05,REF50].
+
+Migrate/restore theo shared/exclusive lifecycle gate DB-05–DB-06; writer lock một mình không chứng minh mọi reader đã đóng. Không raw-copy active WAL một file. Recovery không tự xóa target/source hay sửa toàn registry.
+
+### DB-03 — Các transaction chuẩn
+
+**Publish:** get writer ownership → insert BUILDING row owner_job_id → bounded transactions insert facts/FTS. Validation source/graph/FK outside publication tx. Cuối job kiểm tra policy/profile/root revisions và manifest stability; trong transaction chỉ dùng connection đó: CAS state BUILDING+owner_job_id, set READY hoặc READY_PARTIAL với manifest/digests → active pointer đúng profile → COMMIT. RowsAffected cần đúng1; conflict no publish. Cancel/crash trước commit giữ pointer trước. Existing active giữ nguyên nếu generation mới FAILED. Core read không chọn latest timestamp.
+
+**Record edit:** validate source refs và principal → worktree lock → begin records tx → tìm mutation receipt. Same principal/hash trả version gốc; mismatch reject. Read current head, expected_version match; insert version+1 immutable → CAS head old version → update records_meta epoch+1 → insert mutation receipt → commit. New record version1 có head creation uniqueness. Ghi failure rollback tất cả. `needs_review` derive khi source/hash/policy không khớp, không update historical record_versions. Không xóa record_versions khi cache quota đầy; backup dưới durable policy.
+
+**Map import:** parse+validate+hash entire manifest trước SQL tx; import map+anchors atomically dưới writer; same map ID phải same normalized content. Binding service separately checks anchors versus captured source and creates binding+typed links atomically. `binding_id = H("binding-v1", {build_map_id, source_generation_id, profile_id, policy_digest, resolver_digest})`; no source metadata update trong published generation. Resolver digest bao gồm implementation/config/semantic version của resolver, khác instrumentation provider. UNIQUE(build_map_id,profile_id,source_generation_id,policy_digest,resolver_digest) phải khớp recipe; hai resolver cho cùng source/map được lưu đồng thời, binding cũ không overwrite. Same natural tuple/different content → integrity conflict, không INSERT OR REPLACE. Binding target_refs validator kiểm tra XOR/same scope và actual rows. Re-import producer metadata không đọc app network.
+
+**Retire/GC — thứ tự cố định:** acquire worktree shared lifecycle lease + writer lock → chọn generation không active → một transaction cho từng generation: state READY/READY_PARTIAL→RETIRED; FAILED/CANCELLED giữ terminal state → (1) `ui_build_bindings` của gen (cascade `ui_anchor_links`) nếu table đã migrate; (2) `entity_links`, `state_transitions`, `contract_fields` nếu domain đã migrate; (3) `relations`; (4) `module_members`; (5) `search_documents` (FTS triggers), `diagnostics`, `capability_results`; (6) `symbols`; (7) `domain_entities` nếu có; (8) `modules` theo leaf-before-parent; (9) `files`; (10) `packages`; (11) `generations`; (12) `content_blobs` không còn FK reference từ BẤT KỲ generation còn giữ; FK check → COMMIT. Không bỏ bước bằng cách disable FK, đổi cascade, xóa active pointer hoặc cập nhật source_path=NULL.
+
+Modules leaf-before-parent: trong cùng generation, chọn tối đa256 leaf IDs không có child còn tồn tại, order UTF-8 module_id; xóa đúng các IDs đó; lặp đến hết trong deadline. Còn rows nhưng không leaf → INDEX_CORRUPT và ROLLBACK toàn generation, không xử lý một nửa cây. Module cycle phải bị từ chối ở publish dù FK cho phép cycle. Các bước không có rows là no-op; table addon chưa được migrate được skip dựa schema capability đã xác minh, không nuốt lỗi SQL. Cancellation/fault giữa các bước rollback cả trạng thái RETIRED và deletions; generation active khác/profile khác không đổi. Reader đã mở read transaction vẫn giữ snapshot của lượt đó; page sau có thể SNAPSHOT_EXPIRED.
+
+Whole build-map GC là job riêng trong cùng writer ownership: chỉ map không binding còn giữ và ngoài retention mới được delete `ui_build_maps`; cascade anchors trong một transaction (self-FK deferred) + integrity check. Không xóa từng anchor ở map còn dùng. Không đọc/xóa records.sqlite/catalog/source trong GC derived index. Khi không đủ chỗ trả DISK_FULL/RESOURCE_LIMIT, không giảm dữ liệu active để vừa quota.
+
+FTS dùng `search_documents` external-content + triggers đồng bộ. Query join rowid về documents, filter generation/worktree before returning; không full-text table scan ngoài policy. Regression đảm bảo phrase ở generation A không xuất qua request B. Dedupe source blobs trong cùng worktree, không toàn máy.
+
+### DB-04 — Privacy purge và scope bảo đảm
+
+Revoke quyền đọc có hiệu lực ở các checks trước response; output đã gửi không thu hồi được. DELETE/GC không chứng minh raw bytes biến mất khỏi WAL, FTS shadow tables, free pages, OS snapshot hoặc backup [REF51,REF52]. Không ghi “secure erase” từ rowcount=0. Khi cần purge secret thực đã lỡ lưu: block serving affected data, lập incident metadata không value, rebuild allowed index từ nguồn đã sửa, offline checkpoints/backup handling theo quyền. Đừng thực hiện destructive purge records/backups để làm privacy test pass.
+
+Source security policy được áp trước persistence, không “save raw rồi redact lúc gửi”. Secret scanner hữu hạn có false negative; không claim mọi bí mật được tìm thấy. T001/T106 fixtures dùng marker giả và không user secret.
+
+### DB-05 — Bảo trì nhiều process: lifecycle lease khác writer lock (A07)
+
+Mỗi catalog và mỗi worktree có `lifecycle.lock` cố định ngoài các DB được thay. Primitive OS shared/exclusive được test tại T010/T035 trên Linux/Windows; không xóa hoặc đổi inode lockfile khi còn user. Process phải giữ SHARED lifecycle lease trong suốt thời gian còn bất kỳ pool/handle/transaction/child-owned DB handle nào tới store đó; idle pooled connection cũng tính. Đóng toàn pool/handles rồi mới nhả lease. Writer index/record thêm writer.lock EXCLUSIVE như trước; reader không lấy writer.lock. API entry authorization không thay lease. R1 foundation defines port/proof; actual store public access không mở trước wired lock adapter. Không dùng PID/TTL để chiếm lease.
+
+Maintenance chỉ cho migrate/replace/restore đúng store, không áp cho build/test/normal index toàn máy. Trình tự: validate command/quyền/target identity→acquire EXCLUSIVE lifecycle lease trong maintenance_wait_ms→không owner DB handles→acquire writer lock nếu worktree hoặc catalog mutation lock nếu catalog→backup/checkpoint/stage/migrate/verify→close maintenance handles→release writer→release lifecycle. Không nâng shared→exclusive tại chỗ trong khi đang giữ pool; close/release trước, lấy exclusive mới rồi revalidate. Không giữ hai worktree writer locks. Không giữ catalog SQL transaction khi chờ worktree gate. Acquire nhiều lifecycle leases chỉ ở process startup bằng catalog trước rồi worktree UUID thứ tự tăng, release ngược; không khóa source.
+
+Một CLI maintenance không ép các MCP/Explorer process khác thoát, không kill theo tên. Nếu họ đang giữ SHARED pool lease: trả STORE_MAINTENANCE/WORKTREE_BUSY với store/operation owner metadata đã sanitize và yêu cầu đóng đúng process trước; không khẳng định đã drain chỉ từ writer.lock. Deadline hữu hạn, không retry vô hạn. Worktree B không bị khóa bởi maintenance A; catalog maintenance ảnh hưởng mọi consumer catalog vì đó là shared config thật, phải báo phạm vi này rõ, không gọi dependency build giữa các dự án. Không cần daemon/poll registry mới để bảo trì.
+
+Giữ SQLite native locks/WAL semantics, lifecycle lock chỉ điều phối các process MCE4D hợp tác. Process/DB tool ngoài giao thức hoặc filesystem không hỗ trợ lock đáng tin cậy → refuse automatic replace, offline operator gate; không claim chống arbitrary same-user tool. Reader process lâu sống giữ shared lease nên maintenance có thể yêu cầu user dừng process rõ ràng; đây là trade-off đơn giản, không fake automatic draining. Core command bắt đầu trên incomplete maintenance journal → STORE_RECOVERY_REQUIRED, không tự mở DB nửa thay.
+
+### DB-06 — Incarnation, restore và journal phục hồi (A07)
+
+Catalog có catalog_identity.incarnation; index store_identity.incarnation; records records_meta.incarnation. App init tạo UUID random mới cho mỗi store mới; field bắt buộc không có default cố định. Restore/rebuild/replacement sinh incarnation MỚI trước phục vụ; không lấy lại identity incarnation trong backup làm phiên hiện tại. Regular SQL transaction/atomic publish không đổi incarnation. Scoped tokens/cache/results gồm catalog+index+records incarnation; client thiếu/sai nhận STORE_REPLACED hoặc token invalidation, không chấp nhận vì revision số trùng sau rollback. SourceRef bản thân không mang quyền; khi dùng phải có current/pinned scope đã xác minh.
+
+**Backup baseline:** mỗi command chọn catalog HOẶC một worktree set index+records; không hứa atomic backup xuyên nhiều worktrees/catalog. Backup online dùng verified SQLite backup API từng DB và metadata versions/hashes; còn consistent worktree pair cần exclusive lifecycle + all writers quiesced rồi backup cả hai cùng cửa sổ. Backup manifest có format_version, source store kinds/IDs/incarnations/schema versions, raw file hashes, timestamp, policy/binding/record revisions và `consistency=quiesced_worktree_set|single_store`. Backup không chứa cursor.key/session/bearer; permission approvals khi restore phải được review lại và sessions không tồn tại sau restart. Catalog group refs và worktree backup có thể không cùng point-in-time: sau restore phải reconcile, không auto link missing refs. Worktree/index backup MUST include referenced immutable manifest artifacts theo DB-07 dưới quiescent window; descriptor/raw hashes/files checked trước success. Index-only internal backup cũng cần closed file-set lifecycle proof, không online DB-only snapshot rồi GC làm mất manifests.
+
+**Restore baseline offline:** approved local backup manifest→bounded checksum/schema/worktree/permission validation→EXCLUSIVE lifecycle/worktree writer→create sanitized journal ngoài files sẽ restore→build staged DBs dưới same owned filesystem bằng backup API/closed verified files→PRAGMA integrity_check/foreign_key_check + initialize NEW incarnation(s)→close staging/original handles→record PREPARED→replace each store file theo journal và adapter atomic-rename semantics đã test→verify all intended hashes/schema/IDs→record VERIFIED→resume only sau gate. Giữ rollback artifact thuộc policy/quyền, không tự xóa bản duy nhất để reclaim. Không restore cursor.key từ archive. Catalog restore cũng rotate catalog incarnation, mọi existing scope token invalid. Worktree index-only rebuild giữ records, index incarnation mới; records references cũ là historical/needs_review.
+
+Journal record gồm format_version, operation_id, target_store_ids, expected_old_incarnations, staged hashes, replacement order, phase=`PREPARED|REPLACING|VERIFYING|VERIFIED|NEEDS_RECOVERY`, actual completed steps; không source/raw secrets. Atomic journal writes, flush và directory durability theo OS adapter được kiểm chứng; không hứa crash durability nếu filesystem/platform không bảo đảm. Process crash giữa replace nhiều DB không là atomic multi-file transaction: next command block phục vụ, recovery verify journal/state rồi hoàn tất hoặc rollback đúng owned files có quyền. Không đoán từ file tồn tại/PID cũ rằng restore hoàn tất. Test crash từng boundary; no rollback generation/profile silently để token cũ hợp lệ.
+
+CLI cần triển khai: mce4d store backup --target catalog/worktree --worktree-id <id-if-worktree> --output <approved-owned-backup-dir>; catalog output dưới <MCE4D_HOME>/backups/<operation_id>/, worktree output dưới worktrees/<worktree_id>/backups/<operation_id>/, secured same-volume owned paths và backup entry cache0/volume growth đầy đủ. Existing backup không overwrite/xóa; new exclusive operation directory. restore --manifest <approved-local-file> --confirm --wait-ms <bounded> có thể read approved input ngoài home nhưng staging/replacement/journal chỉ owned home; recover --target ... --report-only mặc định no mutation, apply quyền/confirmation riêng. No HTTP/MCP maintenance endpoint, no placeholder command. Owned same-volume backup chứng minh logical/process/migration recovery, không disaster recovery mất toàn volume; external archival/export chưa có closed writer/admission contract là ngoài runtime baseline, không tự ghi arbitrary path. T035/T005 kiểm parser/ownership/output collision/volume admission.
+
+### DB-07 — Resolver, snapshots và dữ liệu bền vững sau GC
+
+Resolver digest nằm trong binding natural key và immutable metadata; select binding của session explicit binding_id, không lấy MAX(created_at) làm đúng. Cùng producer map/source/policy đổi resolver được lưu cạnh nhau; phiên cũ giữ resolver cũ tới expiry/rebind, không rewrite links. Import same manifest byte-equivalent idempotent; same ID/different content reject. UI metadata chỉ có hiệu lực với generation retained+policy/current incarnation đúng.
+
+Retention cache default2 generations/profile vẫn giữ; TTL pack/result không bảo đảm snapshot được giữ. Đo snapshot_expired_count, repeated_context_bytes, map_expired_count, lock_wait_by_operation trước tăng retention. Không thêm pin/lease hội thoại vào R1. User records và permission version history không vào GC index. Khi historical SourceRef đã GC, RecordSummary báo snapshot_expired/needs_review, có thể xem statement/metadata được policy cho phép nhưng không dựng lại source từ lời nhớ. Reanchor vào current source chỉ proposed mapping mới, có version/review; không sửa record cũ.
+Manifest GC DB-03/DB-07: enumerate StoredCaptureManifestRef mọi retained/BUILDING profiles; delete only owned unreferenced artifacts sau committed generation retirement. BUILDING live operation lease không delete; no active/records/backups prune. Open-handle read/GC cần OS race proof; missing retired SNAPSHOT_EXPIRED, không recreate current source. Crash orphan recovery kiểm lease/descriptor/digest/quota, không TTL. Quiesced index+records backup gồm referenced manifest files và hashes; staged restore verify file set trước served/new incarnation, không DB-only mất manifests. T035/T106/T053 publication/orphan/GC/backup-restore checks.
+
+
+### DDL — catalog_001
+
+<!-- BEGIN MCE4D_DDL_CATALOG_001 -->
+```sql
+PRAGMA foreign_keys=ON;
+CREATE TABLE schema_meta (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+ schema_version INTEGER NOT NULL CHECK(schema_version>=1),
+ min_reader_version INTEGER NOT NULL CHECK(min_reader_version>=1)
+) STRICT;
+INSERT INTO schema_meta VALUES(1,1,1);
+CREATE TABLE catalog_identity (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+ incarnation TEXT NOT NULL CHECK(length(incarnation)=36)
+) STRICT;
+CREATE TABLE repositories (
+ repo_id TEXT PRIMARY KEY NOT NULL,
+ common_dir TEXT NOT NULL UNIQUE,
+ filesystem_identity TEXT NOT NULL UNIQUE,
+ created_at TEXT NOT NULL
+) STRICT;
+CREATE TABLE worktrees (
+ worktree_id TEXT PRIMARY KEY NOT NULL,
+ repo_id TEXT NOT NULL REFERENCES repositories(repo_id) ON DELETE RESTRICT,
+ canonical_root TEXT NOT NULL UNIQUE,
+ filesystem_identity TEXT NOT NULL UNIQUE,
+ binding_revision INTEGER NOT NULL DEFAULT 1 CHECK(binding_revision>=1),
+ status TEXT NOT NULL CHECK(status IN ('registered','unavailable','removed')),
+ created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+) STRICT;
+CREATE INDEX worktrees_repo ON worktrees(repo_id,status);
+CREATE TABLE policies (
+ worktree_id TEXT NOT NULL REFERENCES worktrees(worktree_id) ON DELETE RESTRICT,
+ policy_digest TEXT NOT NULL CHECK(length(policy_digest)=64),
+ config_json TEXT NOT NULL CHECK(json_valid(config_json)),
+ created_at TEXT NOT NULL,
+ PRIMARY KEY(worktree_id,policy_digest)
+) STRICT;
+CREATE TABLE worktree_policy_heads (
+ worktree_id TEXT PRIMARY KEY NOT NULL,
+ policy_digest TEXT NOT NULL,
+ policy_epoch INTEGER NOT NULL CHECK(policy_epoch>=1),
+ updated_at TEXT NOT NULL,
+ FOREIGN KEY(worktree_id,policy_digest) REFERENCES policies(worktree_id,policy_digest) ON DELETE RESTRICT
+) STRICT;
+CREATE TABLE profiles (
+ worktree_id TEXT NOT NULL REFERENCES worktrees(worktree_id) ON DELETE RESTRICT,
+ profile_id TEXT NOT NULL CHECK(length(profile_id)=64),
+ config_json TEXT NOT NULL CHECK(json_valid(config_json)),
+ toolchain_digest TEXT NOT NULL CHECK(length(toolchain_digest)=64),
+ provider_digest TEXT NOT NULL CHECK(length(provider_digest)=64),
+ created_at TEXT NOT NULL,
+ PRIMARY KEY(worktree_id,profile_id)
+) STRICT;
+CREATE TABLE profile_heads (
+ worktree_id TEXT NOT NULL,
+ profile_name TEXT NOT NULL,
+ profile_id TEXT NOT NULL,
+ revision INTEGER NOT NULL CHECK(revision>=1),
+ PRIMARY KEY(worktree_id,profile_name),
+ FOREIGN KEY(worktree_id,profile_id) REFERENCES profiles(worktree_id,profile_id) ON DELETE RESTRICT
+) STRICT;
+CREATE TABLE repo_groups (
+ group_id TEXT PRIMARY KEY NOT NULL,
+ name TEXT NOT NULL UNIQUE,
+ status TEXT NOT NULL DEFAULT 'active' CHECK(status IN('active','removed')),
+ revision INTEGER NOT NULL CHECK(revision>=1),
+ created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+) STRICT;
+CREATE TABLE group_members (
+ group_id TEXT NOT NULL REFERENCES repo_groups(group_id) ON DELETE CASCADE,
+ service_id TEXT NOT NULL,
+ worktree_id TEXT NOT NULL,
+ profile_id TEXT NOT NULL,
+ namespace_json TEXT NOT NULL CHECK(json_valid(namespace_json)),
+ PRIMARY KEY(group_id,service_id),
+ FOREIGN KEY(worktree_id,profile_id) REFERENCES profiles(worktree_id,profile_id) ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX group_members_scope ON group_members(worktree_id,profile_id);
+CREATE TRIGGER policies_immutable BEFORE UPDATE ON policies BEGIN SELECT RAISE(ABORT,'IMMUTABLE_POLICY'); END;
+CREATE TRIGGER profiles_immutable BEFORE UPDATE ON profiles BEGIN SELECT RAISE(ABORT,'IMMUTABLE_PROFILE'); END;
+CREATE TABLE preview_permission_versions (
+ profile_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version>=1),
+ declared_status TEXT NOT NULL CHECK(declared_status IN('approved','revoked')),
+ config_json TEXT NOT NULL CHECK(json_valid(config_json)),
+ config_digest TEXT NOT NULL CHECK(length(config_digest)=64),
+ actor_id TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL,
+ PRIMARY KEY(profile_id,version)
+) STRICT;
+CREATE TABLE preview_permission_heads (
+ profile_id TEXT PRIMARY KEY NOT NULL, version INTEGER NOT NULL,
+ FOREIGN KEY(profile_id,version) REFERENCES preview_permission_versions(profile_id,version) ON DELETE RESTRICT
+) STRICT;
+CREATE TRIGGER preview_permissions_immutable BEFORE UPDATE ON preview_permission_versions
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_PERMISSION_VERSION'); END;
+
+```
+<!-- END MCE4D_DDL_CATALOG_001 -->
+
+### DDL — index_001
+
+<!-- BEGIN MCE4D_DDL_INDEX_001 -->
+```sql
+PRAGMA foreign_keys=ON;
+CREATE TABLE schema_meta (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+ schema_version INTEGER NOT NULL CHECK(schema_version>=1),
+ min_reader_version INTEGER NOT NULL CHECK(min_reader_version>=1)
+) STRICT;
+INSERT INTO schema_meta VALUES(1,1,1);
+CREATE TABLE store_identity (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+ worktree_id TEXT NOT NULL UNIQUE,
+ incarnation TEXT NOT NULL CHECK(length(incarnation)=36)
+) STRICT;
+CREATE TABLE generations (
+ generation_id TEXT PRIMARY KEY NOT NULL,
+ profile_id TEXT NOT NULL CHECK(length(profile_id)=64),
+ snapshot_digest TEXT CHECK(snapshot_digest IS NULL OR length(snapshot_digest)=64),
+ state TEXT NOT NULL CHECK(state IN ('BUILDING','READY','READY_PARTIAL','FAILED','CANCELLED','RETIRED')),
+ owner_job_id TEXT NOT NULL,
+ policy_digest TEXT NOT NULL CHECK(length(policy_digest)=64),
+ policy_epoch INTEGER NOT NULL CHECK(policy_epoch>=1),
+ provider_fingerprint TEXT NOT NULL CHECK(length(provider_fingerprint)=64),
+ manifest_json TEXT CHECK(manifest_json IS NULL OR json_valid(manifest_json)),
+ created_at TEXT NOT NULL, completed_at TEXT,
+ UNIQUE(profile_id,generation_id),
+ CHECK(state NOT IN ('READY','READY_PARTIAL','RETIRED') OR
+       (snapshot_digest IS NOT NULL AND manifest_json IS NOT NULL AND completed_at IS NOT NULL))
+) STRICT;
+CREATE INDEX generations_profile ON generations(profile_id,completed_at,generation_id);
+CREATE TABLE active_generations (
+ profile_id TEXT PRIMARY KEY NOT NULL,
+ generation_id TEXT NOT NULL UNIQUE,
+ FOREIGN KEY(profile_id,generation_id) REFERENCES generations(profile_id,generation_id) ON DELETE RESTRICT
+) STRICT;
+CREATE TABLE content_blobs (
+ content_hash TEXT PRIMARY KEY NOT NULL CHECK(length(content_hash)=64),
+ bytes BLOB NOT NULL,
+ byte_length INTEGER NOT NULL CHECK(byte_length>=0 AND byte_length=length(bytes))
+) STRICT;
+CREATE TABLE packages (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ package_key TEXT NOT NULL,
+ import_path TEXT NOT NULL, module_key TEXT NOT NULL,
+ variant TEXT NOT NULL CHECK(variant IN ('production','internal_test','external_test','other_supported')),
+ input_digest TEXT NOT NULL CHECK(length(input_digest)=64),
+ semantic_status TEXT NOT NULL CHECK(semantic_status IN ('complete_in_profile','partial','unsupported','unknown')),
+ PRIMARY KEY(generation_id,package_key)
+) STRICT;
+CREATE INDEX packages_import ON packages(generation_id,import_path,variant);
+CREATE TABLE files (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ path TEXT NOT NULL,
+ content_hash TEXT REFERENCES content_blobs(content_hash) ON DELETE RESTRICT,
+ kind TEXT NOT NULL,
+ status TEXT NOT NULL CHECK(status IN ('indexed','metadata_only','excluded','missing','read_error','parse_error')),
+ byte_length INTEGER CHECK(byte_length IS NULL OR byte_length>=0),
+ package_key TEXT,
+ generated INTEGER NOT NULL DEFAULT 0 CHECK(generated IN (0,1)),
+ reason_code TEXT,
+ PRIMARY KEY(generation_id,path),
+ FOREIGN KEY(generation_id,package_key) REFERENCES packages(generation_id,package_key) ON DELETE RESTRICT,
+ CHECK(status NOT IN ('indexed','parse_error') OR content_hash IS NOT NULL),
+ CHECK(status NOT IN ('excluded','missing','read_error') OR content_hash IS NULL),
+ CHECK(status='indexed' OR reason_code IS NOT NULL)
+) STRICT;
+CREATE INDEX files_status ON files(generation_id,status,path);
+CREATE TABLE symbols (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ symbol_id TEXT NOT NULL,
+ path TEXT, package_key TEXT, kind TEXT NOT NULL,
+ name TEXT NOT NULL, qualified_name TEXT NOT NULL, scope_key TEXT NOT NULL,
+ start_byte INTEGER, end_byte INTEGER,
+ signature TEXT NOT NULL, exported INTEGER NOT NULL CHECK(exported IN(0,1)),
+ PRIMARY KEY(generation_id,symbol_id),
+ FOREIGN KEY(generation_id,path) REFERENCES files(generation_id,path) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,package_key) REFERENCES packages(generation_id,package_key) ON DELETE RESTRICT,
+ CHECK((path IS NULL AND kind='external' AND start_byte IS NULL AND end_byte IS NULL)
+   OR (path IS NOT NULL AND start_byte IS NOT NULL AND end_byte IS NOT NULL AND start_byte>=0 AND end_byte>=start_byte))
+) STRICT;
+CREATE INDEX symbols_name ON symbols(generation_id,name,symbol_id);
+CREATE INDEX symbols_qualified ON symbols(generation_id,qualified_name,symbol_id);
+CREATE INDEX symbols_range ON symbols(generation_id,path,start_byte,end_byte);
+CREATE TABLE relations (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ relation_id TEXT NOT NULL,
+ source_symbol_id TEXT NOT NULL, target_symbol_id TEXT,
+ kind TEXT NOT NULL,
+ evidence_kind TEXT NOT NULL CHECK(evidence_kind IN
+ ('syntax_exact','type_resolved','type_possible','explicit_document','text_match','unresolved')),
+ site_path TEXT NOT NULL, start_byte INTEGER NOT NULL CHECK(start_byte>=0),
+ end_byte INTEGER NOT NULL CHECK(end_byte>=start_byte),
+ reason TEXT NOT NULL, unresolved_label TEXT,
+ PRIMARY KEY(generation_id,relation_id),
+ FOREIGN KEY(generation_id,source_symbol_id) REFERENCES symbols(generation_id,symbol_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,target_symbol_id) REFERENCES symbols(generation_id,symbol_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,site_path) REFERENCES files(generation_id,path) ON DELETE RESTRICT,
+ CHECK(target_symbol_id IS NOT NULL OR (evidence_kind='unresolved' AND unresolved_label IS NOT NULL))
+) STRICT;
+CREATE INDEX relations_out ON relations(generation_id,source_symbol_id,kind,relation_id);
+CREATE INDEX relations_in ON relations(generation_id,target_symbol_id,kind,relation_id);
+CREATE TABLE diagnostics (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ diagnostic_id TEXT NOT NULL, path TEXT, package_key TEXT,
+ code TEXT NOT NULL, severity TEXT NOT NULL CHECK(severity IN('info','warning','error')),
+ sanitized_message TEXT NOT NULL,
+ scope_json TEXT NOT NULL CHECK(json_valid(scope_json)),
+ PRIMARY KEY(generation_id,diagnostic_id),
+ FOREIGN KEY(generation_id,path) REFERENCES files(generation_id,path) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,package_key) REFERENCES packages(generation_id,package_key) ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX diagnostics_code ON diagnostics(generation_id,severity,code);
+CREATE TABLE capability_results (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ capability_key TEXT NOT NULL, scope_key TEXT NOT NULL,
+ status TEXT NOT NULL CHECK(status IN('supported_scope_complete','partial','unsupported','unknown')),
+ summary_json TEXT NOT NULL CHECK(json_valid(summary_json)),
+ PRIMARY KEY(generation_id,capability_key,scope_key)
+) STRICT;
+CREATE TABLE search_documents (
+ rowid INTEGER PRIMARY KEY,
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ item_id TEXT NOT NULL, path TEXT NOT NULL, kind TEXT NOT NULL,
+ name TEXT NOT NULL, qualified_name TEXT NOT NULL, body TEXT NOT NULL,
+ UNIQUE(generation_id,item_id)
+) STRICT;
+CREATE INDEX search_scope ON search_documents(generation_id,path,item_id);
+CREATE VIRTUAL TABLE search_fts USING fts5(
+ name,qualified_name,body,content='search_documents',content_rowid='rowid',tokenize='unicode61'
+);
+CREATE TRIGGER search_documents_ai AFTER INSERT ON search_documents BEGIN
+ INSERT INTO search_fts(rowid,name,qualified_name,body) VALUES(new.rowid,new.name,new.qualified_name,new.body);
+END;
+CREATE TRIGGER search_documents_ad AFTER DELETE ON search_documents BEGIN
+ INSERT INTO search_fts(search_fts,rowid,name,qualified_name,body) VALUES('delete',old.rowid,old.name,old.qualified_name,old.body);
+END;
+CREATE TRIGGER search_documents_au AFTER UPDATE ON search_documents BEGIN
+ INSERT INTO search_fts(search_fts,rowid,name,qualified_name,body) VALUES('delete',old.rowid,old.name,old.qualified_name,old.body);
+ INSERT INTO search_fts(rowid,name,qualified_name,body) VALUES(new.rowid,new.name,new.qualified_name,new.body);
+END;
+CREATE TRIGGER active_insert_guard BEFORE INSERT ON active_generations BEGIN
+ SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM generations g WHERE g.generation_id=new.generation_id
+ AND g.profile_id=new.profile_id AND g.state IN('READY','READY_PARTIAL'))
+ THEN RAISE(ABORT,'GENERATION_NOT_PUBLISHED') END;
+END;
+CREATE TRIGGER active_update_guard BEFORE UPDATE ON active_generations BEGIN
+ SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM generations g WHERE g.generation_id=new.generation_id
+ AND g.profile_id=new.profile_id AND g.state IN('READY','READY_PARTIAL'))
+ THEN RAISE(ABORT,'GENERATION_NOT_PUBLISHED') END;
+END;
+CREATE TRIGGER generation_retire_guard BEFORE UPDATE OF state ON generations
+WHEN new.state='RETIRED' BEGIN
+ SELECT CASE WHEN EXISTS(SELECT 1 FROM active_generations WHERE generation_id=old.generation_id)
+ THEN RAISE(ABORT,'ACTIVE_GENERATION_CANNOT_RETIRE') END;
+END;
+CREATE TRIGGER content_blob_no_update BEFORE UPDATE ON content_blobs BEGIN
+ SELECT RAISE(ABORT,'IMMUTABLE_CONTENT');
+END;
+CREATE TRIGGER packages_insert_frozen BEFORE INSERT ON packages
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER packages_update_frozen BEFORE UPDATE ON packages
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER packages_delete_frozen BEFORE DELETE ON packages
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER files_insert_frozen BEFORE INSERT ON files
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER files_update_frozen BEFORE UPDATE ON files
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER files_delete_frozen BEFORE DELETE ON files
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER symbols_insert_frozen BEFORE INSERT ON symbols
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER symbols_update_frozen BEFORE UPDATE ON symbols
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER symbols_delete_frozen BEFORE DELETE ON symbols
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER relations_insert_frozen BEFORE INSERT ON relations
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER relations_update_frozen BEFORE UPDATE ON relations
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER relations_delete_frozen BEFORE DELETE ON relations
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER diagnostics_insert_frozen BEFORE INSERT ON diagnostics
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER diagnostics_update_frozen BEFORE UPDATE ON diagnostics
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER diagnostics_delete_frozen BEFORE DELETE ON diagnostics
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER capability_results_insert_frozen BEFORE INSERT ON capability_results
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER capability_results_update_frozen BEFORE UPDATE ON capability_results
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER capability_results_delete_frozen BEFORE DELETE ON capability_results
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER search_documents_insert_frozen BEFORE INSERT ON search_documents
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER search_documents_update_frozen BEFORE UPDATE ON search_documents
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER search_documents_delete_frozen BEFORE DELETE ON search_documents
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER generation_state_guard BEFORE UPDATE OF state ON generations
+WHEN NOT (new.state=old.state OR (old.state='BUILDING' AND new.state IN('READY','READY_PARTIAL','FAILED','CANCELLED'))
+ OR (old.state IN('READY','READY_PARTIAL') AND new.state='RETIRED'))
+BEGIN SELECT RAISE(ABORT,'INVALID_GENERATION_TRANSITION'); END;
+CREATE TRIGGER generation_metadata_guard BEFORE UPDATE ON generations
+WHEN old.state!='BUILDING' AND (new.generation_id IS NOT old.generation_id OR new.profile_id IS NOT old.profile_id
+ OR new.snapshot_digest IS NOT old.snapshot_digest OR new.policy_digest IS NOT old.policy_digest
+ OR new.provider_fingerprint IS NOT old.provider_fingerprint OR new.manifest_json IS NOT old.manifest_json
+ OR new.created_at IS NOT old.created_at OR new.completed_at IS NOT old.completed_at
+ OR new.owner_job_id IS NOT old.owner_job_id OR new.policy_epoch IS NOT old.policy_epoch)
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION_METADATA'); END;
+CREATE TRIGGER generation_delete_guard BEFORE DELETE ON generations
+WHEN old.state NOT IN('RETIRED','FAILED','CANCELLED')
+BEGIN SELECT RAISE(ABORT,'GENERATION_NOT_RETIRED'); END;
+```
+<!-- END MCE4D_DDL_INDEX_001 -->
+
+### DDL — index_002
+
+<!-- BEGIN MCE4D_DDL_INDEX_002 -->
+```sql
+CREATE TABLE modules (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ module_id TEXT NOT NULL, parent_module_id TEXT,
+ label TEXT NOT NULL, kind TEXT NOT NULL,
+ plane TEXT NOT NULL CHECK(plane IN('intended','observed_static')),
+ source_path TEXT, start_byte INTEGER, end_byte INTEGER,
+ PRIMARY KEY(generation_id,module_id),
+ FOREIGN KEY(generation_id,parent_module_id) REFERENCES modules(generation_id,module_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,source_path) REFERENCES files(generation_id,path) ON DELETE RESTRICT
+) STRICT;
+CREATE TABLE module_members (
+ generation_id TEXT NOT NULL, module_id TEXT NOT NULL, package_key TEXT NOT NULL,
+ PRIMARY KEY(generation_id,module_id,package_key),
+ FOREIGN KEY(generation_id,module_id) REFERENCES modules(generation_id,module_id) ON DELETE CASCADE,
+ FOREIGN KEY(generation_id,package_key) REFERENCES packages(generation_id,package_key) ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX module_members_reverse ON module_members(generation_id,package_key,module_id);
+UPDATE schema_meta SET schema_version=2,min_reader_version=2 WHERE singleton=1;
+CREATE TRIGGER modules_insert_frozen BEFORE INSERT ON modules
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER modules_update_frozen BEFORE UPDATE ON modules
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER modules_delete_frozen BEFORE DELETE ON modules
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER module_members_insert_frozen BEFORE INSERT ON module_members
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER module_members_update_frozen BEFORE UPDATE ON module_members
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER module_members_delete_frozen BEFORE DELETE ON module_members
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+```
+<!-- END MCE4D_DDL_INDEX_002 -->
+
+### DDL — records_001
+
+<!-- BEGIN MCE4D_DDL_RECORDS_001 -->
+```sql
+PRAGMA foreign_keys=ON;
+CREATE TABLE schema_meta (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+ schema_version INTEGER NOT NULL CHECK(schema_version>=1),
+ min_reader_version INTEGER NOT NULL CHECK(min_reader_version>=1)
+) STRICT;
+INSERT INTO schema_meta VALUES(1,1,1);
+CREATE TABLE records_meta (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), worktree_id TEXT NOT NULL,
+ incarnation TEXT NOT NULL CHECK(length(incarnation)=36),
+ record_epoch INTEGER NOT NULL DEFAULT 0 CHECK(record_epoch>=0)
+) STRICT;
+CREATE TABLE record_versions (
+ record_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version>=1),
+ record_kind TEXT NOT NULL CHECK(record_kind IN('decision','constraint','vocabulary','ui_mapping','intended_architecture','state_model')),
+ declared_status TEXT NOT NULL CHECK(declared_status IN('proposed','approved','revoked','superseded')),
+ payload_json TEXT NOT NULL CHECK(json_valid(payload_json)),
+ source_refs_json TEXT NOT NULL CHECK(json_valid(source_refs_json)),
+ actor_id TEXT NOT NULL, reason TEXT NOT NULL,
+ payload_hash TEXT NOT NULL CHECK(length(payload_hash)=64), created_at TEXT NOT NULL,
+ PRIMARY KEY(record_id,version)
+) STRICT;
+CREATE TABLE record_heads (
+ record_id TEXT PRIMARY KEY NOT NULL, version INTEGER NOT NULL,
+ FOREIGN KEY(record_id,version) REFERENCES record_versions(record_id,version) ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX records_kind ON record_versions(record_kind,record_id,version);
+CREATE TRIGGER record_versions_immutable BEFORE UPDATE ON record_versions BEGIN
+ SELECT RAISE(ABORT,'IMMUTABLE_RECORD_VERSION');
+END;
+CREATE TABLE mutation_receipts (
+ client_mutation_id TEXT PRIMARY KEY NOT NULL,
+ principal_id TEXT NOT NULL,
+ request_hash TEXT NOT NULL CHECK(length(request_hash)=64),
+ record_id TEXT NOT NULL, result_version INTEGER NOT NULL,
+ created_at TEXT NOT NULL,
+ FOREIGN KEY(record_id,result_version) REFERENCES record_versions(record_id,version) ON DELETE RESTRICT
+) STRICT;
+```
+<!-- END MCE4D_DDL_RECORDS_001 -->
+
+### DDL — index_003
+
+<!-- BEGIN MCE4D_DDL_INDEX_003 -->
+```sql
+CREATE TABLE domain_entities (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ entity_id TEXT NOT NULL, kind TEXT NOT NULL, qualified_key TEXT NOT NULL,
+ plane TEXT NOT NULL CHECK(plane IN('intended','observed_static')),
+ payload_json TEXT NOT NULL CHECK(json_valid(payload_json)),
+ source_refs_json TEXT NOT NULL CHECK(json_valid(source_refs_json)),
+ PRIMARY KEY(generation_id,entity_id)
+) STRICT;
+CREATE INDEX entities_kind ON domain_entities(generation_id,kind,qualified_key,entity_id);
+CREATE TABLE entity_links (
+ generation_id TEXT NOT NULL REFERENCES generations(generation_id) ON DELETE CASCADE,
+ link_id TEXT NOT NULL, source_symbol_id TEXT, source_entity_id TEXT,
+ target_symbol_id TEXT, target_entity_id TEXT, kind TEXT NOT NULL,
+ evidence_json TEXT NOT NULL CHECK(json_valid(evidence_json)),
+ resolution_status TEXT NOT NULL CHECK(resolution_status IN('exact_in_supported_scope','candidate','unresolved')),
+ PRIMARY KEY(generation_id,link_id),
+ FOREIGN KEY(generation_id,source_symbol_id) REFERENCES symbols(generation_id,symbol_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,target_symbol_id) REFERENCES symbols(generation_id,symbol_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,source_entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,target_entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE RESTRICT,
+ CHECK((source_symbol_id IS NOT NULL)+(source_entity_id IS NOT NULL)=1),
+ CHECK((target_symbol_id IS NOT NULL)+(target_entity_id IS NOT NULL)=1)
+) STRICT;
+CREATE INDEX entity_links_out ON entity_links(generation_id,source_entity_id,kind,link_id);
+CREATE INDEX entity_links_in ON entity_links(generation_id,target_entity_id,kind,link_id);
+CREATE INDEX symbol_entity_out ON entity_links(generation_id,source_symbol_id,kind,link_id);
+CREATE INDEX symbol_entity_in ON entity_links(generation_id,target_symbol_id,kind,link_id);
+CREATE TABLE contract_fields (
+ generation_id TEXT NOT NULL, entity_id TEXT NOT NULL, field_path TEXT NOT NULL,
+ direction TEXT NOT NULL CHECK(direction IN('input','output','bidirectional','stored')),
+ field_json TEXT NOT NULL CHECK(json_valid(field_json)),
+ PRIMARY KEY(generation_id,entity_id,field_path,direction),
+ FOREIGN KEY(generation_id,entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE CASCADE
+) STRICT;
+CREATE TABLE state_transitions (
+ generation_id TEXT NOT NULL, machine_entity_id TEXT NOT NULL,
+ transition_id TEXT NOT NULL, from_entity_id TEXT NOT NULL, to_entity_id TEXT NOT NULL,
+ guard_ref_json TEXT CHECK(guard_ref_json IS NULL OR json_valid(guard_ref_json)),
+ effect_refs_json TEXT NOT NULL CHECK(json_valid(effect_refs_json)),
+ evidence_json TEXT NOT NULL CHECK(json_valid(evidence_json)),
+ PRIMARY KEY(generation_id,machine_entity_id,transition_id),
+ FOREIGN KEY(generation_id,machine_entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE CASCADE,
+ FOREIGN KEY(generation_id,from_entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE RESTRICT,
+ FOREIGN KEY(generation_id,to_entity_id) REFERENCES domain_entities(generation_id,entity_id) ON DELETE RESTRICT
+) STRICT;
+UPDATE schema_meta SET schema_version=3,min_reader_version=3 WHERE singleton=1;
+CREATE TRIGGER domain_entities_insert_frozen BEFORE INSERT ON domain_entities
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER domain_entities_update_frozen BEFORE UPDATE ON domain_entities
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER domain_entities_delete_frozen BEFORE DELETE ON domain_entities
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER entity_links_insert_frozen BEFORE INSERT ON entity_links
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER entity_links_update_frozen BEFORE UPDATE ON entity_links
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER entity_links_delete_frozen BEFORE DELETE ON entity_links
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER contract_fields_insert_frozen BEFORE INSERT ON contract_fields
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER contract_fields_update_frozen BEFORE UPDATE ON contract_fields
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER contract_fields_delete_frozen BEFORE DELETE ON contract_fields
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER state_transitions_insert_frozen BEFORE INSERT ON state_transitions
+WHEN (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER state_transitions_update_frozen BEFORE UPDATE ON state_transitions
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id)!='BUILDING'
+ OR (SELECT state FROM generations WHERE generation_id=new.generation_id)!='BUILDING'
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+CREATE TRIGGER state_transitions_delete_frozen BEFORE DELETE ON state_transitions
+WHEN (SELECT state FROM generations WHERE generation_id=old.generation_id) IN('READY','READY_PARTIAL')
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION'); END;
+```
+<!-- END MCE4D_DDL_INDEX_003 -->
+
+### DDL — index_004
+
+<!-- BEGIN MCE4D_DDL_INDEX_004 -->
+```sql
+CREATE TABLE ui_build_maps (
+ build_map_id TEXT PRIMARY KEY NOT NULL CHECK(length(build_map_id)=64),
+ schema_version INTEGER NOT NULL CHECK(schema_version=1),
+ profile_id TEXT NOT NULL, provider_version TEXT NOT NULL,
+ provider_digest TEXT NOT NULL CHECK(length(provider_digest)=64),
+ build_config_digest TEXT NOT NULL CHECK(length(build_config_digest)=64),
+ input_manifest_digest TEXT NOT NULL CHECK(length(input_manifest_digest)=64),
+ mode TEXT NOT NULL CHECK(mode IN('development','test')),
+ artifact_hash TEXT NOT NULL CHECK(length(artifact_hash)=64),
+ metadata_json TEXT NOT NULL CHECK(json_valid(metadata_json)), created_at TEXT NOT NULL
+) STRICT;
+CREATE TABLE ui_source_anchors (
+ build_map_id TEXT NOT NULL REFERENCES ui_build_maps(build_map_id) ON DELETE CASCADE,
+ anchor_id TEXT NOT NULL CHECK(length(anchor_id)=64),
+ kind TEXT NOT NULL CHECK(kind IN('element_site','component_definition','component_render_site','event_binding_site')),
+ path TEXT NOT NULL, source_hash TEXT NOT NULL CHECK(length(source_hash)=64),
+ start_byte INTEGER NOT NULL CHECK(start_byte>=0), end_byte INTEGER NOT NULL CHECK(end_byte>=start_byte),
+ owner_anchor_id TEXT,
+ PRIMARY KEY(build_map_id,anchor_id),
+ FOREIGN KEY(build_map_id,owner_anchor_id) REFERENCES ui_source_anchors(build_map_id,anchor_id) DEFERRABLE INITIALLY DEFERRED
+) STRICT;
+CREATE INDEX anchors_source ON ui_source_anchors(build_map_id,path,start_byte,end_byte);
+CREATE TABLE ui_build_bindings (
+ binding_id TEXT PRIMARY KEY NOT NULL CHECK(length(binding_id)=64),
+ build_map_id TEXT NOT NULL REFERENCES ui_build_maps(build_map_id) ON DELETE CASCADE,
+ profile_id TEXT NOT NULL, source_generation_id TEXT NOT NULL,
+ policy_digest TEXT NOT NULL CHECK(length(policy_digest)=64),
+ resolver_digest TEXT NOT NULL CHECK(length(resolver_digest)=64),
+ evidence_digest TEXT NOT NULL CHECK(length(evidence_digest)=64),
+ created_at TEXT NOT NULL,
+ UNIQUE(binding_id,build_map_id),
+ UNIQUE(build_map_id,profile_id,source_generation_id,policy_digest,resolver_digest),
+ FOREIGN KEY(profile_id,source_generation_id) REFERENCES generations(profile_id,generation_id) ON DELETE RESTRICT
+) STRICT;
+CREATE INDEX build_bindings_gen ON ui_build_bindings(source_generation_id,build_map_id);
+CREATE TABLE ui_anchor_links (
+ binding_id TEXT NOT NULL, build_map_id TEXT NOT NULL, link_id TEXT NOT NULL, anchor_id TEXT NOT NULL,
+ target_ref_json TEXT NOT NULL CHECK(json_valid(target_ref_json)),
+ kind TEXT NOT NULL, resolution_status TEXT NOT NULL,
+ evidence_json TEXT NOT NULL CHECK(json_valid(evidence_json)),
+ PRIMARY KEY(binding_id,link_id),
+ FOREIGN KEY(binding_id,build_map_id) REFERENCES ui_build_bindings(binding_id,build_map_id) ON DELETE CASCADE,
+ FOREIGN KEY(build_map_id,anchor_id) REFERENCES ui_source_anchors(build_map_id,anchor_id) ON DELETE CASCADE
+) STRICT;
+CREATE INDEX anchors_reverse ON ui_anchor_links(binding_id,anchor_id,link_id);
+UPDATE schema_meta SET schema_version=4,min_reader_version=4 WHERE singleton=1;
+CREATE TRIGGER ui_build_maps_immutable BEFORE UPDATE ON ui_build_maps BEGIN SELECT RAISE(ABORT,'IMMUTABLE_UI_METADATA'); END;
+CREATE TRIGGER ui_source_anchors_immutable BEFORE UPDATE ON ui_source_anchors BEGIN SELECT RAISE(ABORT,'IMMUTABLE_UI_METADATA'); END;
+CREATE TRIGGER ui_build_bindings_immutable BEFORE UPDATE ON ui_build_bindings BEGIN SELECT RAISE(ABORT,'IMMUTABLE_UI_METADATA'); END;
+CREATE TRIGGER ui_anchor_links_immutable BEFORE UPDATE ON ui_anchor_links BEGIN SELECT RAISE(ABORT,'IMMUTABLE_UI_METADATA'); END;
+CREATE TRIGGER ui_anchors_bound_insert BEFORE INSERT ON ui_source_anchors
+WHEN EXISTS(SELECT 1 FROM ui_build_bindings WHERE build_map_id=new.build_map_id)
+BEGIN SELECT RAISE(ABORT,'BUILD_MAP_ALREADY_BOUND'); END;
+```
+<!-- END MCE4D_DDL_INDEX_004 -->
+
+### DDL — records_002
+
+<!-- BEGIN MCE4D_DDL_RECORDS_002 -->
+```sql
+CREATE TABLE evidence_artifacts (
+ artifact_id TEXT PRIMARY KEY NOT NULL CHECK(length(artifact_id)=64),
+ artifact_kind TEXT NOT NULL CHECK(artifact_kind IN('runtime_trace','test_report','coverage_report','deployment_metadata')),
+ input_hash TEXT NOT NULL CHECK(length(input_hash)=64),
+ sanitizer_version TEXT NOT NULL,
+ metadata_json TEXT NOT NULL CHECK(json_valid(metadata_json)),
+ created_at TEXT NOT NULL
+) STRICT;
+CREATE TABLE evidence_items (
+ artifact_id TEXT NOT NULL REFERENCES evidence_artifacts(artifact_id) ON DELETE CASCADE,
+ item_id TEXT NOT NULL, kind TEXT NOT NULL,
+ payload_json TEXT NOT NULL CHECK(json_valid(payload_json)),
+ source_binding_json TEXT NOT NULL CHECK(json_valid(source_binding_json)),
+ PRIMARY KEY(artifact_id,item_id)
+) STRICT;
+CREATE INDEX evidence_kind ON evidence_items(artifact_id,kind,item_id);
+UPDATE schema_meta SET schema_version=2,min_reader_version=2 WHERE singleton=1;
+```
+<!-- END MCE4D_DDL_RECORDS_002 -->
+
+## S45 — Thuật toán chuẩn và state transitions không được tự suy diễn
+
+### AL-01 — Index/analyzer contracts
+
+Inventory sorted raw relative path bytes được hỗ trợ; no symlink/ADS/UNC escape; enumerate tracked+allowed untracked và sparse/nested boundaries. Capture regular files qua secured handle, stat/identity before+after, hash raw bytes. Source range luôn [start,end). Invalid UTF8/path/file deny có diagnostic reason; không zero-byte substitution.
+
+Go `go/packages.Load` profile được pin, Overlay chứa captured inputs; custom ParseFile phải dùng provided src khớp capture hoặc reject; không âm thầm đọc disk mới. Loader có thể đọc metadata/dependencies nên preflight allowed closure + no custom driver/hooks là bắt buộc; overlay không sandbox. Type values (`types.Object`, `types.Type`) của hai Load khác nhau không dùng để so identity trực tiếp: mỗi load run registry riêng; normalize facts sang stable keys đã định nghĩa rồi mới join qua source/import identity có evidence [REF07].
+
+Parse cache key=(bytes,syntax provider/options). Semantic cache=(complete input closure,config/profile/policy/provider). Negative facts không reuse qua membership change. `x += y` read+write x chỉ khi binding chứng minh; pointer alias unknown không fake READS actual target. Interface target lưu method và candidate implementations riêng. Count declared file/test variants không tăng caller count vì cùng occurrence được type-check nhiều lần.
+
+Provider process payload chỉ snapshots/allowed paths đúng contract; cancellation by request ID/close/terminate. AST response nhận như untrusted: validate source hash/ranges/endpoints/kinds before store. Foreign source not allowlisted không trả snippets. Layer này không execute user tests, training module, notebook, target build plugin hoặc migration.
+
+ProviderStart/Batch/Done/Cancel S43; Go Analyze(ctx,input,sink) error giữ normalized facts, compiler objects không qua boundary. Coordinator tạo snapshot_root+manifest_path owned scratch; worker verify digest/profile/source, no arbitrary client path/URL/source reread. Materialization/dependency metadata là actual future cache/volume growth, admit closure thật, có thể tới full source size chứ không giả0,5B. Provider/compiler cache/temp children chỉ ghi owned budgeted scope, không target source/config.
+
+Start một job/scope mỗi worker; batching sequence strict tăng1, symbol/package facts trước consumer relations hoặc stage relation tới endpoints ready trong BUILDING; no public reads staging. Frame <=16MiB; partition source closure lớn dùng manifest file reference, không nhét tất cả bytes vào một frame. Done input_digest phải đúng capture; thiếu Done/job wrong/digest mismatch không publish complete. Output bytes/range/hash/FK validated bởi coordinator. Cancel frame best effort rồi terminate theo DF20; no unbounded sink backpressure. Batch có unknown kind hoặc oversized diagnostic là provider error, không drop im lặng. Python provider trước enable phải bổ sung PythonProfile schema tại T057 theo same seal, không accept EffectiveProfile=any để chạy.
+CaptureManifest producer MUST dùng MCE-MANIFEST-JSON1 dưới đây, canonical cả key order và escapes; byte limit áp actual artifact. Minified JSON tùy thư viện chưa đủ canonical. max_capture_manifest_bytes(default/hard32 GiB). Coordinator/provider decoder streaming tokens, depth<=32/object keys<=4096, strings theo schema+UTF-8/path checks. Normalize/sort bằng runs<=4096 entries và admitted merge spool; không load toàn triệu-entry JSON/AST vào RAM. Stream exact E(capture-v1) theo normalized sorted order; secure-open digest/file identity trước consumer, manifest frozen. Artifact cap không RAM allocation/reservation trước; oversized malformed reject trước allocating body, dimension=manifest_bytes. T020/T105/T107 bounded small-limit fixtures; T053/T077 whole XL proof.
+StoredCaptureManifestRef S43 là private physical metadata: generations.manifest_json chỉ descriptor<=4096 UTF-8 bytes, không full manifest. Full JSON worktrees/<worktree_id>/manifests/<snapshot_digest>.json; descriptor path worktree-relative manifests/<digest>.json, byte_length<=manifest cap, artifact_sha256=raw SHA256 khác snapshot_digest=E(capture-v1). Freeze/stream hash và cache+volume admission trước materialize; flush/verify immutable artifact trước SQL publish transaction. File chưa SQL commit là orphan candidate, không visible; crash sau commit ref phải trỏ verified file. Same digest path different bytes/hash reject/no overwrite, reuse chỉ current ownership/schema/hash đúng. Reader bounded descriptor, secure-open/verify raw hash/length và logical capture digest/profile/policy/provider, không giant SQL cell/live-source repair. Missing/tampered active artifact INDEX_CORRUPT/SOURCE_CAPTURE_MISMATCH; inactive retired SNAPSHOT_EXPIRED, fail closed.
+
+`MCE-MANIFEST-JSON1` là physical serialization duy nhất: normalize CaptureManifest theo CT-04 trước (files unique sorted UTF-8 path, dependency digests sorted giữ multiplicity; các arrays khác giữ semantic order), rồi sort keys UTF-8 byte lexicographic ở MỌI object. Chỉ null/bool/string/array/object/safe integers; minimal decimal, -0 thành 0, không fraction/exponent/unsafe integer. UTF-8 literal Unicode, reject surrogate/invalid encoding; quote và backslash escape, dùng short escapes \b/\f/\n/\r/\t cho đúng control, C0 còn lại dùng lowercase \u00xx; U+2028/U+2029 luôn \u2028/\u2029; slash không escape, <>& không HTML escape. Không space/BOM/trailing newline. Unicode không NFC/NFD normalization. JSON duplicate keys reject trước canonicalization. Input API/object key order hoặc escaped/literal Unicode tương đương phải sinh cùng canonical bytes; artifact persisted nhận từ worker phải đúng canonical representation, khác => reject trước publish. Không dùng runtime Go/Node encoder defaults nếu chưa cấu hình/verify tương đương.
+
+Logical snapshot_digest=H(capture-v1) bỏ chính field digest theo CT-04; raw artifact_sha256=SHA256(MCE-MANIFEST-JSON1(full CaptureManifest gồm snapshot_digest)). Do serialization duy nhất nên same logical manifest sinh same raw bytes/path, không false conflict vì key order. Same digest path khác canonical bytes/hash vẫn fail closed/no overwrite (corrupt/collision/identity mismatch). Canonical key-sort chỉ giữ object nhỏ theo depth/key caps; files/dependencies normalize bằng runs<=4096 + admitted spool/merge streaming, không json.Marshal toàn32 GiB. Golden full+Unicode serialization trong HASH_VECTORS, Go/Node/Python reference proof tại T006/T020/T105/T107; tests phải đảo key insertion, literal/escaped Unicode, C0/slash/HTML/U+2028 và reject malformed/noncanonical artifacts.
+
+### AL-02 — Context selection/order
+
+Resolve target exact → initial source/constraint obligations → reference catalog + boundary ledger → task-specific graph traversal với visited tuple(gen,node,kind) → group by module/semantic use → merge overlapping source ranges same file/hash → stable sort (required category, relation kind, path,start,id) → serialize whole items under cap. New UI selection chỉ cung cấp seed; không cắt dependencies chỉ vì UI nhỏ.
+
+No universal depth=2 sufficiency. Bound traversal time/nodes/depth produces gap. Graph walk order không proof execution. Cycles giữ representative cycle witness + expansion, không xóa cho layout. A required item không vừa budget phải pending với descriptor; consumer chưa được mark reviewed. Repeated page sau progress token phải tiếp tục item/order trong same vector; duplicate item IDs không làm AI đọc mãi cùng page.
+
+### AL-03 — Selection reducer (browser owner)
+
+State gồm selected GraphRef, source hash/scope vector, optional live instance, flow occurrence, mode pin, selection_seq, active resolver request IDs, viewport state. Hover state riêng, không copy graph nodes mỗi frame. Khi commit click: seq+=1, cancel old resolver, send typed request; response chỉ apply khi selection_seq+scope+build+epoch+requestId còn khớp. Render/update highlight ACK **không** dispatch user SELECT event. Graph/flow/source đều dùng một reducer; ReactFlow local layout không được mutation domain edges.
+
+Click flow step giữ occurrence và root; graph-origin chọn operation mới mới re-root. Multi-instance/ambiguous đưa chooser; unique anchor chưa chắc unique runtime instance. Preview not mounted vẫn source/graph view, không tự render UI giả, navigation hoặc auth.
+
+### AL-04 — Session pairing và mode state machine
+
+| Input / điều kiện | Transition và hành động |
+|---|---|
+| Attach valid permission+origin+scope | Server creates pairing, revision1, doc_epoch1, hmr0, auth_epoch0, mode inspect; browser installs shield trước iframe load |
+| iframe load/reload | Browser giữ shield; old listeners/requests disposed; origin/window verify; old session detach hoặc invalidate. Document epoch chỉ theo server acknowledgement, không SDK tự mở scope |
+| Parent CHALLENGE | Gửi nonce/session/exact expectedOrigin; SDK chỉ trả READY tương ứng, build_map opaque/capabilities |
+| READY valid | Browser POST preview/bind với expected_revision+nonce+epochs+build; server resolve imported map/source binding và source policy |
+| Bind success | Server revision tăng và state bound, returns binding_id; parent gửi BOUND build+auth_epoch; SDK BOUND_ACK khớp mới client READY. No ACK trong3s → invalidate/shield |
+| Request Interact | Chỉ explicit UI action+permission test profile; server expected_revision/auth epoch CAS → arming, command_id random, auth_epoch+1, deadline3s; shield vẫn còn |
+| SDK MODE_ACK accepted | Browser verify session/build/doc/hmr/command/epoch; POST preview/ack; server còn arming+not_expired mới interact; browser bỏ shield chỉ sau response khớp selection/session |
+| Wrong/late/rejected ACK / timeout | Không chuyển interact; server inspect hoặc stale, auth_epoch invalidate; browser shield. Không auto retry mode escalation |
+| Disarm/mode Inspect | Browser bật shield synchronously TRƯỚC request; server inspect+epoch++ ngay, sends SET_MODE inspect best effort; ack không là prerequisite safety |
+| HMR/build/origin/policy/group change | Browser shield+cancel first; preview/invalidate CAS; state stale, nonce/command invalid, auth_epoch++; mới bind/source check mới ready |
+| Detach/server stop | Shield/remove iframe if mounted, revoke session and bearer as scoped, cleanup observers/timers/ports/weak refs; do not kill user's app |
+
+Preview session TTL30 phút, bearer TTL30 phút maximum không vượt source permission; bootstrap code32 randombytes base64url TTL60s single-use, max5 attempts/min/process rồi rate-limit không global lock. Command ACK deadline3s; graceful detach timeout1s rồi local cleanup. Query defaults theo S15. Bridge PING/PONG kiểm SDK liveness riêng server status; polling không gia hạn session/bearer/quyền và không bump revision. Heartbeat chỉ liveness hint, không source freshness proof; server `POST /preview/status` polling2s khi visible/5s hidden (CT-08), timeout2 missed -> local shield+disarm; in-flight race vẫn cần isolated test environment, không sandbox guarantee.
+
+Bridge mỗi direction có increasing seq và dedupe message_id bounded256 entries/session. Reply phải match pending reply_to/type; event unsolicited chỉ allow BUILD_CHANGED/INSTANCE_INVALIDATED/CAPABILITY_STATUS/ERROR theo state; PONG chỉ reply PING pending (không unsolicited). HMR notification phải ở old authorized session với new_hmr_epoch cao hơn; invalidated epoch không dùng PICK responses. Không ACK vòng lặp, không echo full messages vào log. Parent/SDK directions closed ở CT registry.
+
+### AL-05 — Build maps và source-generation binding
+
+Producer transform chạy trong user-approved dev build: original TSX bytes → supported AST nodes → opaque anchors → instrumentation output + map artifact. Anchor/build-map hashes theo recipe CT-04; owner_anchor relationship không dựa DOM parent. partial/lazy coverage là dữ liệu thật; provider_digest của instrumenter có trong manifest và anchor recipe. Không dùng provider_version string đơn lẻ thay fingerprint. Native JSX host attach opaque attr, không bọc DOM/handlers làm đổi props/this/hooks.
+
+Engine imports local artifact trước binding; build map KHÔNG chứa engine generation/symbol IDs. Engine finds candidate published generation explicit profile rồi so original hashes/ranges. Same source bytes in a newer index can bind through new binding ID; không rewrite producer ID vì HEAD khác. Source changed but graph old -> stale/unbound. Reverse graph mapping returns CT-05 paged MappingMatch rows (anchor_ref/target_ref cùng một match), browser LIST_INSTANCES obtains instances; server không đọc DOM/không lưu per-pixel/props.
+
+Explicit `registerBoundary` API local SDK nhận DOM handles và opaque anchor/known parent, trả dispose; no private Fiber. Unknown third-party/portal/render-site preserve candidate/ancestor, not false exact. Production build inspector flag bị strip bất kể tên env; negative fixture no attrs/SDK/private mapping endpoint. Dev assets may run code: target tests/data isolation không thay được bằng Inspect shield.
+
+### AL-06 — Static/full-stack/observed flow
+
+Select operation -> resolve root candidates -> static call graph occurrence projection -> route/middleware bindings -> typed database/sql sites -> supported literal SQL parse -> table/column/transaction evidence -> contract bridge to FE consumers. Definition vs invocation occurrence tách. For branches only known supported AST/control patterns add conditional edges; unknown expression does not become false/unreachable. Async goroutine/send not sequential edge.
+
+Bridge match keys include namespace/service/method/route/profile/baseURL/rewrite/version. No URL text-only joins. Symbol name giống span name chỉ candidate. Runtime import must be separate observed plane; attempt/statement_success/commit/rollback/outcome_unknown không collapsed thành saved. No DB query/EXPLAIN or request executed to draw flow. R3/U3 runtime opt-in có dữ liệu thì source revision binding/check first; missing trace không no-dependency.
+
+### AL-07 — Storage/runtime state recovery
+
+Generation BUILDING đến READY/READY_PARTIAL/FAILED/CANCELLED; published content immutable; retirement only nonactive via GC. Process chết để BUILDING abandoned; next owner kiểm job metadata và mark FAILED, không inherit writer từ TTL. Failed attempt never becomes active. Records versions append-only, heads CAS; effective needs_review derived. UI maps immutable; deleting source generation expires its binding, not remap newest silently. Query cache evict/cancel no durable state loss; user records survive index reset.
+
+### AL-08 — Chu trình HMR và nhập map local có kiểm soát
+
+Baseline import một lần vẫn CLI explicit. Opt-in `mce4d explorer-map watch --worktree-id <id> --profile-id <id> --directory <approved-owned-map-dir>` là foreground process do user khởi chạy, không auto daemon/service/target build. T085 producer export file bất biến `<build_map_id>.json.tmp`→flush→atomic rename `<build_map_id>.json`; file committed không sửa. Directory ở MCE-owned state/scratch hoặc path được duyệt, không target source. Watch chỉ regular files suffix/schema đúng, deny symlink/traversal/oversize (>64MiB mặc định), kiểm lần đọc ổn định+digest; không fetch URL.
+
+Event coalesce mỗi worktree tối đa1 pending latest *notification*, nhưng index manifests vẫn content-addressed và validation đầy đủ; poll2s/debounce300ms là hints không bằng chứng source fresh. Import qua same writer lock/use case DF09, retry busy tối đa1 trong deadline rồi báo map pending/unavailable; không giữ lock trong preview session hoặc tạo writer mới. Producer sequence/lazy module changes không thể trộn anchors của hai map. Khi BUILD_CHANGED: browser shield/disarm ngay, resolve map đã import và source hash; map chưa có → awaiting_map (UI loading/stale), không tự bind old map dưới ID mới. Sau matching import+binding mới pairing/ACK theo AL-04; Interact không tự bật lại.
+
+Một HMR notification không cấp quyền command, import hay mở directory. Watch permission chỉ đọc directory và ghi own map metadata/cache. Lỗi watcher/map parsing không làm source index invalid; graph/source old vẫn historical. T091 đo import queue age+lock wait+rebind time; nếu writer index dài, UI báo pending và cho retry rõ, không ghost-ready. Không bypass shared writer để UI nhìn nhanh. Stop watch dừng own workers, không kill dev app; artifact cleanup cần policy, không tự dọn thư mục người dùng.
+
+### AL-09 — Chính sách không tự mở tính năng trong audit closure
+
+A01–A08 đã được chốt ở các owner sections/schema/DDL, không phải yêu cầu implement ngoài thứ tự. Chỉ code những operation đã tới task/gate; metadata/conformance tests có thể chuẩn bị sớm. RuntimeConfig không làm core tự hỗ trợ Python, DB engines hay frontend khác. Resolver/pagination/store-recovery tạo đúng ranh giới cần cho chức năng đã được yêu cầu, không graph cluster hoặc orchestration framework mới.
+
+T105/T107 kiểm hash/selector/config/continuation validators và state models; T106 SQL+GC+binding/incarnation proof; T010 có lifecycle+writer adapter; T025 pagination/spool primitives; T029 rename spool provider; T081 session/admin/schema integration; T087 status/quyền/PING; T091 map watch; T035 restore/recovery. Nếu có actual version cũ đã chạy, bản này là proposed migration baseline cho dữ liệu đó cho đến khi forward migration được duyệt và test; không dùng approval sửa tài liệu để xóa/reset store.
+
+### AL-10 — Mọi đường ra phải có câu trả lời hoặc lỗi có thể hành động
+
+Mỗi operation test success, zero-result, partial, ambiguous, stale, too-large, timeout, cancel, denied, expired và recovery-required theo applicability. Không tạo next_cursor khi client không có request schema để dùng; không trả operation success với mandatory fields không khớp enum/shape; không có pagination loop progress0. Unknown totals null và explicit gaps. Read-only query không tạo thêm policy/permission hoặc index ngầm. Capture/provider/DB result/transport caches phải có cùng input identities; nguồn thiếu vẫn thiếu, không làm đầy bằng conventional name hoặc previous chat.
+
+
+## S46 — Quy định code từ dòng đầu và Definition of Ready
+
+### CODE-01 — Module import direction
+
+`internal/model` chứa validated value types/errors/IDs/refs và pure normalization; không SQL/HTTP/SDK/exec/React. `internal/app` điều phối use cases qua consumer-owned small ports. `internal/store/sqlite` implements typed ports và imports model/ports; MUST NOT import app. `internal/ports` là vị trí cố định cho interface đi qua boundary app↔adapter; chỉ port đang có consumer thật, không God interface. Private helper interface không qua boundary đặt tại consumer. `cmd/mce4d` composition root tạo concrete adapters, inject app services. CLI/MCP/Explorer adapters gọi app, không trực tiếp query SQL/parse source.
+
+Dependency order: model → pure helpers/policy/ranges → small ports → concrete store/provider adapters → app orchestration → CLI/MCP/HTTP → UI. Indexer owns jobs/publish; contextpack owns selection/budget; uimap owns binding; flowview owns projection. Analyzer không gọi transport, UI không invent relations, no global singleton mutable current_repo/session. Test import boundary tự đọc Go imports, allowlist layer edges; cycles or cross-layer SQL fail CI.
+
+### CODE-02 — Chuẩn Go
+
+Go identifiers/comments tiếng Anh; spec/description Vietnamese; exported names chỉ khi module boundary cần. Functions receive context.Context first khi I/O; không lưu request context vào long-lived service, không dùng Background thay cancel caller. Constructors validate config/dependencies, return error khi thiếu; không hidden side effects ở init/import. Standard library trước; không fmt.Println vào MCP stdout.
+
+Error có typed code + op/request metadata, wrap with context, errors.Is/As; không ignore close/rollback/write errors cần xử lý. Primary error giữ nguyên, cleanup secondary log sanitized. Panic chỉ internal invariant không recoverable; boundary recover log sanitized+INTERNAL_ERROR, không biến panic thành success. Không sleep để chữa race; bounded channel/workers; close bởi owner; cancel child và wait trước return. Time/random injected interfaces nhỏ cho test, runtime UTC và monotonic duration. No timestamp/PID as UUID uniqueness, no default zero as unknown count.
+
+SQL qua database/sql prepared/parameter binding; scan/rows.Err/close kiểm tra; một transaction dùng cùng *sql.Tx hoặc cùng connection-managed transaction adapter đã chốt, không DB.Exec xen giữa. Writer lock/revision check ở application + repository invariant guard. No raw BEGIN/COMMIT rải rác trong use case; transaction manager dùng SDK semantics đã verify. Config immutable sau startup, requests chỉ được thu hẹp quyền. Every connection policy applied/tested, no global mutex all repos.
+
+### CODE-03 — Chuẩn frontend / SDK / TypeScript
+
+`strict=true`, noUncheckedIndexedAccess và exactOptionalPropertyTypes bật từ bootstrap UI; nullable theo schema, không non-null assertion che lỗi. Unknown external data giữ unknown đến decoder; no implicit any, no cast để bỏ validation. npm workspaces private, một lockfile. React reducer/hooks theo supported API; no package import side effects tự attach target. AbortController cho queries, stale-response guard independent cancellation. Effects luôn cleanup; global events registered exactly once per session/epoch.
+
+CSS Modules/native CSS theo components, UI layout2D không business graph. Không dùng dangerous HTML injection, eval/new Function, arbitrary iframe URLs, localStorage bearer hoặc public CDN scripts. SDK không import engine client/secret/source tools. Source drawer plain escaped text+range đầu tiên; không nhúng full IDE/terminal. Flow/graph labels từ sanitized source facts, tooltip không dump SQL params/DOM values. Lazy rendering bounded, no source tree copy vào browser state.
+
+Tests frontend: built-in Node test runner cho pure SDK/provider utilities nơi đủ; React component tests Vitest + Testing Library, E2E Playwright theo version/license gate T081. Bổ sung dependency testing có lý do; không dùng screenshot-only làm oracle mapping. jsdom không chứng minh iframe/origin/HMR/real browser behavior; browser fixture bắt buộc.
+
+### CODE-04 — Contracts/tests trước implementation
+
+Mỗi task theo thứ tự: (1) mode/assignment/card/source/policy/dependencies/Git state; (2) reproduce/independent oracle; (3) contract/negative/failure tests; (4) minimal implementation; (5) positive/negative/integration; (6) automated format/build/lint/static; (7) self-review diff/security/canary; (8) AW-08 ordered Vietnamese commits/push + exact-SHA GitHub checks; (9) payload evidence→closing tracker/resume→closing HEAD checks→DONE/auto-next. Test red trước implementation không evidence completion; không publish intermediate commit cố ý broken để tách tests/code.
+
+Không copy output engine làm expected; fixtures tự tạo với source/reference truth lập độc lập. No fake data in runtime to satisfy UI; mocks chỉ tests, dependency injection explicit. Không tạo method TODO return nil/empty success, code commented-out scaffold hay disabling tests. Không tự update goldens/golden snapshots nếu chưa giải thích diff. Không thêm feature ngoài card. New migrations/API/permissions cần preapproved contract, không “để sau tối ưu”.
+
+### CODE-05 — Ready checklist, dừng đúng chỗ
+
+Task Ready iff: mode/assignment và nguồn quy tắc S50 được resolve cho task; Change Budget cùng command preconditions S51 đã xác minh khi áp dụng; dependency DONE đúng scope; previous gate PASS; versioned blueprint/schema present; target file/path ownership rõ; input/output/failure/limits fixtures known; dependency APIs verified; permissions đủ; no open blocker affecting this task. Chỉ T001/T002/T003/T105–T108 là foundation/admin/contract proof theo BP-02, không yêu cầu product đã tồn tại; các task khác không được miễn gate. FUTURE ngoài108 không Ready dù agent rảnh; R2/R3/U3 trong 108 đã mở scope, chỉ chờ technical prerequisites.
+
+Thiếu credential/repo/build metadata không liên quan fixture thì triển khai/test fixture và label chính xác, không bịa real integration. Không được đánh dấu task yêu cầu real evidence DONE nếu thiếu evidence mà chưa có defined fixture-label handover rule. Một task kiểm conformance không được tự thay contract để implementation pass.
+
+### CODE-06 — Verification/CI mỗi lát cắt
+
+Core: gofmt changed Go files; go test relevant packages; go test ./...; go vet ./...; go build ./cmd/mce4d; go run ./tools/spec_check; contract/schema + import-boundary tests. Race suite khi platform/toolchain/cgo hỗ trợ; NOT_RUN ghi nguyên nhân và gate cần chờ, không giả PASS. Fuzz bounded targets, no network. Tests use temporary unique MCE4D_HOME, no user's registry.
+
+UI sau T081 creates package scripts chính xác: `typecheck`, `test`, `build`, `test:e2e`, `test:production-strip`. npm ci theo lock, npm run <script> -w <workspace thật đã khai báo>; không chạy placeholder hoặc script chưa tạo. Production strip runs on controlled fixture, target tree content hashes before/after assertion. CI build matrix Windows native/Linux/WSL evidence như S17, không đánh đồng cross-compile với runtime PASS.
+
+Critical continuous regressions sau mọi đổi model/schema/query/policy: C001/C003/C013/C019/C020/C021/C024/C025/C028/C030/C041 và C113–C136 theo scope. UI changes thêm bidirectional/mode/HMR/security subset. DB changes migration/rollback/FTS/CAS/GC. Security/tool version review trước release; no bypass SSL, ignore errors or infinite retries to pass network-off tests.
+
+AW-08 áp dụng mọi lát cắt, gồm T001 foundation/docs/contracts. Expected checks theo actual phase, repo rules và owner cases; T001 bootstrap CI thật, T003 mở rộng validator. Không coi workflow file, exit0 rỗng hoặc local PASS là GitHub PASS; checks phải đúng pushed SHA, terminal và đủ expected set.
+
+### CODE-07 — Definition of Done và sửa lỗi sau DONE
+
+DONE = output contract implemented + matching tests PASS + necessary integration PASS + no remaining blocking gaps + evidence revision/digest/commands/environment + applicable V0–V4 và policy/command checks + diff reviewed + current tracker validator PASS + per-task Git delivery/closing HEAD GitHub checks PASS theo AW-08. File tồn tại/compile pass không đủ. VERIFY không tính completion. Sau regression, reopen đúng task(s), giữ evidence cũ historical và ghi nguyên nhân; không reset toàn dự án hoặc xóa lịch sử. Một công việc có thể cần thêm test/sửa lỗi thực tế; đây là kiểm soát chất lượng, không được che giấu để giữ hình ảnh “làm một lần xong”.
+
+### CODE-08 — Change Budget và Complexity/Abstraction Gate
+
+Trước ghi, bổ sung phiếu S47 bằng ghi chú task S21: mục tiêu, mode/assignment, baseline, vùng file VÀ hành vi được sửa, contracts/bên tiêu thụ chung, phần loại trừ, kiểm tra bắt buộc, quyền và ngân sách có liên quan. Không đặt số dòng/file cố định; không chia một thay đổi cần nhất quán thành những mảnh thiếu an toàn. Khác thư mục không tự chứng minh độc lập hành vi, ports, DB/queue/cache/test resources.
+
+Giữ stack/module/schema/flow S41–S45. Chỉ kích hoạt Complexity Gate cho delta tăng đáng kể bề mặt bảo trì/trạng thái/ownership/triển khai ngoài baseline: ghi nhu cầu+rủi ro có nguồn, phương án nhỏ hơn và vì sao thiếu, tác động/tương thích, cách kiểm/phục hồi và authority tại ADR/task hiện có. Chưa có quyết định thì không implement phần mở rộng. Không mở lại toàn kiến trúc mỗi phiên hoặc xin duyệt private helper tương đương trong task. Không lấy simplicity để tự viết crypto/parser khó, bỏ validation, idempotency, transaction, audit hay recovery bắt buộc. Rework do lỗi thật theo CODE-07; không che cờ/state mới ngoài bản vẽ.
+
+### CODE-09 — Lệnh, code sinh và kiểm soát bằng chứng
+
+Trước command xem contract S51: executable/argv/cwd/toolchain, nguồn command, ảnh hưởng output/temp/cache/network/children và quyền. Lệnh hiện có không tự an toàn; lệnh chưa tồn tại/placeholder không chạy. Output đáng kể cần budget trên các volume thật; core quota khác build budget. Không tự install, sửa host config hoặc thêm wrapper trước khi chứng minh cần và có quyền. T002 dùng preflight nhỏ trước build đầu tiên, không chờ T033 rồi bỏ guard giai đoạn đầu.
+
+Code/schema sinh tự động phải có source→generator/version→output set; chỉ regenerate trong quyền, kiểm diff cả ngoài docs. Không sửa tay output để khác canonical source. Bảo vệ test, validator, lint/race, expected/goldens, threshold, CI và release gate: đổi chúng cần lý do yêu cầu/oracle/compatibility đúng, impact+review; không disable/auto-bless để che regression. Không cấm sửa test sai đã chứng minh, nhưng phải sửa đúng nguồn theo BP-04 và giữ negative case.
+
+Bằng chứng tái sử dụng chỉ khi inputs liên quan còn tương đương: source/diff, contracts/rules, dependencies/config, command/fixture, environment/profile và applicability. Không dùng cached result sau merge hoặc compaction chỉ vì từng PASS. Sau tích hợp kiểm bản kết hợp và consumers bị ảnh hưởng; baseline lỗi/thiếu tool/quyền ghi riêng, không đổi thành NOT_APPLICABLE. No ours/theirs toàn bộ, no force/reset/clean/stash hoặc mutation workspace khác ngoài quyền.
+
+## S47 — Thứ tự thi công chính xác và phiếu việc
+
+Đây là work order mặc định, không bảng progress thứ hai. S19 giữ trạng thái/evidence. Mỗi task chỉ xuất hiện một lần; thứ tự dưới đã topo-sort theo dependencies và tracks. Không chọn task chỉ vì ID nhỏ hơn hoặc vì UI nhìn dễ hơn. P00–P14 là toàn bộ108 task đã chọn, gồm R3/U3. Cả108 hàng TODO; prerequisites/gates quyết định Ready. AI tự chuyển phase, không chờ user acceptance giữa chừng.
+
+### Lịch theo phase
+
+| Phase | Thứ tự bắt buộc | Điểm đóng |
+|---|---|---|
+| P00 Foundation | T001 → T002 → T003 → T105 → T106 → T107 → T108 | G0 |
+| P01 Safe storage | T005 → T004 → T006 → T007 → T010 → T012 → T008 → T009 → T011 | theo S20 / final task evidence |
+| P02 Correct map | T013 → T017 → T020 → T014 → T015 → T016 → T018 → T019 → T021 → T049 → T050 | theo S20 / final task evidence |
+| P03 AI contracts | T022 → T023 → T024 → T025 → T029 → T031 → T051 → T052 → T026 → T027 → T028 → T030 | theo S20 / final task evidence |
+| P04 Verification | T032 → T033 → T035 → T053 → T054 → T034 → T036 → T037 → T038 → T039 → T040 | theo S20 / final task evidence |
+| P05 Core release | T041 → T042 | theo S20 / final task evidence |
+| P06 Explorer base | T081 → T082 → T083 → T084 | theo S20 / final task evidence |
+| P07 Frontend prerequisites | T043 → T055 → T044 → T045 → T056 → T047 | theo S20 / final task evidence |
+| P08 Frontend inspect | T085 → T086 → T087 → T088 → T089 → T090 → T091 → T092 → T093 → T094 | theo S20 / final task evidence |
+| P09 Backend contracts | T046 → T059 → T060 → T061 | theo S20 / final task evidence |
+| P10 Full-stack static | T095 → T096 → T097 → T098 → T099 → T100 | theo S20 / final task evidence |
+| P11 R2 remaining | T057 → T058 → T062 → T063 → T064 → T065 → T066 → T067 → T068 → T048 | theo S20 / final task evidence |
+| P12 Observed prerequisites | T069 → T070 | theo S20 / final task evidence |
+| P13 Observed Explorer | T101 → T102 → T103 → T104 | theo S20 / final task evidence |
+| P14 R3 remaining | T071 → T072 → T073 → T074 → T075 → T076 → T077 → T078 → T079 → T080 | theo S20 / final task evidence |
+
+P01 cần G0 PASS; P02 cần G1; P03 cần G2; P04 cần G3; P05 cần G4. P06 cần G5; P08 cần GU0 + P07 capability proofs; P10 cần GU1 + P09. P11 hoàn tất G6; P12/P14 cần G6; P13 cần GU2+runtime capability. Scope108 đã mở; release/gate trung gian không là điểm dừng. Sau P14/T080 thực hiện AW-06 trước bàn giao.
+
+### Phiếu thi công từng task
+
+Read mặc định cho mọi hàng: S00/S53/S22/S41/S46 + POL-01/POL-03 và nguồn theo POL-05; S51 trước command liên quan; requirement/case exact ở S01/S17, task row S19, source hiện có trong owned paths. Contracts I/O và failure lấy S42/S43; physical rows S44; algorithm S45. Cột below chỉ bổ sung task-specific route. Input thực thi gồm evidence của Dependencies trong S19; Output chính là Deliverable của S19, không acceptance bằng file có tồn tại. Mỗi hàng lập Change Budget/verification/command metadata S21, không tracker thứ hai. Mọi hàng bắt buộc AW-08 (automated checks, commit nhỏ tiếng Việt đúng thứ tự, push, exact-SHA CI và delivery receipt); đây là policy chung, không thêm108 tracker/requirements cạnh tranh. Mọi hàng được thêm colocated tests/fixture/artifacts riêng task và cập nhật đúng hàng tracker/evidence/resume; không mở rộng tất cả thư mục nếu task chỉ một use case.
+
+| Seq | Task | Đọc thêm | Owned production paths / allowed test artifacts | Flow contract | Oracle / gate evidence |
+|---|---|---|---|---|---|
+| 001 | T001 | S43,S44,S45,S50,S53,S21 GIT-DATA-10,S21 GIT-DATA-11,S21 GIT-DATA-12,S21 GIT-DATA-13,S48 QA-06 | `go.mod,.gitignore,.gitattributes,cmd/mce4d/main.go (bootstrap only),.github/workflows/ (real bootstrap checks),tools/ci/ (minimal bootstrap validators),.githooks/ (repo-local only when required)`; docs sources read/hash only | DF00–DF20; contract proof only where implementation unavailable | C041,C137,C138,C181,C191 |
+| 002 | T002 | S43,S44,S45,S50,S51,S03 DEP-01 | `go.mod,go.sum,artifacts/preflight/` | DF00–DF20; contract proof only where implementation unavailable | C039,C042,C046,C140,C141,C142,C188,C182 |
+| 003 | T003 | S43,S44,S45,S50,S52 (route only); owner CT/DB/AL cited there,S53 AW-08,S21 GIT-DATA-10,S21 GIT-DATA-11,S21 GIT-DATA-12,S21 GIT-DATA-13,S48 QA-06 | `tools/spec_check/,tools/ci/,.github/workflows/,.githooks/ (repo-local only when required)` | DF00–DF20; contract proof only where implementation unavailable | C043,C133,C135,C137,C138,C148,C180,C181,C189,C190,C191 |
+| 004 | T105 | S41–S49,S50,S52 (route only); owner CT/DB/AL cited there,S14 SEC-CORE-01,S15 ACC-01 | `internal/model/,internal/ports/,contracts/,tests/contract/` | DF00–DF20; contract proof only where implementation unavailable | C113,C114,C122,C131,C134,C139,C154,C155,C156,C157,C158,C159,C160,C161,C162,C163,C164,C165,C166,C167,C168,C169,C170,C171,C172,C173,C174,C175,C176,C183,C184,C185,C186,C187 |
+| 005 | T106 | S41–S49,S52 (route only); owner CT/DB/AL cited there,S03 DEP-01 | `internal/store/sqlite/migrations/,tests/contract/storage*,artifacts/preflight/` | DF00–DF20; contract proof only where implementation unavailable | C115,C116,C117,C118,C119,C120,C121,C149,C150,C151,C152,C153,C171,C172,C173,C188,C175 |
+| 006 | T107 | S41–S49,S50,S51,S52 (route only); owner CT/DB/AL cited there,S14 SEC-CORE-01,S15 ACC-01,S53 AW-08,S21 GIT-DATA-10,S21 GIT-DATA-11,S21 GIT-DATA-12,S21 GIT-DATA-13,S48 QA-06 | `tests/contract/,testdata/fixtures/contracts/,tools/spec_check/` | DF00–DF20; contract proof only where implementation unavailable | C114,C117,C128,C129,C132,C136,C140,C141,C142,C143,C144,C145,C146,C154,C155,C156,C157,C158,C159,C160,C161,C162,C163,C164,C165,C166,C167,C168,C169,C170,C171,C172,C173,C174,C175,C176,C181,C182,C183,C184,C185,C186,C187,C189,C190,C191 |
+| 007 | T108 | S41–S49,S50,S51,S52 (route only); owner CT/DB/AL cited there,S53,S21 GIT-DATA-10,S21 GIT-DATA-11,S21 GIT-DATA-12,S21 GIT-DATA-13,S48 QA-06 | `tools/spec_check/,artifacts/preflight/` | DF00–DF20; contract proof only where implementation unavailable | C113,C133,C134,C135,C138,C139,C148,C180,C181,C182,C189,C190,C191 |
+| 008 | T005 | S06–S08,S14–S15,S42,S44,S50,S51,S14 SEC-CORE-01 | `internal/paths/,internal/policy/,internal/runtime/fs*` | DF02,DF08,DF17 | C024,C025,C026,C145,C183,C184,C185 |
+| 009 | T004 | S06–S08,S14–S15,S42,S44,S52 (route only); owner CT/DB/AL cited there,S14 SEC-CORE-01,S15 ACC-01,S43 CT-07 | `internal/catalog/,internal/app/registration*,internal/app/config*,internal/runtime/config*` | DF01,DF19 | C001,C016,C167,C168,C157,C169,C170,C183,C186,C187,C176 |
+| 010 | T006 | S06–S08,S14–S15,S42,S44,S52 (route only); owner CT/DB/AL cited there | `internal/snapshot/,internal/inventory/capture*` | DF02,DF08,DF17 | C015,C023,C027,C174,C175,C176 |
+| 011 | T007 | S06–S08,S14–S15,S42,S44,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/store/sqlite/` | DF02,DF08,DF17 | C019,C037,C042,C171,C172,C173,C186,C187,C175 |
+| 012 | T010 | S06–S08,S14–S15,S42,S44,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/runtime/lock*,internal/runtime/lifecycle*,internal/store/sqlite/ownership*` | DF02,DF08,DF17 | C021,C022,C171,C172,C173,C187 |
+| 013 | T012 | S06–S08,S14–S15,S42,S44 | `internal/inventory/` | DF02,DF08,DF17 | C011,C013,C014,C016 |
+| 014 | T008 | S06–S08,S14–S15,S42,S44 | `internal/indexer/publish*,internal/store/sqlite/` | DF02,DF08,DF17 | C019,C020,C117,C136 |
+| 015 | T009 | S06–S08,S14–S15,S42,S44 | `internal/indexer/recovery*` | DF02,DF08,DF17 | C019,C022,C036 |
+| 016 | T011 | S06–S08,S14–S15,S42,S44 | `tests/integration/concurrency*` | DF02,DF08,DF17 | C001,C020,C021 |
+| 017 | T013 | S04,S09,S45 | `internal/analysis/golang/` | DF02,DF08,DF17 | C002,C003,C004,C010 |
+| 018 | T017 | S04,S09,S45 | `internal/search/` | DF03–DF07 | C002,C042,C045 |
+| 019 | T020 | S04,S09,S45,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/analysis/golang/loader*,internal/runtime/exec*` | DF02,DF08,DF17 | C009,C012,C046,C047,C129,C132,C174,C175,C176,C186,C187 |
+| 020 | T014 | S04,S09,S45 | `internal/analysis/golang/` | DF02,DF08,DF17 | C003,C004,C005,C009,C129 |
+| 021 | T015 | S04,S09,S45 | `internal/analysis/golang/,internal/indexer/facts*` | DF02,DF08,DF17 | C006,C007,C008,C045 |
+| 022 | T016 | S04,S09,S45 | `internal/analysis/golang/,internal/model/capability*` | DF02,DF08,DF17 | C008,C010,C011,C045 |
+| 023 | T018 | S06–S08,S14–S15,S42,S44 | `internal/indexer/invalidation*,internal/snapshot/` | DF02,DF08,DF17 | C013,C014,C015,C016,C017 |
+| 024 | T019 | S06–S08,S14–S15,S42,S44 | `internal/snapshot/validation*,internal/app/validate*` | DF03–DF07 | C013,C015,C023,C122 |
+| 025 | T021 | S04,S09,S45 | `internal/indexer/cache*` | DF02,DF08,DF17 | C017,C018 |
+| 026 | T049 | S43,S44,S45 | `internal/overview/` | DF02,DF08,DF17 | C049 |
+| 027 | T050 | S43,S44,S45 | `internal/indexer/cache*,internal/indexer/partition*` | DF02,DF08,DF17 | C050,C053 |
+| 028 | T022 | S10–S13,S43,S45 | `internal/contextpack/` | DF03–DF07 | C002,C006,C029 |
+| 029 | T023 | S10–S13,S43,S45 | `internal/contextpack/` | DF03–DF07 | C025,C026,C033,C045 |
+| 030 | T024 | S10–S13,S43,S45 | `internal/contextpack/budget*,internal/app/response*` | DF03–DF07 | C028,C029 |
+| 031 | T025 | S10–S13,S43,S45,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/contextpack/cursor*,internal/contextpack/fragments*,internal/search/paging*,internal/lsp/result_store*` | DF03–DF07 | C028,C030,C031,C122,C158,C159,C160,C161,C162,C170,C179,C186,C187 |
+| 032 | T029 | S10–S13,S43,S45,S52 (route only); owner CT/DB/AL cited there | `internal/lsp/` | DF03–DF07 | C027,C032,C034,C035,C158,C159,C160,C161,C162 |
+| 033 | T031 | S43,S44,S45 | `internal/telemetry/,tests/integration/telemetry*` | DF03–DF07 | C035,C048 |
+| 034 | T051 | S43,S44,S45 | `internal/overview/,internal/contextpack/` | DF03–DF07 | C049,C052 |
+| 035 | T052 | S43,S44,S45 | `internal/snapshot/,internal/app/validate*` | DF03–DF07 | C051 |
+| 036 | T026 | S10–S13,S43,S45 | `contracts/,internal/app/,tests/contract/` | DF03–DF07 | C028,C039 |
+| 037 | T027 | S10–S13,S43,S45 | `internal/mcp/` | DF03–DF07 | C039,C041,C128 |
+| 038 | T028 | S10–S13,S43,S45,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01,S43 CT-07 | `internal/cli/,cmd/mce4d/` | DF03–DF07 | C040,C041,C167,C168,C186,C187,C176 |
+| 039 | T030 | S10–S13,S43,S45,S52 (route only); owner CT/DB/AL cited there | `internal/lsp/,internal/app/rename*` | DF03–DF07 | C032,C033,C034,C041,C158,C159,C160,C161,C162 |
+| 040 | T032 | S17–S20,S48,S14 SEC-CORE-01 | `testdata/malicious/,tests/acceptance/security*` | DF03–DF07 | C024,C025,C026,C034,C041,C046,C047,C183,C184,C185 |
+| 041 | T033 | S17–S20,S48,S50,S51,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/runtime/,tests/integration/resources*,tools/run_check/ (only if existing tooling insufficient)` | DF03–DF07 | C029,C035,C036,C141,C142,C143,C144,C145,C146,C167,C168,C186,C187 |
+| 042 | T035 | S06–S08,S14–S15,S42,S44,S50,S51,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/store/sqlite/,internal/catalog/backup*,internal/runtime/maintenance*,internal/cli/store*,tests/integration/recovery*` | DF17,DF19 | C036,C037,C038,C119,C130,C145,C146,C149,C150,C151,C171,C172,C173,C160,C170,C179,C186,C187 |
+| 043 | T053 | S43,S44,S45,S15 ACC-01 | `tools/bench/,tests/acceptance/scale*` | DF02,DF08,DF17 | C053,C186,C187 |
+| 044 | T054 | S43,S44,S45 | `tests/acceptance/self_index*,tools/bench/` | DF02,DF08,DF17 | C052,C054 |
+| 045 | T034 | S17–S20,S48,S50,S51,S52 (route only); owner CT/DB/AL cited there | `tests/acceptance/,artifacts/acceptance/` | DF03–DF07 | C001..C054,C137..C148,C149,C150,C151 |
+| 046 | T036 | S17–S20,S48,S52 (route only); owner CT/DB/AL cited there,S03 DEP-01 | `tests/integration/platform*,.github/workflows/` | DF03–DF07 | C019,C020,C021,C024,C035,C040,C171,C172,C173,C188,C195 |
+| 047 | T037 | S17–S20,S48,S52 (route only); owner CT/DB/AL cited there,S03 DEP-01 | `tests/integration/platform*,internal/runtime/windows*,.github/workflows/` | DF03–DF07 | C021,C024,C027,C035,C040,C171,C172,C173,C188,C195 |
+| 048 | T038 | S17–S20,S48 | `tools/bench/` | DF03–DF07 | C044 |
+| 049 | T039 | S17–S20,S48,S52 (route only); owner CT/DB/AL cited there | `tools/bench/,artifacts/bench/` | DF03–DF07 | C018,C042,C044,C160,C170,C179 |
+| 050 | T040 | S17–S20,S48,S50,S51,S52 (route only); owner CT/DB/AL cited there | `tools/spec_check/,tests/contract/` | DF00–DF20; contract proof only where implementation unavailable | C039,C040,C043,C133,C134,C135,C137,C138,C139,C147,C148,C180,C189,C190 |
+| 051 | T041 | S17–S20,S48,S50,S03 DEP-01 | `artifacts/release/,LICENSE/NOTICE material as applicable` | DF00–DF20; contract proof only where implementation unavailable | C046,C047,C048,C148,C188,C195 |
+| 052 | T042 | S17–S20,S48,S50,S52 (route only); owner CT/DB/AL cited there | `artifacts/release/` | DF00–DF20; contract proof only where implementation unavailable | C001..C054,C148,C180,C181,C190 |
+| 053 | T081 | S34–S39,S43–S45,S50,S51,S52 (route only); owner CT/DB/AL cited there | `contracts/,package.json,package-lock.json,artifacts/preflight/,tests/contract/ui*` | DF10,DF03 | C081,C082,C123,C124,C125,C126,C140,C141,C142,C152,C153,C174,C175,C176,C180 |
+| 054 | T082 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/explorer/` | DF10,DF03 | C083,C154,C155,C156,C157 |
+| 055 | T083 | S34–S39,S43–S45 | `web/explorer/` | DF10,DF03 | C081,C082 |
+| 056 | T084 | S34–S39,S43–S45 | `tests/acceptance/explorer*,artifacts/acceptance/` | DF10,DF03 | C081..C083 |
+| 057 | T043 | S24,S28–S30,S43–S45 | `packages/ts-provider/,artifacts/preflight/` | DF03–DF07 | C055 |
+| 058 | T055 | S24,S28–S30,S43–S45 | `internal/analysis/providers/,internal/ports/,contracts/` | DF03–DF07 | C055,C057,C058 |
+| 059 | T044 | S24,S28–S30,S43–S45 | `packages/ts-provider/` | DF03–DF07 | C055 |
+| 060 | T045 | S24,S28–S30,S43–S45,S52 (route only); owner CT/DB/AL cited there | `contracts/,internal/contracts/,internal/store/sqlite/migrations/index/` | DF14,DF15,DF19 | C059,C060,C061,C114,C163,C164,C165,C166 |
+| 061 | T056 | S24,S28–S30,S43–S45 | `packages/ts-provider/frontend*,internal/contracts/frontend*` | DF03–DF07 | C056 |
+| 062 | T047 | S24,S28–S30,S43–S45,S52 (route only); owner CT/DB/AL cited there,S15 ACC-01 | `internal/history/records*,internal/store/sqlite/records*,internal/app/records*,internal/cli/records*` | DF14,DF15,DF19 | C062,C064,C120,C121,C122,C157,C169,C170,C160,C179,C186,C187,C176 |
+| 063 | T085 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `packages/vite-inspector/,internal/uimap/import*,internal/store/sqlite/ui*` | DF09,DF11 | C084,C085,C089,C095,C123,C152,C153,C174,C175,C176,C177,C178 |
+| 064 | T086 | S34–S39,S43–S45 | `packages/preview-sdk/,packages/react-inspector/` | DF09,DF11 | C085,C086,C093,C094 |
+| 065 | T087 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/explorer/sessions*,internal/catalog/preview_permissions*,internal/cli/preview_permission*,web/explorer/src/features/preview/,packages/preview-sdk/` | DF11,DF12,DF13,DF15 | C091,C092,C123,C125,C154,C155,C156,C157,C169,C170,C177,C178 |
+| 066 | T088 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/explorer/sessions*,web/explorer/src/features/preview/,packages/preview-sdk/` | DF11,DF12,DF13,DF15 | C084,C090,C091,C094,C126,C154,C155,C156,C157 |
+| 067 | T089 | S34–S39,S43–S45 | `internal/uimap/resolve*,web/explorer/src/state/,web/explorer/src/features/preview/` | DF11,DF12,DF13,DF15 | C084,C085,C086,C087,C124,C127 |
+| 068 | T090 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `web/explorer/src/features/graph/,web/explorer/src/features/source/,packages/preview-sdk/` | DF11,DF12,DF13,DF15 | C087,C088,C158,C159,C160,C161,C162 |
+| 069 | T091 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/uimap/,internal/cli/explorer_map*,web/explorer/src/features/preview/,packages/preview-sdk/` | DF11,DF12,DF13,DF15 | C086,C088,C089,C093,C094,C177,C178 |
+| 070 | T092 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/history/records*,internal/uimap/manual*,web/explorer/src/features/preview/` | DF11,DF12,DF13,DF15 | C096,C120,C121,C130,C157,C169,C170,C160,C179 |
+| 071 | T093 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/explorer/context*,web/explorer/src/api/,web/explorer/src/features/graph/` | DF11,DF12,DF13,DF15 | C097,C158,C159,C160,C161,C162,C163,C164,C165,C166 |
+| 072 | T094 | S34–S39,S43–S45,S50,S51,S52 (route only); owner CT/DB/AL cited there | `tests/acceptance/explorer*,artifacts/acceptance/` | DF11,DF12,DF13,DF15 | C084..C098,C123,C124,C125,C126,C127,C147,C148,C154,C155,C156,C157,C177,C178,C180 |
+| 073 | T046 | S24,S28–S30,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/catalog/groups*,internal/contracts/federation*,internal/cli/groups*` | DF14,DF15,DF19 | C063,C163,C164,C165,C166,C157,C169,C170 |
+| 074 | T059 | S24,S28–S30,S43–S45 | `internal/contracts/sql/` | DF14,DF15,DF19 | C059 |
+| 075 | T060 | S24,S28–S30,S43–S45 | `internal/contracts/http/,internal/contracts/schema/` | DF14,DF15,DF19 | C060 |
+| 076 | T061 | S24,S28–S30,S43–S45 | `internal/contracts/events/` | DF14,DF15,DF19 | C061 |
+| 077 | T095 | S34–S39,S43–S45 | `internal/flowview/,internal/contracts/gohttp*` | DF14,DF19 | C099,C101,C102 |
+| 078 | T096 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/contracts/federation/,internal/uimap/bridge*` | DF14,DF19 | C100,C103,C106,C163,C164,C165,C166 |
+| 079 | T097 | S34–S39,S43–S45 | `web/explorer/src/features/flow/` | DF14,DF19 | C099,C103 |
+| 080 | T098 | S34–S39,S43–S45 | `internal/flowview/,internal/contracts/events/` | DF14,DF19 | C101,C102,C104 |
+| 081 | T099 | S34–S39,S43–S45,S52 (route only); owner CT/DB/AL cited there | `web/explorer/src/features/graph/,web/explorer/src/features/flow/,tools/bench/` | DF14,DF19 | C081,C105,C160,C170,C179 |
+| 082 | T100 | S34–S39,S43–S45,S50,S51,S52 (route only); owner CT/DB/AL cited there | `tests/acceptance/explorer*,artifacts/release/` | DF14,DF19 | C099..C106,C147,C148,C180 |
+| 083 | T057 | S24,S28–S30,S43–S45 | `packages/python-provider/,internal/analysis/providers/` | DF03–DF07 | C057,C058 |
+| 084 | T058 | S24,S28–S30,S43–S45 | `packages/python-provider/,contracts/` | DF03–DF07 | C057,C058 |
+| 085 | T062 | S24,S28–S30,S43–S45 | `internal/domain/state/,internal/history/records*` | DF14,DF15,DF19 | C062 |
+| 086 | T063 | S24,S28–S30,S43–S45,S52 (route only); owner CT/DB/AL cited there | `internal/contracts/federation/` | DF14,DF15,DF19 | C063,C163,C164,C165,C166 |
+| 087 | T064 | S24,S28–S30,S43–S45 | `internal/history/diff*` | DF14,DF15,DF19 | C064 |
+| 088 | T065 | S24,S28–S30,S43–S45 | `internal/domain/profiles/` | DF14,DF15,DF19 | C065,C066 |
+| 089 | T066 | S24,S28–S30,S43–S45 | `internal/domain/ai/` | DF14,DF15,DF19 | C067 |
+| 090 | T067 | S24,S28–S30,S43–S45 | `internal/domain/architecture*` | DF14,DF15,DF19 | C068 |
+| 091 | T068 | S24,S28–S30,S43–S45 | `tests/acceptance/polyglot*,tools/bench/` | DF14,DF15,DF19 | C055..C069 |
+| 092 | T048 | S24,S28–S30,S43–S45 | `artifacts/release/` | DF03–DF07 | C055..C069 |
+| 093 | T069 | S27,S31,S43–S45,S15 ACC-01 | `internal/evidence/import*,internal/store/sqlite/records*` | DF16,DF19 | C070,C186,C187 |
+| 094 | T070 | S27,S31,S43–S45 | `internal/evidence/traces*` | DF16,DF19 | C071 |
+| 095 | T101 | S34–S39,S43–S45 | `internal/flowview/observed*,web/explorer/src/features/flow/` | DF11,DF16 | C107,C108,C109 |
+| 096 | T102 | S34–S39,S43–S45 | `packages/preview-sdk/observe*,internal/explorer/sessions*,web/explorer/src/features/preview/` | DF11,DF16 | C107,C108,C110 |
+| 097 | T103 | S34–S39,S43–S45 | `tests/acceptance/explorer*,testdata/malicious/` | DF11,DF16 | C108..C112 |
+| 098 | T104 | S34–S39,S43–S45,S53 AW-05/AW-06 | `artifacts/release/` | DF11,DF16 | C107..C112,C190,C195 |
+| 099 | T071 | S27,S31,S43–S45 | `internal/evidence/tests*` | DF16,DF19 | C072 |
+| 100 | T072 | S27,S31,S43–S45 | `internal/evidence/selection*` | DF16,DF19 | C073 |
+| 101 | T073 | S27,S31,S43–S45,S53 AW-05/AW-06 | `internal/evidence/editor*,packages/editor-bridge/` | DF03–DF07 | C074,C192 |
+| 102 | T074 | S27,S31,S43–S45,S53 AW-05/AW-06 | `internal/search/semantic*,internal/evidence/vectors*` | DF03–DF07 | C075,C193 |
+| 103 | T075 | S27,S31,S43–S45,S53 AW-05/AW-06 | `internal/store/sqlite/factsets*,internal/indexer/` | DF03–DF07 | C076,C186,C195 |
+| 104 | T076 | S27,S31,S43–S45,S53 AW-05/AW-06 | `internal/evidence/deployment*` | DF16,DF19 | C077,C195 |
+| 105 | T077 | S27,S31,S43–S45,S15 ACC-01,S53 AW-05/AW-06 | `tools/bench/,tests/acceptance/scale*` | DF03–DF07 | C078,C186,C187,C195 |
+| 106 | T078 | S27,S31,S43–S45 | `internal/history/report*` | DF16,DF19 | C077,C080 |
+| 107 | T079 | S27,S31,S43–S45,S53 AW-05/AW-06 | `internal/analysis/providers/,packages/rust-provider/` | DF03–DF07 | C079,C194 |
+| 108 | T080 | S27,S31,S43–S45,S53 | `artifacts/release/` | DF03–DF07 | C070..C080,C181,C182,C190,C191,C192,C193,C194,C195 |
+
+Không cần mở toàn table mỗi phiên: tìm hàng task bằng ID rồi exact section locator. Thay owned paths vượt phiếu cần xem impact và cập nhật card theo scope-authority, không implicit refactor. Phiếu không cho phép overwrite user changes. Task conformance/testing được sửa implementation lỗi trong phạm vi qua reopen task hoặc linked fix record, không tự chỉnh blueprint để hợp thức bug.
+
+## S48 — Kiểm chứng bản vẽ, oracle và bàn giao
+
+### QA-01 — Validator tài liệu / contract
+
+T003/T108/T040 phải kiểm: ID unique/resolved, counts derived, no task dependency cycles, schedule permutation và dependency-before-consumer, gate closure, required sections trong work cards, requirement→task→case, no DONE without evidence, no unknown enum/version, JSON schema local refs only, DDL migration order, fenced blocks balanced, source-policy ledger/version/mode/activation và new traceability C137–C148. Khối machine-readable authority trích theo marker và hash; code artifacts phải match source blocks.
+
+Structured validation không chứng minh thuật toán đúng hay ứng dụng production an toàn. Document-level SQLite tests không tương đương modernc Go driver/Windows; JSON schema meta-validation không tương đương MCP/React conformance; reducer reference tests không tương đương browser. Khi báo kết quả phải nêu đúng lớp kiểm thử.
+
+### QA-02 — Mandatory positive/negative/failure matrix
+
+C113–C136 là test bổ sung cho blueprint v1.3.0, được chạy theo task/subcase của core/UI/R2, không ép bootstrap chạy browser chưa tồn tại. T107 checks contract-level reducers bằng fake components; T094/T100 mới end-to-end browser. Case có nhiều phạm vi ghi partial coverage evidence, không false universal PASS.
+
+Fixture minimal end-to-end phải có hai repos/worktrees trùng name, Go shadowed variables/interface/callback, TS shared Button100 instances, literal API route và SQL transaction rollback, alternate build/source mismatch, untracked new caller, stale delayed mode ack. All generated fixtures synthetic label, no credential/prod endpoint. Expected mapping tạo từ source position/cases do người viết fixture xác nhận độc lập, không graph output.
+
+Database tests bắt buộc: inactive/BUILDING invisible; cross-generation FK reject; publish old/new all-or-nothing; record CAS+idempotency; FTS scope; GC active reject+records preserve; aborted transaction state unchanged; index version too new reject. Byte/source tests: Unicode/Lao/emoji/CRLF line ranges; source hash bound; duplicate JSON and case/path collision; full manifest membership not mtime-only.
+
+### QA-03 — Lớp evidence và release status
+
+`document_checks` báo PASS/FAIL riêng `product_build`, `product_tests`, `browser_e2e`, `real_repo_acceptance`, `token_benchmark`. Không đưa audit doc vào E001 product bằng chứng giả. Document audit có bảng DV ở cuối mục này; E001 chỉ khi actual implementation có revision tồn tại. Actual scripts/artifact kiểm tra được phép ở artifacts/; file này giữ ID/hash/results/reference, không chứa private chain-of-thought hoặc log raw nguồn.
+
+Không có luật “toàn bộ mọi dự án không cần quay lại sửa”. Blueprint kiểm soát assumptions và order; nếu môi trường hay requirement đổi thì lập design change ảnh hưởng có traceability. Unknown real dependencies remain preflight gate, không hợp thức hóa auto invent.
+
+### QA-04 — Verification Ladder và Production Claim Gate
+
+Tiếp nhận POL-SRC-01 §11.1 và §19.5–19.6. V0–V4 là loại/độ sâu bằng chứng, KHÔNG là G0–G7/GU0–GU3 mới, không pipeline cứng và không thay điều kiện test đã chốt. Một task chọn mức theo tác động và phải đáp ứng mọi case bắt buộc đã assigned; không dùng ma trận này để bỏ regression.
+
+| Mức | Bằng chứng cho MCE4D khi áp dụng | Không được suy ra |
+|---|---|---|
+| V0 nguồn/hiện trạng | Workspace, assignment/mode, spec+policy versions, source/diff/constraints hiện tại | Đã build/run phần mềm |
+| V1 phần đổi | Unit/property/negative/regression + format/type/build/validator phù hợp artifact | Mọi boundary hoặc target platform đã đúng |
+| V2 ranh giới | Schema/ports/provider/SQLite/MCP/SDK consumers; transaction, failure/cancel và source consistency | Browser/production E2E hay scope ngoài đã được kiểm |
+| V3 artifact/target | Binary/package/Explorer assets, install/startup trên target có quyền, bidirectional E2E khi UI có thật | Chỉ cross-compile hoặc jsdom đã PASS thì OS/iframe thật cũng PASS |
+| V4 rủi ro vận hành | Permissions/containment/concurrency/resources/restore/migration/load/retention thuộc scope | Mọi repo cần cloud, SLA, DB cluster hoặc chứng nhận |
+
+Foundation chỉ gồm T001/T002/T003/T105–T108; kiểm artifact/contract của foundation ở V0–V2, không gán sản phẩm V3/V4 đã đạt. T033–T042/T081/T094/T100 thực hiện mức liên quan đúng component/platform; chưa có môi trường thì giữ NOT_RUN và giới hạn nhãn như S20, không mock thành production evidence.
+
+Ánh xạ báo cáo: ĐẠT=PASS có evidence; CHƯA ĐẠT=FAIL trong scope đã kiểm (phân biệt lỗi product/môi trường); CHƯA XÁC MINH=NOT_RUN hoặc evidence thiếu/stale/cancelled; KHÔNG ÁP DỤNG cần lý do scope đã xác minh. Applicability là thuộc tính verification plan; không thêm giá trị giả vào enum result S21/S43. Task TODO/VERIFY không phải result test. Thiếu công cụ hoặc chưa xây feature không tự là không áp dụng.
+
+Trước claim Production-Ready/Enterprise-Grade: nêu artifact+revision/diff+environment+intended use, tiêu chí bắt buộc có nguồn, evidence hiện hành, review thực đã có, gaps và authority/ngoại lệ. Required FAIL/NOT_RUN chặn claim tương ứng; ngoại lệ thật không biến kết quả thành PASS. Document policy, manual check, configured guard, verified guard là bốn lớp khác nhau; không dùng hash/green badge thay proof. Đủ evidence không tự cấp quyền mới; commit/push MCE4D có explicit authority AW-08, còn merge/deploy/quyền chạy external target app giữ boundary riêng.
+
+### QA-05 — Hiệu lực guard, mutation và tích hợp
+
+C137–C148 bổ sung kiểm chính cơ chế áp dụng quy định và build tooling. T107 dùng fixtures nhỏ/pure fake volumes/clock/outputs cho contract; T033/T035 và OS/browser tasks phải xác minh hiệu lực thật trước các claim tương ứng. Test disk-full dùng meter/fault injection, không làm đầy ổ thật. Test cleanup chỉ disposable roots có quyền, không dùng source/dữ liệu người dùng.
+
+Chọn mutation non-equivalent cho invariant quan trọng khi implementation đã tồn tại, ví dụ bỏ source-hash check, cho old MODE_ACK arm, hoặc nuốt exit code. Làm trong bản sao/fixture cô lập theo quyền, lưu expected failing check và kết quả, loại trừ mutation tương đương; không ép một mutation score toàn repo. Test không phát hiện lỗi quan trọng → bổ sung test, rerun, giữ evidence đúng. Hoàn tác đúng mutant tạo ra và kiểm diff cuối; không giao code thử phá.
+
+Review kỹ thuật trong 108 là AI self-review theo AW-02, không external-human prerequisite và không giả independent review. Khi quy định bên ngoài thực sự có hiệu lực đòi một reviewer chưa có, chặn đúng external claim, không dựng gate mới cho implementation. Sau merge/conflict/source/dependency/rules/config change kiểm lại inputs và bản kết hợp; evidence chỉ reuse khi equivalence proved và gate không đòi fresh run.
+
+### QA-06 — Manifest validation và source binding của portable proof
+
+`MANIFEST-CHECK-01` (V1612-04/P2): verifier phải thực sự kiểm existence/type/size/SHA256 của từng listed member và bound final SPEC trước khi báo members_verified/PASS. Dùng explicit validation/error, không dùng assert cho bất kỳ điều kiện bắt buộc; Python -O/-OO hoặc PYTHONOPTIMIZE không được loại validation hoặc biến member tampered/missing thành PASS. Success count chỉ tăng sau checks thật. Regression trong fresh private copies phải có intact/default/optimized PASS và tampered/missing/size/hash mismatch reject ở default lẫn optimized; không sửa original ZIP/sources để chạy mutant. Optimization có thể đổi diagnostics nhưng không đổi verdict.
+
+`PROOF-SOURCE-01` (V1612-05/P2): flat portable proof entrypoint chỉ chọn source root của chính package đã được manifest xác minh; resolve/load helpers và verify_spec.py từ đúng tree đó. Trước runpy phải kiểm mọi executable source bắt buộc của package, gồm verify_spec.py và helper closure hiện hành, đều là listed member đã được kiểm hash; bỏ source khỏi manifest không được biến nó thành unverified executable được phép chạy. Không tự ưu tiên R/proof, current working directory hoặc tree khác vì directory tồn tại; root manifest PASS không cấp quyền chạy child source chưa được bind. Nếu hỗ trợ layout khác, selection phải explicit và xác minh manifest/hashes của chính selected tree trước execution; không silent fallback. Thư mục con/file ngoài member set không tự là hash failure của flat manifest, nhưng tuyệt đối không được dùng làm audit source. Regression giữ root bytes/hash nguyên và thêm child proof/verify_spec.py sentinel ngoài manifest: audit phải chạy verified root, không execute child; root-source hash mismatch phải reject trước runpy. Fresh extraction và reused directory controls đều bắt buộc. Không claim OS tamper-proof loader/process isolation chỉ từ reference test.
+
+T003/T107/T108 kiểm cả harness và composed contracts cùng source provenance; artifact lưu exact command/environment/result/member hashes và regression controls. Gói proof là document evidence theo QA-03, không application module hoặc tracker mới; historical ZIPs và3 policy sources giữ nguyên bytes. Các harness guards không cấp coding kickoff, commit/push/CI hoặc external quyền mới.
+
+### DV — Audit lịch sử của tài liệu v1.3.0, 2026-10-13
+
+Giữ nguyên báo cáo từ bản 1.3.0; không coi 94 assertions hoặc state/SQL tests lịch sử là đã được chạy lại trong lần tích hợp 1.4.0. Audit mới ở DV-1.4 bên dưới, product evidence vẫn độc lập.
+
+| Layer đã chạy | Kết quả | Phạm vi bằng chứng |
+|---|---|---|
+| IDs/sections/traceability/task order | PASS | 50 sections; 104 requirements; 108 tasks; 136 cases; no dangling IDs/duplicate task/DAG cycles; corrected dependency order; no fake DONE |
+| Canonical JSON schema/registry | PASS | Draft2020-12 meta-validation; 117 definitions; 21 operation request/data mappings; representative positive/negative fixtures; all local refs resolve |
+| Embedded physical SQL | PASS | 7 scripts executed on disposable Python sqlite3 SQLite 3.46.1; integrity/FK checks; positive publication/negative FK/immutable/rollback/FTS/recordCAS/build binding/GC cases |
+| Reference state/serialization models | PASS | Stale selection and delayed mode ACK rejection; shield-first disarm; MCP dual-body byte-count fixed point; NOT browser/MCP SDK E2E |
+| Tổng document-level assertions | 94 PASS, 0 FAIL | Includes individual registry-reference checks; không đồng nghĩa 94 product acceptance cases |
+| Product Go build/test; modernc driver matrix | NOT_RUN | Chưa có implementation repository/bundle đã được chạy; bắt buộc T002/T106 và các gate sản phẩm |
+| Real browser Inspect/Interact/HMR/production strip | NOT_RUN | Cần actual Explorer/SDK và controlled fixture/browser tại T084/T094/T100 |
+| Real repository/token/performance benchmark | NOT_RUN | Chưa dùng codebase thực của người dùng; không claim token savings hoặc scale supported |
+
+Canonical schema semantic hash (sorted JSON): `f2506c38a2f39a19e825ee70482055f3e24b1a877cf6ee03802c601bd02b8d52`. DDL bundle hash (ordered marker+SQL text): `3efbd545e88ac80ca5e18ce43867903a2fb9f7f957529484795e7c237cf20364`. Document-audit report hash: `6148348ad6e0f7c03b04c7ef2503f269d3764221b208ed25779ed2eabb8f035e`. Các hash này nhận diện nội dung đã kiểm tra, không chứng nhận dependency, OS sandbox, code correctness hoặc quyền pháp lý. Evidence S21 vẫn NONE; không mark T105/T106/T107 DONE từ audit này vì deliverables code/pinned driver của sản phẩm chưa có.
+
+
+### DV-1.4 — Kiểm tra bản cập nhật policy 2026-10-13
+
+| Kiểm tra lần này | Kết quả | Giới hạn |
+|---|---|---|
+| Sections/requirements/cases/traceability, 108 task/order/dependencies/status và work cards | PASS | Chỉ cấu trúc tài liệu, không product test |
+| Ba file nguồn so hash trước/sau; ledger path/version/hash | PASS | Attachment được kiểm; bản đã copy vào docs của repo vẫn NOT_VERIFIED |
+| Canonical schema/operation registry/7 DDL blocks và thứ tự task so với 1.3.0 | PASS | Phải không đổi; không chạy lại toàn SQL/reducer suite lịch sử |
+| JSON Schema/local refs/JSON/YAML fences và cây Markdown | PASS | Parse/meta-validation và preservation, không browser/Go SDK conformance |
+| Product code, build/test, runtime storage guard, real repo/browser/benchmark | NOT_RUN | Không có implementation/repository được thay đổi trong lần này |
+
+Kết quả lần này: 57 kiểm tra cấu trúc/parity/nguồn và parse/meta-validation PASS, 0 FAIL trong môi trường soạn. Không phải 57 product acceptance cases; không chạy lại đầy đủ 94 kiểm tra lịch sử của 1.3.0. Canonical code blocks, dependency order và trạng thái task được so sánh trực tiếp với file đầu vào 1.3.0. Ba file nguồn giữ nguyên raw bytes. Không đưa kết quả document audit vào E001 hoặc DONE; bản trong docs của repository, runtime guard, Go/browser tests và benchmark vẫn chưa xác minh.
+
+### DV — Audit bản cập nhật v1.5.0, 2026-10-14
+
+| Lớp đã kiểm | Kết quả | Phạm vi và giới hạn |
+|---|---|---|
+| Section/requirement/task/case/schedule | PASS | 53 sections,124 requirements,108 tasks,180 cases; DAG/order valid, no task DONE |
+| Canonical schema/registry/defaults | PASS | 151 definitions;31 operation mappings (6 MCP,18 HTTP,7 CLI-only); local refs/schema positive-negative fixtures |
+| Physical SQL và GC | PASS | 7 DDL trên SQLite 3.46.1; actual FK/tree/shared-blob/FTS/map GC và rollback tại17 vị trí lỗi |
+| Resolver/permission/incarnations | PASS | SQL multiple resolver versions+natural unique key+immutable metadata; permission CAS/revoke và3 store identity fields |
+| Paging/fragment/scope/state | PASS — reference models | 137 mapping matches;1025 rename edits đọc qua process riêng; Unicode fragment reassembly; pinned/unavailable scope; status/revoke/late ACK/restore models; KHÔNG app E2E |
+| Codec liên ngôn ngữ | PASS | 14 positive vectors bytes+SHA256 khớp Python/Go/Node; raw source hashes riêng codec; negative primitive checks ở Python reference |
+| Lifecycle OS primitive | PASS — Linux reference only | Hai process thử shared/exclusive flock và worktree B độc lập; KHÔNG Go pool adapter/Windows/full restore proof |
+| Ba file policy nguồn | BYTE_UNCHANGED | Raw hashes khớp POL-02; chưa xác minh đã được copy vào repository của người dùng |
+| Tổng kiểm tra | 106 PASS,0 FAIL | Có31 registry-reference checks và17 GC-fault cases; không phải106 tính năng sản phẩm |
+| Product Go/modernc/MCP/browser/Windows | NOT_RUN | Chưa có implementation; code codec Go là proof độc lập, không build sản phẩm |
+| Real-repo/scale/token | NOT_RUN | Chưa đọc/chạy repository thật; không công bố số tiết kiệm hoặc100% correctness |
+
+Historical canonical baseline giữ đến1.6.0, không current1.6.2: schema semantic SHA-256(sorted JSON): 0c738b6b47c99687ca2469076b6883e57bb4eaf998d9b90b38aa8a604ed6882b. Historical DDL bundle SHA-256(ordered marker+SQL newline): 666d2a6e38474715f5621aaeb7fcbc2c3ffb3703912da47dc88da3bab2419f25. Codec proof toolchain: go version go1.23.2 linux/amd64, Node v22.16.0, Python 3.13.5; không thay ledger UNRESOLVED của product. Bộ tái hiện lịch sử được mô tả đã bàn giao dưới tên MCE4D_1.5.0_VERIFICATION.zip (script+vectors+results+manifest), không phải spec/tracker. Review v1.6.0 chưa thấy ZIP tại workspace hiện hành: NOT_AVAILABLE, không nhận đã tái hiện106 kiểm tra. T003/T106/T107 tự tạo proof mới; không dừng chờ attachment. Main file SHA-256 và hashes của proof files ở manifest ngoài để tránh self-hash vòng lặp. Không đưa document proofs vào E001 product.
+
+Các PASS lịch sử v1.3.0/v1.4.0 ở trên giữ đúng lớp đã chạy; không có nghĩa đã phủ các phản ví dụ phát hiện sau đó. V1.5.0 thay canonical schema/DDL baseline trước release; historical hashes ở DV cũ không là hashes hiện hành. Product task/evidence vẫn NONE, mọi product build/modernc/browser/real-repo/OS-matrix test NOT_RUN cho đến task actual. Bộ proof tạm không phải source implementation repository hoặc reviewer độc lập.
+
+### DV-1.6 — Kiểm bản sửa autonomy/scope và owner contracts,2026-10-14
+
+| Nhóm kiểm hiện hành | Kết quả | Phạm vi/giới hạn |
+|---|---|---|
+| Sections/requirements/tasks/cases và canonical row uniqueness | PASS |54 sections,130 requirements,108 tasks,195 cases; parse đúng owner section, không coi cùng task ID trong bảng applicability là duplicate tracker |
+| S47 DAG/order/cards và T080 final dependency | PASS |108 task permutation; dependency-before-consumer; card order/cases khớp; T080 sau T104 |
+| Bidirectional requirement↔task và ID resolution | PASS |381 cạnh R↔T cùng hai chiều; S/R/T/C refs resolved;17 cạnh thiếu từ1.5.0 được bổ sung |
+| JSON/YAML/markers/current contract | PASS |4 JSON blocks không duplicate keys;151 definitions,31 operation mappings,523 local refs; frontmatter/resume1.6.0 parsed/consistent;11 markers và fences balanced |
+| Canonical schema semantic parity với1.5.0 | PASS |`0c738b6b47c99687ca2469076b6883e57bb4eaf998d9b90b38aa8a604ed6882b` giữ nguyên; new rules ở owner prose, không raw SQL/wire schema mutation; Draft2020-12 full meta-validation không chạy lại |
+| DDL catalog/index/records | PASS — in-memory only |7 DDL executes,3 databases integrity_check=ok/foreign_key_check empty trên Python3.12.10 SQLite3.49.1 Windows; không modernc/WAL/pool/OS proof |
+| Source policies/current task/gate/resume | PASS |3 raw policy hashes giữ nguyên;108 TODO/0 DONE,12 gates NOT_RUN; implementation NOT_STARTED; source verification khác enforcement |
+| Negative document fixtures | PASS — reference checks |Missing reverse edge, backward dependency, card/case drift, fake108 DONE thiếu evidence, required unknown/stale package bị phát hiện; không chứng minh implementation validator/runtime đã enforce |
+| Scanner description reference | PASS — Python reference only |PEM/synthetic marker samples và SPEC không tự bị full marker match; không Go RE2/OS scanner test |
+| Tổng check của lần sửa này |39 PASS,0 FAIL |Tài liệu/reference only; không39 product acceptance cases; command inline `python -B -` với read-only parsing/SQLite in-memory, không artifact pointer giả |
+| Product build/tests/browser/MCP/driver/OS/token benchmark | NOT_RUN |Chưa bắt đầu coding; E001 product evidence vẫn NONE; coding task phải tự implement/verify theo S53 |
+
+Một check ban đầu đếm task-ID ở mọi bảng làm false duplicate do bảng applicability; validator đã sửa scoping về canonical S19, giữ kiểm duplicate trong tracker và negative fixtures. Không sửa task list/expectations để bỏ lỗi thật.39 checks được chạy lại đầy đủ sau bản sửa cuối; hashes file SPEC cuối xuất trong báo cáo/tool output ngoài file để tránh self-hash. Historical106 PASS ở DV1.5 giữ đúng lớp/nguồn lịch sử, ZIP hiện hành NOT_AVAILABLE; không claim đã tái hiện lại toàn bộ.
+
+### DV-1.6.1 — Đồng bộ capacity target repo lớn, 2026-10-14
+
+| Nhóm kiểm bản sửa | Kết quả | Phạm vi/giới hạn |
+|---|---|---|
+| Frontmatter/resume/changelog và version | PASS | Frontmatter + resume đều1.6.1; previous_spec_sha256 khớp file v1.6.0; product vẫn NOT_STARTED |
+| Quota defaults và policy | PASS | Policy/defaults:1.000.000 files, 32 GiB source, 384 GiB/worktree; byte conversions và 3B+4.5B+0.5B estimate được tính lại |
+| Defaults/schema hard caps | PASS | CoreRuntimeLimits + CaptureManifest:1.000.000 items; runtime JSON quotas đồng bộ; schema semantic SHA-256(sorted JSON)=038a49b952586b31ee701f6766fa4705d6c1eed0d4f14f0f8270f9906ca5b68b |
+| JSON/YAML/fences/markers/refs/task-card parity | PASS |24 document/reference checks;4 JSON không duplicate keys;151 defs/523 refs;54 sections/130 requirements/108 tasks/195 cases;381 requirement-task edges; dependencies/cards/cases resolve |
+| DDL/hash và policy source files | PASS — scoped edit | Không có match/ghi nào vào7 SQL blocks hoặc3 file policy docs; hash DDL v1.6.0 giữ như lịch sử, không tuyên bố product verification |
+| Product build/tests/benchmark/real repositories | NOT_RUN | Đây là sửa SPEC; chưa có implementation, quota 384 GiB chưa phải benchmark hoặc claim support |
+| Main SPEC SHA-256 | RECORDED_AFTER_VALIDATION | Xuất trong báo cáo cuối, không self-reference |
+
+Sizing coefficients trong revision này là planning assumptions được owner chấp thuận làm target; chỉ benchmark T053/T077 trên fixtures/host đã ghi mới xác nhận capacity.
+
+
+### DV-1.6.2 — Review closure và kiểm lại bản vẽ hiện hành
+
+| Lớp đã kiểm | Kết quả | Scope/giới hạn |
+|---|---|---|
+| Canonical sections/requirements/tasks/cases | PASS |54/130/108/195;108 TODO/0 DONE; không product completion |
+| R↔T/order/cards/global IDs/Markdown/YAML | PASS |386 bidirectional edges,108 schedule permutation/dependencies-before-consumer, case parity, all references/table widths/fences; current versions/resume1.6.2 |
+| JSON/schema/registry | PASS |4 JSON reject duplicate keys;155 defs/538 local refs/31 registry mappings; full Draft2020-12 meta-validation cả bundle+subschemas bằng jsonschema4.26.0 [REF59]; private models không exposed endpoint |
+| Positive/negative contract shapes | PASS — document only |Defaults/nondefault caps, stale Profile/Mapping fields, owner scope/kind/unknown journal, full manifest/ref bounds; không actual authorization/driver enforcement |
+| Admission/ownership/limits arithmetic | PASS — pure reference |Cache-vs-durable,512/128 GiB configured caps, volume reserve/remaining/no double count, profile336 GiB counterexample, cross-field/path counterexamples; không OS locks/RSS monitor |
+| Full manifest sizing/physical metadata | PASS — bounded calculations/shape only |Minified literal-UTF8 upper-field estimate17770004096 bytes<32 GiB; StoredCaptureManifestRef<=4 KiB, no full JSON SQLite cell; actual streaming/publish/GC/backup OS tests NOT_RUN |
+| Codec/full capture recipe | PASS — Python+Node reference |18/18 vectors bytes+digest khớp hai runtimes;4 identity mutations đổi digest, full capture schema/raw-byte hash khớp; primitive negatives; Go/product transport decoder NOT_RUN |
+| Physical DDL/source policies | PASS |7 SQL byte-unchanged chạy3 in-memory DBs integrity=ok/FK empty;3 policy raw hashes byte-unchanged; không SQLite WAL/pool/modernc/platform proof |
+| Tổng Python checks |142 PASS,0 FAIL |Document/meta-schema/shape/arithmetic/SQL assertions, không142 acceptance cases hoặc features |
+| Node codec |18 vectors PASS,0 FAIL;3 primitive rejects |Node24.19.0 reference implementation, không Explorer/provider/MCP roundtrip |
+| Product/driver/OS/browser/XL/token | NOT_RUN |Không implementation;108 task vẫn TODO, final engineering NOT_STARTED |
+
+Toolchain proof: Python3.12.10, SQLite3.49.1 in-memory, jsonschema4.26.0 và Node24.19.0; các versions này KHÔNG pin hoặc approve dependency bundle sản phẩm T002/T081. Helper library chỉ cài trong run-owned temporary directory, không đổi host/project dependencies. Scope/source hash và từng assertion có trong document-proof package; không giả independent reviewer hoặc runtime security.
+
+Current schema semantic SHA-256(sorted JSON): 7e7728e462597fb8906abdde752c2eac04f06e9ec9f8e5850fd4e54bd3ff49a9. Current runtime defaults semantic SHA-256(sorted JSON): 276bb94c1c554155c4edcd40097a4ae755c1f4b95eab486ff6dfacae55492c57. DDL/codecs/policies giữ đúng lớp lịch sử; chỉ current vectors/defs/defaults ở trên là baseline1.6.2. Main SPEC/ZIP hashes ở manifest ngoài để tránh self-hash vòng lặp.
+
+Reproduction artifact: artifacts/spec-proof/MCE4D_SPEC_1.6.2_DOCUMENT_PROOF.zip chứa immutable before/after input bytes, validators/reference codec/results và manifest/version/hash. Các inputs là test snapshots, không spec/tracker authority thứ hai; không copy helpers thành product implementation hoặc mark T003/T105–T108 DONE. Re-run proof theo command metadata trong ZIP; historical missing1.5 ZIP vẫn NOT_AVAILABLE, không claim tái hiện106 tests. Coding kickoff T001→T002→T003→T105→T106→T107→T108 vẫn phải tự build/verify actual dependencies và foundation; không routine approval.
+
+### DV-1.6.3 — Quy định Git delivery từng task, 2026-10-15
+
+| Kiểm tra | Kết quả | Phạm vi/bằng chứng |
+|---|---|---|
+| Cấu trúc/traceability/current state | PASS |54 sections,130 requirements,108 tasks TODO/0 DONE,195 cases;387 bidirectional R↔T edges,108 schedule/card parity và dependencies-before-consumer; YAML/fences/table widths/current1.6.3 hợp lệ |
+| Quy định AW-08 và đồng bộ execution | PASS — document/pure policy |7 GIT clauses; S00/R125/R129/S19–S22/S46/S47/S49/S50/S53 đồng bộ automated checks/ordered Vietnamese commits/push/exact-SHA CI; bootstrap phase, scope, receipts, interrupted closing và final applicability có rules |
+| Observer-policy counterexamples | PASS — reference only |Reject wrong remote/source/SHA, empty/missing checks, newest attempt failure, skipped/neutral/failed/nonterminal/non-executed tests, pending closing và unknown expected set; không gọi GitHub thật hoặc nhận guard đã enforce |
+| Python document/reference proof |184 PASS,0 FAIL |Meta-schema/shape/codec/arithmetic/in-memory SQL, structural/governance assertions và pure counterexamples; không184 product acceptance tests |
+| Node codec reference |18 vectors PASS,0 FAIL;3 primitive rejects |Bytes/digests giữ khớp reference; không product transport/provider/browser proof |
+| Baseline contracts/defaults/DDL/policies | PASS — preservation |4 machine JSON blocks/7 DDL byte-unchanged so1.6.2;155 definitions/538 local refs/31 registry mappings;3 source-policy files raw-hash unchanged; schema/default semantic hashes vẫn DV-1.6.2 |
+| Actual Git/GitHub/product | NOT_CONFIGURED/NOT_RUN |Workspace không Git root/remote; chưa actual commit/push/workflow/required checks/protection; product implementation NOT_STARTED, build/tests/OS/browser/XL NOT_RUN |
+
+Toolchain reference giữ Python3.12.10/SQLite3.49.1 in-memory/jsonschema4.26.0 và Node24.19.0; verification libraries chỉ trong run-owned temp, không project dependency pins. Document proofs không làm T001/T003/T107/T108 DONE hoặc coi108 task đã implement. Source policy originals không sửa.
+
+Reproduction artifact: artifacts/spec-proof/MCE4D_SPEC_1.6.3_DOCUMENT_PROOF.zip chứa immutable1.6.2/1.6.3 test input snapshots, portable validators, results, pinned verification-only requirements và manifest SHA-256/commands. Đây là evidence artifact, không spec/tracker authority thứ hai hoặc product tooling; hashes main SPEC/ZIP ở manifest ngoài tránh self-hash. Historical1.6.2 proof được giữ nguyên. GitHub/ref/rules thực phải được T001/T003 và observer verify khi coding kickoff; tài liệu này quy định hành vi, không giả CI đã được cấu hình/chạy.
+
+### DV-1.6.4 — Khép8 findings và kiểm lại tài liệu, 2026-10-15
+
+| Kiểm tra | Kết quả | Evidence và giới hạn |
+|---|---|---|
+| Cấu trúc/traceability/state | PASS |54 sections,130 requirements,108 TODO/0 DONE,195 cases;387 bidirectional R↔T edges;108 schedule/cards và dependencies-before-consumer giữ nguyên; YAML/fences/GFM tables/IDs/version/authority hợp lệ |
+| Runtime và governance schemas | PASS — document/meta-schema |155 runtime definitions/540 local refs,31 operation mappings;9 closed Git governance models,5 JSON blocks/12 markers;153 runtime models không bị đổi, defaults và registry giữ nguyên semantic bytes; no product observer claim |
+| F01/F02/F06/F07 delivery reference | PASS — pure fixtures |Unique marker+parent+ancestry; payload/closing/observer/effective DONE; leaf-only classifier decisions; eligible events/app/actual checkout/PR binding/newest run; privacy; archive member hashes/payload linkage/restart/offline historical và final live distinction. Parser/live GitHub/protection enforcement NOT_RUN |
+| F03/F05 codec/manifest/config source | PASS — Python+Node reference |20/20 C14N vectors và2/2 physical full/Unicode manifest goldens khớp bytes+SHA256 hai runtimes; key-order/escaped-literal Unicode equivalents; exact controls/HTML/slash/U2028;3 primitive rejects mỗi reference.18 old vectors giữ nguyên; Go/streaming provider/transport NOT_RUN |
+| F04/F05/F08 negative fixtures | PASS — shape/pure decisions |Reject4 result maxima+1, malformed provenance, source/effective CAS confusion, missing archive/failed payload, unsafe/old/protected/crash teardown; lower resource configs vẫn hợp lệ. Không thật xóa dữ liệu, chưa chạy product config/OS |
+| DDL/source/historical integrity | PASS |7 DDL blocks unchanged, SQLite in-memory integrity/FK checks; source docs3/3 raw-hash unchanged; historical1.6.2/1.6.3 proof ZIP giữ nguyên. SQLite3.49.1 reference không là patched embedded driver/WAL proof |
+| Tổng assertions |341 PASS,0 FAIL |Python3.12.10/jsonschema4.26.0, SQLite3.49.1; Node24.19.0 reference. Portable proof được giải nén/check member hashes/replay cùng kết quả; xem manifest ngoài |
+| Product/GitHub verification | NOT_RUN |Không code sản phẩm/build/tests/benchmark/OS/XL;108 TODO. Git main initialized/unborn/no remote/no configured identity, chưa actual commit/push/checks; chỉ sửa SPEC và tạo document evidence |
+
+Artifact tái kiểm: artifacts/spec-proof/MCE4D_SPEC_1.6.4_DOCUMENT_PROOF.zip chứa before/after snapshots, validators tham chiếu tài liệu, results, pinned verification dependencies và manifest SHA256/commands. Không product source/tooling/tracker mới. Historical1.6.2/1.6.3 ZIP cùng ba nguồn docs giữ nguyên bytes. Không self-hash main SPEC hoặc archive; hashes ở manifest ngoài. Git initialized main/unborn/no remote/author identity; actual commit/push/GitHub và product build/tests/OS/XL NOT_RUN.
+
+### DV-1.6.5 — Khép7 findings và editorial, 2026-10-15
+
+| Kiểm tra | Kết quả | Phạm vi / giới hạn |
+|---|---|---|
+| Structural/traceability/schedule | PASS |54 sections/130 requirements/108 TODO và0 DONE/195 cases;387 bidirectional R↔T edges; original task IDs/dependencies/order và108 cards giữ;195/195 cases có task owner sau range expansion; YAML/JSON/fences/GFM table widths/version/refs hợp lệ |
+| H01 relational evaluator | PASS — reference regressions |Bốn counterexamples từng ACCEPT ở1.6.4 nay REJECT: wrong closing phase, wrong task archive, swapped observation pointer, payload commit mismatch. Additional assignment/revision/ref-kind/ancestry/selector/seal/hash/remote checks; positive renamed role paths và no-op được chấp nhận, không hardcode filenames |
+| H02 archive publication/recovery | PASS — bounded Windows reference I/O |5 child-process exit boundaries: empty/member/manifest/seal chưa published đều chưa DONE; published sealed directory được cold-discover trước next-task pointer, valid staging resume publication, idempotent readback, tamper bị reject. Actual small files/fsync/rename, exit73; KHÔNG power-loss durability/no-replace-race/secure-handle/production OS proof |
+| H03 current selector/checkpoint | PASS — shape/pure reference |14 closed governance definitions/refs meta-valid; reopened task revision không reuse old PASS; selector/seal/publication context explicit, missing/ambiguous rejected; typed checkpoint mandatory fields/null pre-code state giữ đúng, no second task-status tracker |
+| H04 merge-stage + H07 fresh push | PASS — pure fixtures |Group M khác member C accepted đúng merge stage với current membership/base/authority; stale group/head/base/source rejected. Merge-only pending không chặn delivery. Fresh destination each P/C/retry/resume, wrong visibility/repo/ref/operation/config rejected; no real GitHub/API enforcement |
+| H05 config + H06 teardown | PASS — schema/pure fixtures |Validate=set whole candidate replacement, old home100 không merge ngầm, candidate default1000000; show alternate vẫn home100; source CAS/provenance tách candidate, CLI shared/security override reject. Fresh synthetic Git/SQLite teardown decision positive, actual/canonical/linked/user/old/evidence negative; không thật xóa dữ liệu |
+| Codec/runtime/DDL/source preservation | PASS |20 C14N+2 raw manifest vectors giữ nguyên và khớp Python/Node bytes+digest;3 primitive rejects mỗi reference. Runtime155 definitions/540 refs/31 ops, chỉ RuntimeConfigData thêm candidate provenance,154 models/root còn lại unchanged; defaults/hardcaps giữ.7 DDL unchanged + in-memory integrity/FK;3 docs raw hash và3 historical ZIPs nguyên bytes |
+| Tổng |438 PASS,0 FAIL |Python3.12.10/jsonschema4.26.0/SQLite3.49.1; Node24.19.0. Portable ZIP extract/member-hash/replay bằng final snapshot; pinned verification-only dependencies, không cài project/global tools |
+| Product/Git delivery | NOT_STARTED/NOT_RUN |Không source/tests/runtime tooling sản phẩm;108 TODO. Git initialized main/unborn/no HEAD, no remote/configured author identity; chưa actual commit/push/GitHub CI. Scope autonomy108/per-task local checks→Vietnamese small commits→push→eligible delivery CI→sealed archive→auto-next và single final acceptance giữ |
+
+Historical v1.6.5 runtime schema semantic SHA256(sorted JSON): 065b0cec6ae6cf9966e2194fe0f22d06e08ec3a737f1991ed1474712686d32c0; runtime defaults semantic SHA256: 276bb94c1c554155c4edcd40097a4ae755c1f4b95eab486ff6dfacae55492c57. Main SPEC/ZIP hashes ở external proof manifest, không ghi own hash trong main bytes.
+
+Historical portable artifact artifacts/spec-proof/MCE4D_SPEC_1.6.5_DOCUMENT_PROOF.zip gồm before/after snapshots, closed governance validators/reference fixtures, archive small-I/O process-exit probes, measured results, pinned verification-only requirements và manifest SHA256. Không code/tooling sản phẩm hoặc tracker mới; hashes main SPEC/ZIP ở manifest ngoài, không selfhash. Historical1.6.2–1.6.4 ZIP + ba nguồn docs giữ nguyên; source/Git/CI/driver/OS/product enforcement vẫn NOT_RUN trừ đúng tiny reference filesystem process checks được nêu.
+
+### DV-1.6.6 — Khép7 findings J01–J07, 2026-10-15
+
+| Kiểm tra | Kết quả | Phạm vi / giới hạn |
+|---|---|---|
+| Structure/traceability/order | PASS |54 sections/130 requirements/108 TODO và0 DONE/195 cases/387 R↔T edges; IDs/dependencies/topological order/cards và case ownership giữ. Canonical GFM/YAML/JSON/closed schema/refs hợp lệ |
+| J01 required evidence/canary | PASS — pure reference |Complete typed local/check source/execution/native API subsets, natural identity duplicates, explicit closing reuse; missing canary/second local FAIL/plan-as-log/duplicate job đều reject; valid full local checks và compatible historical canary accepted |
+| J02 CI newest generation | PASS — pure reference |Parsed UTC instant/fraction/offset, exact fractional precision; malformed/ambiguous/newer queued/failed reject; repaired newer success after retained old failure/queued accepted, không drop old source |
+| J03 PR binding | PASS — pure reference |Separate P/C synthetic merges có ordered [base,head] parents/API snapshot/live current context accepted; missing/wrong parents/stale head/base/ref/repo/current snapshot reject. Old base candidate giữ historical, không chặn valid revalidation |
+| J04 resume/checkpoint | PASS — pure reference |Revision2/new UUID/previous selection/invalidation chain accepted; relabel old UUID/missing/cycle/jump reject. Semantic checkpoint actual fingerprints/command states tested; idle không hide running command. Digest adapter/actual Git-tree decoder chưa implement |
+| J05 push freshness | PASS — pure reference |Each operation/lifecycle/retry/query/remote config/pre-post snapshot/command trace bound; old-year read/interruption/wait/config or repo drift reject; valid exact pre/post positive. Không actual push/API/admin-race proof |
+| J06 native source mapping | PASS — pure reference |Actions/external App/commit status IDs và app.id/creator.id/source refs, native pending/requested/null/stale/unknown mapped fail closed; nonterminal không fake execution; full positive external/status delivery và case-insensitive status context tested. Live collector API pin/canary vẫn T001/T003 |
+| J07 SQLite config | PASS — doc/schema/pure preview |DB-02 dùng effective sqlite_busy_timeout_ms default5000; previews1/1234/5000/8000 preserved. Actual pooled modernc/OS/driver timeout test vẫn NOT_RUN tại T002/T007/T106; in-memory SQL không thay proof này |
+| Reviewed regressions |8 REJECT/UNKNOWN,0 false ACCEPT |Historical1.6.5 có438 assertions PASS nhưng8 later counterexamples ACCEPT; current oracle chạy đủ8 mutations đã rehash đúng refs/seal và positive counterparts. Không dùng thêm unrelated shape error để làm regression xanh |
+| Historical assertion preservation |438 retained |Bốn assertion labels cập nhật version/governance count, không bỏ assertion cũ; thêm targeted semantic guards/positives. Reference helper chỉ oracle document, không product parser/observer |
+| Codec/runtime/DDL/policies | PASS |20 codec+2 raw manifest vectors khớp Python/Node;3 primitive rejects. Runtime155 definitions/540 refs/31 ops/defaults và7 DDL nguyên semantic/SQL bytes; governance20 closed definitions. Ba policy docs và4 historical ZIPs giữ raw bytes |
+| Archive I/O |5 process-exit boundaries PASS |Tiny owned Windows files/fsync/rename, exit73 tại empty/member/manifest/seal/published; staging không DONE, sealed final cold-discover/idempotent readback và tamper reject. Không power-loss/atomic-no-replace-race/secure-handle/GitHub proof |
+| Tổng |581 PASS,0 FAIL |Python3.12.10/jsonschema4.26.0/SQLite3.49.1 in-memory; Node24.19.0. Portable ZIP có before/after snapshots/helpers/results/member hashes và extraction replay; dependencies verification-only đã pin, không cài project/global tooling |
+| Product/Git delivery |NOT_STARTED/NOT_RUN |108 TODO/0 DONE. Current Git initialized main/unborn/no HEAD/no remote/configured author; không actual commit/push/GitHub CI, không code sản phẩm. Autonomy108/per-task Vietnamese small commits→push→eligible CI→sealed archive→auto-next và single final acceptance giữ |
+
+Runtime schema/default semantic SHA256 giữ nguyên như DV-1.6.5. Main SPEC/proof ZIP hashes ở external manifest/handover, không own-hash trong main bytes. Artifact artifacts/spec-proof/MCE4D_SPEC_1.6.6_DOCUMENT_PROOF.zip là document/reference evidence; actual T003 observer/parser, driver/OS/browser/XL/product/GitHub enforcement vẫn NOT_RUN. Gói chứa đủ helper modules và pinned verification requirements để extract/hash-check/replay; không file authority/tracker cạnh tranh.
+
+### DV-1.6.7 — Khép6 findings L01–L06, 2026-10-15
+
+Historical artifact v1.6.7: `artifacts/spec-proof/MCE4D_SPEC_1.6.7_DOCUMENT_PROOF.zip`. PASS — 671/671 Python assertions;20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries;6/6 L regressions corrected +8/8 J bad cases rejected. Governance22 closed definitions; runtime schema155/defaults/registry31/DDL giữ nguyên. Reproduce bằng flat manifest+hash verification, pinned Python dependencies, verify_spec.py và verify_codec.cjs từ extracted directory; actual product/parser/network collector/GitHub checks/protection/OS secure-handle/power-loss/modernc driver/browser/XL NOT_RUN. Existing581 assertions được migrate theo temporal/live contract, không bỏ covered negatives; sáu phản ví dụ1.6.6 phải sửa đúng expected và có valid counterparts. Proof lưu baseline1.6.6/final1.6.7 snapshots, scripts và current regression report, không authority/tracker thứ hai. Historical proof không overwrite.
+
+### DV-1.6.8 — Khép4 findings M01–M04, 2026-10-15
+
+Historical artifact v1.6.8: `artifacts/spec-proof/MCE4D_SPEC_1.6.8_DOCUMENT_PROOF.zip`. PASS — 798/798 Python assertions (671 inherited +127 new);20/20 Node codec +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries;4/4 finding groups và7/7 prior counterexamples corrected,7/7 prior controls retained/migrated;6/6 L regressions và8/8 J rejects giữ. ZIP re-extract/member hash/replay PASS. Governance24 definitions; runtime155/defaults/registry31/7 DDL giữ nguyên. Prior671 assertions được migrate theo common lifecycle/native attempt/PR flow/Git metadata contracts, có migration map; 4 finding groups và7 prior counterexamples cho đúng expected results;7 prior controls giữ/migrate bằng đúng typed contracts, không bỏ valid counterparts. Proof chứa baseline1.6.7/final1.6.8, scripts/raw synthetic fixtures/current regression report và manifest hashes; re-extract/hash/replay bắt buộc. Actual Git parser/commands/push/GitHub observer/hooks/protection/rerun, product/driver/browser/XL/OS secure handles/power-loss NOT_RUN; no product code hoặc task DONE.
+
+### DV-1.6.9 — Khép5 findings V168-01–V168-05, 2026-10-15
+
+Historical artifact v1.6.9: `artifacts/spec-proof/MCE4D_SPEC_1.6.9_DOCUMENT_PROOF.zip`. PASS — 926/926 Python assertions (798 inherited +128 new);20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries;5/5 finding groups closed,9/9 prior incorrect acceptances rejected và7/7 controls giữ đúng expected. ZIP member hash/re-extract/replay PASS. Giữ24 governance definitions; thêm closed publication projection trong GitLiveVerification. Prior798 assertions migrate có label/fixture map;16 independent review probes (9 incorrect acceptances +7 controls) cho đúng expected; new positives/negatives kiểm cả composed evaluator và helper; test chỉ rehash/reseal metadata để cô lập rule, không bù missing evidence hoặc tự đổi kết quả/time sau mutation. Normative evaluator không gọi fixture constructors. Runtime155/540 refs/31 registry operations/defaults/7 DDL giữ nguyên;108 TODO. ZIP chứa baseline1.6.8/final1.6.9, current scripts/regression reports/manifest/reproduce instructions; re-extract/hash/replay bắt buộc. Git parser/commands/push/GitHub collector/CI/protection, product/driver/browser/XL/OS secure-handle/power-loss NOT_RUN; synthetic native/publication inputs không actual enforcement.
+
+### DV-1.6.10 — Khép5 findings V169-01–V169-05, 2026-10-15
+
+Historical artifact v1.6.10: `artifacts/spec-proof/MCE4D_SPEC_1.6.10_DOCUMENT_PROOF.zip`. PASS — 1232/1232 Python assertions (926 inherited +306 new);20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries. All16 prior review probes đúng expected,7/7 mismatches corrected và9/9 controls preserved. ZIP member hash/re-extract/replay PASS; manifest lưu hashes và lệnh tái hiện. Prior926 assertions giữ/migrate có mapping,16 independent review probes (5 incorrect acceptances +2 incorrect rejections +9 controls) phải cho đúng expected; current guards/helper/composed positives/negatives cùng chạy. Legacy checkpoint tests dựng explicit secured actual-context fixture trước mutation, không để evaluator tự bù context.24 governance definitions và runtime155/540 refs/31 registry operations/defaults/7 DDL giữ;108 TODO. ZIP chứa baseline1.6.9/final1.6.10, scripts/migration/current reports/manifest/reproduce instructions; re-extract/member hash/replay bắt buộc. Actual Git parser/process/push/GitHub collector/CI/protection/product/driver/browser/XL/full OS safety/power-loss NOT_RUN; synthetic fixtures không enforcement hoặc task DONE.
+
+### DV-1.6.11 — Khép4 findings V1610-01–V1610-04, 2026-10-15
+
+Historical artifact v1.6.11: `artifacts/spec-proof/MCE4D_SPEC_1.6.11_DOCUMENT_PROOF.zip`. PASS — 1337/1337 Python assertions (1232 inherited +105 new:104 chronology/order checks +1 protocol marker);20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries.12/12 prior review probes đúng expected,4/4 wrong acceptances corrected và8/8 controls preserved. ZIP member hash/re-extract/replay PASS; manifest lưu hashes và lệnh tái hiện. Prior1232 assertions giữ/migrate có mapping;12 prior independent probes (4 wrong acceptances +8 controls) phải đúng expected; thêm source/phase/live/history/allocation/order boundaries với positive counterparts.24 governance definitions giữ, selection thêm required allocated_at_utc; runtime155/540 refs/31 operations/defaults/7 DDL giữ;108 TODO. ZIP chứa baseline1.6.10/final1.6.11, scripts/migration/current reports/manifest/reproduce instructions; re-extract/hash/replay bắt buộc. Synthetic timestamps/API/current-context/allocator facts không actual Git/process/collector/CI/protection/product/driver/browser/XL/OS secure-handle/power-loss proof. Normative evaluator không gọi fixture constructors hoặc tự backfill evidence.
+
+### DV-1.6.12 — Khép4 findings V1611-01–V1611-04, 2026-10-15
+
+Historical artifact: `artifacts/spec-proof/MCE4D_SPEC_1.6.12_DOCUMENT_PROOF.zip`. PASS — 1810/1810 Python assertions (1337 inherited +473 new);20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries.18/18 prior review probes đúng expected,6 false acceptances và2 false rejections corrected,10 controls preserved. New regressions gồm257 source/identity/instant checks (gồm strict JSON bool/int parity cho PR/destination/native/CI sources) cùng full delivery stage permutations và18 secured resume boundaries, safe external-blocker suspension/AW-04, wrong-type/missing-context negatives; malformed source/time/UUID không được bù bởi fixture evaluator. ZIP member hash/fresh extraction/replay PASS; manifest giữ actual commands/hashes và mapping toàn1337 inherited assertions.24 governance definitions/fields, runtime155/540 refs/31 operations/defaults/7 DDL và108 TODO giữ nguyên. ZIP chứa baseline1.6.11/final1.6.12, helpers/tests/migration/current reports/manifest/reproduce instructions. Own PR source, historical command UUID, semantic UTC equality và full P→C→archive→live/resume được kiểm qua shared helpers/composed evaluator; protocol decisions vẫn symbolic, không actual executor proof. Actual product/Git parser/process/push/collector/CI/protection/driver/browser/XL/OS secure-handle/power-loss NOT_RUN. Normative evaluator không gọi fixture constructors hoặc sửa input; historical ZIPs và3 policy sources giữ nguyên.
+
+### DV-1.6.13 — Khép5 P2 V1612-01–V1612-05 và1 P3 E1612-01, 2026-10-15
+
+Current artifact: `artifacts/spec-proof/MCE4D_SPEC_1.6.13_DOCUMENT_PROOF.zip`. PASS — 2095/2095 Python assertions (1810 inherited +285 new);20/20 Node codec vectors +2/2 raw-manifest vectors +3 primitive rejects;5/5 bounded Windows process-exit boundaries. Retained141 prior review probes được replay theo corrected expected, gồm strict retry/rationale/wrong-root rejection và default/optimized manifest/child-source controls; không đổi malformed input thành valid để PASS. Manifest xác minh 67 listed members bằng explicit checks không phụ thuộc Python optimization; fresh extraction/replay và root source selection trong reused tree có unlisted child được kiểm. ZIP chứa baseline1.6.12/final1.6.13, helpers/tests/migration/current reports/manifest/reproduce instructions, mapping toàn1810 inherited assertions và regression của5 P2; E1612-01 kiểm current S40/frontmatter/resume/BP-01/S53 labels. Giữ54 sections/130 requirements/108 TODO/195 cases/387 R↔T edges,108 schedule/cards,24 governance definitions/fields, runtime155/540 refs/31 operations/defaults/7 DDL. Evaluator không mutate/backfill source/context/rationale; historical ZIPs và3 policy sources giữ raw bytes. Actual product/Git decoder/process/push/collector/hosted CI/protection/driver/browser/XL/OS secure-handle/power-loss NOT_RUN; symbolic reference/source-binding proof không actual executor hoặc OS isolation proof.
+
+## S49 — Chỉ thị khởi công và tiếp tục dành cho AI
+
+Đọc S00, S53, S22, S41 và POL-01/POL-03/POL-05 ở S50; xác minh source docs/mode của nhiệm vụ. Chỉ khi có assignment implement/integrate phù hợp mới lấy task đầu tiên chưa DONE theo S47 trong track được mở; docs-only dừng ở bàn giao bản vẽ, không tự bắt đầu code. Đọc phiếu của task, contracts/flow/storage/code rules mà phiếu chỉ ra, khảo sát source/actual git status. Không đọc toàn bộ source hay toàn spec mỗi phiên nếu locator đã rõ, nhưng không lấy trí nhớ phiên trước làm bằng chứng source hiện tại.
+
+T001 chỉ khảo sát/bootstrap; T002 pin/smoke; T003 validator; T105→T106→T107→T108 đóng blueprint/proof trước feature code. Chưa qua G0 không viết catalog/index/API/UI implementation, ngoại trừ foundation contract/proof/stdlib tooling trong các task trên. Sau đó tuân thủ đúng thứ tự S47. Mỗi task hoàn thành cả test/error/cancel/failure scope, command/storage checks S51 khi áp dụng và cập nhật tracker trước task kế. Không cần tạo lại hồ sơ bootstrap vì ba file docs có mặt.
+
+AI tự đóng schema/adapter contract theo BP-04/AW-02 trước feature và kiểm parity; không chạy feature thiếu contract hoặc đoán business rule. Unknown có diagnostics/boundary, denied source ACCESS_DENIED, thiếu capability giữ error thật. Dữ kiện môi trường unresolved tự kiểm official docs/local tools; technical discrepancy trong ủy quyền tự sửa/review/test rồi đi tiếp. External quyền thiếu xử lý AW-04; routine teardown chỉ trong TEARDOWN-01/A045, không dùng approval loop cho fresh scratch đã đủ proof.
+
+Sửa code chỉ trong repository MCE4D đã được người dùng cho phép hoặc fixture của chính tests. Engine chạy trên repository khác mặc định read-only; preview build/install/runtime permission không suy từ quyền lập bản đồ. MCE4D development tự commit/push từng task theo explicit authorization AW-08; không suy thành quyền commit/push/deploy/delete repository được phân tích hoặc cleanup ngoài owned paths.
+
+Sau mỗi task: automated checks thật có revision → self-review → commit nhỏ tiếng Việt đúng thứ tự → push/observe GitHub đúng SHA → closing evidence/tracker/resume và closing HEAD checks AW-08 → tự nhận Ready task. Fail thì tự sửa/reopen/chạy lại, không trả kế hoạch dang dở. Chỉ bàn giao khi AW-06 đạt; host interruption AW-07; không hứa chạy nền thiếu runner thật.
+
+## S50 — Tiếp nhận quy tắc trong docs, một bản vẽ chính
+
+### POL-01 — Vai trò và phạm vi đã được chấp thuận
+
+Người dùng chấp thuận tiếp nhận các quy định cần thiết và giữ ba file nguồn nguyên bản trong `docs/`. File `Maps-Context-Engine-4D_SPEC.md` vẫn là bản vẽ chính duy nhất: yêu cầu, kiến trúc, schema/DDL, luồng, quyết định riêng, thứ tự, tracker và evidence dự án ở đây. Ba file nguồn là quy tắc tham chiếu theo vai trò, không là ba bản vẽ/tracker khác. Không chép toàn văn nguồn vào spec, không tạo `PROJECT_CONTEXT.md`, `AI_RULES_PROJECT.md` hoặc một ROADMAP cạnh tranh khi thông tin đã có trong file này. S19 là nơi duy nhất giữ trạng thái task; S21 giữ quyết định/evidence, S22 là summary suy ra.
+
+Đây là tiếp nhận có chọn lọc và cụ thể hóa cho MCE4D, KHÔNG là bản sửa/nâng cấp bộ Universal 3.1. Nội dung Universal đã tiếp nhận áp dụng theo điều kiện của nó; các quyết định cụ thể đã chốt của MCE4D không bị mở lại vì Universal không ấn định stack chung. S50/S51 không hạ quyền hệ thống/người dùng/nguồn hướng dẫn thực sự có hiệu lực. Xung đột chưa được giải thích phải theo BP-04, không dùng quy tắc “file mới nhất thắng” hoặc “câu nghiêm hơn luôn thắng”.
+
+Vị trí mặc định (đường dẫn dưới đây tương đối với project root, không phải đường dẫn của phiên tạo tài liệu):
+
+```text
+maps-context-engine-4d/
+  Maps-Context-Engine-4D_SPEC.md       # bản vẽ + điều phối + tracker duy nhất
+  docs/
+    AI_RULES.md                    # giữ nội dung gốc, Universal 3.1
+    AI_RULES_STORAGE_SUPPLEMENT.md  # giữ nội dung gốc, supplement 1.0.0
+    PROJECT_BOOTSTRAP_PROMPT.txt    # giữ nội dung gốc, nhiệm vụ docs-only 3.1
+```
+
+Hậu tố upload không phải version. Không bắt người dùng đổi tên; tham chiếu chuẩn `AI_RULES.md`/`PROJECT_BOOTSTRAP_PROMPT.txt` bên trong Universal được resolve tới nguồn tương ứng trong ledger sau xác minh, KHÔNG tạo bản sao chỉ để khớp tên. Có thể nhận bản đã được người dùng đổi tên tại `docs/AI_RULES.md`, `docs/AI_RULES_STORAGE_SUPPLEMENT.md`, `docs/PROJECT_BOOTSTRAP_PROMPT.txt` khi đúng nội dung/version. Nhiều candidate khác nội dung → conflict; không chọn theo mtime/hậu tố. Nhiều bản byte-identical → chọn đường dẫn ưu tiên đã ghi, không sửa/xóa các bản còn lại. Không tự đi tìm chính sách thay thế ở repo khác.
+
+Nếu dự án đã đặt chính spec này trong `docs/`, giữ duy nhất bản đang có thẩm quyền và ghi đường dẫn thật ở S21; không tạo thêm bản ở root. Cấu trúc mặc định không phải lệnh di chuyển hoặc xóa file. Bản cập nhật này không tự copy, cài đặt hoặc đồng bộ các file lên repository người dùng.
+
+### POL-02 — Ledger nguồn đã đọc và điều kiện xác minh ở dự án
+
+| Policy ID | Đường dẫn dự kiến | Version nội dung | SHA-256 bytes gốc được cung cấp | Vai trò/kích hoạt |
+|---|---|---|---|---|
+| POL-SRC-01 | `docs/AI_RULES.md` | 3.1 | `1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3` | Quy tắc hành vi chung; đọc các phần bắt buộc và các mục theo task, không thay bản vẽ cụ thể |
+| POL-SRC-02 | `docs/AI_RULES_STORAGE_SUPPLEMENT.md` | 1.0.0 | `eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac` | Trước build/test/benchmark/generator hoặc check có khả năng sinh output đáng kể; S51 cụ thể hóa |
+| POL-SRC-03 | `docs/PROJECT_BOOTSTRAP_PROMPT.txt` | 3.1 | `b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686` | Chỉ thực hiện khi nhiệm vụ khảo sát/thiết lập hồ sơ docs-only được giao; sự tồn tại của file không tự kích hoạt |
+
+Tại revision 1.4.0: nội dung và hash ba file đã kiểm tra trong các attachment được cung cấp; người dùng sẽ copy vào `docs/`. `project_installation=NOT_VERIFIED`, `runtime_enforcement=NOT_IMPLEMENTED`, product evidence vẫn NONE. T001 xác minh đường dẫn thực và ghi bằng chứng vào S21, không tự ghi rằng nguồn trong repo đã khớp khi mới thấy attachment. Chấp thuận chính sách ≠ đã đọc đúng file ở checkout ≠ có guard thực thi ≠ guard đã qua test.
+
+T001/T003 kiểm file trong scope được phép, version, raw hash và nội dung. Không gọi web hoặc nâng bản “latest” để thay nguồn đã tiếp nhận. Khi raw hash khác: so sánh đầy đủ nội dung; chỉ khác CRLF↔LF thì có thể ghi `CONTENT_EQUIVALENT_EOL_ONLY`, kèm actual raw hash và phép đối chiếu, không tuyên bố byte-identical/không sửa nguồn. BOM, whitespace, từ ngữ, version hoặc quy tắc khác không được tự coi tương đương; ghi discrepancy theo BP-04. Hash chỉ nhận diện nội dung, không chứng minh chất lượng hoặc quyền thực thi.
+
+Thiếu/mâu thuẫn nguồn → ghi thiếu đúng nguồn/phạm vi, không tái tạo file “giống như nhớ”. Cho phép khảo sát/đọc/sửa tài liệu an toàn để resolve; không nhận đã tiếp nhận đầy đủ và không bắt đầu phần implement/heavy command phụ thuộc khi chưa resolve. Không chặn mọi repository khác hoặc dùng thiếu file làm lý do thay kiến trúc. Issue của policy checker là kết quả tooling, không tự thêm enum/error mới vào MCP schema S43.
+
+
+Quan sát source tại snapshot lịch sử v1.6.9: ba docs POL-02 tồn tại, raw SHA-256 khớp3/3/byte-unchanged so1.6.2; VERIFIED_RAW_HASHES_3_OF_3. State tree dùng actual canonical names, upload aliases vẫn POL-02. Document evidence, không T001 DONE/guard enforced/product; coding kickoff recheck bytes/host loading.
+
+### POL-03 — Mode được xác định từ nhiệm vụ, không từ tên file
+
+| task_mode | Cho phép theo quyền thực tế | Không tự cho phép |
+|---|---|---|
+| docs_only | Khảo sát, cập nhật bản vẽ/hồ sơ hiện có theo yêu cầu; kiểm tra artifact được phép có đầu ra nhỏ và cô lập | Không tự implement sản phẩm, generator, wrapper, CI, test thực thi mới trong repo, install/khởi chạy target hoặc regenerate runtime artifacts |
+| implement | Assignment108: tự nhận Ready tasks, pin/install tools/deps tại owned workspace, build/test/run isolated fixtures, tự đóng internal gate/technical decisions BP-04/S53 | Không nới security/quyền, mở FUTURE, hạ checks, dọn dữ liệu cũ hoặc tác động external/production chưa được phép |
+| review | Đọc, đối chiếu và chạy check có quyền/phạm vi phù hợp | Không tự sửa source hoặc tự nhận reviewer độc lập; patch cần quyền riêng |
+| integrate | Kiểm bản kết hợp và tích hợp đúng phạm vi được giao, giữ các thay đổi của bên khác | Không suy ra quyền commit/merge/push/release/deploy hoặc bỏ check nếu nhiệm vụ chưa cho phép |
+
+Prompt bootstrap là nhiệm vụ, không phải instruction tự chạy khi đọc file. Task implementation đã được giao không bị biến thành docs-only chỉ vì POL-SRC-03 nằm trong `docs/`. Ngược lại, kết thúc bootstrap docs-only không tự chuyển sang T001 implementation. T001 có thể được khảo sát trong docs-only, nhưng không mark deliverable bootstrap-code DONE nếu chưa có quyền và evidence. Các kiểm tra tài liệu tạm trong phiên chuẩn bị bản vẽ không đồng nghĩa tạo code/test runtime trong repository.
+
+Mỗi phiên ghi mode/assignment_ref S21. Assignment implement108 còn hiệu lực xuyên task/compaction/phiên tiếp tục đến completion, user stop/revoke hoặc yêu cầu thay thế; kiểm hiện trạng/quyền áp dụng, không xin giao lại task. Sửa SPEC riêng trong phiên v1.6.0 vẫn docs_only, chưa bắt đầu coding. Thiếu coding assignment chỉ làm phần đọc/tài liệu được giao; không hỏi lại tên/bố cục/stack.
+
+
+Coding assignment theo S53 gồm quyền làm việc trên MCE4D và self-authored isolated fixtures: tạo source/tests/config/migrations/owned artifacts, verify và cài/pin project-local dependencies/toolchain/browser binaries từ official sources khi môi trường cho phép, chạy controlled frontend/backend/test DB và browser tests, đóng internal gates và tự commit/push/observe GitHub theo AW-08. Quyền này dùng khi người dùng giao triển khai, không tự biến phiên chỉ sửa SPEC thành coding. Per-task commit/push MCE4D vào approved repo/branch đã được yêu cầu trực tiếp theo AW-08; không còn là quyền phải xin lại trong coding assignment. Public release/package/deploy, push repo/ref ngoài assignment, paid API, production/data thật, admin/host reconfiguration và destructive cleanup ngoài authority hiện có vẫn riêng. Fixture permission/attestation do test harness hoặc CLI actor có delegated fixture authority tạo sau khi kiểm endpoints/data/build; ghi test_fixture_actor/authority_ref thật, không gán người dùng đã duyệt riêng hoặc giả chữ ký. External target attestation vẫn cần nguồn quyền thật. Source policies giữ nguyên bytes; user instruction mới về autonomy đã resolve intermediate project approval, không tự sửa nguyên bản Universal.
+
+Ngoại lệ fresh scratch teardown TEARDOWN-01/A045 được user chấp thuận theo yêu cầu sửa8 findings; chỉ class mới, reconstructible, run-owned với exact command contract, không mở rộng quyền xóa accumulated/protected data. GIT-01 vẫn private-first publication boundary. A046/TEARDOWN-FIXTURE-01 chỉ mở fresh self-authored synthetic Git/SQLite test copies, giữ canonical/user/old data nguyên authority.
+
+### POL-04 — Bảng tiếp nhận có chọn lọc, không thêm authority cạnh tranh
+
+| Nguồn | Cách tiếp nhận cho MCE4D | Nơi điều hành/kiểm |
+|---|---|---|
+| POL-SRC-01 §§1–3,5–8 | Giữ no-guessing, ownership, uncertainty, no blind retry; đã được cụ thể hóa bằng source/snapshot/permission contracts | S00,S06–S12,S41–S45; không chép lại |
+| POL-SRC-01 §§9–10 | Complexity Gate và Change Budget áp dụng khi tăng phạm vi/độ phức tạp ngoài baseline; không mở lại thiết kế mọi task | S46 CODE-08; phiếu S47 |
+| POL-SRC-01 §§11–14,19 | Verification Ladder, mutation có chọn lọc, review đúng vai trò và Production Claim Gate | S48 QA-04/QA-05; không thay G/GU bằng V0–V4 |
+| POL-SRC-01 §§16–18,21–23 | Đọc theo tác vụ, generated-output parity, không sửa chồng, evidence còn hiệu lực và test bản kết hợp | S00,S21,S46,S47,S48 |
+| POL-SRC-02 | Command impact, multi-volume budget, run ownership, bounded retention, cleanup đúng quyền và bảo toàn lỗi | S51; quota runtime engine vẫn S15/S44 |
+| POL-SRC-03 §§1–7,GIỚI HẠN | Chỉ onboarding docs-only khi được giao; dùng chính spec thay hồ sơ mới; không khởi chạy lại toàn bootstrap mỗi phiên | POL-03; S21/S22; sau bàn giao chờ assignment phù hợp |
+
+Tài liệu nguồn giữ nguyên, không chèn stack/path/tiến độ MCE4D. Mọi khác biệt cần quyết định lưu ở S21 theo BP-04; không dùng entrypoint/skill/prompt phát sinh để hạ blueprint. Chi tiết sản phẩm do S41–S45 quyết định; chính sách hành vi/quyền không được xem như đề xuất schema/luồng mới của sản phẩm.
+
+### POL-05 — Đọc theo task và entrypoint
+
+Mỗi phiên: S00 → S53 → S22 → POL-01/POL-03 và ledger hiện hành → hàng task S19/S47 → source/phần quy định áp dụng. Đối với POL-SRC-01, đọc HỢP ĐỒNG DÙNG CHUNG và KHỞI ĐỘNG; dùng LỘ TRÌNH ĐỌC để mở thêm đúng mục. POL-SRC-02 đọc trước workload liên quan; POL-SRC-03 đọc khi onboarding docs-only hoặc cần giải quyết ranh giới mode, không “thực hiện lại” ngầm. Phiên/compaction mất context hoặc nguồn đổi phải đọc lại phần thiếu; checksum không thay việc hiểu phần quy định áp dụng.
+
+Không auto-load toàn spec và ba file vào mọi tool schema/AGENTS. Đặt cạnh nhau không chứng minh tự nạp. Khi task cho phép chỉnh entrypoint, kiểm cơ chế host thực tế, giữ chỉ dẫn có sẵn; entrypoint nhỏ trỏ bản spec thực cùng S50, không sao chép chính sách. Không tự cấu hình toàn máy, cài skill/plugin toàn máy, tạo server đồng bộ hay thêm credential. Riêng Git hooks/CI thuộc repo MCE4D được khảo sát và cấu hình trong approved task paths theo AW-08, không đổi global Git identity, host credential store hoặc policy admin; không vô hiệu hook có sẵn. Chưa kiểm host thì ghi khả năng nạp `NOT_VERIFIED`, hướng dẫn explicit read; không nhận policy đã được cưỡng chế.
+
+## S51 — Hợp đồng lệnh và storage khi phát triển/kiểm thử
+
+### RUN-01 — Phạm vi, lệnh nhỏ và vòng bootstrap
+
+S51 áp dụng cho tác vụ phát triển MCE4D và các fixture đã được cho phép, đặc biệt command sinh build/test/benchmark/generator output đáng kể. Không thay runtime quota S15, storage authority S44 hoặc thêm tính năng dọn máy cho engine. Không cấp quyền chạy target app/test, tải dependency, chỉnh config hay xóa dữ liệu. Nguồn: POL-SRC-02 và POL-SRC-01 §§2–3,10–13,16–19,22–23. Những công thức/field/điểm tích hợp dưới là quyết định triển khai riêng của bản spec, không phải phần đã có sẵn trong file nguồn.
+
+Trước mọi command: xác minh cwd/argv/tool version, tác động và quyền; tên `check`, `verify`, `dry-run`, `--write` không là chứng nhận. Đọc script/helper khi cần; không đoán flag, không chạy placeholder. Lệnh đọc hoặc check đã biết đầu ra nhỏ không cần wrapper/budget biểu mẫu lớn; ghi căn cứ phạm vi nhỏ. Unknown-growth hoặc long/variable/heavy run cần RUN-02–RUN-05; không gắn “small” chỉ để vượt preflight.
+
+T002 áp dụng preflight thủ công/máy đo sẵn có và thử nghiệm nhỏ được giới hạn trước smoke build. Không bắt phải build wrapper hoàn chỉnh mới được build wrapper. T107 thêm pure budget/ownership/finalization contract fixtures nhỏ; T033 harden cơ chế theo tooling thực. Ưu tiên công cụ có sẵn + wrapper nhỏ chỉ khi thiếu guard có căn cứ; không bắt thêm dependency, daemon, global lock hoặc registry dịch vụ. Khi cần wrapper, phạm vi duy nhất mặc định `tools/run_check/` thuộc T033, gọi utilities hiện có; test contract ban đầu không giả wrapper đã chạy production. Chưa kiểm guard thì báo manual/documented/untested đúng lớp và không chạy workload nặng không đủ bảo vệ.
+
+### RUN-02 — Command contract và bằng chứng, không tracker thứ hai
+
+Mỗi nhóm lệnh quan trọng có record tại S21 hoặc artifact máy sinh do S21 trỏ tới. Tái dùng record khi đầu vào còn đúng, không viết dài cho mỗi invocation. S19 vẫn là tracker duy nhất; record lệnh không có trạng thái task thứ hai. `command_id` chỉ cấp khi command/cwd thật đã xác minh; template rỗng không được thực thi. Nội dung tối thiểu:
+
+| Trường | Điều kiện |
+|---|---|
+| task_id, task_mode, assignment_ref, owner, baseline_ref | Phải truy về task/phạm vi/quyền đang có; baseline gồm diff khi chưa commit |
+| command_id, executable/argv, cwd, tool_versions, command_source_ref | Đường dẫn/command thật; quote/argv đúng; không log secret trong argv hoặc environment |
+| input_refs, contracts, dependency/config/rules fingerprints | Căn cứ tái sử dụng evidence; fingerprint theo phần đầu vào thực sự ảnh hưởng, không chỉ timestamp |
+| expected_writes, temporary_roots, cache_roots, log_roots, download_roots | Mọi nơi có khả năng ghi kể cả redirect, children, browser artifacts và compiler caches |
+| network_scope, child_processes, side_effect_class, permission_ref | Đọc/ghi-tạm/ghi-bền-vững/dịch-vụ-ngoài được phân biệt; không tự widening |
+| storage_mode, volumes, budgets, retention, deadline, monitor_interval | `bounded_small` có căn cứ hoặc `budgeted`; giá trị cho workload nặng phải xác minh trước chạy |
+| run_id, output_root, outputs_created, result, artifact_refs | Một run identity; theo dõi exact owned outputs; ref đơn chưa có thì null khi schema cho phép, danh sách chưa có phần tử dùng []; không bịa pointer |
+| cleanup_plan, cleanup_permission, command_exit_status, cleanup_status, final_status | Kết quả command khác cleanup; original lỗi không bị ghi đè; crash không suy đã cleanup |
+
+Records là dữ liệu governance/build, KHÔNG thêm field vào wire schema S43 hay bảng domain S44. Thư mục mặc định `artifacts/runs/<run_id>/` chỉ cho output được công cụ cho phép redirect; căn cứ actual root/volume có thể khác. Không reset/xóa cache của người dùng để ép theo mẫu. Run record nhỏ có retention; dữ liệu bằng chứng duy nhất/deliverable không tự trở thành disposable.
+
+### RUN-03 — Preflight dung lượng theo volume thật
+
+1. Resolve các destination và volume/resource quota thực của chúng, gồm temp/cache/log/download; nhiều path cùng volume phải gộp. Đo available bytes mà principal/process có thể sử dụng, không chỉ free của drive chứa repo. Nếu filesystem/quota/inode limit được môi trường công bố thì kiểm tra khi liên quan; phần không quan sát được ghi giới hạn, không giả vô hạn.
+2. Lấy peak additional demand, retained bytes, safety reserve, warning/block thresholds, deadline và monitor interval từ lần chạy liên quan hoặc bounded sample có quyền. Số bytes nguyên không âm, duration/interval hợp lệ; warning >= block. Không gán một số GB cho mọi repo, không lấy quota cache engine S15 làm build budget.
+3. Admission xét một snapshot dung lượng hiện tại theo từng volume v: `required_v = max(block_threshold_v, new_job_peak_remaining_v + other_jobs_peak_remaining_v + safety_reserve_v)`. Chỉ cho workload nặng bắt đầu khi `available_v >= required_v` trên MỌI destination, quyền và các điều kiện khác đều đạt. `available_v < warning_threshold_v` phải cảnh báo. Unknown/invalid measurement/budget không được chuyển thành 0 hoặc PASS.
+4. `available_v` đã phản ánh bytes thực đã chiếm. Reservation của job khác là phần nhu cầu tương lai còn lại, không cộng lại toàn ngân sách ban đầu và đếm đôi bytes đã ghi. Peak không phải retained; peak gồm intermediate files/children/download/extraction khi có. Không suy remaining bằng file size khi tool's growth model chưa được xác minh.
+5. Với các job cùng điều phối, kiểm tra và giữ chỗ bằng cơ chế đã có, được kiểm chứng cho các writer đó; critical section ngắn chỉ cho admission bookkeeping. Không giữ mutex của mọi repo suốt build. Output riêng + đủ tài nguyên → được song song. Shared output không thể cô lập → serialize/lock đúng tài nguyên, không tên dự án toàn máy.
+6. Không thấy writer/reservation ngoài process thì ghi `coordination_scope` và giới hạn; không báo aggregate toàn máy đã kiểm soát. Nếu không thể budget an toàn workload nặng thì chặn workload đó. Không tự tạo daemon/khóa toàn máy để có cảm giác chắc chắn. Những job không liên quan vẫn theo điều kiện riêng của chúng.
+
+Chỉ số filesystem và reservation đều có thời điểm quan sát; preflight không bảo đảm disk không thể đầy. Resource exhaustion phải có failure path. Nếu source/tool không hỗ trợ redirect/limits phù hợp, giảm/phân chia workload trong phạm vi yêu cầu hoặc ghi BLOCKED; không bỏ test bắt buộc, không nới quyền cleanup để lấy chỗ.
+
+### RUN-04 — Theo dõi, kết thúc và phục hồi
+
+Run record được tạo trước tác vụ ghi đáng kể tại nơi owned đã được phép; một owner và phạm vi output rõ. Long/variable run kiểm tra dung lượng/growth định kỳ hữu hạn đã xác định; output/log bị cap bằng cơ chế thực được test, không chỉ ghi limit vào JSON. Chạm blocking/resource/output/deadline limit → ngăn job mới trong scope đó, cancel owned process tree, chờ writers/handles dừng, rồi finalize. Không kill process khác chỉ vì cùng tên hoặc dùng cùng volume.
+
+Mọi đường success/failure/cancel đi qua finalization sau writers dừng. Giữ riêng `command_exit_status`, `termination_reason`, `cleanup_status`, `final_status`. Command fail → giữ lỗi/exit gốc và failing test/seed; cleanup fail không đổi thành command success. Command success nhưng cleanup/finalization bắt buộc fail → báo tổng thể chưa thành công, vẫn giữ exit gốc 0 làm dữ kiện. Không bịa exit status khi bị kill/mất kết nối; ghi unknown và căn cứ quan sát. Không retry action có side effect mù quáng chỉ vì mất kết quả.
+
+Routine finalization chỉ tự teardown fresh scratch khi TEARDOWN-01 đủ mọi điều kiện; không chờ user cho mỗi run hợp lệ. Uncatchable crash → để record cho lần kiểm tra report-only; không tự nhận finally đã chạy hoặc tự chiếm output theo TTL/PID đơn lẻ. Xác minh owner/process identity/current state theo cơ chế hiện có; chưa rõ thì không xóa. Không tự dọn file tích lũy trước lần chạy. Khi volume thiếu, báo nhu cầu/đường dẫn đã che thông tin nhạy cảm và lựa chọn trong quyền; không tự dọn cache chung.
+
+### RUN-05 — Cleanup, retention và quyền xóa
+
+Retention byte/count/age hữu hạn áp dụng cho disposable artifacts thuộc dự án; output độc nhất phục vụ nghiệm thu, test source/fixtures/baseline/golden, Git metadata, source tracked, catalog, records.sqlite, durable backups và deliverable người dùng yêu cầu không là rác. `gitignored`, tên `tmp/cache` hoặc marker alone không chứng minh disposable. Artifact unique cần giữ phải budget từ đầu hoặc bàn giao đúng quyền; không giữ unbounded dump/secrets.
+
+Trước xóa: report-only liệt kê exact candidate, provenance/owner, size, lý do, exclusions, writer status và dữ liệu sẽ giữ. Dry-run KHÔNG chạy workload, tạo run directory/record mới, ghi log/state vào repo, install, repair hay delete; chỉ đọc và xuất báo cáo tới output channel được phép. Retention policy không biến dry-run thành cleanup.
+
+Chỉ cleanup khi quyền hiện hành cho phép đúng candidate, writers đã dừng và containment được chứng minh. Resolve mọi ancestor liên quan và revalidate lúc mở/xóa; chặn traversal/symlink/junction/reparse/mount escape, path replacement race, unexpected content, thiếu ownership. Không đi qua link để xóa target. Nền tảng không enforce được containment → refuse automatic removal, báo giới hạn. Kiểm tra chuỗi prefix hoặc record cũ không đủ.
+
+Dọn dữ liệu tích lũy cũ cần consent riêng, cụ thể. Xóa không thể phục hồi cần phê duyệt tại thời điểm hành động theo POL-SRC-02, trừ đúng lớp fresh reconstructible scratch đã được user explicit ủy quyền tại TEARDOWN-01/A045. Ngoài lớp đó, standing policy/marker/việc duyệt bản vẽ không thay approval; thiếu authority → report candidates và để nguyên. Recoverable removal vẫn cần quyền tương ứng; di chuyển cùng volume không giải phóng dung lượng. Không thêm cleanup tự động vào MCP, startup hooks hoặc một global cache policy.
+
+S15/DF17 là thiết kế GC runtime cho owned index; TEARDOWN-FIXTURE-01 chỉ development test copies, không thay runtime GC/backup/records semantics; S51 không cấp quyền để AI chạy GC/delete trong một phiên không được phép, không xóa records/catalog/source. Khi user trực tiếp dùng sản phẩm hoặc task có quyền cleanup, vẫn áp dụng đúng contract và instruction hierarchy, không thay semantics xóa để lách approval.
+
+### TEARDOWN-01 — Ngoại lệ user-scoped cho scratch mới của test/build
+
+Authority: yêu cầu trực tiếp2026-10-15 sửa đủ8 findings và giữ AI tự làm liên tục, bao gồm F08 routine teardown; A045 ghi ngoại lệ MCE4D, không sửa Universal source. Trong coding assignment, AI được tự cleanup fresh run-created reconstructible temporary outputs/copies thuộc đúng command hiện tại, không xin lại mỗi temp file. Trước execute, command contract S51 ghi run_id, authority_ref=A045/TEARDOWN-01 hoặc A046/TEARDOWN-FIXTURE-01, exact destination+cleanup selector, baseline inventory chứng minh path chưa có, reconstruct recipe và evidence retained destination. Tại cleanup phải resolve/verify exact candidates thực tạo trong run, secure containment/reparse/identity, writers/handles đã dừng, unique failure evidence đã giữ và output không là deliverable. Marker/gitignore không đủ. Default ưu tiên recoverable khi khả thi, nhưng authority class này bao gồm unrecoverable deletion chính fresh disposable copies đã chứng minh.
+
+Loại trừ tuyệt đối: source/test source/fixtures/goldens/baselines canonical; staged/dirty/user/other-run files; accumulated/shared caches/leftovers; Git metadata/history thật hoặc Git common-dir liên kết workspace ngoài fixture; actual canonical MCE4D_HOME/catalog/records/backups; sole failure evidence, delivery archives, final package/user deliverables. Fresh synthetic fixture Git/SQLite copies chỉ được dọn theo TEARDOWN-FIXTURE-01 dưới đây, không xem tên .git/catalog.sqlite tự đủ ownership. Không nhận existing folder cả cây là fresh chỉ vì tạo một file mới; verify per-candidate containment/identity và baseline. Unexpected path/link/content/owner, crash mất proof hoặc thiếu reconstruct/evidence => để nguyên, ghi exact blocker; không tự mở rộng selector/global cleanup. Crash leftovers không tự thừa kế fresh authority ở run sau. Old/unique/protected/other permanent deletion vẫn action-time approval POL-SRC-02. Đây là explicit user exception có phạm vi đóng, không tuyên bố source policy cho phép standing approval toàn máy. C144–C146/T033/T107 kiểm positive fresh-copy teardown và negative protected/unexpected/crash; document proof chỉ pure decision fixtures, không thật xóa dữ liệu trong lượt sửa SPEC.
+
+### TEARDOWN-FIXTURE-01 — Fixture Git/SQLite mới trong cùng command
+
+Yêu cầu user sửa7 findings/A046 mở rõ ngoại lệ: scratch mới có thể gồm synthetic fixture repo .git, temporary test MCE4D_HOME/catalog.sqlite/records.sqlite và WAL/SHM, hoặc generated mutable source copies, khi được tạo exclusive trong `artifacts/runs/<run_id>/fixtures/<fixture_id>/` (hay equivalent private command root được khai báo) bằng deterministic self-authored recipe. Đây là bản thử tái tạo được, không Git history/durable state thật. Mọi điều kiện TEARDOWN-01 vẫn bắt buộc: baseline absent, exact selector/manifest, verified identity/containment, writers/handles dừng, failure evidence retained và authority_ref=A046/TEARDOWN-FIXTURE-01. Không xin lại mỗi fixture hợp lệ; không giảm test để tránh cleanup.
+
+Fixture .git phải có common-dir/objects/alternates/worktree links hoàn toàn trong fixture root và không chứa unique/user history; linked worktree của repo thật hoặc pointer ra ngoài => refuse. Fixture DB phải đúng temporary child-process home đã khai báo, không actual/default/shared/user MCE4D_HOME, mọi DB handle/sidecar writer đóng; giữ evidence trước removal. Canonical fixture templates/goldens/source gốc, actual stores/backups/Git metadata, unknown/old/crash/other-run data vẫn protected/action-time approval; không global cleanup hoặc tự xóa retained archive. Không lấy synthetic label/marker/path prefix thay actual identity proof. T033/T035/T107 positive disposable Git/SQLite fixtures và negative linked-common-dir/real-home/user history/evidence; docs proof quyết định hoặc tiny owned fixture I/O phải nêu giới hạn, không product cleanup enforcement.
+
+### RUN-06 — Kiểm chứng và điểm tích hợp không đổi thứ tự thi công
+
+| Task hiện có | Việc tiếp nhận thêm, cùng thứ tự S47 | Bằng chứng cần có |
+|---|---|---|
+| T001 | Resolve main spec + docs ledger; mode và nguồn authority; không sửa ba file nguồn | C137,C138, hash/path/version observations |
+| T002 | Command inventory/preflight/bounded sample trước install/build đã có quyền; giữ budget từ nguồn thật | C140–C142 theo check thủ công/fixture nhỏ, không fake enforced guard |
+| T003 | spec_check kiểm ledger/mode metadata, traceability, no false DONE/claim | C137,C138,C148 bằng fixture synthetic |
+| T105,T108 | Change Budget/Complexity Gate gắn contract baseline; design seal không là quyền chạy production | C139,C148; approval/authority và scope |
+| T107 | Pure contract tests cho budget/destination grouping/finalization/dry-run và evidence applicability | C140–C146 thuộc proof scope; fake volumes/paths, không làm đầy/xóa ổ thật |
+| T005,T033,T035 | Secure ownership/containment, teardown/output cap, retention; reuse mechanisms; wrapper nhỏ chỉ khi cần | C143–C146 integration trên disposable fixture; old source/records protected |
+| T034,T040 | Consolidate policy checks + targeted mutation/evidence reuse/merge validation; no auto bless | C137–C148 theo applicability; full core behavior evidence |
+| T081,T094,T100 | UI/browser artifact budgets, SDK build/prod-strip outputs, integrated verification | Same command contract; C147,C148 và applicable storage cases trên UI tooling |
+| T041,T042 | Check readiness claim, actual versions/artifacts/required checks còn hiệu lực; permission khác evidence | C148; không tự publish/deploy |
+
+Không tạo task mới chỉ để thêm nhãn quy tắc; giữ 108 task và dependencies/order, mở rộng deliverable/case đúng owner. Foundation chỉ proof/manual controls; OS/browser evidence vẫn phải chạy tại task/platform tương ứng. Trước mỗi workload nặng, guard thực tế của môi trường phải đạt điều kiện RUN-03–RUN-05, không lấy lịch “sẽ implement T033” để cho chạy thiếu bảo vệ. Thiếu điều kiện chặn workload phụ thuộc, không chỉnh thứ tự/kiến trúc tùy ý.
+
+Báo sau run: command/check/cwd/versions, volumes+free trước/sau, generated/retained bytes, removed candidates được phép, lỗi cleanup và limitations. Chỉ ghi số đã đo; không có thì unknown/NOT_RUN. Đây là evidence của công cụ/fixture, không tự chứng minh mọi trường hợp disk-full đã được ngăn chặn.
+
+
+## S52 — Đóng audit 1.4.0 và đường kiểm chứng 1.5.0
+
+### CLOSE-01 — Phạm vi hoàn thiện
+
+Revision này hoàn thiện các thay đổi đã chấp thuận từ audit, không tuyên bố mọi chương trình hoặc mọi môi trường đạt correctness100%. `CLOSED_IN_SPEC` = đã có contract/flow/storage/owner task/case tương ứng; khác IMPLEMENTED/PRODUCT_VERIFIED. Không còn để A01–A08 cho AI tự chọn thiết kế trong phạm vi được mô tả dưới đây. Exact dependency version, tool paths, trusted target roots, measured throughput và quyền runtime thật vẫn phải xác minh qua gate, không điền bằng phỏng đoán để có nhãn hoàn thành.
+
+| Audit | Quyết định và owner authority | Task/case bắt buộc | Closure |
+|---|---|---|---|
+| A01 GC FK | DB-03 exact order + leaf tree/cycle rollback, no FK disable | T106/T035; C149–C151 | CLOSED_IN_SPEC; SQL proof S48 |
+| A02 resolver | CT-04 recipe + DB-03/DDL resolver_digest natural key, immutable multiple versions | T081/T085/T106; C152–C153 | CLOSED_IN_SPEC; SQL proof S48 |
+| A03 session | CT-08 status READ, permission current version, PING/PONG SDK, AL-04 disarm | T087/T088/T094; C154–C157 | CLOSED_IN_SPEC; browser/OS product NOT_RUN |
+| A04 continuation | CT-05 MappingMatch pages, bounded rename spool, fragments, expiry/progress | T025/T029/T090/T093; C158–C162 | CLOSED_IN_SPEC; model proof khác product |
+| A05 federation | CT-06 pinned_vector+RefSelector+service, unavailable members, incarnations | T045/T046/T063/T096; C163–C166 | CLOSED_IN_SPEC; actual cross-repo NOT_RUN |
+| A06 config/lifecycle | CT-07 RuntimeConfig defaults/CAS/restart, group/permission/record reads/mutations | T004/T028/T046/T047/T087; C167–C170 | CLOSED_IN_SPEC; actual CLI integration NOT_RUN |
+| A07 maintenance | DB-05 pool lifecycle lease; DB-06 scoped journal/restore/new incarnation, no global build lock | T010/T035/T036/T037; C171–C173 | CLOSED_IN_SPEC; actual Go/Windows matrix NOT_RUN |
+| A08 identity | CT-04 canonical bytes/recipes/vectors; capture input separate files result; semantic path validator | T006/T105/T107/T081; C174–C176 | CLOSED_IN_SPEC; provider integration NOT_RUN |
+| O01 HMR | AL-08 local atomic maps watch opt-in/coalesce/busy status, no target launch | T091/T094; C177–C178 | SPECIFIED; browser product NOT_RUN |
+| O02 retention/records/lock | DB-07 metrics/continuity, no auto-approve hoặc lease conversation phức tạp | T035/T039/T047/T099; C179 | SPECIFIED; measurements NOT_RUN |
+| O03 end-to-end parity | registry/schema/DDLs/work cards đúng owner, source policies nguyên bản | T003/T108/T040; C180 | DOCUMENT_PROOF_ONLY |
+
+### CLOSE-02 — Quy trình khởi công duy nhất
+
+S00→S53→S22→S50 role/mode→S41→task S19/S47→owner sections trong bảng trên khi liên quan. Giữ thứ tự T001→T002→T003→T105→T106→T107→T108 và 108 task; T029 thêm prerequisite T025 vì dùng pagination/result primitives. Không implementation feature trước seal đúng scope. Đặc tả/tài liệu proof không phải bằng chứng task DONE; product progress vẫn0/108.
+
+Source-of-truth vẫn một file này. Không tạo `AUDIT_SPEC.md` hoặc `PATCH_SPEC.md` thay thế; proof scripts/results ZIP nếu bàn giao chỉ là bằng chứng có hash, không chứa quy tắc cạnh tranh. Ba nguồn docs Universal giữ nguyên byte/hash. Nếu quyền/môi trường thiếu, chặn đúng operation/capability; không thêm stub, bỏ negative case hoặc xin lại các quyết định user đã chốt.
+
+
+### CLOSE-03 — Review1.6.1 khép trong1.6.2, không product PASS
+
+| Review | Contract closure | Owner task/case | Status |
+|---|---|---|---|
+| N01 Profile authority | S13,S43 CT-07/EffectiveProfile | T004,T020,T028,T105,T107; C167,C176 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N02 Mapping input/server record | S35,S42 DF15,S43 | T047,T105,T107; C121,C170,C176 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N03 Default/effective/shared caps | S15,S43 CT-07 | T004,T028,T010,T105,T107; C167,C168,C186,C187 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N04 Durable/home reservation | S15 ACC-01,S43 private journal | T004,T007,T010,T047,T069; C186,C187 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N05 Profiles/materialization sizing | S15,S27,S45 AL-01 | T035,T053,T075,T077; C053,C078,C186 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N06 XL/RSS/reconcile plan | S15,S27 XL-V1,S45 | T010,T033,T053,T077; C053,C078,C186 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N07 Error taxonomy | S42 DF20,S43 CT-03 | T025,T028,T033,T053,T077; C053,C078,C186 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N08 Manifest count/bytes/stream/storage | S08,S43,S44 DB-01/DB-07,S45 AL-01 | T007,T020,T035,T053,T077,T105,T106,T107; C175,C176,C186 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N09 XL positive-negative oracles | S17 C053/C078,S27,S53 AW-05 | T053,T077; C053,C078 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N10 Reserve/owned paths | S15,S43 CT-07/private journal | T010,T033,T035,T105,T107; C176,C186,C187 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N11 Full capture recipe | S43 CT-04/vectors | T006,T020,T105,T107; C174,C175 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+| N12 Version/evidence/authority | S21,S22,S40,S41,S53 | T003,T108; C180,C189,C191 | CLOSED_IN_SPEC; implementation/OS/XL NOT_RUN |
+
+Review IDs không thêm requirements/tasks/cases hoặc tracker. T003/T105/T107/T108 kiểm owner/schema/default/card/negative parity; T010/T033/T036/T037 và features/XL mới actual enforcement. Historical PASS giữ revision/layer; historical v1.6.2 có18 codec vectors/155 runtime definitions, hashes ở DV1.6.2; snapshot lịch sử v1.6.9 có20 codec+2 raw manifest vectors, runtime155 và governance24 definitions, xem DV-1.6.9; measured results hiện hành theo DV-1.6.13;438 assertions ở1.6.5 là historical scope,8 later counterexamples phải reject ở current proof. Remaining facts toolchain/API/platform/resource measurements/external rights do AI tự resolve trong assignment, không routine approval.
+
+### CLOSE-04 — Review1.6.3 khép trong1.6.4, theo P1 rồi P2
+
+| Finding / priority | Owner closure | Proof / trạng thái |
+|---|---|---|
+| F01 P1 — candidate DONE/closing identity | S19,S21 GIT-DATA-01,DONE-EVAL-01,CLOSE-DIFF-01; GIT-06 | Closed shape+semantic/static-observer fixtures; product/GitHub NOT_RUN |
+| F02 P1 — CI bootstrap event/credential/checkout | T001/T003/T108,GIT-04/05,plan schema | Eligible event/canary/actual checkout failure fixtures; live NOT_RUN |
+| F03 P1 — raw manifest key/escape ambiguity | S43 vectors,S45 AL-01 MCE-MANIFEST-JSON1 | Cross-language full/Unicode raw bytes; streaming/Go runtime NOT_RUN |
+| F04 P2 — result-cache maxima divergence | S43 CoreRuntimeLimits/CT-07,C167 | Above-limit schema negatives; defaults/resources unchanged |
+| F05 P2 — source CAS/provenance missing | S43 RuntimeConfigData/CT-04/CT-07,C167/C168 | Source/effective distinction, absent/file and CAS pure fixtures |
+| F06 P2 — public remote vs private-first | IP-04,GIT-01,repository identity | Visibility/authority negatives; actual destination NOT_CONFIGURED |
+| F07 P2 — CI evidence retention | S21 GIT-DATA-02,GIT-06/07,AW-06 | Archive schema/hash/replay rules; no actual delivery archive claim |
+| F08 P2 — routine teardown approval conflict | A045,S50,S51 TEARDOWN-01,C144–C146 | Closed fresh scratch authority pure decisions; source docs unchanged |
+
+Đây là audit closure, không task tracker/evidence implementation. Giữ54 sections/130 requirements/108 tasks/195 cases và toàn bộ order/dependencies; tất cả108 TODO, coding NOT_STARTED. AI tự làm liên tục khi được giao code, tự local test/review/commit nhỏ tiếng Việt/push/eligible CI+archive từng task, user nghiệm thu đúng một lần cuối. Đã có Git main/unborn nhưng no remote/identity, không fabricate delivery. Proof portable hiện hành xem DV-1.6.4; tài liệu chưa chứng minh sản phẩm chạy hoặc GitHub đã enforce.
+
+### CLOSE-05 — Review1.6.4 khép trong1.6.5, P1 trước P2
+
+| Finding | Owner closure / kiểm bắt buộc |
+|---|---|
+| H01 P1 — reference evaluator accepted invalid metadata | DELIVERY-LINK-01; four original mutations + assignment/revision/ref/ancestry negatives; T003/T107 |
+| H02 P1 — archive crash discovery/publication | ARCHIVE-PUBLISH-01 deterministic paths/flush/seal/no-replace/readback + crash-boundary/resume proof; T003/T033/T107 |
+| H03 P2 — current attempt/checkpoint | ACTIVE-DELIVERY-01 + CHECKPOINT-01, row/selection/revision invalidation; T003/T107 |
+| H04 P2 — merge-group SHA/stage | MERGE-BIND-01, delivery checks vs merge_checks; group/base/membership/authority; T001/T003/T107 |
+| H05 P2 — config validate precedence | CONFIG-REPLACE-01 validate=set whole replacement, candidate provenance; T004/T028/T107 |
+| H06 P2 — fresh fixture teardown | TEARDOWN-FIXTURE-01/A046, synthetic .git/test SQLite vs actual/linked/user data; T033/T035/T107 |
+| H07 P2 — private-first freshness | GitDestinationObservation mỗi push/retry/resume; T001/T003/T107 |
+| H08 P3 — historical/current vector wording | CLOSE-03 ghi historical18, current20+2; metadata version/resume/closure synchronized |
+
+CLOSED_IN_SPEC_REFERENCE_PROOF_PRODUCT_UNVERIFIED; không thêm task/requirements/cases hoặc tracker. Giữ54 sections/130 requirements/108 TODO/195 cases, dependencies/order/387 R↔T edges. Full108 autonomous execution/per-task local checks→Vietnamese small commits→push→eligible delivery CI→sealed archive→auto-next và một lần user acceptance giữ nguyên. Chưa code sản phẩm, chưa actual commit/push/GitHub, current Git main/unborn/no remote/identity. Proof current DV-1.6.5; lịch sử nguyên bytes.
+
+### CLOSE-06 — Review1.6.5 khép trong1.6.6, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| J01 P1 — missing/failed/wrong-kind/duplicate required proof | EVIDENCE-COMPLETE-01/CANARY-LINK-01 + typed local/source/execution/canary records; four false ACCEPT cases reject |
+| J02 P1 — lexicographic latest-run time | CI-ORDER-01; fractional/offset/equal-time generation and nonterminal negatives |
+| J03 P1 — PR parents/currentness | PR-BIND-01; separate P/C merge parents, retained API snapshot và live current base/head |
+| J04 P2 — revision history/checkpoint semantics | RESUME-LINK-01/CHECKPOINT-01; chain/invalidation/command/actual fingerprint oracle |
+| J05 P2 — old prepush read accepted | PUSH-FRESH-01; operation/lifecycle/retry/query/raw pre-post evidence, no arbitrary TTL |
+| J06 P2 — native GitHub normalization unspecified | API-NORMALIZE-01/REF68/69; Actions/external/status source namespaces and unknown/nonterminal preservation |
+| J07 P2 — busy timeout literal vs config | S43 CT-07/S44 DB-02; every pooled connection effective config default5000/nondefault1234 |
+
+Scope108/54 sections/130 requirements/195 cases/387 edges và task dependencies/order giữ nguyên; engineering autonomy/per-task Vietnamese small commits→push→eligible CI→sealed archive→auto-next, single final user acceptance giữ nguyên. SPEC/reference proof closure không implementation/live GitHub/driver enforcement; chưa coding kickoff. Current measured results DV-1.6.6; historical proofs không overwrite.
+
+### CLOSE-07 — Review1.6.6 khép trong1.6.7, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| L01 P1 — PR hai current heads | PR-TIME-01; retained P và một current C, old payload not queried as current |
+| L02 P1 — native source graph | NATIVE-GRAPH-01; API edge checks + immutable ID ledger P/C/live |
+| L03 P1 — newest candidate sai logical ID | NATIVE-MAP-01; native mapping before latest, queued/fail cannot hide |
+| L04 P1 — archive green bị gọi live PASS | LIVE-CI-01; invocation-bound live verification, raw paginated collection, archive unchanged |
+| L05 P2 — duplicate binding alias | NATIVE-UNIQUE-01; same execution one slot, requirement origins aggregate |
+| L06 P2 — bỏ allocated operation | CHECKPOINT-ALLOC-01; NOT_STARTED allocated/null actual identity parity |
+
+Giữ54 sections/130 requirements/108 tasks/195 cases/387 R↔T edges và dependencies/order. Cả108 TODO; AI autonomous/per-task Vietnamese small commits→push→eligible CI→sealed archive→auto-next, user acceptance một lần cuối. Chưa coding kickoff; product/GitHub actual NOT_RUN. Proof lịch sử DV-1.6.7; sources/historical ZIPs giữ nguyên.
+
+### CLOSE-08 — Review1.6.7 khép trong1.6.8, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| M01 P1 — push/checkpoint lifecycle khác record | COMMAND-LIFECYCLE-01; common typed S51 record, RUNNING/SUCCEEDED push→checkpoint→resume parity |
+| M02 P1 — global workflow attempt chặn partial rerun | JOB-ATTEMPT-01; native current workflow row + actual older-attempt detail, latest riêng per job |
+| M03 P2 — PR refs không bind approved flow | PR-FLOW-01; frozen same-repo source/target refs và actual head repository ID |
+| M04 P2 — commit message chỉ prose | COMMIT-GATE-01; actual Git snapshot/scope/message/body/closing metadata semantic guards |
+
+Giữ54 sections/130 requirements/108 tasks/195 cases/387 R↔T edges và dependencies/order.108 TODO, autonomy/per-task Vietnamese small commits→push→eligible CI→sealed archive+fresh live verification→auto-next; user acceptance một lần cuối. Chỉ SPEC/reference proof; product/GitHub actual NOT_RUN. Proof lịch sử DV-1.6.8, policy sources và historical ZIPs giữ bytes.
+
+### CLOSE-09 — Review1.6.8 khép trong1.6.9, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| V168-01 P1 — same execution relabel checkout | EXECUTION-PIN-01; immutable terminal input/command/log pin, actual new execution positive |
+| V168-02 P1 — verdict trước push completion | DELIVERY-TIME-01; P/C→manifest/seal→publication/readback→live chronology, legal overlap giữ |
+| V168-03 P1 — unrelated queued event làm canary | CANARY-EVENT-01; selected required success+execution, no all-candidate event union |
+| V168-04 P2 — conflicting closing trailers | TRAILER-PARSE-01; one canonical actual trailer parser static/observer/resume |
+| V168-05 P2 — skip-CI directive được nhận | NO-SKIP-01; actual subject/body/trailer gate, official forms + valid counterparts |
+
+Giữ54 sections/130 requirements/108 tasks/195 cases/387 R↔T edges, dependency/order/statuses. Cả108 TODO; AI tự làm liên tục, Vietnamese small commits→normal push→eligible CI từng task→sealed archive+fresh live verification→auto-next, user nghiệm thu một lần cuối. Chỉ SPEC/reference, product và GitHub actual NOT_RUN. DV-1.6.9 là proof lịch sử; historical ZIPs và3 policy sources giữ bytes.
+
+### CLOSE-10 — Review1.6.9 khép trong1.6.10, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| V169-01 P1 — live event chưa có canary | CANARY-LIVE-01; shared archived/current coverage, retained facts và native ledger |
+| V169-02 P1 — newer event run chưa có job bị bỏ | CANARY-GENERATION-01; complete workflow generation/event trước job selection, no old green fallback |
+| V169-03 P2 — checkpoint bỏ current lifecycle/retry | CHECKPOINT-CURRENT-01; secured current ref/digest/lifecycle/retry/push operation binding |
+| V169-04 P2 — no-op reject prior closing HEAD | NOOP-HISTORY-01; actual historical original phase/message/parents, current C riêng |
+| V169-05 P2 — gate whitelist fixed G0 | CLOSE-GATE-01; canonical S19/S20 own gate, all108 positive scope và wrong gate negatives |
+
+Giữ54 sections/130 requirements/108 TODO/195 cases/387 R↔T edges, dependencies/order/owners. AI tự làm liên tục, tự kiểm/sửa, commit nhỏ tiếng Việt→normal push→eligible CI từng task→sealed archive+fresh live verification→auto-next; user nghiệm thu một lần cuối. Chỉ SPEC/reference proof, chưa coding kickoff, actual product/GitHub NOT_RUN. DV-1.6.10 là proof lịch sử; historical ZIPs và3 policy sources giữ raw bytes.
+
+### CLOSE-11 — Review1.6.10 khép trong1.6.11, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| V1610-01 P1 — canary receipt trước push completion | PHASE-RECEIPT-TIME-01; common phase predicate current P/C/canary + late source rejects |
+| V1610-02 P1 — PR snapshot sau receipt/seal | PR-ACQUISITION-TIME-01; retained receipt containment và secured live acquisition interval |
+| V1610-03 P2 — selection snapshot sau seal | SELECTION-TIME-01; allocated_at riêng updated_at, bounded history snapshot/claim trước current P |
+| V1610-04 P2 — DONE-EVAL/live/archive khác thứ tự | DELIVERY-ORDER-01; owner paragraph synchronized + stage order/permutation/restart fixtures |
+
+Giữ54 sections/130 requirements/108 TODO/195 cases/387 R↔T edges, dependencies/order/owners. AI tự làm liên tục, tự kiểm/sửa, commit nhỏ tiếng Việt→normal push→eligible CI từng task→sealed archive+fresh live verification→auto-next; user nghiệm thu một lần cuối. Chỉ SPEC/reference, chưa coding kickoff, actual product/GitHub NOT_RUN. DV-1.6.11 là proof lịch sử; historical ZIPs và3 policy sources giữ raw bytes.
+
+### CLOSE-12 — Review1.6.11 khép trong1.6.12, P1 trước P2
+
+| Finding | Owner closure / oracle |
+|---|---|
+| V1611-01 P1 — current_pr_ref bỏ own API source | PR-SOURCE-PARITY-01; shared raw source resolution/parity cho mọi binding, distinct current source positive và mutated/missing negatives |
+| V1611-02 P1 — historical canary command khác delivery | PHASE-COMMAND-IDENTITY-01; every phase own UUID, valid historical different-current UUID và cross-delivery rejection |
+| V1611-03 P2 — lifecycle equality so raw strings | LIFECYCLE-INSTANT-01; precise UTC equality cho start/deadline, offset/fractional controls và genuine drift rejects |
+| V1611-04 P2 — S22 C-before-proposal và claim-before-resume | DELIVERY-FLOW-01; full P→C→six close stages, secured identity-bound resume và settled external-blocker/independent-work exception AW-04 |
+
+E1611-01 editorial: BP-01/current authority/resume/frontmatter dùng1.6.12; POL-02/CLOSE-03 cũ ghi rõ snapshot lịch sử, giữ actual historical bytes/facts. Giữ54 sections/130 requirements/108 TODO/195 cases/387 R↔T edges, dependencies/order/owners. AI tự làm liên tục, tự kiểm/sửa, commit nhỏ tiếng Việt→normal push→eligible CI từng task→sealed archive+fresh live verification→auto-next; user nghiệm thu một lần cuối. Chỉ SPEC/reference, chưa coding kickoff, actual product/GitHub NOT_RUN. DV-1.6.12 là proof lịch sử; historical ZIPs và3 policy sources giữ raw bytes.
+
+### CLOSE-13 — Review1.6.12 khép trong1.6.13,5 P2 trước1 P3
+
+| Finding | Owner closure / oracle |
+|---|---|
+| V1612-01 P2 — actual retry bool/float bằng integer | S21 CHECKPOINT-TYPE-01; strict integer/range trước identity equality, valid retry controls và malformed secured context negatives |
+| V1612-02 P2 — rationale truthy nhưng không có văn bản | S21 RATIONALE-TEXT-01; shared typed nonblank reason predicate, three commit exception branches/no-op controls qua composed evaluator |
+| V1612-03 P2 — wrong-root JSON gây AttributeError | S21 MEMBER-SHAPE-01; object/type checks trước field access, six member roles × five wrong roots trả False/UNKNOWN không crash |
+| V1612-04 P2 — optimization bỏ assert hash checks | S48 MANIFEST-CHECK-01; explicit existence/size/hash/SPEC validation, intact/tampered controls trên default và optimized Python |
+| V1612-05 P2 — entrypoint chọn unmanifested child source | S48 PROOF-SOURCE-01; exact verified root source, unlisted child sentinel không được execute, source hash drift reject trước load |
+| E1612-01 P3 — current S40 labels còn1.6.6 | S40 current labels/routing, BP-01/frontmatter/resume/S53 dùng1.6.13; DV/CLOSE/changelog lịch sử giữ đúng revision |
+
+Giữ54 sections/130 requirements/108 TODO/195 cases/387 R↔T edges, dependencies/order/owners và108 cards. AI tự làm liên tục trong coding assignment, tự kiểm/sửa, commit nhỏ đúng dependencies/priority bằng tiếng Việt→normal push→eligible CI từng task→sealed archive+fresh live verification→auto-next; user nghiệm thu một lần cuối. Chỉ SPEC/reference proof và regression, chưa coding kickoff; actual product/GitHub NOT_RUN, no remote/identity/CI fabricated. DV-1.6.13 là current proof; historical ZIPs và3 policy sources giữ raw bytes. Các findings được khép ở contract/reference layer, không claim universal zero bug hoặc108 task đã hoàn thành.
+
+## S53 — Thi công tự chủ108 task và nghiệm thu người dùng một lần
+
+### AW-01 — Phạm vi, authority và điểm bắt đầu
+
+Yêu cầu hiện hành ngày2026-10-14: người dùng muốn AI tự code/tự kiểm/tự hoàn thiện xuyên suốt, nghiệm thu một lần sau hoàn thiện; khi hỏi rõ denominator, người dùng chọn “108 task: gồm cả R3 và U3”. Baseline bắt buộc = R1(52)+R2(20)+R3(12)+U0(4)+U1(10)+U2(6)+U3(4)=108. Không DEFER/CANCEL task trong 108 để tăng progress; không thay số lượng task thành effort/correctness%.
+
+Phiên tạo v1.6.0 chỉ sửa SPEC, implementation vẫn NOT_STARTED. Khi có coding kickoff “triển khai theo SPEC này” hoặc assignment tương đương, đó là một assignment toàn bộ 108, không cần user giao từng Txxx, mở scope R2/R3/U3 lần nữa, duyệt pin/helper/seal hoặc nghiệm thu phase. Assignment, gồm per-task commit/push AW-08 vào repo/nhánh được phép, có hiệu lực đến AW-06 hoặc user stop/revoke/thay mục tiêu; compaction/chuyển phiên không làm mất quyền đã có. AI phải resolve context/actual state, tự bắt đầu T001 và chạy S47 P00–P14 xuyên suốt.
+
+Quyền coding assignment áp dụng MCE4D/owned artifacts/self-authored fixtures theo POL-03, không production/external private repositories. Runtime sản phẩm vẫn read-only/offline/opt-in theo S14/S37; autonomy của AI xây sản phẩm không là quyền của một tool MCP. FUTURE3D/distributed/SaaS/auto-trade và mọi ngôn ngữ/framework không thuộc verified matrix vẫn ngoài baseline.
+
+### AW-02 — AI tự đóng quyết định và các gate nội bộ
+
+G0–G7/GU0–GU3 là cổng kỹ thuật AI phải tự kiểm bằng command/case/evidence, không cổng chờ người dùng chấp thuận. Design/provider/UI seals giữ nguyên thứ tự trước feature. Gate PASS đúng scope thì cập nhật S20 và tiếp tục ngay; FAIL thì tự truy nguyên/sửa/kiểm lại. Không gate nào bắt human reviewer/architect bên ngoài làm prerequisite nội bộ của108 task; user acceptance riêng chỉ AW-06. Lượt self-review phải kiểm source thực trong pass riêng, không chỉ lặp lời giải thích của code generation; báo đúng là AI self-review.
+
+AI được và phải tự resolve unresolved versions, profile/tool paths, bounded fixture selection, closed extension schemas, internal IDs/recipes, policy/quota wiring và lỗi bản vẽ trong constraints BP-04. Technical choices dùng phương án nhỏ nhất đã chứng minh đủ, stdlib/existing deps trước, official API/license/pin và compatibility/failure tests; cần thêm dependency thì ghi necessity/options/impact trong ADR ACCEPTED_DELEGATED_AI. Field/table/contract bổ sung phải sửa owner S43/S44/S42/S45 và parity tests TRƯỚC consumer code; unshipped schema được forward revise, released consumer/store cần migration/version compatibility. Không kiến trúc thứ hai/schema any hoặc placeholder để đi vòng seal.
+
+Từ ngữ “approved”, “mở scope”, “task đã nhận”, “chờ architect” trong phần cũ được áp dụng theo authority cụ thể ở đây: scope108 đã approved bởi người dùng; chi tiết kỹ thuật trong delegated authority do AI tự đóng; external permissions/production/destructive quyền vẫn không được tự cấp. Không dùng autonomy để giảm invariant/capability coverage, bỏ security/race/restore tests hoặc ép upstream API khác tài liệu.
+
+### AW-03 — Vòng thực hiện liên tục và sửa lỗi đến hoàn tất
+
+1. Đọc S00/S53/S22, source policy/task/card/owner sections; inspect current tree/diff và dependency evidence.
+2. Tự claim task Ready theo S47; lập Change Budget/verification/command preflight đúng scope. Một agent một task mặc định; parallel agents chỉ khi host/user/instructions thực sự cho phép, không là prerequisite.
+3. Xác định oracle độc lập từ source semantics/contract; implement cùng positive/negative/failure/cancel tests; chạy checks phù hợp.
+4. Test fail hoặc phát hiện defect thì reproduce→root cause→fix→rerun affected/full checks theo impact. Mỗi retry command có deadline/attempt bounds; một command hết retry không kết thúc mục tiêu: đổi cách chẩn đoán/phương án hợp lệ có evidence. Không blind infinite retries/arbitrary sleep.
+5. Self-review diff/consumers/security/resource/compatibility; revision/fixture/command/environment phải đúng bản cuối. Fix làm invalid evidence thì reopen đúng task và mọi gate/check bị ảnh hưởng.
+6. Thực hiện đầy đủ AW-08: automated local checks/self-review → ordered Vietnamese commits → normal push → exact-SHA GitHub checks → closing evidence/tracker/resume → closing HEAD verified. Khi delivery đã hoàn tất mới tự lấy Ready task tiếp theo, không chờ người dùng duyệt; ngoại lệ duy nhất cho delivery bị external blocker là safe suspension đã secured-verify theo AW-04/DELIVERY-FLOW-01, giữ nguyên selector/evidence task bị chặn và chỉ làm task độc lập Ready. Không trả “đã xong Txxx, chờ duyệt/tiếp tục” khi vẫn có việc đủ điều kiện.
+7. Chạy đến tất cả 108 và final integration AW-06. G5/G6/GU0/GU1/GU2/GU3 chỉ milestones; T080 hoàn thiện R3 không thay final review toàn sản phẩm.
+
+Updates trong chat là thông báo tiến độ/finding/next action, không câu hỏi phê duyệt routine. S19 là tracker duy nhất; S22.execution_checkpoint lưu typed command_record_ref/operation_id/tree+index digest/unfinished checks/next action theo CHECKPOINT-01 khi interruption, không giữ chain-of-thought hoặc duplicate task list.
+
+### AW-04 — Tự gỡ blocker; chỉ escalate điều không thể tự cấp
+
+Compile/test failures, thiếu exact pin, chưa có proof ZIP lịch sử, chưa có private user repo, thiết kế addon chưa seal, quota chưa đo và chưa có reviewer người dùng KHÔNG tự là lý do dừng toàn assignment. AI tự khảo sát official/local sources, chọn compatible pinned tools, xây independent fixtures/proof mới, giảm/phân chia workload có giữ acceptance, tự review và tiếp tục. Missing historical attachment chỉ ghi NOT_AVAILABLE; rebuild equivalent required checks ở T003/T106/T107, không fake106 PASS.
+
+Routine fresh scratch teardown đủ TEARDOWN-01/A045 tự thực hiện; old/protected/unknown cleanup vẫn đúng action-time authority, không dùng missing approval của class đã được ủy quyền để dừng. Task bị blocker thì ghi reproduction+evidence+phạm vi, thử các phương án thực sự khác nhau trong quyền, tiếp tục task độc lập Ready theo dependency DAG sau safe suspension DELIVERY-FLOW-01: secured actual operation_settled=true, không inflight/unknown side effect, retained suspension_ref + S19 BLOCKED/S21 exact selector/operation/state/blocker/remaining checks; giữ nguyên UUID/revision/evidence task bị chặn và cấp UUID riêng cho task độc lập, không vượt prerequisite bị thiếu. Khi không còn việc độc lập và không thể tự khắc phục, báo một blocker report ngắn có: exact missing external fact/right/environment, remedies đã kiểm, command/requirement bị chặn, state preserved và minimal action cần từ người dùng. Đây là ngoại lệ cần điều kiện ngoài, không nghiệm thu trung gian hoặc “project lớn nên dừng”. Không invent credentials/token telemetry, ký thay người dùng, chạy production, bypass host permission/approval, hoặc xóa dữ liệu protected để giữ lời hứa không dừng.
+
+User stop/revoke, hard resource/host execution limit hoặc external authorization thiếu vẫn có hiệu lực. Máy/host không thể chạy Linux/Windows/browser required check thì AI tìm target/runner có sẵn được phép; không được biến cross-compile/mock thành OS PASS. Platform check required chưa chạy giữ final INCOMPLETE và resume; không gọi108/108100% verified. Host token telemetry thiếu không chặn byte-proxy benchmark đã định nghĩa, nhưng token-saving/personal-use claim vẫn NOT_RUN.
+
+### AW-05 — R3/U3 bắt buộc xây, capability giới hạn và runtime opt-in
+
+Không yêu cầu “mọi addon/mọi language/XL vô hạn”. Các task sau có baseline đóng để AI không hỏi chọn lại; mọi extension wire/payload/profile/migration được AI seal theo BP-04 trước feature, tests và registry update nằm trong đúng task.
+
+| Tasks | Deliverable baseline bắt buộc | Nghiệm thu và giới hạn |
+|---|---|---|
+| T069/T070/T101–T104 | Sanitized local OpenTelemetry JSON export subset, spans+links/async/retry/source-build binding, observed overlay; explicit Interact/Observe trên self-authored test application | Chạy browser→actual local Go HTTP backend→temporary local DB bằng verified driver/dialect; imported run có real timestamps/build/revision; raw bodies/secrets không thu. Mock variants là negative/additional evidence, không thay actual E2E. Source/dialect adapter cần thêm cho fixture được seal nhỏ theo BP-04 |
+| T071/T072 | Local Go test/JUnit-style result và coverage metadata subset; source/profile/artifact hashes; selection rationale + full-regression fallback | Actual MCE4D/fixture test exports, không chạy user target tests. Selection không cấp quyền skip required checks |
+| T073 | Authenticated local editor-buffer bridge API/client library với session/version/base_disk_hash, buffer bytes, save/discard/divergence lifecycle; minimal working client gửi unsaved buffers | Actual protocol roundtrip và buffers analyzable, isolated from disk generation; malformed/stale/secret/cross-session rejected. Không bắt universal IDE plugin/native editor installation; generic bridge capability phải hoạt động, không stub |
+| T074 | Local precomputed-vector metadata import/query, declared model/tokenizer/dimension/distance/version; bounded cosine candidate ranking, exact resolver/source validation sau retrieval | Fixture vectors/model metadata có nhãn synthetic, no model quality claim; query vectors supplied explicit. Không tải/train/chạy model/call API; vector similarity không tạo exact edges. Privacy/cross-scope/cache invalidation tests bắt buộc |
+| T075/T077 | Immutable partition fact sets+atomic manifest/GC/compatibility; S/M/L + count-only/byte-only/combined XL tới1.000.000 manifest entries/32 GiB theo XL-V1 | Code/test bắt buộc, activation opt-in. Effective caps/actual profiles/cache/volume reserve/RSS+finite plan đủ thì whole workload. RESOURCE_LIMIT cho actual resource dimension, elapsed TIMEOUT/strict FRESHNESS_UNKNOWN, ENOSPC DISK_FULL, caller CANCELLED. No legacy reject/manifest-only throughput/partial-as-full; independent counts/oracles và resource/error evidence |
+| T076/T078 | Static deployment/config/flag ownership và bounded reports; baseline Docker Compose YAML + Kubernetes YAML declared subset, local JSON report format | Parse data an toàn, source-vs-deployed status khác nhau, unknown fields/capabilities rõ; không execute IaC/Helm/plugins/Kubernetes/cloud. Closed schemas/pins được seal trước parser |
+| T079 | Một provider bổ sung: Rust syntax/source-map/import/declaration baseline qua official parser hoặc verified local rust-analyzer adapter; exact tools/libs chọn bằng evidence | Independent Rust fixtures, safe process/offline/scope/ranges; typed enrichment chỉ khi verified. Không cần hỗ trợ thêm tất cả Rust/Java/C#/language hoặc renderer; syntax capability hoạt động không đồng nghĩa full semantic support |
+| T080 | G7 + final108 integrated readiness review sau T104 và các R3 dependencies | Không bỏ task khi runtime addon disabled; all core/UI/addon regression, packaged startup và final AW-06 |
+
+Các capability limits hợp lệ ghi trước implementation tại seal và phản ánh UI/API/runtime; “unsupported” chỉ cho cases ngoài baseline đã định nghĩa, không làm success cho baseline feature chưa code. User acceptance một lần kiểm sản phẩm trên môi trường của người dùng; self-authored repository fixture là real compiled/executed repository do dự án kiểm soát, không được gọi đã chạy user private repo/production. R1 luôn disk_only; R3 buffer profile có scope riêng, không sửa semantic guarantee của R1.
+
+### AW-06 — Định nghĩa100% engineering và một lần bàn giao cuối
+
+`engineering_complete` chỉ true khi đồng thời:
+- Cả108 task effective DONE theo DONE-EVAL-01, mỗi task có Git delivery receipt AW-08 và archive GIT-DATA-02 đã hoàn tất, evidence đúng revision và đủ case/subcase;0 TODO/IN_PROGRESS/VERIFY/BLOCKED/DEFERRED/CANCELLED trong baseline.
+- Tất cả G0–G7 và GU0–GU3 PASS;0 required check FAIL/NOT_RUN/unknown ở final verification plan. Required ở đây là engineering/product+delivery scope của108 task; merge_checks chỉ phục vụ external merge-ready claim khi merge/queue được ủy quyền, không tự thành gate engineering completion. Merge-only chưa chạy vẫn ghi NOT_RUN đúng stage, không fake PASS hoặc tự enqueue. N/A chỉ khi feature/platform thật sự ngoài baseline đã đóng; không dùng thiếu môi trường, missing addon hoặc time pressure làm N/A.
+- Source cuối, contracts/schema/DDL/registry/defaults, dependencies/lockfiles, generated/bundled assets, CLI/API/help và SPEC/tracker/resume nhất quán; requirement↔task/case/card traceability validator PASS.
+- Trên packaged final artifact: core commands/MCP actual client roundtrip; Explorer graph/source, Inspect hai chiều, HMR/prod strip, FE→BE→DB static và observed run thực trên isolated fixtures; enabled addon imports/queries/buffers; platform/security/concurrency/restore/migration/resource checks đúng plan.
+- Final regression chạy trên combined tree cuối sau code/contract/dependency changes; reused evidence chỉ với equivalence proved và check không yêu cầu fresh run.0 known P0/P1 defect trong supported baseline; fix không bỏ negative cases hoặc giảm yêu cầu.
+- Benchmark có actual correctness/completion/bytes/latency/storage/RSS, corpus versions/hardware/filesystem và failures; token metrics nếu host cung cấp thì dùng usage thật. Không có telemetry giữ token_savings=NOT_RUN, không coi byte proxy là token; đây là claim riêng, không bịa dữ kiện.
+- Mọi thay đổi MCE4D được phép đã commit/push đầy đủ, không còn task delta thất lạc; remote branch HEAD đúng final combined revision, expected GitHub checks PASS trên latest closing HEAD; PR merge checks nếu áp dụng có head/base/tested-merge binding còn hiệu lực. Final package provenance gắn verified source payload; tracker-only closing commit không giả làm package source mới. Không dùng old task SHA thay final HEAD check.
+- Gói bàn giao local đã tạo và kiểm: source/tree revision, binaries+Explorer assets+checksums, dependency/license/notices manifest, evidence summary+artifact hashes, install/start/stop/backup/restore commands, supported matrix/limitations và người dùng nghiệm thu script. Hướng dẫn/tracker ở đúng SPEC này; artifacts không là tài liệu authority thứ hai.
+
+Final verification plan từ các owner requirements/cases đã seal, không tự loại check sau khi fail. Private user-project UAT, token-saving claim khi telemetry thiếu và public legal/name clearance là claims/authority riêng đã định nghĩa từ đầu, không được giả đã đạt hoặc trộn vào engineering PASS.
+
+T080/S21 ghi final evidence map theo requirement→task→case→command/revision/artifact, final defect review và source tree digest; S22 final_engineering_status=`ENGINEERING_COMPLETE_AWAITING_USER_ACCEPTANCE` chỉ có hiệu lực sau đủ mọi điều kiện; nếu được đề xuất trong closing commit thì observer AW-08/GIT-06 phải xác minh latest closing HEAD trước khi công nhận, chưa đạt vẫn INCOMPLETE. `108/108` là % tasks + required acceptance trong baseline, không bảo đảm zero bugs cho mọi chương trình/OS hoặc 100% business correctness. Runtime scanner/static graph/observed trace có limitations như spec; không được quảng cáo vượt evidence.
+
+Chỉ lúc này gửi một final handover cho người dùng nghiệm thu. Internal self-tests không tự đặt owner_acceptance=ACCEPTED; trạng thái owner acceptance=`PENDING_FINAL_USER_ACCEPTANCE`. Không tự publish/merge/deploy. Nếu owner tìm defect trong baseline, reopen đúng task/linked fix evidence và AI tự sửa/kiểm lại toàn impact; denominator108 không đổi, không coi một defect đã biết là “user test thêm nên ngoài scope”.
+
+### AW-07 — Host interruption/compaction và resume mục tiêu
+
+“Liên tục” là không tự dừng vì task/gate/phase hoặc xin duyệt routine khi còn việc có thể làm. Nó không cho phép SPEC giả host sẽ chạy vô hạn qua sleep/budget/connection/app shutdown. Trước hard interruption có thể quan sát: stop/checkpoint owned workers đúng lifecycle, ghi GitExecutionCheckpoint theo CHECKPOINT-01 cùng current selector/task_revision/actual Git/tree/index/command state/unfinished checks/blockers/next action và deterministic archive paths vào S22; giữ source/evidence và reservation ownership thật. Nếu uncatchable crash, resume kiểm thực tế, không nhận đã cleanup hoặc command PASS.
+
+Trong active execution/auto-continuation mà host hỗ trợ: resume cùng assignment, re-read locator/source changes và tiếp tục ngay, không bắt người dùng nhập “tiếp tục” sau mỗi task. Nếu host dừng và không có continuation runner thì báo trạng thái chưa hoàn tất rõ; không bịa đã tạo scheduler/automation hoặc hứa chạy nền. Không tự tạo scheduled jobs/cấu hình host chỉ từ câu yêu cầu thi công liên tục. Khi có phiên tiếp tục, không restart project, không duplicate tracker và không mất mục tiêu108.
+
+### AW-08 — Quy định bắt buộc tự kiểm, commit/push từng task và GitHub verification
+
+#### GIT-01 — Phạm vi và khảo sát trước delivery
+
+Yêu cầu trực tiếp2026-10-15: mỗi task xong phải tự động kiểm tra, tự commit và push toàn bộ thay đổi thuộc task, chia nhỏ đúng thứ tự, ghi chú tiếng Việt và kiểm GitHub đầy đủ. MUST áp dụng cho cả108 task, gồm docs/foundation/contracts, trong coding assignment AW-01; không dồn cuối phase hoặc cuối dự án. Khi đã xác minh repo/remote/nhánh MCE4D thuộc assignment, AI tự thực hiện xuyên task/compaction, không xin duyệt commit/push lại từng lần. Đây không phải quyền sửa/push target repositories mà engine lập bản đồ; không tự merge, deploy, publish release/package, thay ruleset/admin, force-push, xóa branch/tag hoặc thêm credential.
+
+T001 MUST inspect actual Git root/status/branch/remotes/upstream, tracked/untracked/staged work, author identity, hooks, workflows, protection/rulesets/required check sources và quyền dùng runner. Trước MỌI push (P, C, retry, sau resume) và khi destination đổi, query fresh host+numeric repository_id+owner/name+visibility+approved remote/ref, đối chiếu immutable plan và local remote config; không reuse observation từ push trước dù URL/ID giữ nguyên. Record GitDestinationObservation + GitPushOperationEvidence/S51 lifecycle theo PUSH-FRESH-01, đúng push_operation_id/candidate_sha/query/retry, UTC và remote-config digest; xác minh ngay trước git push, nếu có wait/interruption/config change thì re-read/restart observation trước gửi. Không có fresh successful read/visibility unknown hoặc private→public/internal ngoài authority => chặn push, giữ local source/evidence; cần changed plan thì payload/attempt mới trong quyền. Plan visibility phải khớp actual observation; public publication authority explicit vẫn bắt buộc. Sau push đối chiếu actual ref/repository và visibility quan sát được trước delivery PASS; không hứa transaction atomic với admin đổi settings đồng thời [REF67]. Private-first theo IP-04. Existing public repository chỉ push khi có explicit user publication authority cho destination đó; generic per-task auto-push không tự cấp public disclosure. Visibility unknown/no destination => chưa push, làm việc độc lập rồi ghi exact blocker; không đổi visibility/admin hoặc tạo public repo. Internal visibility cũng cần approved organizational destination, không coi mặc định private. Destination repo/branch phải từ cấu hình hiện hữu được phép hoặc user authority thật; không đoán URL, tạo public repo, tự chọn remote của project khác hoặc nhận GitHub integration đã hoạt động. Không đổi global identity, giả tác giả/signoff, ghi token vào URL/log/SPEC. Khi có repo/branch hợp lệ tiếp tục ngay; missing credentials/destination/access không thể tự cấp ghi exact blocker AW-04 sau khi làm các bước độc lập, giữ commits/source/evidence. Lượt sửa SPEC1.6.13 hiện tại không coding kickoff: Git đã initialized, branch main/unborn/no HEAD, no remote, no configured author identity; GitHub checks NOT_RUN. Không dựng tác giả/remote/SHA để đủ receipt.
+
+#### GIT-02 — Lát cắt nhỏ, thứ tự và toàn bộ thay đổi được phép
+
+Mỗi task đi qua implement → automated local checks → self-review → stage theo scope → commit(s) → normal push → observe GitHub → closing receipt/tracker → closing HEAD checks → DONE/auto-next. MUST NOT gom nhiều task/phase/toàn dự án thành một commit hoặc giữ mọi task local đến cuối mới push. Một task nhiều mục đích tách thành commits review được: contract/foundation trước consumer, implementation cùng tests cần thiết, integration/wiring rồi docs/evidence/closure. Dependencies quyết định trước; khi độc lập thì P0 → P1 → P2 → P3. Không dùng priority để đảo prerequisites. Một task nhỏ có một mục đích được một payload commit, không ép nhiều payload commits; closing metadata riêng theo GIT-06; không tạo commit rỗng hoặc chia tests/code làm intermediate commit cố ý broken chỉ để đủ số lượng.
+
+Mỗi commit phải coherent và vượt checks phù hợp của lát cắt. Trước commit inspect diff/staged diff, `git diff --check` và `git diff --cached --check`; review secret/scope/line endings/generated artifacts. Trước push task payload chạy lại task/full regression theo CODE-06 và impact trên combined final payload. “Toàn bộ thay đổi” gồm tất cả source/tests/docs/config/lockfiles cần thiết thuộc assignment/task; inspect cả tracked/untracked và stage paths/hunks có chủ đích. Không blind `git add .`, không gom user/concurrent/staged work không thuộc quyền, không đưa credentials, caches/temp, raw private data hoặc binary chưa được phép. Ghi rõ phần còn lại preserved/unrelated; authorized delta bị bỏ sót chặn closure. Task verified no-op phải có actual revision+checks+receipt giải thích; không empty commit hoặc push giả.
+
+#### GIT-03 — Commit message và tính toàn vẹn lịch sử
+
+MUST áp dụng COMMIT-GATE-01 + TRAILER-PARSE-01/NO-SKIP-01 và NOOP-HISTORY-01 khi reused P ở static CI/observer và dùng Conventional Commits1.0.0 syntax, subject/body tiếng Việt có dấu; type/scope/identifiers kỹ thuật giữ tiếng Anh khi cần. Subject bắt buộc priority và task thật, ví dụ minh họa: `feat(index): [P1][T020] Chụp snapshot và kiểm tra manifest`; đây không phải evidence task đã làm. Types theo mục đích thực: feat/fix/test/docs/refactor/build/ci/chore/perf/revert; `!`/BREAKING CHANGE chỉ khi có thay đổi breaking thật và compatibility decision. Body tiếng Việt ghi vấn đề/mục đích, thay đổi, checks thực chạy/kết quả, ảnh hưởng/giới hạn khi có; không ghi PASS cho command chưa chạy hoặc dùng nội dung “cập nhật” chung chung. P0/P1/P2/P3 lấy priority requirement/impact của lát cắt, nêu lý do khi khác task label/gate; multi-task fix chỉ khi một invariant không thể tách an toàn, liệt kê mọi task liên quan, không dùng ngoại lệ để gộp delivery nhiều task chưa xong.
+
+Dùng UTF-8 message file/structured argument (ví dụ `git commit -F <message-file>`) để giữ dấu/newlines, không shell-interpolate body. DCO `Signed-off-by`/`git commit -s` khi repository yêu cầu; cryptographic signing là yêu cầu riêng nếu policy có, không coi signoff là chữ ký mật mã. Giữ hooks và security checks; MUST NOT `--no-verify`, `HUSKY=0`, skip-CI directive, bỏ test, nới threshold, `continue-on-error` trên required job hoặc sửa expected checks để che failure. Fix sau published commit tạo commit mới đúng thứ tự; không amend/rebase published history khi chưa có explicit authority.
+
+#### GIT-04 — CI bootstrap thực, event eligibility và expected plan
+
+Trước T001 delivery đầu, tạo/verify minimal real GitHub workflow trong owned paths: kiểm UTF-8/Markdown/YAML/required source files và bootstrap invariants hiện hữu, có failure fixture chứng minh guard fail. Không job echo PASS/no-op success/command chưa tồn tại. T001 dùng available verified Git/CLI/API, push canary trong payload task thật và observe run/check đúng credential/event/checkout SHA, trước khi closing T001. Canary không thêm task/empty commit; nếu sửa sau failure thì ordinary fix commit. T003 làm static validator+observer tooling và negative fixtures; T108 seal plan đã thực dùng, không lần đầu phát hiện workflow không trigger. Thiếu remote/auth/runner là exact blocker, không giả canary PASS hoặc task DONE.
+
+Plan S21 GIT-DATA-01 chốt TRƯỚC run: hợp required owner cases/CODE-06 + project committed checks + repo rules/protection; logical scopes tối thiểu bootstrap-document (T001), spec-contract (T003/foundation), core-quality (core khi hiện hữu), platform-linux/windows/wsl và explorer-quality/browser-e2e tại task/gate đến hạn, final-package/security-release tại release/final. T001/T003 map logical scopes thành actual workflow path/job/matrix/context/kind/source app/eligible events/command/revision binding theo dependencies và runner thực; local required acceptance và GitHub required contexts ghi riêng. Nonempty, unique, immutable plan hash mỗi delivery; thay plan cần payload mới và kiểm lại, không sửa để che fail. Không bắt product check chưa có implementation; không bỏ check đã đến hạn. Không hardcode paid CodeQL/DCO/service nếu không applicable/required. OS/browser proof chạy đúng runtime, không mock/cross-compile thay.
+
+Default execution là local Git push bằng authorized existing user/App credential và on:push/PR workflow đã canary. `GITHUB_TOKEN` bên trong Actions push không tự trigger push workflow; PR opened/synchronize/reopened do token có thể tạo approval-required runs [REF64]. Không coi token valid là CI liveness. Không tự thêm credential/secrets/admin; approval-required thật chặn delivery theo AW-04. `workflow_dispatch`/`repository_dispatch` chỉ diagnostic, không substitute PR required-check eligibility [REF61]. MCE4D accepted event subset theo actual repo flow: push, pull_request, pull_request_review, pull_request_target, deployment, deployment_status, merge_group; external_app check có app authorization/source binding riêng. Không enable event chỉ vì nằm enum. Plan.checks là required delivery set cho cả P/C, nonempty, checkout_binding chỉ head/pr_merge. Plan.merge_checks giữ riêng required checks của merge queue (checkout_binding=merge_group), có thể rỗng khi không dùng. Tổng repo/project required set phân loại theo stage TRƯỚC run; không bỏ required check hoặc gọi queue check PASS khi chưa chạy. Task delivery không đợi enqueue/merge; merge-only claim giữ NOT_RUN đến khi có explicit merge/queue authority thật. Không tự enqueue, enable queue hoặc merge để đóng task. Plan phải khớp event đủ điều kiện ở repo; event không eligible => UNKNOWN/FAIL dù green. Không checkout/execute untrusted PR code bằng privileged pull_request_target token/secrets.
+
+Required CI phải xuất hiện và thực chạy ở cả P và metadata-only C. Tránh workflow-level path/branch/skip filters làm mất required context; required always-run aggregator kiểm needs/results và execution artifacts, không che missing/skipped/failure/continue-on-error. N/A phải được seal trước đúng scope, không đổi baseline test thành N/A. Record actual checked-out/build SHA từ runner, không chỉ check-run reported head_sha. Plan reported_sha_binding=subject hoặc tested phải được canary/API verify: push thường subject, PR có thể reported subject hoặc synthetic tested theo API thực; observer kiểm field tương ứng, không đoán API và không gọi tested merge là payload SHA. source_app dùng stable App ID+host; commit status không App dùng verified creator/provider identity, không chỉ tên hiển thị. PR-BIND-01 lưu current snapshot/ref/host/repo/head/base/tested merge và actual ordered parent pair; merge_group theo rules khi thực dùng. Không đổi base/head rồi reuse stale merge proof. Protection403/unknown => NOT_VERIFIED, expected required set chưa xác định => không claim đầy đủ/DONE; accepted push không chứng minh enforcement.
+
+Workflow least-privilege permissions, pin third-party Actions full commit SHA đã verify, xử lý untrusted input an toàn/không secrets cho untrusted fork [REF63]. Repo-local CI/hooks trong approved paths; không global hooks/identity/credential mutation hoặc hạ protection. Mỗi check phải có command execution/result evidence và source app đúng, không badge/zero checks/local-only thay GitHub.
+
+#### GIT-05 — Push và theo dõi đúng revision
+
+Sau local checks PASS và self-review, MUST normal push các commits theo thứ tự lên đúng approved remote/ref, rồi đối chiếu local payload SHA với actual remote ref (ví dụ Git API hoặc `git ls-remote`). Không push `--all`/`--mirror`/force/tags/delete ngoài assignment. Branch protection cấm direct push thì dùng feature branch/PR flow thuộc quyền đã có; không bypass hoặc tự merge. Không gửi review request/comment/thông báo cho người khác khi chưa được giao. Workflows cần PR có thể dùng draft PR tối thiểu cho delivery nếu được phép trong assignment; repo thiếu quyền mở PR là external blocker, không fake checks.
+
+Observe GitHub check-runs VÀ commit statuses thuộc expected set, đúng source app, eligible event, newest attempt của đúng check identity và SHA vừa push; plan hash và actual tested_checkout_sha phải khớp GIT-DATA-01. Newer queued/fail cùng identity làm old green không đủ. Latest theo CI-ORDER-01/API-NORMALIZE-01: parse run_created_at_utc thành instant UTC giữ precision, Actions newest run generation rồi max actual attempt riêng mỗi job/check identity theo JOB-ATTEMPT-01; external/status theo actual creation instant+source ID. Không so timestamp strings; không drop malformed/nonterminal candidates để chọn old green. Không so attempt2 của run cũ với attempt1 run mới rồi bỏ run mới. Quan sát API phải bao gồm terminal và nonterminal candidates, không chỉ filter successes hoặc chọn success cũ để che attempt mới. Ghi actual run/job/matrix/event/URL/conclusion; queued/in_progress/waiting/missing/stale/failed/cancelled/timed_out/action_required không PASS. Workflow file tồn tại, local exit0, badge xanh, zero discovered checks hoặc check ở SHA cũ không đủ. GitHub có thể chấp nhận skipped/neutral theo platform rules, nhưng required test của MCE4D chỉ PASS khi thực chạy và đạt; N/A cần scope rationale đã seal từ trước và không loại baseline required test. Job success che step skipped/continue-on-error không chứng minh test PASS; kiểm job/step/log/artifact phù hợp.
+
+Push workflow phải gắn đúng pushed head SHA. Nếu PR workflow kiểm synthetic merge commit, ghi riêng head_sha/base_sha/tested_merge_sha và chứng minh merge commit được tạo từ đúng head/base hiện hành; không gọi merge SHA là head SHA. Base/head đổi làm stale binding phải kiểm lại theo affected checks. Nếu merge queue thực được dùng, kiểm `merge_group` theo repo rules; không tự enable queue. `MERGE-BIND-01`: merge observation phase=merge, subject_sha là source head C, parent_sha=null, observed_remote_sha=group_head_sha M tại group_ref; GitMergeGroupBinding giữ M/base B/target ref/repository/member heads và membership evidence từ API/Git đã verify. Với merge_checks, actual tested_checkout_sha và reported SHA binding theo M, KHÔNG đòi M=C. C phải là đúng member head của repo/PR và source_subject_sha=C, B/group/ref/membership còn hiện hành; thay group/base/member invalidate proof. Payload/closing observations merge_group_binding=null, không dùng queue evidence thay delivery head/PR checks. Các merge observations sau delivery được lưu evidence record riêng, không sửa sealed delivery archive. Default coding assignment không có quyền merge; external queue proof không gate auto-next của108 task. Required workflow bị path filter không tạo check vẫn là thiếu/pending, không tự miễn. Mỗi published task payload và latest closing HEAD phải đủ required CI; intermediate commits phải locally coherent, CI per-intermediate nếu repo plan yêu cầu. Poll có timeout/backoff, không flood hoặc indefinite wait không checkpoint.
+
+Failure → AI tự đọc logs/reproduce/root cause/fix → local checks → new Vietnamese fix commit(s) → push → observe SHA mới. Transient network/runner failure retry hữu hạn; missing auth/permission/runner không tự tạo hoặc đổi sang fake check. Non-fast-forward thì fetch/inspect concurrent changes, reconcile theo branch policy và rerun combined checks; không reset/force hoặc loại bỏ công việc người khác. Required human approval thực từ repo rules chỉ chặn external merge claim; không tự tạo human approval prerequisite nội bộ. Nếu rules ngăn cả delivery không thể tự cấp thì AW-04, không tuyên bố DONE.
+
+#### GIT-06 — Delivery P→C→sealed archive và resume
+
+1. Secured-read S19/S21/actual command/Git/remote/CI trước; có pending active thì resume exact identity/boundary theo DELIVERY-FLOW-01, không thay UUID của attempt hoặc lặp commit/push. Chỉ khi không pending, delivery trước effective DONE, hoặc suspended_external_blocker đã secured-verify operation settled + retained suspension evidence theo AW-04 mới claim Ready task độc lập; task bị chặn giữ S19 BLOCKED/S21 selector/evidence, không discard hoặc coi DONE; current selector ACTIVE-DELIVERY-01 cấp task_revision/delivery_id và deterministic planned archive/staging paths TRƯỚC P, không fake artifact đã tồn tại. Freeze plan.checks delivery set và merge_checks riêng. Payload giữ S19 VERIFY; local automated checks/self-review→ordered Vietnamese payload commits→fresh destination verification→normal push→observe actual P đủ delivery checks PASS. Payload observation/file refs thực, no ownSHA trong payload.
+2. Tạo C direct child một parent P, subject docs(progress) có priority/task thật và trailers `MCE4D-Delivery-ID: <UUID>`, `MCE4D-Delivery-Phase: closing`; records task_revision/selection/P/immutable plan/payload receipt/planned paths, candidate DONE/checkpoint trong CLOSE-DIFF-01. Ordered payload list kết thúc P, không chứa C. Không source/contract/workflow/test/dependency/artifact delta. Concurrent/reconcile/content/plan change => payload+new revision/attempt, không force/amend published.
+3. Fresh destination verify riêng cho C→push→resolve marker+P+approved ancestry→observe C delivery checks và actual checkout/PR bindings theo PR-TIME-01/NATIVE-GRAPH-01/NATIVE-MAP-01/LIVE-CI-01. Candidate DONE vẫn effective VERIFY khi pending/fail/missing. Local expensive checks reuse chỉ khi plan explicit+equivalence; mọi required GitHub delivery jobs ở C thực chạy. Static CI chỉ validates P receipt+proposal/equivalence, dùng same trailer/skip parser và execution/time/canary guards đến phase applicable, không wait own running CI.
+4. DELIVERY-ORDER-01: DELIVERY-LINK-01 kiểm toàn record/ref identity/claim/acquisition chronology→ARCHIVE-PUBLISH-01 ghi/flush/seal/atomic publish/readback final→fresh LIVE-CI-01 query/verification riêng + retained live record/readback + DELIVERY-TIME-01 chronology→CANARY-LIVE-01 kiểm selected current events và canary generation→mới current task effective DONE/auto-next. Archive actual C/result không nằm trong C, không commit thêm chỉ ghi ownSHA/own CI result. Locator đã derive được từ attempt trước P; hash/pointer actual có thể thêm ordinary next-task commit hoặc final external handover.
+
+Resume ở mọi boundary theo DELIVERY-FLOW-01/canonical resume_next_stage: actual boundary/delivery_id/task_revision/effective_done được secured-read; pending active luôn resolve trước claim Ready mới; AW-04 chỉ cho Ready độc lập khi suspended_external_blocker có secured operation_settled/suspension proof và giữ task bị chặn nguyên selector/evidence. Inflight push reconcile actual common command/postflight cùng operation identity trước retry, pending CI observe đúng existing P/C SHA; no missing/ambiguous state fallback new UUID. current S19 selector+S21 trước, S22 typed checkpoint chỉ cache; actual commits/remote/run/staging/final recheck. Published sealed exact archive => idempotent reuse/history đúng revision; staging-only/partial chưa DONE; final current HEAD cần fresh GitLiveVerification/LIVE-CI-01, không chỉ archived green+remote=C. New attempt không fallback old archive; transient same immutable C retry hữu hạn, byte change new payload/revision/UUID. No-op theo NOOP-HISTORY-01 dùng existing actual P (gồm prior closing HEAD hợp lệ, giữ original metadata) có fresh applicable checks, declared payload list kết thúc P và closing metadata thực nếu có; không empty commit. Merge queue checks chỉ trong merge stage có authority riêng, không tự enqueue/merge hoặc chặn auto-next chỉ vì merge-only NOT_RUN.
+
+#### GIT-07 — Điều kiện bàn giao cuối
+
+AW-06 chỉ đạt khi mọi task có receipt/local+GitHub evidence và durable archive GIT-DATA-02 hợp lệ, ordered commits đã push đầy đủ, final approved remote HEAD được đối chiếu và toàn expected checks của latest closing HEAD PASS bằng fresh GitLiveVerification+collection, không mutate sealed history. Payload/source revision tạo package và metadata-only closing equivalence phải rõ; substantive changes sau package/CI invalidates affected verification. Không dùng một đợt CI cũ, unknown protection hoặc final local green thay delivery proof. Không còn authorized task delta chưa commit/push; preserved unrelated work phải được nêu riêng, không tự đưa vào lịch sử. Người dùng chỉ nghiệm thu một lần khi engineering hoàn tất; per-task commit/push/CI là công việc tự động của AI, không vòng chờ duyệt mới.
+
+S53 là execution/completion authority v1.6.13; S43 model/schema/registry/codec, S44 physical stores/DDL, S42/S45 flow/state; S14/S15/S27 policy/resource/capacity theo references. S19 tracker duy nhất, S47 order/cards và S22 resume derived. BP-04/AW-02 reconcile owner+parity trước consumer, no latest-section-wins. System/user permissions và yêu cầu mới vẫn ưu tiên; final acceptance không external/destructive/production quyền.
