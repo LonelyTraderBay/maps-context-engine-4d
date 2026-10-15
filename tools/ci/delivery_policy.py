@@ -35,6 +35,11 @@ ALLOWED_S22_KEYS = {
     "git_delivery.last_live_verification_ref", "git_delivery.last_live_verification_id",
     "git_delivery.last_ci_collection_ref", "git_delivery.pending_delivery_task",
     "git_delivery.last_delivery_evidence_ref", "execution_checkpoint",
+    "execution_checkpoint.head_sha", "execution_checkpoint.working_tree_digest",
+    "execution_checkpoint.index_digest", "execution_checkpoint.command_record_ref",
+    "execution_checkpoint.operation_id", "execution_checkpoint.command_state",
+    "execution_checkpoint.unfinished_check_refs", "execution_checkpoint.blocker_refs",
+    "execution_checkpoint.next_action_ref", "execution_checkpoint.checkpointed_at_utc",
 }
 
 
@@ -365,7 +370,9 @@ def _section_map(text: str) -> tuple[list[str], dict[str, list[str]]]:
     prefix: list[str] = []
     sections: dict[str, list[str]] = {}
     current: str | None = None
-    for line in text.splitlines(keepends=True):
+    # Markdown lines are separated by LF. Unicode line separators can occur inside
+    # canonical JSON/string vectors and must remain content rather than boundaries.
+    for line in text.split("\n"):
         match = re.match(r"^##\s+(S\d{2})(?:\s|—|$)", line)
         if match:
             current = match.group(1)
@@ -512,17 +519,31 @@ def _change_allowed_s22(old: list[str], new: list[str]) -> list[str]:
     errors: list[str] = []
     if len(old) != len(new):
         return ["S22 changed line count; closing chỉ có thể đổi giá trị derived đã có"]
+    parent = ""
+    in_yaml = False
     for before, after in zip(old, new):
-        if before == after:
+        if before.strip() == "```yaml":
+            in_yaml = True
+            parent = ""
+            continue
+        if in_yaml and before.strip() == "```":
+            in_yaml = False
+            parent = ""
             continue
         old_match = re.match(r"^(\s*)([A-Za-z_][A-Za-z0-9_-]*):", before)
+        if in_yaml and old_match is not None:
+            indent, key = old_match.groups()
+            if indent == "  ":
+                parent = key if key in {"git_delivery", "execution_checkpoint"} else ""
+        if before == after:
+            continue
         new_match = re.match(r"^(\s*)([A-Za-z_][A-Za-z0-9_-]*):", after)
-        if old_match is None or new_match is None or old_match.groups() != new_match.groups():
-            errors.append("S22 changed YAML structure")
+        if (not in_yaml or old_match is None or new_match is None
+                or old_match.groups() != new_match.groups()):
+            errors.append("S22 changed YAML structure or content outside its resume mapping")
             continue
         indent, key = old_match.groups()
-        parent = "git_delivery." if indent == "    " else "" if indent == "  " else ""
-        full_key = parent + key
+        full_key = f"{parent}.{key}" if indent == "    " and parent else key
         if full_key not in ALLOWED_S22_KEYS:
             errors.append(f"S22 changed non-derived or authority field {full_key}")
     return errors

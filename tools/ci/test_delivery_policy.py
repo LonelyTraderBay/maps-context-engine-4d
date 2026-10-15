@@ -15,6 +15,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.ci.delivery_policy import (
+    _change_allowed_s22,
+    _section_map,
     classify_closing_spec_diff,
     validate_check_plan,
     validate_commit_message,
@@ -193,6 +195,47 @@ class ClosingDiffTests(unittest.TestCase):
     def test_candidate_closing_leaf_passes(self) -> None:
         payload, closing = self._payload_and_closing()
         self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
+
+    def test_s22_allows_derived_execution_checkpoint_leaves(self) -> None:
+        before = [
+            "## S22 — Resume",
+            "```yaml",
+            "resume:",
+            "  git_delivery:",
+            "    last_ci_result: P1",
+            "  execution_checkpoint:",
+            '    checkpoint_id: "stable-id"',
+            '    head_sha: "P1"',
+            '    command_record_ref: "old-command.json"',
+            '    operation_id: "old-operation"',
+            '    command_state: "RUNNING"',
+            '    unfinished_check_refs: ["old-check"]',
+            '    next_action_ref: "old action"',
+            '    checkpointed_at_utc: "2026-10-15T00:00:00Z"',
+            "```",
+        ]
+        after = before.copy()
+        after[4] = "    last_ci_result: P2"
+        after[7] = '    head_sha: "C"'
+        after[8] = '    command_record_ref: "closing-command.json"'
+        after[9] = '    operation_id: "closing-operation"'
+        after[10] = '    command_state: "SUCCEEDED"'
+        after[11] = '    unfinished_check_refs: ["archive", "live"]'
+        after[12] = '    next_action_ref: "publish archive"'
+        after[13] = '    checkpointed_at_utc: "2026-10-15T01:00:00Z"'
+        self.assertEqual([], _change_allowed_s22(before, after))
+
+    def test_s22_rejects_execution_checkpoint_identity_change(self) -> None:
+        before = ["## S22 — Resume", "```yaml", "resume:", "  execution_checkpoint:", '    checkpoint_id: "stable-id"', "```"]
+        after = before.copy()
+        after[4] = '    checkpoint_id: "changed-id"'
+        errors = _change_allowed_s22(before, after)
+        self.assertTrue(any("execution_checkpoint.checkpoint_id" in error for error in errors))
+
+    def test_section_map_preserves_unicode_line_separator_content(self) -> None:
+        separator = chr(0x2028)
+        _, sections = _section_map(f"## S19\nvalue before{separator}value after\n## S20\n")
+        self.assertIn(f"value before{separator}value after", sections["S19"])
 
     def test_another_task_status_change_fails(self) -> None:
         payload, closing = self._payload_and_closing()

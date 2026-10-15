@@ -1479,6 +1479,7 @@ Evidence IDs E001,E002,... monotonic unique, cấp khi code thật có run/artif
 | E006 | T002 | closing=020a367dc2aa6920f4ef36038e2f04c625fdb5bc; external task-closure record sha256:f3ea633719c655b496024af18a2e73380d5f778331655725c4a76c241cf68081 | Windows 11; WSL2 Ubuntu 26.04.1; GitHub Actions App 15368; repo ID 1421031011 | Reconcile exact T002 P/C and four native checks; archive/seal/readback; fresh live verification/readback; stale E005 receipt diagnostics retained | PASS — T002 effective DONE at revision 1; E005 stale hashes are explicitly reconciled, not relabeled as matching | task-closure-E006.json=3843B sha256:f3ea633719c655b496024af18a2e73380d5f778331655725c4a76c241cf68081; archive/manifest.json=sha256:adab5f696f8341ca9062087f08df713160ce071404370c1b3923c09257986bf4; archive/seal.json=sha256:b06fb4665053d575bb94fa1f600ec2f0f120112dd6b0b1e8b1251922a32e2119; live-verification.json=sha256:c9dd81bf239ef7591b5e1278f53953f7378c0eeecaef5dea8933f5ec960986ba; live-readback.json=sha256:099cf1727d662005d88ffa5ae9df61d9d92b9e10b17ca4327eee2d4785ff8dbf; stale-receipt-reconciliation.json=sha256:4d639abd74c0fc26a6c3d4465e927862b58690d882a9a51ae1ff69b4b65c99c | 2026-10-15T19:22:08.909361Z |
 | E007 | T003 | selection revision 1; frozen plan sha256:4f45e35da625fd547c690bfbe10662d9b41ce9162fbb644f3a5fb934aad1ad6f | Windows 11 NTFS; Python 3.12.10; Git 2.45.1; GitHub repository ID 1421031011 | Initial task allocation captured before payload work; later required-check plan drift detected during implementation | NOT_RUN — revision 1 superseded before payload; no push or CI claim; history and invalidation reason retained | selection.json=469B sha256:c491ad9941c28ed5f3cb617cbd359c5122406d029a986ec1d95e7543a1960d61; check-plan.json=2785B sha256:4f45e35da625fd547c690bfbe10662d9b41ce9162fbb644f3a5fb934aad1ad6f; task-mode.json=1739B sha256:c9400bd399e6a903816e9cf889d5655b196b4bf3afed5835f1b1c48c8d909621; authority/task-start.txt=722B sha256:a8aedf183ec71f5763e84fa9843ceb2af78bb179aceb5930732f4b58cf0e0aca | 2026-10-15T19:24:54.387760Z |
 | E008 | T003 | base=020a367dc2aa6920f4ef36038e2f04c625fdb5bc; selection revision 2; plan=sha256:0adcedf6dcd2e57f159d2be096cbc7edfe2563d794bd2ca2369925a53cce0009 | Windows 11 NTFS; Python 3.12.10; Git 2.45.1; GitHub repository ID 1421031011; target main/public | Freeze corrected seven-command check plan, retain revision 1 selection+plan and recorded invalidation before revalidating carried implementation | NOT_RUN — revision 2 active selection; payload commit, exact-SHA CI, closing, archive and live observer pending | selection.json=505B sha256:ec4293a0cf11c3c54c714e52e6ca2afa70c1f4fa1b5f0d92ffc2822f32a497fe; check-plan.json=3077B sha256:0adcedf6dcd2e57f159d2be096cbc7edfe2563d794bd2ca2369925a53cce0009; task-mode.json=1738B sha256:208ef6f8f89427cb76ea96a8594095f8c5ca5f7a24edb5f97ddeb2a33879bce9; authority/task-start.txt=923B sha256:a5a7d6562d87a3882de1b103058c3efd03582262b8961e64b854387e619b510f; history/selection-revision-1.json=469B sha256:c491ad9941c28ed5f3cb617cbd359c5122406d029a986ec1d95e7543a1960d61; history/check-plan-revision-1.json=2785B sha256:4f45e35da625fd547c690bfbe10662d9b41ce9162fbb644f3a5fb934aad1ad6f; invalidation/plan-revision-2.json=830B sha256:32ffac5e2b9fb71a5e52d5a1e4472c6df6397fa52509280b54d7552971783515; preflight/storage-preflight-01.json=587B sha256:5a424c19e90e331bccaf42b3e26c1ffdf5a4b38c56aae0904aa4526d5e4c853e | 2026-10-15T20:40:26.307282Z |
+| E009 | T003 | P2=b0c29f2cfb438ccba0d97c152075c5ae8a72e31f; plan=sha256:0adcedf6dcd2e57f159d2be096cbc7edfe2563d794bd2ca2369925a53cce0009; revision=2; follow-up parser fix retained for same task | Windows 11 NTFS; Python 3.12.10; Git 2.45.1; GitHub Actions App 15368; public repository 1421031011 | Seven frozen local commands and P2 push/CI PASS; run 38807108177 attempt 1 has four exact-SHA contexts and checkout bindings; typed retry observation validates. Preliminary C was rejected before commit when classifier exposed its S22 checkpoint-path defect; corrected implementation/tests are in this P3 payload and pending full frozen checks and delivery. | PASS for prior P2 evidence; T003 remains VERIFY pending P3 and closing delivery | commands/payload-progress-02-commit-message.txt=372B sha256:461878dbf798aa20d0da9fd55696b9daaaa250387ae0217202989c35a0eb772f; local-checks/payload-02/summary.json=8482B sha256:ec56aa4e7d8a2d1ac4d10881dfa957fefb7738f9796a733e7dd95e40d16d07c3; push/payload-02-retry-1-operation.json=2235B sha256:c0f028c94aa85aebaf0b48be61cd824d6429e3eedaf2c395706d66fcd1b67827; push/payload-02-retry-1-destination-observation.json=784B sha256:af45c0a051ab3454cce4bae13700655c788eabf8ce107149c0b7b011b7ec4025; commands/payload-push-02-retry-1.json=5134B sha256:ed6f17b40b7c7c6cddc431b4f04bbb6494322116bb66bab7b23758a7447da969; ci/payload-observation-02-retry-1/typed/ci-collection.json=1674B sha256:1d35adc9b30a6464aabc1e69d51179e6fc8224e71f8e8918caa9436a4e9a5361; ci/payload-observation-02-retry-1/typed/payload-observation.json=6178B sha256:c8290ed7b15d6e9c84177f8fa89b38605709726d2ca5cc9a942dd68cad75b77d; commands/payload-ci-observation-02-retry-1.json=6607B sha256:8baddb5c133df44a6a56c3605ecc3bcdf72eda8a1cd8c0d5617b53a2f17c9488; commands/collect_payload_ci_02_retry_1.py=17760B sha256:4c5f70520ee088dc0211b17742f118defc8ad8653af558f8607134dbe71d35cf; diagnostics/payload-observation-02-validation.json=1066B sha256:b4706e34791a5d16df74af89fb56453a4f338cc65a2472a5f95621a3c29fb3d9; commands/payload-ci-observation-02.json=5972B sha256:94100c2adb456202dfd569570d3802aef70f1eeae3f96550b6b32a9c4399f6bf; diagnostics/preliminary-closing-candidate-01.json=1341B sha256:cafba39f51649cc67e3c210deefd8eb2feec1fe33fe6d084e1a8d04b8d406304 | 2026-10-15T21:13:09.980284Z |
 Format result: PASS, FAIL, NOT_RUN. NOT_RUN phải có lý do trong record. Hash tree dùng khi chưa commit; không bịa commit SHA. Absolute local paths chỉ trong private evidence khi cần, không publish; log sanitized. File artifact không tồn tại thì không tạo pointer giả. DONE task MUST trỏ >=1 evidence record PASS bao phủ test scope; gate reviewer kiểm tra không chỉ string “PASS”.
 
 ### Metadata áp dụng cho task/lệnh — không thêm tracker
@@ -5006,7 +5007,7 @@ resume:
   git_delivery:
     repository_status: REMOTE_CONFIGURED_PUBLIC_AUTHENTICATED_BRANCH_UNPROTECTED_ACTIONS_ENABLED
     local_branch: main
-    local_head_sha: 416c434437ac03c985573d54aadb9405186f6411
+    local_head_sha: b0c29f2cfb438ccba0d97c152075c5ae8a72e31f
     author_identity_status: CONFIGURED
     approved_remote: origin
     approved_branch: main
@@ -5020,12 +5021,12 @@ resume:
     durable_archive_ref: artifacts/git-delivery/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/manifest.json
     observed_remote_sha: 416c434437ac03c985573d54aadb9405186f6411
     expected_check_plan_ref: artifacts/git-delivery/eca9684d-8e74-4b06-8168-47f2a3c82e9e/check-plan.json
-    last_ci_result: T003 payload PASS run 38805318271 on four exact-SHA contexts
+    last_ci_result: T003 payload PASS run 38807108177 on four exact-SHA contexts
     last_live_verification_ref: artifacts/git-live/f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1/c04f4705-3f31-41c4-974b-26e1743a63e7/live-verification.json # LIVE-CI-01, external evidence, not sealed history
     last_live_verification_id: c04f4705-3f31-41c4-974b-26e1743a63e7
-    last_ci_collection_ref: artifacts/git-delivery/.staging-eca9684d-8e74-4b06-8168-47f2a3c82e9e/ci/payload-observation-01/typed/ci-collection.json
+    last_ci_collection_ref: artifacts/git-delivery/eca9684d-8e74-4b06-8168-47f2a3c82e9e/ci/payload-observation-02-retry-1/typed/ci-collection.json
     pending_delivery_task: T003
-    last_delivery_evidence_ref: artifacts/git-delivery/.staging-eca9684d-8e74-4b06-8168-47f2a3c82e9e/ci/payload-observation-01/typed/payload-observation.json
+    last_delivery_evidence_ref: artifacts/git-delivery/eca9684d-8e74-4b06-8168-47f2a3c82e9e/ci/payload-observation-02-retry-1/typed/payload-observation.json
   auto_advance_tasks: true
   auto_close_internal_gates: true
   intermediate_user_approval: false
@@ -5047,17 +5048,17 @@ resume:
     task_revision: 2
     delivery_id: "eca9684d-8e74-4b06-8168-47f2a3c82e9e"
     local_branch: "main"
-    head_sha: "416c434437ac03c985573d54aadb9405186f6411"
-    working_tree_digest: "66dccce53d51deecc0c037aa630642270074823e405ff5a6ef85c354ad5549c1"
-    index_digest: "05230f7bfdc9406b4e416f8b83d15a0bcd567756cd99073bfc0848643efa07ec"
-    command_record_ref: "commands/payload-ci-observation-01-retry-1.json"
-    operation_id: "f2b4129a-c9e6-4e2d-b7dc-71c417da3b83"
+    head_sha: "b0c29f2cfb438ccba0d97c152075c5ae8a72e31f"
+    working_tree_digest: "eeff9a672e896ae899e12611058c4a94f697a8ef843a5246e0ef4df37ee9c770"
+    index_digest: "f12fd5ef997abcdf34d727e65e10dca18be7e0efe8dc4e08079c0407019aad5b"
+    command_record_ref: "commands/payload-ci-observation-02-retry-1.json"
+    operation_id: "53521efb-5b7f-4a77-92ff-21e2bcd1ed70"
     command_state: "SUCCEEDED"
-    unfinished_check_refs: ["P2 payload commit/push", "P2 four exact-SHA CI contexts", "closing C and exact-SHA CI", "archive seal/readback", "fresh live verification/readback"]
+    unfinished_check_refs: ["P3 payload commit/push", "P3 four exact-SHA CI contexts", "closing C and exact-SHA CI", "archive seal/readback", "fresh live verification/readback"]
     blocker_refs: []
-    next_action_ref: "S53/AW-08: commit and push P2 normally, then collect all four exact-SHA CI contexts for its SHA."
+    next_action_ref: "S53/AW-08: verify the frozen P3 checks, commit and push normally, then collect four exact-SHA CI contexts."
     planned_archive_path: artifacts/git-delivery/eca9684d-8e74-4b06-8168-47f2a3c82e9e
-    checkpointed_at_utc: "2026-10-15T21:01:51.802990Z"
+    checkpointed_at_utc: "2026-10-15T21:13:09.999300Z"
   active_owner: Codex
   done_r1_tasks: 2
   total_r1_tasks: 52
