@@ -28,10 +28,28 @@ from tools.spec_check.schema import strict_json_loads
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
 SPEC_TEXT = SPEC_PATH.read_text(encoding="utf-8")
-DELIVERY_ID = "eca9684d-8e74-4b06-8168-47f2a3c82e9e"
 PAYLOAD_SHA = "1" * 40
 PLAN_SHA = "2" * 64
-PLAN_FILE_SHA = "0adcedf6dcd2e57f159d2be096cbc7edfe2563d794bd2ca2369925a53cce0009"
+
+
+def _current_s19_evidence_identity() -> tuple[str, dict[str, str]]:
+    row = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T003 | G0 |"))
+    evidence = row.strip().strip("|").split("|")[8].strip()
+    parts = evidence.split(";")
+    values: dict[str, str] = {}
+    for part in parts[1:]:
+        key, separator, value = part.partition("=")
+        if separator:
+            values[key] = value
+    required = {"task_revision", "delivery", "plan", "priority"}
+    if not re.fullmatch(r"E\d{3}(?:,E\d{3})*", parts[0]) or not required.issubset(values):
+        raise AssertionError("Current S19 T003 row must bind an active selection and frozen plan")
+    return parts[0], values
+
+
+CURRENT_EVIDENCE_ID, CURRENT_S19 = _current_s19_evidence_identity()
+DELIVERY_ID = CURRENT_S19["delivery"]
+PLAN_FILE_SHA = hashlib.sha256((ROOT / "tools/ci/check-plan.json").read_bytes()).hexdigest()
 COMMIT_BODY = (
     "Mục đích: Kiểm chứng luồng giao task.\n"
     "Thay đổi: Ghi bằng chứng đã khóa.\n"
@@ -41,7 +59,8 @@ COMMIT_BODY = (
 
 def _delivery_evidence(payload_sha: str = "PENDING", *, closing: bool = False) -> str:
     payload_ci = "PENDING" if payload_sha == "PENDING" else "PASS(run:1)"
-    value = (f"E007;task_revision=1;delivery={DELIVERY_ID};plan={PLAN_FILE_SHA};priority=P0;"
+    value = (f"{CURRENT_EVIDENCE_ID};task_revision={CURRENT_S19['task_revision']};delivery={DELIVERY_ID};"
+             f"plan={PLAN_FILE_SHA};priority={CURRENT_S19['priority']};"
              f"local=PASS;payload_sha={payload_sha};payload_CI={payload_ci};closing_sha=PENDING;"
              "closing_CI=PENDING;archive/live=PENDING")
     return value + (";candidate=DONE" if closing else "")
