@@ -23,6 +23,30 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate bootstrap sources
-        run: python tools/ci/bootstrap_check.py
+        run: python -B tools/ci/bootstrap_check.py
       - name: Run positive and failure fixtures
-        run: python tools/ci/test_bootstrap_check.py
+        run: python -B tools/ci/test_bootstrap_check.py
+
+  spec-contract:
+    name: spec-contract (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Validate frozen delivery plan
+        run: python -B tools/ci/delivery_policy.py check-plan
+      - name: Validate SPEC contracts
+        run: python -B tools/spec_check/check.py
+      - name: Run positive and failure fixtures
+        run: python -B tools/spec_check/test_spec_check.py
+      - name: Run delivery policy fixtures
+        run: python -B tools/ci/test_delivery_policy.py
+      - name: Verify checkpoint digest recipe
+        run: python -B tools/ci/test_checkpoint_digest.py

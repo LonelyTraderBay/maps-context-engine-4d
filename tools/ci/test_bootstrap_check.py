@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from bootstrap_check import POLICY_SOURCES, SPEC_FILE, validate
+from bootstrap_check import POLICY_SOURCES, REQUIRED_FILES, SPEC_FILE, validate
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,7 +17,7 @@ class BootstrapValidatorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory(prefix="mce4d-bootstrap-")
         self.root = Path(self.temp_dir.name)
-        for relative_path in (SPEC_FILE, ".github/workflows/bootstrap.yml", *POLICY_SOURCES):
+        for relative_path in (*REQUIRED_FILES, *POLICY_SOURCES):
             destination = self.root / relative_path
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(PROJECT_ROOT / relative_path, destination)

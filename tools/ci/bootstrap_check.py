@@ -30,14 +30,30 @@ WORKFLOW_REQUIREMENTS = (
     "persist-credentials: false",
     "ubuntu-latest",
     "windows-latest",
-    "tools/ci/bootstrap_check.py",
-    "tools/ci/test_bootstrap_check.py",
+    "name: bootstrap (${{ matrix.os }})",
+    "name: spec-contract (${{ matrix.os }})",
+    "python -B tools/ci/bootstrap_check.py",
+    "python -B tools/ci/test_bootstrap_check.py",
+    "python -B tools/ci/delivery_policy.py check-plan",
+    "python -B tools/spec_check/check.py",
+    "python -B tools/spec_check/test_spec_check.py",
+    "python -B tools/ci/test_delivery_policy.py",
+    "python -B tools/ci/test_checkpoint_digest.py",
 )
 POLICY_SOURCES = {
     "docs/AI_RULES.md": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
     "docs/AI_RULES_STORAGE_SUPPLEMENT.md": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
     "docs/PROJECT_BOOTSTRAP_PROMPT.txt": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
 }
+REQUIRED_FILES = (
+    SPEC_FILE, WORKFLOW_FILE, "tools/spec_check/check.py",
+    "tools/spec_check/spec.py", "tools/spec_check/schema.py", "tools/spec_check/manifest.py",
+    "tools/spec_check/ci_order.py",
+    "tools/spec_check/semantics.py", "tools/spec_check/test_spec_check.py",
+    "tools/ci/delivery_policy.py", "tools/ci/test_delivery_policy.py",
+    "tools/ci/checkpoint_digest.py", "tools/ci/test_checkpoint_digest.py",
+    "tools/ci/check-plan.json",
+)
 
 
 def validate(root: Path) -> list[str]:
@@ -45,7 +61,7 @@ def validate(root: Path) -> list[str]:
     errors: list[str] = []
     decoded: dict[str, str] = {}
 
-    for relative_path in (SPEC_FILE, WORKFLOW_FILE, *POLICY_SOURCES):
+    for relative_path in (*REQUIRED_FILES, *POLICY_SOURCES):
         path = root / relative_path
         try:
             contents = path.read_bytes()
