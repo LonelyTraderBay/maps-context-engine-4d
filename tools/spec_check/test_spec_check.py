@@ -210,13 +210,48 @@ class FoundationSealTests(unittest.TestCase):
     def test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field(self) -> None:
         delivery_id = "cdad7e47-cad0-4327-a984-0393aa41f84a"
         verification_id = "0fbfe75d-5cb5-4bf8-b61a-7253e1027c49"
-        record_path = ROOT / "artifacts/git-live" / delivery_id / verification_id / "live-verification.json"
-        record = json.loads(record_path.read_text(encoding="utf-8"))
-        publication = record["archive_publication"]
+        subject_sha = "c" * 40
+        manifest_sha256 = "a" * 64
+        seal_sha256 = "b" * 64
+        record = {
+            "format_version": 1,
+            "kind": "live_verification",
+            "verification_id": verification_id,
+            "assignment_ref": "test-fixture:T107",
+            "task_id": "T107",
+            "task_revision": 1,
+            "delivery_id": delivery_id,
+            "check_plan_sha256": "d" * 64,
+            "subject_sha": subject_sha,
+            "observed_remote_sha": subject_sha,
+            "started_at_utc": "2026-10-16T07:32:00Z",
+            "completed_at_utc": "2026-10-16T07:33:00Z",
+            "closing_observation_ref": "closing-observation.json",
+            "collection_evidence_ref": "collection.json",
+            "git_evidence_ref": "git/closing-commit-snapshot.json",
+            "current_pr_ref": None,
+            "files": [
+                {"path": path, "byte_length": 1, "sha256": "e" * 64}
+                for path in (
+                    "closing-observation.json",
+                    "collection.json",
+                    "git/closing-commit-snapshot.json",
+                )
+            ],
+            "archive_publication": {
+                "format_version": 1,
+                "kind": "archive_publication",
+                "planned_archive_path": f"artifacts/git-delivery/{delivery_id}",
+                "archive_manifest_sha256": manifest_sha256,
+                "archive_seal_sha256": seal_sha256,
+                "published_at_utc": "2026-10-16T07:30:00Z",
+                "readback_completed_at_utc": "2026-10-16T07:31:00Z",
+            },
+        }
         identity = {
-            "manifest_sha256": publication["archive_manifest_sha256"],
-            "seal_sha256": publication["archive_seal_sha256"],
-            "closing_sha": record["subject_sha"],
+            "manifest_sha256": manifest_sha256,
+            "seal_sha256": seal_sha256,
+            "closing_sha": subject_sha,
             "task_revision": record["task_revision"],
         }
         with patch("mce4d_foundation_seal._verified_archive_identity", return_value=identity):
