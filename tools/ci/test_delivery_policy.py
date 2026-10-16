@@ -247,6 +247,27 @@ class ClosingDiffTests(unittest.TestCase):
         payload, closing = self._payload_and_closing()
         self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
 
+    def test_candidate_closing_accepts_semicolon_separated_evidence_ids(self) -> None:
+        evidence = (
+            f"E053;E054;E055;E056;task_revision={CURRENT_S19['task_revision']};delivery={DELIVERY_ID};"
+            f"plan={PLAN_FILE_SHA};priority={CURRENT_S19['priority']};local=PASS;payload_sha=PENDING;"
+            "payload_CI=PENDING;closing_sha=PENDING;closing_CI=PENDING;archive/live=PENDING"
+        )
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", evidence)
+        observed = evidence.replace("payload_sha=PENDING", f"payload_sha={PAYLOAD_SHA}")
+        observed = observed.replace("payload_CI=PENDING", "payload_CI=PASS(run:1)") + ";candidate=DONE"
+        closing = _with_task_row(payload, "DONE", observed)
+        closing = _append_evidence(closing)
+        self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
+
+    def test_candidate_closing_rejects_duplicate_evidence_ids(self) -> None:
+        evidence = _delivery_evidence().replace(CURRENT_EVIDENCE_ID, "E053;E053")
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", evidence)
+        closing = _with_task_row(payload, "DONE", _delivery_evidence(PAYLOAD_SHA, closing=True).replace(CURRENT_EVIDENCE_ID, "E053;E053"))
+        closing = _append_evidence(closing)
+        errors = classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0")
+        self.assertTrue(any("evidence ID bị lặp" in error for error in errors))
+
     def test_s22_allows_derived_execution_checkpoint_leaves(self) -> None:
         before = [
             "## S22 — Resume",

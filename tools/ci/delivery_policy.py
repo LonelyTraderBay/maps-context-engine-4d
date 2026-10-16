@@ -445,17 +445,31 @@ def _change_allowed_s19(old: list[str], new: list[str], task_id: str) -> list[st
 
 def _evidence_fields(value: str, errors: list[str], owner: str) -> dict[str, str]:
     fields: dict[str, str] = {}
-    pieces = value.split(";")
-    if not pieces or not re.fullmatch(r"E\d{3}(?:,E\d{3})*", pieces[0]):
-        errors.append(f"{owner} thiếu evidence ID dạng E###")
-    for item in pieces[1:]:
+    pieces = [piece.strip() for piece in value.split(";")]
+    evidence_ids: list[str] = []
+    fields_started = False
+    for item in pieces:
+        if not fields_started:
+            ids = item.split(",")
+            if ids and all(re.fullmatch(r"E\d{3}", evidence_id) for evidence_id in ids):
+                evidence_ids.extend(ids)
+                continue
+            fields_started = True
+        if re.fullmatch(r"E\d{3}", item):
+            errors.append(f"{owner} evidence ID phải đứng trước fields: {item!r}")
+            continue
         if not item:
+            errors.append(f"{owner} có field rỗng")
             continue
         key, separator, field_value = item.partition("=")
         if not separator or not key or key in fields:
             errors.append(f"{owner} có field rỗng/sai/trùng: {item!r}")
             continue
         fields[key] = field_value
+    if not evidence_ids:
+        errors.append(f"{owner} thiếu evidence ID dạng E###")
+    if len(evidence_ids) != len(set(evidence_ids)):
+        errors.append(f"{owner} có evidence ID bị lặp")
     return fields
 
 
