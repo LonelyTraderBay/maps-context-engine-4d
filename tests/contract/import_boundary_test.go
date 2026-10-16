@@ -27,6 +27,10 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/paths":  {},
 		"internal/policy": {modulePath + "/internal/paths": true},
+		"internal/inventory": {
+			modulePath + "/internal/paths":  true,
+			modulePath + "/internal/policy": true,
+		},
 		"internal/runtime/config": {
 			modulePath + "/contracts":      true,
 			modulePath + "/internal/model": true,
