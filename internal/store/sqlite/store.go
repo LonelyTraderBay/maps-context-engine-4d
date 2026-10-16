@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	_ "modernc.org/sqlite"
@@ -40,14 +41,18 @@ var indexMigrations embed.FS
 // Options describes one private index store. Create must be explicit because
 // opening a typo must not silently create a second index beside the intended one.
 type Options struct {
-	Path          string
-	WorktreeID    model.UUID
-	BusyTimeoutMS int64
-	Create        bool
+	Path                    string
+	HomePath                string
+	WorktreeID              model.UUID
+	BusyTimeoutMS           int64
+	LockWaitMS              int64
+	AdmissionConfig         model.AdmissionConfig
+	AdmissionConfigProvider AdmissionConfigProvider
+	Create                  bool
 }
 
 // Store owns a single-connection writer and a four-connection read-only pool.
-// Lifecycle leases and quota admission are intentionally supplied by T010.
+// Home and worktree lifecycle leases remain held until every pool is closed.
 type Store struct {
 	path          string
 	worktree      model.UUID
@@ -55,12 +60,15 @@ type Store struct {
 	busyTimeoutMS int64
 	writer        *sql.DB
 	readers       *sql.DB
+	ownership     *storeOwnership
+	writeGate     sync.RWMutex
+	closed        bool
 }
 
 // openIndex opens an index, applying only shipped index migrations in order.
 // A future schema is checked through a read-only connection before any setting
-// or migration can modify the file. It remains private until T010 wires the
-// lifecycle lease and quota admission required before any write path.
+// or migration can modify the file. The writer lease and admission reservation
+// cover every SQLite mutation performed while opening the index.
 func openIndex(ctx context.Context, options Options) (*Store, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("%w: nil context", ErrInvalidIndex)
@@ -69,6 +77,31 @@ func openIndex(ctx context.Context, options Options) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
+	ownership, err := newStoreOwnership(ctx, options, false)
+	if err != nil {
+		return nil, err
+	}
+	keepOwnership := false
+	defer func() {
+		if !keepOwnership {
+			_ = ownership.Close()
+		}
+	}()
+	writerLease, err := ownership.acquireWriter(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("acquire worktree writer lease before opening SQLite: %w", err)
+	}
+	keepWriterLease := false
+	defer func() {
+		if !keepWriterLease {
+			_ = writerLease.Close()
+		}
+	}()
+	reservation, err := ownership.admitIndexGrowth(ctx, indexOpenPeakGrowth)
+	if err != nil {
+		return nil, fmt.Errorf("admit SQLite open and migration growth: %w", err)
+	}
+	defer func() { _ = reservation.Close() }()
 	info, err := os.Lstat(path)
 	created := errors.Is(err, os.ErrNotExist)
 	if err != nil && !created {
@@ -144,8 +177,18 @@ func openIndex(ctx context.Context, options Options) (*Store, error) {
 		_ = readers.Close()
 		return nil, fmt.Errorf("verify SQLite reader pool: %w", err)
 	}
+	if err := reservation.Close(); err != nil {
+		_ = readers.Close()
+		return nil, fmt.Errorf("settle SQLite open reservation: %w", err)
+	}
+	if err := writerLease.Close(); err != nil {
+		_ = readers.Close()
+		return nil, fmt.Errorf("release worktree writer lease after open: %w", err)
+	}
 	closeWriter = false
-	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, writer: writer, readers: readers}, nil
+	keepOwnership = true
+	keepWriterLease = true
+	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, writer: writer, readers: readers, ownership: ownership}, nil
 }
 
 // OpenIndexReadOnly opens an existing store without running migrations or
@@ -161,6 +204,16 @@ func OpenIndexReadOnly(ctx context.Context, options Options) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
+	ownership, err := newStoreOwnership(ctx, options, true)
+	if err != nil {
+		return nil, err
+	}
+	keepOwnership := false
+	defer func() {
+		if !keepOwnership {
+			_ = ownership.Close()
+		}
+	}()
 	if err := preflightIndex(ctx, path, timeout, options.WorktreeID); err != nil {
 		return nil, err
 	}
@@ -177,7 +230,8 @@ func OpenIndexReadOnly(ctx context.Context, options Options) (*Store, error) {
 		_ = readers.Close()
 		return nil, err
 	}
-	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, readers: readers}, nil
+	keepOwnership = true
+	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, readers: readers, ownership: ownership}, nil
 }
 
 // ReadDB returns the bounded read-only connection pool for internal store users.
@@ -210,6 +264,12 @@ func (store *Store) Close() error {
 	if store == nil {
 		return nil
 	}
+	store.writeGate.Lock()
+	defer store.writeGate.Unlock()
+	if store.closed {
+		return nil
+	}
+	store.closed = true
 	var writerErr, readerErr error
 	if store.writer != nil {
 		writerErr = store.writer.Close()
@@ -217,7 +277,11 @@ func (store *Store) Close() error {
 	if store.readers != nil {
 		readerErr = store.readers.Close()
 	}
-	return errors.Join(writerErr, readerErr)
+	var ownershipErr error
+	if store.ownership != nil {
+		ownershipErr = store.ownership.Close()
+	}
+	return errors.Join(writerErr, readerErr, ownershipErr)
 }
 
 func normalizeOptions(options *Options) (string, int64, error) {

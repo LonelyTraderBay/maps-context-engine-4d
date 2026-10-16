@@ -38,6 +38,8 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		"internal/store/sqlite": {
 			modulePath + "/contracts":      true,
 			modulePath + "/internal/model": true,
+			// SQLite is the runtime lock consumer; the resulting graph remains acyclic.
+			modulePath + "/internal/runtime": true,
 		},
 		"internal/app/config": {
 			modulePath + "/internal/model":          true,

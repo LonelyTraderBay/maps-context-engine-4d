@@ -16,9 +16,10 @@ import (
 
 func TestOpenIndexCreatesOrderedSchemaAndAppliesEveryPoolSetting(t *testing.T) {
 	ctx := context.Background()
-	path := filepath.Join(t.TempDir(), "index.sqlite")
 	worktreeID := testUUID(t, "11111111-1111-4111-8111-111111111111")
-	first, err := openIndex(ctx, Options{Path: path, WorktreeID: worktreeID, BusyTimeoutMS: 1234, Create: true})
+	options := testStoreOptions(t, worktreeID)
+	options.BusyTimeoutMS, options.Create = 1234, true
+	first, err := openIndex(ctx, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +47,8 @@ func TestOpenIndexCreatesOrderedSchemaAndAppliesEveryPoolSetting(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	second, err := openIndex(ctx, Options{Path: path, WorktreeID: worktreeID, BusyTimeoutMS: 1234})
+	options.Create = false
+	second, err := openIndex(ctx, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +60,31 @@ func TestOpenIndexCreatesOrderedSchemaAndAppliesEveryPoolSetting(t *testing.T) {
 	if second.Incarnation() != incarnation {
 		t.Fatalf("reopen changed index incarnation from %s to %s", incarnation, second.Incarnation())
 	}
-	if _, err := openIndex(ctx, Options{Path: path, WorktreeID: testUUID(t, "22222222-2222-4222-8222-222222222222")}); !errors.Is(err, ErrWorktreeMismatch) {
+	if err := second.Close(); err != nil {
+		t.Fatal(err)
+	}
+	otherID := testUUID(t, "22222222-2222-4222-8222-222222222222")
+	otherOptions := testStoreOptions(t, otherID)
+	otherOptions.Create = true
+	otherStore, err := openIndex(ctx, otherOptions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := otherStore.Close(); err != nil {
+		t.Fatal(err)
+	}
+	otherDB, err := sql.Open("sqlite", otherOptions.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := otherDB.ExecContext(ctx, `UPDATE store_identity SET worktree_id=? WHERE singleton=1`, worktreeID); err != nil {
+		_ = otherDB.Close()
+		t.Fatal(err)
+	}
+	if err := otherDB.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := openIndex(ctx, otherOptions); !errors.Is(err, ErrWorktreeMismatch) {
 		t.Fatalf("opening under another worktree returned %v; want ErrWorktreeMismatch", err)
 	}
 }
@@ -76,7 +102,9 @@ func TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath(t *testing.T) {
 		{name: "malformed worktree on empty file", createFile: true, worktreeID: "not-a-uuid"},
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
-			path := filepath.Join(t.TempDir(), "index.sqlite")
+			home := t.TempDir()
+			path := filepath.Join(home, "index.sqlite")
+			options := Options{HomePath: home, Path: path, WorktreeID: testCase.worktreeID, AdmissionConfig: testAdmissionConfig()}
 			if testCase.createFile {
 				file, err := os.Create(path)
 				if err != nil {
@@ -86,7 +114,8 @@ func TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			_, err := openIndex(ctx, Options{Path: path, WorktreeID: testCase.worktreeID, Create: true})
+			options.Create = true
+			_, err := openIndex(ctx, options)
 			if !errors.Is(err, ErrInvalidIndex) {
 				t.Fatalf("openIndex error=%v; want ErrInvalidIndex", err)
 			}
@@ -107,7 +136,9 @@ func TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath(t *testing.T) {
 
 func TestOpenIndexMigratesV1AndPreservesIdentity(t *testing.T) {
 	ctx := context.Background()
-	path := filepath.Join(t.TempDir(), "index-v1.sqlite")
+	worktreeID := testUUID(t, "33333333-3333-4333-8333-333333333333")
+	options := testStoreOptions(t, worktreeID)
+	path := options.Path
 	legacy, err := sql.Open("sqlite", path)
 	if err != nil {
 		t.Fatal(err)
@@ -122,8 +153,7 @@ func TestOpenIndexMigratesV1AndPreservesIdentity(t *testing.T) {
 	if err := legacy.Close(); err != nil {
 		t.Fatal(err)
 	}
-	worktreeID := testUUID(t, "33333333-3333-4333-8333-333333333333")
-	store, err := openIndex(ctx, Options{Path: path, WorktreeID: worktreeID})
+	store, err := openIndex(ctx, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,7 +176,8 @@ func TestOpenIndexMigratesV1AndPreservesIdentity(t *testing.T) {
 
 func TestOpenIndexRejectsFutureSchemaWithoutChangingFile(t *testing.T) {
 	ctx := context.Background()
-	path := filepath.Join(t.TempDir(), "future-index.sqlite")
+	options := testStoreOptions(t, testUUID(t, "44444444-4444-4444-8444-444444444444"))
+	path := options.Path
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		t.Fatal(err)
@@ -170,7 +201,8 @@ func TestOpenIndexRejectsFutureSchemaWithoutChangingFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = openIndex(ctx, Options{Path: path, WorktreeID: testUUID(t, "44444444-4444-4444-8444-444444444444"), Create: true})
+	options.Create = true
+	_, err = openIndex(ctx, options)
 	if !errors.Is(err, ErrSchemaTooNew) {
 		t.Fatalf("openIndex error=%v; want ErrSchemaTooNew", err)
 	}
@@ -185,7 +217,8 @@ func TestOpenIndexRejectsFutureSchemaWithoutChangingFile(t *testing.T) {
 
 func TestOpenIndexRejectsNonemptyUnmanagedDatabaseWithoutMutation(t *testing.T) {
 	ctx := context.Background()
-	path := filepath.Join(t.TempDir(), "unmanaged.sqlite")
+	options := testStoreOptions(t, testUUID(t, "55555555-5555-4555-8555-555555555555"))
+	path := options.Path
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		t.Fatal(err)
@@ -200,7 +233,8 @@ func TestOpenIndexRejectsNonemptyUnmanagedDatabaseWithoutMutation(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = openIndex(ctx, Options{Path: path, WorktreeID: testUUID(t, "55555555-5555-4555-8555-555555555555"), Create: true})
+	options.Create = true
+	_, err = openIndex(ctx, options)
 	if !errors.Is(err, ErrInvalidIndex) {
 		t.Fatalf("openIndex error=%v; want ErrInvalidIndex", err)
 	}
@@ -295,7 +329,7 @@ func TestSQLiteContextDeadlineInterruptsBusyWriter(t *testing.T) {
 	blocked, cancel := context.WithTimeout(ctx, 150*time.Millisecond)
 	defer cancel()
 	started := time.Now()
-	err = store.withWriteTx(blocked, func(tx *writeTx) error {
+	err = store.withWriteTx(blocked, 1024, func(tx *writeTx) error {
 		_, err := tx.ExecContext(blocked, `INSERT INTO lock_probe(value) VALUES(2)`)
 		return err
 	})
@@ -315,10 +349,9 @@ func TestSQLiteContextDeadlineInterruptsBusyWriter(t *testing.T) {
 
 func openTestIndex(t *testing.T, timeout int64) *Store {
 	t.Helper()
-	store, err := openIndex(context.Background(), Options{
-		Path: filepath.Join(t.TempDir(), "index.sqlite"), WorktreeID: testUUID(t, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"),
-		BusyTimeoutMS: timeout, Create: true,
-	})
+	options := testStoreOptions(t, testUUID(t, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"))
+	options.BusyTimeoutMS, options.Create = timeout, true
+	store, err := openIndex(context.Background(), options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -337,6 +370,20 @@ func testUUID(t *testing.T, value string) model.UUID {
 		t.Fatal(err)
 	}
 	return uuid
+}
+
+func testStoreOptions(t *testing.T, worktreeID model.UUID) Options {
+	t.Helper()
+	home := t.TempDir()
+	path := filepath.Join(home, "worktrees", string(worktreeID), "index.sqlite")
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	return Options{HomePath: home, Path: path, WorktreeID: worktreeID, AdmissionConfig: testAdmissionConfig(), LockWaitMS: 500}
+}
+
+func testAdmissionConfig() model.AdmissionConfig {
+	return model.AdmissionConfig{SchemaVersion: 1, MaxWorktreeCacheBytes: 64 << 20, VolumeReserveBytes: 1 << 20, VolumeWarningBytes: 2 << 20}
 }
 
 func validManifestRef() model.StoredCaptureManifestRef {

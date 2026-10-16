@@ -3,6 +3,7 @@ package runtime
 import (
 	"crypto/sha256"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -36,6 +37,10 @@ type secureFile struct {
 	err     error
 }
 
+// SecureFile is an opened regular file whose final handle was verified beneath
+// the root. Closing it also releases any platform-specific parent handles.
+type SecureFile = secureFile
+
 type CapturedFile struct {
 	Bytes  []byte
 	SHA256 [32]byte
@@ -66,6 +71,125 @@ func (root *Root) CaseMode() (paths.CaseMode, error) {
 		return paths.CaseUnknown, ErrRootClosed
 	}
 	return caseModeForHandle(root.handle)
+}
+
+// FinalPath returns the canonical path bound to the open root handle.
+func (root *Root) FinalPath() (string, error) {
+	if root == nil {
+		return "", ErrRootClosed
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return "", ErrRootClosed
+	}
+	return root.finalPath, nil
+}
+
+// Identity returns stable opaque identities for the filesystem volume and the
+// opened home directory. It never derives either value from a path or PID.
+func (root *Root) Identity() (volumeID, homeIdentity string, err error) {
+	if root == nil {
+		return "", "", ErrRootClosed
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return "", "", ErrRootClosed
+	}
+	return identityForHandle(root.handle)
+}
+
+// AvailableBytes reports filesystem headroom using the verified root handle.
+func (root *Root) AvailableBytes() (int64, error) {
+	if root == nil {
+		return 0, ErrRootClosed
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return 0, ErrRootClosed
+	}
+	return availableBytesForHandle(root.handle, root.finalPath)
+}
+
+// EnsurePrivateDirs creates or validates a bounded set of home-relative
+// private directories without following links or crossing filesystem roots.
+func (root *Root) EnsurePrivateDirs(relatives ...string) error {
+	if root == nil {
+		return ErrRootClosed
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return ErrRootClosed
+	}
+	for _, relative := range relatives {
+		if err := paths.ValidateRelative(relative); err != nil {
+			return fmt.Errorf("validate private directory path: %w", ErrPathDenied)
+		}
+		if err := makeRelativeDirs(root.handle, root.finalPath, relative); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// OpenLockFile securely creates or opens a permanent lockfile beneath root.
+// Callers must never unlink or replace the returned lockfile path.
+func (root *Root) OpenLockFile(relative string) (*os.File, error) {
+	if root == nil {
+		return nil, ErrRootClosed
+	}
+	if err := paths.ValidateRelative(relative); err != nil {
+		return nil, fmt.Errorf("validate lockfile path: %w", ErrPathDenied)
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return nil, ErrRootClosed
+	}
+	duplicate, err := duplicateRootHandle(root.handle)
+	if err != nil {
+		return nil, ErrOpenFailed
+	}
+	file, err := openRelativeLock(duplicate, root.finalPath, relative)
+	rootCloseErr := closeRootHandle(duplicate)
+	if err != nil {
+		return nil, err
+	}
+	if rootCloseErr != nil {
+		_ = file.Close()
+		return nil, ErrOpenFailed
+	}
+	return file, nil
+}
+
+// WriteAtomicFile replaces one regular home-relative file with a flushed
+// temporary created in the same verified directory. The path is never
+// resolved through a symbolic link or reparse point.
+func (root *Root) WriteAtomicFile(relative string, value []byte, mode os.FileMode) error {
+	if root == nil {
+		return ErrRootClosed
+	}
+	if err := paths.ValidateRelative(relative); err != nil || mode.Perm()&0o077 != 0 {
+		return fmt.Errorf("validate private atomic file: %w", ErrPathDenied)
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return ErrRootClosed
+	}
+	duplicate, err := duplicateRootHandle(root.handle)
+	if err != nil {
+		return ErrOpenFailed
+	}
+	writeErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm())
+	closeErr := closeRootHandle(duplicate)
+	if writeErr != nil || closeErr != nil {
+		return errors.Join(writeErr, closeErr)
+	}
+	return nil
 }
 
 func (root *Root) openRegularFile(relative string) (*secureFile, error) {
@@ -99,6 +223,10 @@ func (root *Root) openRegularFile(relative string) (*secureFile, error) {
 			return firstErr
 		},
 	}, nil
+}
+
+func (root *Root) OpenRegularFile(relative string) (*SecureFile, error) {
+	return root.openRegularFile(relative)
 }
 
 func (file *secureFile) Read(value []byte) (int, error) {

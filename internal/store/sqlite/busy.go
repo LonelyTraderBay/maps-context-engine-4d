@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	moderncsqlite "modernc.org/sqlite"
 )
 
@@ -29,13 +30,36 @@ type writeRow struct {
 	args  []any
 }
 
-// withWriteTx serializes writes through the one-connection pool and applies a
-// context-aware wait bounded by the effective SQLite busy timeout. The
-// connection's configured PRAGMA value is restored before returning it to pool.
-func (store *Store) withWriteTx(ctx context.Context, write func(*writeTx) error) (retErr error) {
-	if store == nil || store.writer == nil || ctx == nil || write == nil || store.busyTimeoutMS < 1 {
+// withWriteTx serializes writes through the OS writer lease and one-connection
+// pool, admits the bounded peak before touching SQLite, and applies a
+// context-aware wait bounded by the effective SQLite busy timeout.
+func (store *Store) withWriteTx(ctx context.Context, peakGrowthBytes int64, write func(*writeTx) error) (retErr error) {
+	if store == nil || store.writer == nil || store.ownership == nil || ctx == nil || write == nil || store.busyTimeoutMS < 1 || peakGrowthBytes < 1 || peakGrowthBytes > model.MaxSafeInteger {
 		return fmt.Errorf("invalid SQLite write transaction request: %w", ErrInvalidIndex)
 	}
+	store.writeGate.RLock()
+	defer store.writeGate.RUnlock()
+	if store.closed {
+		return fmt.Errorf("SQLite store is closed: %w", ErrInvalidIndex)
+	}
+	writerLease, err := store.ownership.acquireWriter(ctx)
+	if err != nil {
+		return fmt.Errorf("acquire worktree writer lease: %w", err)
+	}
+	defer func() {
+		if err := writerLease.Close(); err != nil {
+			retErr = errors.Join(retErr, fmt.Errorf("release worktree writer lease: %w", err))
+		}
+	}()
+	reservation, err := store.ownership.admitIndexGrowth(ctx, peakGrowthBytes)
+	if err != nil {
+		return fmt.Errorf("admit SQLite write growth: %w", err)
+	}
+	defer func() {
+		if err := reservation.Close(); err != nil {
+			retErr = errors.Join(retErr, fmt.Errorf("settle SQLite write admission: %w", err))
+		}
+	}()
 	conn, err := store.writer.Conn(ctx)
 	if err != nil {
 		return fmt.Errorf("acquire SQLite write connection: %w", err)

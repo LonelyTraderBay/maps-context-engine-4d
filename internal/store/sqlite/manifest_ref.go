@@ -71,7 +71,11 @@ func (store *Store) putCaptureManifestRef(ctx context.Context, generationID stri
 	if err != nil {
 		return err
 	}
-	return store.withWriteTx(ctx, func(tx *writeTx) error {
+	peakGrowth, ok := addNonnegative(int64(len(raw)), manifestWriteOverhead)
+	if !ok || peakGrowth > model.MaxSafeInteger {
+		return ErrAdmissionReservationOverflow
+	}
+	return store.withWriteTx(ctx, peakGrowth, func(tx *writeTx) error {
 		result, err := tx.ExecContext(ctx, `UPDATE generations
 			SET manifest_json=?
 			WHERE generation_id=? AND state='BUILDING'
