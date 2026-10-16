@@ -107,7 +107,7 @@ func ddlFromSpec(t *testing.T, marker string) string {
 	if stop < 0 || stop+1 >= len(lines) || lines[stop+1] != end {
 		t.Fatalf("missing DDL end marker %s", marker)
 	}
-	return strings.Join(lines[start:stop], "\n") + "\n"
+	return strings.TrimRight(strings.Join(lines[start:stop], "\n"), "\n") + "\n"
 }
 
 func expectStorageError(t *testing.T, err error, contains string) {

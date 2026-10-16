@@ -89,4 +89,3 @@ CREATE TABLE preview_permission_heads (
 ) STRICT;
 CREATE TRIGGER preview_permissions_immutable BEFORE UPDATE ON preview_permission_versions
 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_PERMISSION_VERSION'); END;
-
