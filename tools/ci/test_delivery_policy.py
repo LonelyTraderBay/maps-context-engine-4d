@@ -107,6 +107,17 @@ class CommitPolicyTests(unittest.TestCase):
         message = "test(spec-check): [P0][T003] Bắt lỗi thiếu cạnh truy vết\n\n" + COMMIT_BODY
         self.assertEqual([], validate_commit_message(message, phase="payload", task_id="T003", priority="P0"))
 
+    def test_literal_backslash_n_commit_sections_fail(self) -> None:
+        message = (
+            "test(spec-check): [P0][T003] Chặn newline literal trong commit\n\n"
+            "Mục đích: Bắt sai định dạng body đã làm archive từ chối.\\n\\n"
+            "Thay đổi: Kiểm tra heading commit theo dòng thật.\\n\\n"
+            "Kiểm tra: Validator phải từ chối chuỗi backslash-n literal."
+        )
+        errors = validate_commit_message(message, phase="payload", task_id="T003", priority="P0")
+        self.assertTrue(any("heading Thay đổi:" in error for error in errors))
+        self.assertTrue(any("heading Kiểm tra:" in error for error in errors))
+
     def test_p3_revert_commit_passes(self) -> None:
         message = "revert(spec-check): [P3][T003] Khôi phục kiểm tra đã đổi\n\n" + COMMIT_BODY
         self.assertEqual([], validate_commit_message(message, phase="payload", task_id="T003", priority="P3"))
