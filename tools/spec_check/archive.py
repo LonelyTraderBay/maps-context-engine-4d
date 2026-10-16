@@ -77,6 +77,18 @@ def _safe_relative(value: Any) -> str:
     return path.as_posix()
 
 
+def _native_path(path: Path) -> Path:
+    """Use Windows extended-length paths for deeply nested retained evidence."""
+    if os.name != "nt":
+        return path
+    value = os.path.abspath(os.fspath(path))
+    if value.startswith("\\\\?\\"):
+        return Path(value)
+    if value.startswith("\\\\"):
+        return Path("\\\\?\\UNC\\" + value[2:])
+    return Path("\\\\?\\" + value)
+
+
 def _check_directory(path: Path, *, owner: str) -> os.stat_result:
     try:
         info = path.lstat()
@@ -89,7 +101,7 @@ def _check_directory(path: Path, *, owner: str) -> os.stat_result:
 
 def _member_path(root: Path, relative: str, *, create_parent: bool = False) -> Path:
     parts = _safe_relative(relative).split("/")
-    current = root
+    current = _native_path(root)
     for component in parts[:-1]:
         current = current / component
         if create_parent and not current.exists():
@@ -211,9 +223,18 @@ def _load_index(root: Path, archive: dict[str, Any]) -> tuple[dict[str, Any], di
         data = _read_bounded(_member_path(root, rel))
         member_bytes[rel] = data
         try:
-            raw[rel] = json.loads(data.decode("utf-8", "strict"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ArchiveError(f"raw JSON member lỗi tại {rel}: {exc}") from exc
+            text = data.decode("utf-8", "strict")
+        except UnicodeDecodeError as exc:
+            raise ArchiveError(f"raw member không phải UTF-8 tại {rel}: {exc}") from exc
+        try:
+            raw[rel] = json.loads(text)
+        except json.JSONDecodeError as exc:
+            if Path(rel).suffix.casefold() not in {".md", ".txt"}:
+                raise ArchiveError(f"raw JSON member lỗi tại {rel}: {exc}") from exc
+            # Selection invalidation may retain exact human-readable evidence.
+            # Keep its decoded text for graph checks while member_bytes preserves
+            # the original bytes and manifest hash without normalization.
+            raw[rel] = text
     return typed, raw, member_bytes
 
 

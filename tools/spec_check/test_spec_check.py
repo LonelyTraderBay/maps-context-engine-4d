@@ -23,7 +23,7 @@ from tools.spec_check.manifest import ManifestError, execute_verified_entrypoint
 from tools.spec_check.ci_order import OrderingError, parse_instant, select_latest_actions_attempts, select_latest_actions_generation, select_latest_native_records
 from tools.spec_check.semantics import _canonical, validate_delivery_links, validate_semantics
 from tools.spec_check.spec import validate_spec_text
-from tools.spec_check.archive import ArchiveError, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
+from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
 from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _verify_publication_projection
 
@@ -1267,10 +1267,14 @@ class ArchivePublicationTests(unittest.TestCase):
         typed = {ref: entry for ref, entry in objects.items() if ref != "archive"}
         raw = dict(raw)
         raw["authority/task-start.txt"] = "Ủy quyền fixture cho task T003.".encode("utf-8")
+        raw["history/invalidation-note.md"] = "Bằng chứng invalidation UTF-8 được giữ nguyên.\n"
         index = {
             "format_version": 1,
             "objects": {ref: entry["kind"] for ref, entry in sorted(typed.items())},
-            "raw_members": sorted(ref for ref, value in raw.items() if isinstance(value, dict)),
+            "raw_members": sorted(
+                ref for ref, value in raw.items()
+                if isinstance(value, dict) or (ref.endswith(".md") and isinstance(value, str))
+            ),
         }
         paths = {item["path"] for item in archive["files"]}
         paths.update(typed)
@@ -1316,6 +1320,31 @@ class ArchivePublicationTests(unittest.TestCase):
             self.assertIsNone(cold["published_at_utc"])
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
             self.assertEqual(published["archive_seal_sha256"], cold["archive_seal_sha256"])
+
+    def test_archive_preserves_utf8_text_raw_members_through_cold_readback(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-text-raw-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            expected = "Bằng chứng invalidation UTF-8 được giữ nguyên.\n".encode("utf-8")
+            published = publish_archive(root, archive, spec_path=SPEC_PATH)
+            cold = verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
+            final = root / published["planned_archive_path"]
+            index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
+            self.assertIn("history/invalidation-note.md", index["raw_members"])
+            self.assertEqual((final / "history/invalidation-note.md").read_bytes(), expected)
+            self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
+
+    def test_member_read_supports_deep_windows_paths(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-long-path-") as temp:
+            root = Path(temp)
+            relative = "/".join(["history"] * 21 + ["invalidation-note.txt"])
+            member = _member_path(root, relative, create_parent=True)
+            expected = b"retained evidence\n"
+            try:
+                member.write_bytes(expected)
+                self.assertEqual(_read_bounded(_member_path(root, relative)), expected)
+            finally:
+                member.unlink(missing_ok=True)
 
     def test_publisher_recovers_fully_staged_members_before_manifest_seal(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-archive-resume-") as temp:
@@ -1507,8 +1536,10 @@ class GitHubObserverTests(unittest.TestCase):
             malformed.write_text("## S19 — Tracker\n| T003 | truncated |\n## S20 — Gates\n", encoding="utf-8")
             with self.assertRaisesRegex(GitHubObserverError, "sai cấu trúc cột"):
                 _current_tracker_identity(malformed, "T003")
+        tracker = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T003 | G0 | T001 |"))
+        metadata = dict(item.split("=", 1) for item in tracker.strip().split("|")[-2].strip().split(";")[1:])
         self.assertEqual(
-            ("T003", 7, "85f71cd9-dd27-4964-8211-c2e89e22cb0f"),
+            ("T003", int(metadata["task_revision"]), metadata["delivery"]),
             _current_tracker_identity(SPEC_PATH, "T003"),
         )
 
