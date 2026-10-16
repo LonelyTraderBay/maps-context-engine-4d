@@ -88,12 +88,7 @@ func newStoreOwnership(ctx context.Context, options Options, readOnly bool) (*st
 			_ = owned.Close()
 		}
 	}()
-	rootPath, err := root.FinalPath()
-	if err != nil {
-		return nil, err
-	}
-	expectedPath := filepath.Clean(filepath.Join(rootPath, filepath.FromSlash(owned.indexRelative)))
-	if !sameOwnedPath(expectedPath, options.Path) {
+	if !matchesOwnedIndexPath(options.HomePath, options.Path, owned.indexRelative) {
 		return nil, fmt.Errorf("index path must be the exact worktree-owned path: %w", ErrInvalidStorePath)
 	}
 	volumeID, homeIdentity, err := root.Identity()
@@ -132,17 +127,23 @@ func newStoreOwnership(ctx context.Context, options Options, readOnly bool) (*st
 	return owned, nil
 }
 
-func sameOwnedPath(expected, candidate string) bool {
-	cleanCandidate, err := filepath.Abs(candidate)
+// SQLite receives the caller's path spelling, so bind it to the same HomePath
+// spelling used to open the verified root. Windows final-handle paths may use
+// a different DOS/8.3 spelling for the same directory.
+func matchesOwnedIndexPath(homePath, candidate, expectedRelative string) bool {
+	absoluteHome, err := filepath.Abs(homePath)
 	if err != nil {
 		return false
 	}
-	cleanCandidate = comparableOwnedPath(cleanCandidate)
-	expected = comparableOwnedPath(expected)
-	if filepath.VolumeName(expected) != "" {
-		return strings.EqualFold(expected, cleanCandidate)
+	absoluteCandidate, err := filepath.Abs(candidate)
+	if err != nil {
+		return false
 	}
-	return expected == cleanCandidate
+	relative, err := filepath.Rel(absoluteHome, absoluteCandidate)
+	if err != nil || filepath.IsAbs(relative) {
+		return false
+	}
+	return filepath.Clean(relative) == filepath.Clean(filepath.FromSlash(expectedRelative))
 }
 
 func comparableOwnedPath(path string) string {

@@ -262,3 +262,26 @@ func testStoreOptionsAtHome(t *testing.T, home string, worktreeID model.UUID) Op
 	}
 	return Options{HomePath: home, Path: path, WorktreeID: worktreeID, AdmissionConfig: testAdmissionConfig(), LockWaitMS: 500}
 }
+
+func TestOwnedIndexPathUsesTheSameHomePathSpelling(t *testing.T) {
+	callerHome := filepath.Join(t.TempDir(), "home-input-spelling")
+	canonicalHome := filepath.Join(filepath.Dir(callerHome), "home-handle-spelling")
+	relative := "worktrees/13111111-1111-4111-8111-111111111111/index.sqlite"
+	candidate := filepath.Join(callerHome, filepath.FromSlash(relative))
+
+	if !matchesOwnedIndexPath(callerHome, candidate, relative) {
+		t.Fatal("index path derived from HomePath was rejected")
+	}
+	if matchesOwnedIndexPath(canonicalHome, candidate, relative) {
+		t.Fatal("index path from a different home spelling was accepted")
+	}
+	for _, invalid := range []string{
+		filepath.Join(callerHome, "worktrees", "13111111-1111-4111-8111-111111111111", "other.sqlite"),
+		filepath.Join(callerHome, "worktrees", "13111111-1111-4111-8111-111111111111", "..", "other", "index.sqlite"),
+		filepath.Join(filepath.Dir(callerHome), "outside", filepath.FromSlash(relative)),
+	} {
+		if matchesOwnedIndexPath(callerHome, invalid, relative) {
+			t.Fatalf("path outside exact owned index location was accepted: %s", invalid)
+		}
+	}
+}
