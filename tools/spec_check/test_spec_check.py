@@ -563,6 +563,33 @@ class CanonicalCodecTests(unittest.TestCase):
             with self.subTest(source=vector["name"]):
                 raw = bytes.fromhex(vector["bytes_hex"])
                 self.assertEqual(vector["sha256"], hashlib.sha256(raw).hexdigest())
+        for vector in self.vectors["source_range_vectors"]:
+            with self.subTest(source=vector["name"]):
+                raw = bytes.fromhex(vector["bytes_hex"])
+                mutation = bytes.fromhex(vector["mutation_bytes_hex"])
+                self.assertEqual(vector["text"].encode("utf-8"), raw)
+                self.assertEqual(vector["mutation_text"].encode("utf-8"), mutation)
+                self.assertEqual(vector["sha256"], hashlib.sha256(raw).hexdigest())
+                self.assertEqual(vector["mutation_sha256"], hashlib.sha256(mutation).hexdigest())
+                self.assertEqual(len(raw), len(mutation))
+                self.assertNotEqual(raw, mutation)
+                for byte_range in vector["valid_ranges"]:
+                    start, end = byte_range["start_byte"], byte_range["end_byte"]
+                    self.assertGreaterEqual(start, 0)
+                    self.assertGreaterEqual(end, start)
+                    self.assertLessEqual(end, len(raw))
+                    raw[:start].decode("utf-8")
+                    raw[:end].decode("utf-8")
+                for byte_range in vector["invalid_ranges"]:
+                    start, end = byte_range["start_byte"], byte_range["end_byte"]
+                    valid = 0 <= start <= end <= len(raw)
+                    if valid:
+                        try:
+                            raw[:start].decode("utf-8")
+                            raw[:end].decode("utf-8")
+                        except UnicodeDecodeError:
+                            valid = False
+                    self.assertFalse(valid, msg=f"invalid range unexpectedly aligned: {byte_range}")
 
     def test_manifest_json_full_and_unicode_bytes_match_reference(self) -> None:
         for vector in self.vectors["manifest_json_vectors"]:

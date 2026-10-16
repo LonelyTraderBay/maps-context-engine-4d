@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+	"reflect"
 	"testing"
 )
 
@@ -137,8 +138,62 @@ func TestSourceRefUsesRawBytesAndUTF8Boundaries(t *testing.T) {
 		t.Fatalf("mid-codepoint range error=%v", err)
 	}
 	ref.Range = ByteRange{StartByte: 0, EndByte: 3}
-	if err := ref.ValidateAgainst([]byte("changed")); err == nil {
+	changed := []byte("béz")
+	if len(changed) != len(source) {
+		t.Fatalf("test mutation length=%d, source length=%d", len(changed), len(source))
+	}
+	if err := ref.ValidateAgainst(changed); err == nil {
 		t.Fatal("changed raw source must fail its content hash")
+	}
+}
+
+func TestCaptureManifestIdentityFieldsBindDigestAndDoNotMutateInputs(t *testing.T) {
+	first := Hash("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	second := Hash("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+	third := Hash("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")
+	length := int64(2)
+	manifest := CaptureManifest{
+		SchemaVersion: 1, WorktreeID: "11111111-1111-4111-8111-111111111111",
+		ProfileID: first, PolicyDigest: second, ProviderDigest: third,
+		Files: []ManifestFile{
+			{Path: "z.go", Status: "captured", ContentHash: &second, ByteLength: &length},
+			{Path: "a.go", Status: "captured", ContentHash: &first, ByteLength: &length},
+		},
+		DependencyInputDigests: []Hash{third, first, second},
+	}
+	originalFiles := append([]ManifestFile(nil), manifest.Files...)
+	originalDependencies := append([]Hash(nil), manifest.DependencyInputDigests...)
+	baseline, err := manifest.ComputeSnapshotDigest()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(manifest.Files, originalFiles) || !reflect.DeepEqual(manifest.DependencyInputDigests, originalDependencies) {
+		t.Fatal("digest computation mutated caller-owned manifest arrays")
+	}
+
+	mutations := map[string]func(*CaptureManifest){
+		"schema version": func(value *CaptureManifest) { value.SchemaVersion++ },
+		"worktree":       func(value *CaptureManifest) { value.WorktreeID = "22222222-2222-4222-8222-222222222222" },
+		"profile":        func(value *CaptureManifest) { value.ProfileID = second },
+		"policy":         func(value *CaptureManifest) { value.PolicyDigest = third },
+		"provider":       func(value *CaptureManifest) { value.ProviderDigest = first },
+		"file bytes":     func(value *CaptureManifest) { value.Files[0].ContentHash = &third },
+		"dependency":     func(value *CaptureManifest) { value.DependencyInputDigests[0] = first },
+	}
+	for name, mutate := range mutations {
+		t.Run(name, func(t *testing.T) {
+			candidate := manifest
+			candidate.Files = append([]ManifestFile(nil), manifest.Files...)
+			candidate.DependencyInputDigests = append([]Hash(nil), manifest.DependencyInputDigests...)
+			mutate(&candidate)
+			got, err := candidate.ComputeSnapshotDigest()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got == baseline {
+				t.Fatal("identity mutation did not change the snapshot digest")
+			}
+		})
 	}
 }
 
