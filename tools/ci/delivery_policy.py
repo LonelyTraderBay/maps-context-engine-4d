@@ -419,8 +419,10 @@ def _change_allowed_s19(old: list[str], new: list[str], task_id: str) -> list[st
     for key in ("task_revision", "delivery", "plan", "priority", "local"):
         if before_evidence.get(key) != after_evidence.get(key):
             errors.append(f"S19 closing làm đổi metadata đã freeze: {key}")
-    if before_evidence.get("local") != "PASS":
-        errors.append("S19 closing cần local=PASS")
+    local_result = before_evidence.get("local", "")
+    if (local_result != "PASS"
+            and re.fullmatch(r"PASS\(([1-9]\d*)/\1\)", local_result) is None):
+        errors.append("S19 closing cần local PASS hoặc PASS(N/N)")
     if not set(before_evidence).issubset(after_evidence):
         errors.append("S19 closing không được xóa metadata evidence đã giữ")
     if set(after_evidence) - set(before_evidence) != {"candidate"}:

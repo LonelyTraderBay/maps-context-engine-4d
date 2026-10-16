@@ -250,7 +250,7 @@ class ClosingDiffTests(unittest.TestCase):
     def test_candidate_closing_accepts_semicolon_separated_evidence_ids(self) -> None:
         evidence = (
             f"E053;E054;E055;E056;task_revision={CURRENT_S19['task_revision']};delivery={DELIVERY_ID};"
-            f"plan={PLAN_FILE_SHA};priority={CURRENT_S19['priority']};local=PASS;payload_sha=PENDING;"
+            f"plan={PLAN_FILE_SHA};priority={CURRENT_S19['priority']};local=PASS(11/11);payload_sha=PENDING;"
             "payload_CI=PENDING;closing_sha=PENDING;closing_CI=PENDING;archive/live=PENDING"
         )
         payload = _with_task_row(SPEC_TEXT, "VERIFY", evidence)
@@ -267,6 +267,15 @@ class ClosingDiffTests(unittest.TestCase):
         closing = _append_evidence(closing)
         errors = classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0")
         self.assertTrue(any("evidence ID bị lặp" in error for error in errors))
+
+    def test_candidate_closing_rejects_partial_local_pass_ratio(self) -> None:
+        payload_evidence = _delivery_evidence().replace("local=PASS", "local=PASS(10/11)")
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", payload_evidence)
+        closing_evidence = _delivery_evidence(PAYLOAD_SHA, closing=True).replace("local=PASS", "local=PASS(10/11)")
+        closing = _with_task_row(payload, "DONE", closing_evidence)
+        closing = _append_evidence(closing)
+        errors = classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0")
+        self.assertTrue(any("local PASS" in error for error in errors))
 
     def test_s22_allows_derived_execution_checkpoint_leaves(self) -> None:
         before = [
