@@ -5,8 +5,10 @@ from __future__ import annotations
 import copy
 import contextlib
 import hashlib
+import importlib.util
 import io
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -30,7 +32,7 @@ from tools.spec_check.c14n import CanonicalValueError, canonical_json1, capture_
 from tools.spec_check.manifest import ManifestError, execute_verified_entrypoint, verify_manifest
 from tools.spec_check.ci_order import OrderingError, parse_instant, select_latest_actions_attempts, select_latest_actions_generation, select_latest_native_records
 from tools.spec_check.semantics import _canonical, validate_delivery_links, validate_semantics
-from tools.spec_check.spec import validate_spec_text
+from tools.spec_check.spec import _effective_status, validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
 from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _closing_commit_snapshot, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
@@ -56,6 +58,15 @@ from tools.spec_check.t107_contract_fixtures import (
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
 SPEC_TEXT = SPEC_PATH.read_text(encoding="utf-8")
+FOUNDATION_SEAL_PATH = ROOT / "artifacts/preflight/T108/foundation_seal.py"
+FOUNDATION_SEAL_SPEC = importlib.util.spec_from_file_location("mce4d_foundation_seal", FOUNDATION_SEAL_PATH)
+if FOUNDATION_SEAL_SPEC is None or FOUNDATION_SEAL_SPEC.loader is None:
+    raise RuntimeError("Không nạp được foundation seal preflight")
+FOUNDATION_SEAL = importlib.util.module_from_spec(FOUNDATION_SEAL_SPEC)
+sys.modules[FOUNDATION_SEAL_SPEC.name] = FOUNDATION_SEAL
+FOUNDATION_SEAL_SPEC.loader.exec_module(FOUNDATION_SEAL)
+_live_receipt_errors = FOUNDATION_SEAL._live_receipt_errors
+_verified_archive_identity = FOUNDATION_SEAL._verified_archive_identity
 
 
 class SpecContractTests(unittest.TestCase):
@@ -127,6 +138,96 @@ class SpecContractTests(unittest.TestCase):
         changed = SPEC_TEXT.replace("final_user_acceptance: once_after_engineering_complete", "final_engineering_status: ENGINEERING_COMPLETE_AWAITING_USER_ACCEPTANCE\n  final_user_acceptance: once_after_engineering_complete", 1)
         errors = validate_spec_text(changed)
         self.assertTrue(any("S22 claim hoàn tất" in error for error in errors))
+
+    def test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not(self) -> None:
+        prefix = (
+            "E001;payload_sha=" + "a" * 40 + ";closing_sha=" + "b" * 40
+            + ";payload_CI=PASS;closing_CI=PASS;archive=PASS"
+        )
+        for live in (
+            "PASS",
+            "PASS(8a998615-589c-4608-96cb-a8fc517e12cb)",
+            "8a998615-589c-4608-96cb-a8fc517e12cb-PASS",
+        ):
+            with self.subTest(live=live):
+                self.assertEqual("DONE", _effective_status({"Status": "DONE", "Evidence": f"{prefix};live={live}"}))
+        for live in ("NOT_PASS", "PASS(fake)", "8a998615-589c-PASS"):
+            with self.subTest(live=live):
+                self.assertEqual("VERIFY", _effective_status({"Status": "DONE", "Evidence": f"{prefix};live={live}"}))
+
+    def test_s22_completed_count_must_match_effective_s19_rows(self) -> None:
+        changed = re.sub(r"(?m)^  completed_scope_tasks: [0-9]+$", "  completed_scope_tasks: 999", SPEC_TEXT, count=1)
+        errors = validate_spec_text(changed)
+        self.assertTrue(any("completed_scope_tasks lệch S19" in error for error in errors))
+
+    def test_s22_active_task_must_wait_for_effective_prerequisites(self) -> None:
+        lines = SPEC_TEXT.splitlines()
+        index = next(i for i, line in enumerate(lines) if line.startswith("| T107 | G0 |"))
+        lines[index] = lines[index].replace("| DONE | Codex |", "| VERIFY | Codex |", 1)
+        errors = validate_spec_text("\n".join(lines) + "\n")
+        self.assertTrue(any("chưa Ready; prerequisite chưa effective DONE" in error for error in errors))
+
+    def test_s22_next_task_must_match_active_task(self) -> None:
+        changed = re.sub(r"(?m)^  next_task: T\d{3}$", "  next_task: T005", SPEC_TEXT, count=1)
+        errors = validate_spec_text(changed)
+        self.assertTrue(any("next_task phải khớp active_task" in error for error in errors))
+
+    def test_s22_delivery_identity_must_match_active_s19_assignment(self) -> None:
+        changed = re.sub(
+            r'(?m)^    pending_delivery_id: "[0-9a-f-]+"$',
+            '    pending_delivery_id: "00000000-0000-4000-8000-000000000000"',
+            SPEC_TEXT,
+            count=1,
+        )
+        errors = validate_spec_text(changed)
+        self.assertTrue(any("git_delivery.pending_delivery_id không khớp S19" in error for error in errors))
+
+    def test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done(self) -> None:
+        changed = SPEC_TEXT.replace("  design_seal: NOT_RUN", "  design_seal: PASS", 1)
+        errors = validate_spec_text(changed)
+        self.assertTrue(any("design_seal PASS khi foundation G0 chưa effective DONE" in error for error in errors))
+
+
+class FoundationSealTests(unittest.TestCase):
+    def test_archive_task_identity_is_read_from_the_verified_manifest(self) -> None:
+        delivery_id = "22345678-1234-4234-8234-123456789abc"
+        projection = {"archive_manifest_sha256": "a" * 64, "archive_seal_sha256": "b" * 64}
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive = root / "artifacts" / "git-delivery" / delivery_id
+            archive.mkdir(parents=True)
+            (archive / "manifest.json").write_text(json.dumps({
+                "delivery_id": delivery_id, "task_id": "T107", "task_revision": 1,
+                "closing_sha": "c" * 40,
+            }), encoding="utf-8")
+            with patch("mce4d_foundation_seal.verify_archive", return_value=projection):
+                identity = _verified_archive_identity(root, delivery_id, "T107")
+                with self.assertRaises(ArchiveError):
+                    _verified_archive_identity(root, delivery_id, "T106")
+        self.assertEqual("PASS", identity["archive_result"])
+        self.assertEqual("c" * 40, identity["closing_sha"])
+
+    def test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field(self) -> None:
+        delivery_id = "cdad7e47-cad0-4327-a984-0393aa41f84a"
+        verification_id = "0fbfe75d-5cb5-4bf8-b61a-7253e1027c49"
+        record_path = ROOT / "artifacts/git-live" / delivery_id / verification_id / "live-verification.json"
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+        publication = record["archive_publication"]
+        identity = {
+            "manifest_sha256": publication["archive_manifest_sha256"],
+            "seal_sha256": publication["archive_seal_sha256"],
+            "closing_sha": record["subject_sha"],
+            "task_revision": record["task_revision"],
+        }
+        with patch("mce4d_foundation_seal._verified_archive_identity", return_value=identity):
+            errors = _live_receipt_errors(
+                record,
+                spec_text=SPEC_TEXT,
+                expected_verification_id=verification_id,
+                root=ROOT,
+            )
+        self.assertNotIn("result", record)
+        self.assertEqual([], errors)
 
 
 class T107ContractFixtureTests(unittest.TestCase):

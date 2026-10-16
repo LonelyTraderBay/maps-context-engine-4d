@@ -159,7 +159,16 @@ def _effective_status(row: dict[str, str]) -> str:
         return "VERIFY"
     if not fields.get("archive", "").startswith(("PASS", "sealed-readback-PASS")):
         return "VERIFY"
-    if not fields.get("live", "").endswith("PASS"):
+    live = fields.get("live", "")
+    live_pass = (
+        live == "PASS"
+        or re.fullmatch(
+            r"(?:PASS\([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\)"
+            r"|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-PASS)",
+            live,
+        ) is not None
+    )
+    if not live_pass:
         return "VERIFY"
     return "DONE"
 
@@ -171,6 +180,115 @@ def _evidence_fields(value: str) -> dict[str, str]:
         if separator and key and key not in fields:
             fields[key] = field_value
     return fields
+
+
+def _yaml_scalar(block: str, name: str, *, indent: int) -> str | None:
+    prefix = " " * indent
+    match = re.search(rf"(?m)^{re.escape(prefix + name + ':')}[ \t]*(.*?)[ \t]*$", block)
+    if match is None:
+        return None
+    value = re.sub(r"\s+#.*$", "", match.group(1)).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return value
+
+
+def _validate_resume_state(
+    text: str,
+    tasks: dict[str, dict[str, str]],
+    dependency_map: dict[str, set[str]],
+    gate_table: Table,
+) -> list[str]:
+    """Keep S22 resume claims bound to S19 effective task state and DAG readiness."""
+    errors: list[str] = []
+    section = _section(text, "## S22 — Trạng thái tiếp tục cho phiên AI sau") or ""
+    yaml_match = re.search(r"(?ms)^\s*\x60{3,}yaml\s*\nresume:\s*\n(.*?)^\s*\x60{3,}\s*$", section)
+    if yaml_match is None:
+        return ["S22 thiếu khối YAML resume để đối chiếu task readiness"]
+    resume = yaml_match.group(1)
+
+    scalar_names = (
+        "active_task", "next_task", "completed_scope_tasks", "design_seal",
+    )
+    values = {name: _yaml_scalar(resume, name, indent=2) for name in scalar_names}
+    delivery_match = re.search(
+        r"(?ms)^  git_delivery:\s*\n(.*?)(?=^  [A-Za-z][A-Za-z0-9_]*:|\Z)",
+        resume,
+    )
+    delivery_block = delivery_match.group(1) if delivery_match else ""
+    delivery_values = {
+        name: _yaml_scalar(delivery_block, name, indent=4)
+        for name in (
+            "pending_delivery_id", "active_delivery_id", "task_revision",
+            "pending_delivery_task",
+        )
+    }
+
+    effective_done = sum(_effective_status(row) == "DONE" for row in tasks.values())
+    completed_text = values["completed_scope_tasks"]
+    if completed_text is None or not re.fullmatch(r"(?:0|[1-9][0-9]*)", completed_text):
+        errors.append("S22 completed_scope_tasks phải là số nguyên không âm")
+    elif int(completed_text) != effective_done:
+        errors.append(
+            f"S22 completed_scope_tasks lệch S19 effective DONE: "
+            f"{completed_text}!={effective_done}"
+        )
+
+    active_task = values["active_task"]
+    next_task = values["next_task"]
+    if active_task not in {None, "", "null"}:
+        if not TASK_PATTERN.fullmatch(active_task):
+            errors.append(f"S22 active_task không phải task ID hợp lệ: {active_task!r}")
+        elif active_task not in tasks:
+            errors.append(f"S22 active_task không tồn tại trong S19: {active_task}")
+        else:
+            active_row = tasks[active_task]
+            status = active_row.get("Status", "").strip()
+            if status not in {"IN_PROGRESS", "VERIFY", "BLOCKED", "DONE"}:
+                errors.append(f"S22 active_task {active_task} chưa được claim trong S19")
+            if _effective_status(active_row) == "DONE":
+                errors.append(f"S22 active_task {active_task} đã effective DONE nhưng chưa auto-advance")
+            unready = sorted(
+                dependency for dependency in dependency_map.get(active_task, set())
+                if dependency not in tasks or _effective_status(tasks[dependency]) != "DONE"
+            )
+            if unready:
+                errors.append(
+                    f"S22 active_task {active_task} chưa Ready; prerequisite chưa effective DONE: {unready}"
+                )
+            if active_row.get("Owner", "").strip().upper() in {"", "UNASSIGNED", "NONE"}:
+                errors.append(f"S22 active_task {active_task} chưa có owner trong S19")
+            if next_task != active_task:
+                errors.append(
+                    f"S22 next_task phải khớp active_task hiện hành: {next_task!r}!={active_task}"
+                )
+            evidence = _evidence_fields(active_row.get("Evidence", ""))
+            expected_delivery = evidence.get("delivery")
+            expected_revision = evidence.get("task_revision")
+            for key in ("pending_delivery_id", "active_delivery_id"):
+                if delivery_values[key] != expected_delivery:
+                    errors.append(f"S22 git_delivery.{key} không khớp S19 {active_task}")
+            if delivery_values["pending_delivery_task"] != active_task:
+                errors.append(f"S22 pending_delivery_task không khớp active_task {active_task}")
+            if delivery_values["task_revision"] != expected_revision:
+                errors.append(f"S22 git_delivery.task_revision không khớp S19 {active_task}")
+    elif effective_done < len(tasks):
+        errors.append("S22 thiếu active_task dù còn task chưa effective DONE")
+
+    design_seal = values["design_seal"]
+    if design_seal == "PASS":
+        g0 = next(
+            (row for row in gate_table.rows if row.get("Gate", "").split(" — ", 1)[0].strip() == "G0"),
+            None,
+        )
+        members = _ranges(g0.get("Phạm vi task", ""), "T") if g0 else set()
+        incomplete = sorted(
+            task_id for task_id in members
+            if task_id not in tasks or _effective_status(tasks[task_id]) != "DONE"
+        )
+        if not members or incomplete:
+            errors.append(f"S22 design_seal PASS khi foundation G0 chưa effective DONE: {incomplete}")
+    return errors
 
 
 def validate_spec_text(text: str) -> list[str]:
@@ -519,6 +637,7 @@ def validate_spec_text(text: str) -> list[str]:
         if match is None or match.group(1) != expected:
             errors.append(f"S22 resume contract sai hoặc thiếu: {key}={expected}")
 
+    errors.extend(_validate_resume_state(normalized, tasks, dependency_map, gate_table))
     return errors
 
 
