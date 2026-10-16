@@ -268,14 +268,22 @@ func TestScanUsesNULDelimitedPaths(t *testing.T) {
 	writeFile(t, root, "-leading.go", "leading")
 	if runtime.GOOS != "windows" {
 		writeFile(t, root, "line\nbreak.go", "newline")
+		gitCommand(t, root, "add", "--", "line\nbreak.go")
+		gitCommand(t, root, "commit", "-m", "newline path fixture")
 		writeFile(t, root, ":(glob)*.go", "literal pathspec-like name")
 	}
 	snapshot := scan(t, root, gitPath)
 	if !slices.Contains(filePaths(snapshot), "-leading.go") {
 		t.Fatal("path beginning with dash was not inventoried")
 	}
-	if runtime.GOOS != "windows" && !slices.Contains(filePaths(snapshot), "line\nbreak.go") {
-		t.Fatal("newline-containing path was not parsed from NUL-delimited Git output")
+	if runtime.GOOS != "windows" {
+		pathsInMap := filePaths(snapshot)
+		if snapshot.Coverage.UnsupportedPath != 1 || slices.Contains(pathsInMap, "line\nbreak.go") {
+			t.Fatalf("control-character path was not retained as unsupported coverage: %+v", snapshot.Coverage)
+		}
+		if slices.Contains(pathsInMap, "line") || slices.Contains(pathsInMap, "break.go") {
+			t.Fatalf("newline path leaked as split path identities: %v", pathsInMap)
+		}
 	}
 	if runtime.GOOS != "windows" && !slices.Contains(filePaths(snapshot), ":(glob)*.go") {
 		t.Fatal("pathspec-like filename was not passed to check-ignore literally")
