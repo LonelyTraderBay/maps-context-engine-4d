@@ -167,20 +167,54 @@ func TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback(t *testing.T) {
 	}
 }
 
+func TestAdmissionJournalAccepts256Entries(t *testing.T) {
+	journal := admissionJournalWithEntryCount(t, 256)
+	raw, err := encodeAdmissionJournal(journal)
+	if err != nil {
+		t.Fatalf("journal with 256 entries was rejected: %v", err)
+	}
+	if len(raw) > maxAdmissionJournalBytes {
+		t.Fatalf("256-entry journal has %d bytes; maximum is %d", len(raw), maxAdmissionJournalBytes)
+	}
+	readBack, err := decodeAdmissionJournal(raw)
+	if err != nil {
+		t.Fatalf("decode 256-entry journal: %v", err)
+	}
+	if len(readBack.Entries) != 256 {
+		t.Fatalf("round-tripped journal has %d entries; want 256", len(readBack.Entries))
+	}
+	seen := make(map[model.UUID]struct{}, len(readBack.Entries))
+	for _, entry := range readBack.Entries {
+		if _, exists := seen[entry.OperationID]; exists {
+			t.Fatalf("round-tripped journal contains duplicate operation ID %q", entry.OperationID)
+		}
+		seen[entry.OperationID] = struct{}{}
+	}
+}
+
 func TestAdmissionJournalRejectsMoreThan256Entries(t *testing.T) {
+	journal := admissionJournalWithEntryCount(t, 257)
+	if _, err := encodeAdmissionJournal(journal); err == nil {
+		t.Fatal("journal with more than 256 entries was accepted")
+	}
+}
+
+func admissionJournalWithEntryCount(t *testing.T, count int) model.VolumeAdmissionJournal {
+	t.Helper()
 	journal, _ := validAdmissionJournal(t)
-	entries := make([]model.VolumeAdmissionEntry, 257)
+	entries := make([]model.VolumeAdmissionEntry, count)
 	for index := range entries {
 		entry := journal.Entries[0]
 		operationID := testUUID(t, fmt.Sprintf("%08x-aaaa-4aaa-8aaa-%012x", index+1, index+1))
 		entry.OperationID = operationID
 		entry.OwnershipRef = model.AdmissionOwnedPath("operation-leases/" + string(operationID) + ".lock")
+		entry.AllowedPaths = []model.AdmissionOwnedPath{
+			model.AdmissionOwnedPath(fmt.Sprintf("worktrees/%s/index-%03d.sqlite", *entry.WorktreeID, index+1)),
+		}
 		entries[index] = entry
 	}
 	journal.Entries = entries
-	if _, err := encodeAdmissionJournal(journal); err == nil {
-		t.Fatal("journal with more than 256 entries was accepted")
-	}
+	return journal
 }
 
 func validAdmissionJournal(t *testing.T) (model.VolumeAdmissionJournal, admissionJournalBinding) {
