@@ -22,6 +22,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	allowed := map[string]map[string]bool{
 		"internal/model":           {},
 		"internal/analysis/golang": {modulePath + "/internal/model": true},
+		"internal/search":          {modulePath + "/internal/model": true},
 		"internal/catalog": {
 			modulePath + "/internal/model":  true,
 			modulePath + "/internal/policy": true,
