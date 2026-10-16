@@ -51,6 +51,11 @@ var builtinDenyGlobs = []string{
 	"**/*.log",
 }
 
+// BuiltinDenyGlobs returns the immutable baseline copied into default policies.
+func BuiltinDenyGlobs() []string {
+	return append([]string(nil), builtinDenyGlobs...)
+}
+
 type Decision struct {
 	Denied bool
 	Reason string

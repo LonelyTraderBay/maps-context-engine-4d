@@ -20,22 +20,43 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join(filepath.Dir(sourceFile), "..", ".."))
 	allowed := map[string]map[string]bool{
-		"internal/model":  {},
+		"internal/model": {},
+		"internal/catalog": {
+			modulePath + "/internal/model":  true,
+			modulePath + "/internal/policy": true,
+		},
 		"internal/paths":  {},
 		"internal/policy": {modulePath + "/internal/paths": true},
+		"internal/runtime/config": {
+			modulePath + "/contracts":      true,
+			modulePath + "/internal/model": true,
+		},
 		"internal/runtime": {
 			modulePath + "/internal/paths":  true,
 			modulePath + "/internal/policy": true,
 		},
+		"internal/app/config": {
+			modulePath + "/internal/model":          true,
+			modulePath + "/internal/runtime/config": true,
+		},
+		"internal/app/registration": {
+			modulePath + "/contracts":        true,
+			modulePath + "/internal/catalog": true,
+			modulePath + "/internal/model":   true,
+		},
 		"internal/ports": {modulePath + "/internal/model": true},
 		"contracts":      {modulePath + "/internal/model": true},
 		"tests/contract": {
-			modulePath + "/contracts":        true,
-			modulePath + "/internal/model":   true,
-			modulePath + "/internal/paths":   true,
-			modulePath + "/internal/policy":  true,
-			modulePath + "/internal/ports":   true,
-			modulePath + "/internal/runtime": true,
+			modulePath + "/contracts":                 true,
+			modulePath + "/internal/model":            true,
+			modulePath + "/internal/catalog":          true,
+			modulePath + "/internal/paths":            true,
+			modulePath + "/internal/policy":           true,
+			modulePath + "/internal/ports":            true,
+			modulePath + "/internal/runtime":          true,
+			modulePath + "/internal/runtime/config":   true,
+			modulePath + "/internal/app/config":       true,
+			modulePath + "/internal/app/registration": true,
 		},
 	}
 	graph := make(map[string][]string)
