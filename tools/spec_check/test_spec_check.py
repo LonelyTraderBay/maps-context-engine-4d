@@ -1649,6 +1649,11 @@ class GitHubObserverTests(unittest.TestCase):
         }
         raw[page_ref] = envelope
         raw[body_ref] = body
+        for check in payload["checks"]:
+            source = bundle[check["source_evidence_ref"]]["value"]
+            if source.get("raw_api_ref") == page_ref:
+                refs = check["evidence_refs"]
+                refs.insert(refs.index(page_ref) + 1, body_ref)
         bundle["archive"]["value"]["files"].append({"path": body_ref, "byte_length": len(body_bytes),
                                                           "sha256": hashlib.sha256(body_bytes).hexdigest()})
         return bundle, raw, {page_ref: _canonical(envelope), body_ref: body_bytes}, page_ref
@@ -1658,6 +1663,19 @@ class GitHubObserverTests(unittest.TestCase):
         result = validate_delivery_links(bundle, raw_members=raw, raw_member_bytes=member_bytes)
         self.assertEqual("UNKNOWN", result["verdict"])
         self.assertEqual([], result["errors"])
+
+    def test_static_graph_rejects_missing_api_body_evidence_reference(self) -> None:
+        bundle, raw, member_bytes, page_ref = self._byte_bound_bundle()
+        check = bundle["payload"]["value"]["checks"][0]
+        source = bundle[check["source_evidence_ref"]]["value"]
+        self.assertEqual(page_ref, source["raw_api_ref"])
+        body_ref = raw[page_ref]["body_ref"]
+        check["evidence_refs"].remove(body_ref)
+
+        result = validate_delivery_links(bundle, raw_members=raw, raw_member_bytes=member_bytes)
+
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("raw page/body/log members" in error for error in result["errors"]))
 
     def test_static_graph_rejects_declared_api_body_hash_mismatch(self) -> None:
         bundle, raw, member_bytes, page_ref = self._byte_bound_bundle()

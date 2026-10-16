@@ -1190,6 +1190,11 @@ def _observation_link_errors(
         expected_evidence_refs = {item for item in (source_ref, execution_ref) if isinstance(item, str)}
         if source is not None and isinstance(source.get("raw_api_ref"), str):
             expected_evidence_refs.add(source["raw_api_ref"])
+            raw_page = raw_members.get(source["raw_api_ref"])
+            if isinstance(raw_page, dict) and raw_page.get("kind") == "github_api_page":
+                body_ref = raw_page.get("body_ref")
+                if isinstance(body_ref, str):
+                    expected_evidence_refs.add(body_ref)
         if execution is not None and isinstance(execution.get("command_results"), list):
             expected_evidence_refs.update(
                 row["log_ref"] for row in execution["command_results"]
@@ -1199,7 +1204,7 @@ def _observation_link_errors(
                 or any(not isinstance(item, str) for item in evidence_refs)
                 or len(evidence_refs) != len(set(item for item in evidence_refs if isinstance(item, str)))
                 or set(item for item in evidence_refs if isinstance(item, str)) != expected_evidence_refs):
-            error(f"check {check_id} evidence_refs phải khớp source/execution/raw/log members")
+            error(f"check {check_id} evidence_refs phải khớp source/execution/raw page/body/log members")
         else:
             used_refs.update(evidence_refs)
 
