@@ -161,14 +161,19 @@ class SpecContractTests(unittest.TestCase):
         self.assertTrue(any("completed_scope_tasks lệch S19" in error for error in errors))
 
     def test_s22_active_task_must_wait_for_effective_prerequisites(self) -> None:
+        active_task = re.search(r"(?m)^  active_task: (T\d{3})$", SPEC_TEXT).group(1)
         lines = SPEC_TEXT.splitlines()
-        index = next(i for i, line in enumerate(lines) if line.startswith("| T107 | G0 |"))
+        active_row = next(line for line in lines if line.startswith(f"| {active_task} |"))
+        dependency = active_row.split("|")[3].strip().split(",")[0]
+        index = next(i for i, line in enumerate(lines) if line.startswith(f"| {dependency} |"))
         lines[index] = lines[index].replace("| DONE | Codex |", "| VERIFY | Codex |", 1)
         errors = validate_spec_text("\n".join(lines) + "\n")
         self.assertTrue(any("chưa Ready; prerequisite chưa effective DONE" in error for error in errors))
 
     def test_s22_next_task_must_match_active_task(self) -> None:
-        changed = re.sub(r"(?m)^  next_task: T\d{3}$", "  next_task: T005", SPEC_TEXT, count=1)
+        active_task = re.search(r"(?m)^  active_task: (T\d{3})$", SPEC_TEXT).group(1)
+        wrong_task = "T001" if active_task != "T001" else "T002"
+        changed = re.sub(r"(?m)^  next_task: T\d{3}$", f"  next_task: {wrong_task}", SPEC_TEXT, count=1)
         errors = validate_spec_text(changed)
         self.assertTrue(any("next_task phải khớp active_task" in error for error in errors))
 
@@ -183,7 +188,13 @@ class SpecContractTests(unittest.TestCase):
         self.assertTrue(any("git_delivery.pending_delivery_id không khớp S19" in error for error in errors))
 
     def test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done(self) -> None:
-        changed = SPEC_TEXT.replace("  design_seal: NOT_RUN", "  design_seal: PASS", 1)
+        lines = SPEC_TEXT.splitlines()
+        g0_index = next(
+            i for i, line in enumerate(lines)
+            if line.startswith("| T") and "| G0 |" in line and "| DONE | Codex |" in line
+        )
+        lines[g0_index] = lines[g0_index].replace("| DONE | Codex |", "| VERIFY | Codex |", 1)
+        changed = "\n".join(lines) + "\n"
         errors = validate_spec_text(changed)
         self.assertTrue(any("design_seal PASS khi foundation G0 chưa effective DONE" in error for error in errors))
 
