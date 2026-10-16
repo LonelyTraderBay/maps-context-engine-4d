@@ -86,8 +86,17 @@ def _with_task_row(text: str, status: str, evidence: str) -> str:
 
 def _append_evidence(text: str, task_id: str = "T003") -> str:
     lines = text.splitlines()
-    insertion = next(i for i, line in enumerate(lines) if line.startswith("Format result:"))
-    ids = [int(match.group(1)) for line in lines if (match := re.match(r"^\| E(\d{3}) \|", line))]
+    section_start = next(i for i, line in enumerate(lines)
+                         if line == "## S21 — ADR, evidence, gaps và lịch sử thực thi")
+    section_end = next((i for i in range(section_start + 1, len(lines))
+                        if lines[i].startswith("## ")), len(lines))
+    section = lines[section_start:section_end]
+    rows = [(section_start + i, match.group(1)) for i, line in enumerate(section)
+            if (match := re.match(r"^\| (E\d{3}) \|", line))]
+    if not rows:
+        raise AssertionError("S21 must contain at least one numeric evidence row")
+    insertion = rows[-1][0] + 1
+    ids = [int(value[1:]) for _, value in rows]
     evidence_id = max(ids, default=0) + 1
     lines.insert(insertion, f"| E{evidence_id:03d} | {task_id} | payload={PAYLOAD_SHA} | Windows + Ubuntu fixture runtime | classifier positive fixture | PASS local/static only | fixture.json=sha256:{PLAN_SHA} | 2026-10-16T00:00:00Z |")
     return "\n".join(lines) + "\n"
