@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -163,6 +164,22 @@ func TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback(t *testing.T) {
 	}
 	if _, err := admissionJournalPath("relative/volume.json"); !errors.Is(err, ErrAdmissionJournalPath) {
 		t.Fatalf("relative journal path returned %v; want ErrAdmissionJournalPath", err)
+	}
+}
+
+func TestAdmissionJournalRejectsMoreThan256Entries(t *testing.T) {
+	journal, _ := validAdmissionJournal(t)
+	entries := make([]model.VolumeAdmissionEntry, 257)
+	for index := range entries {
+		entry := journal.Entries[0]
+		operationID := testUUID(t, fmt.Sprintf("%08x-aaaa-4aaa-8aaa-%012x", index+1, index+1))
+		entry.OperationID = operationID
+		entry.OwnershipRef = model.AdmissionOwnedPath("operation-leases/" + string(operationID) + ".lock")
+		entries[index] = entry
+	}
+	journal.Entries = entries
+	if _, err := encodeAdmissionJournal(journal); err == nil {
+		t.Fatal("journal with more than 256 entries was accepted")
 	}
 }
 
