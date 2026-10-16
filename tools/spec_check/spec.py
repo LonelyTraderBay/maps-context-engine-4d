@@ -524,6 +524,9 @@ def validate_spec_text(text: str) -> list[str]:
 
 def validate_spec(path: Path) -> list[str]:
     try:
-        return validate_spec_text(path.read_text(encoding="utf-8"))
+        errors = validate_spec_text(path.read_text(encoding="utf-8"))
+        from .contract_artifacts import validate_contract_artifacts
+        errors.extend(validate_contract_artifacts(path))
+        return errors
     except (OSError, UnicodeDecodeError) as exc:
         return [f"Không đọc được SPEC UTF-8: {exc}"]

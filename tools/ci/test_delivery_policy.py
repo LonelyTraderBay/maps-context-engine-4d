@@ -32,8 +32,19 @@ PAYLOAD_SHA = "1" * 40
 PLAN_SHA = "2" * 64
 
 
+PLAN_FILE_SHA = hashlib.sha256((ROOT / "tools/ci/check-plan.json").read_bytes()).hexdigest()
+FROZEN_PLAN = strict_json_loads((ROOT / "tools/ci/check-plan.json").read_bytes())
+CANARY_REF = FROZEN_PLAN.get("canary_ref")
+if not isinstance(CANARY_REF, str) or not CANARY_REF.startswith("delivery:") or not CANARY_REF.endswith(":payload"):
+    raise AssertionError("Frozen plan must bind its payload canary to an active delivery")
+DELIVERY_ID = CANARY_REF.removeprefix("delivery:").removesuffix(":payload")
+
+
 def _current_s19_evidence_identity() -> tuple[str, dict[str, str]]:
-    row = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T003 | G0 |"))
+    rows = [line for line in SPEC_TEXT.splitlines() if line.startswith("| T") and f"delivery={DELIVERY_ID};" in line]
+    if len(rows) != 1:
+        raise AssertionError("S19 must contain exactly one task row for the frozen plan delivery")
+    row = rows[0]
     evidence = row.strip().strip("|").split("|")[8].strip()
     parts = evidence.split(";")
     values: dict[str, str] = {}
@@ -42,14 +53,15 @@ def _current_s19_evidence_identity() -> tuple[str, dict[str, str]]:
         if separator:
             values[key] = value
     required = {"task_revision", "delivery", "plan", "priority"}
-    if not re.fullmatch(r"E\d{3}(?:,E\d{3})*", parts[0]) or not required.issubset(values):
-        raise AssertionError("Current S19 T003 row must bind an active selection and frozen plan")
+    if (not re.fullmatch(r"E\d{3}(?:,E\d{3})*", parts[0]) or not required.issubset(values)
+            or values.get("plan") != PLAN_FILE_SHA):
+        raise AssertionError("Current S19 row must bind the active selection and exact frozen plan")
     return parts[0], values
 
 
 CURRENT_EVIDENCE_ID, CURRENT_S19 = _current_s19_evidence_identity()
-DELIVERY_ID = CURRENT_S19["delivery"]
-PLAN_FILE_SHA = hashlib.sha256((ROOT / "tools/ci/check-plan.json").read_bytes()).hexdigest()
+if CURRENT_S19["delivery"] != DELIVERY_ID:
+    raise AssertionError("S19 delivery identity differs from the frozen plan canary")
 COMMIT_BODY = (
     "Mục đích: Kiểm chứng luồng giao task.\n"
     "Thay đổi: Ghi bằng chứng đã khóa.\n"
@@ -203,9 +215,9 @@ class CheckObservationTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/bootstrap.yml").read_text(encoding="utf-8")
         raw = plan_path.read_bytes()
         plan = strict_json_loads(raw)
-        task_line = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T003 | G0 |"))
+        task_line = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T") and f"delivery={DELIVERY_ID};" in line)
         match = re.search(r"(?:^|;)plan=([0-9a-f]{64})(?:;|\s*\|)", task_line)
-        self.assertIsNotNone(match, "S19 T003 row must retain the immutable expected plan SHA")
+        self.assertIsNotNone(match, "S19 current task row must retain the immutable expected plan SHA")
         self.assertEqual(match.group(1), hashlib.sha256(raw).hexdigest())
         self.assertEqual([], validate_check_plan(plan, workflow_text=workflow, expected_sha256=match.group(1)))
 

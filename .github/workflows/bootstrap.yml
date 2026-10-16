@@ -40,6 +40,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - name: Set up pinned Go toolchain
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.mod
+          cache: false
       - name: Validate frozen delivery plan
         run: python -B tools/ci/delivery_policy.py check-plan
       - name: Validate SPEC contracts
@@ -50,3 +55,11 @@ jobs:
         run: python -B tools/ci/test_delivery_policy.py
       - name: Verify checkpoint digest recipe
         run: python -B tools/ci/test_checkpoint_digest.py
+      - name: Verify Go formatting
+        run: python -B tools/ci/check_gofmt.py
+      - name: Run Go contract tests
+        run: go test ./...
+      - name: Run Go static analysis
+        run: go vet ./...
+      - name: Build Go packages
+        run: go build ./...

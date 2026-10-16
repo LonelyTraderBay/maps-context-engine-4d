@@ -19,6 +19,14 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.spec_check.schema import SchemaError, extract_governance_schema, strict_json_loads, validate_schema
+from tools.spec_check.contract_artifacts import (
+    ContractArtifactError,
+    extract_contract_artifacts,
+    normalized_json,
+    validate_contract_artifacts,
+    write_contract_artifacts,
+)
+from tools.spec_check.c14n import CanonicalValueError, canonical_json1, capture_manifest_json1, capture_snapshot_digest, encode_value, hash_json, hash_value
 from tools.spec_check.manifest import ManifestError, execute_verified_entrypoint, verify_manifest
 from tools.spec_check.ci_order import OrderingError, parse_instant, select_latest_actions_attempts, select_latest_actions_generation, select_latest_native_records
 from tools.spec_check.semantics import _canonical, validate_delivery_links, validate_semantics
@@ -35,6 +43,7 @@ SPEC_TEXT = SPEC_PATH.read_text(encoding="utf-8")
 class SpecContractTests(unittest.TestCase):
     def test_current_spec_passes(self) -> None:
         self.assertEqual([], validate_spec_text(SPEC_TEXT))
+
 
     def test_duplicate_task_fails(self) -> None:
         row = next(line for line in SPEC_TEXT.splitlines() if line.startswith("| T108 |"))
@@ -100,6 +109,115 @@ class SpecContractTests(unittest.TestCase):
         changed = SPEC_TEXT.replace("final_user_acceptance: once_after_engineering_complete", "final_engineering_status: ENGINEERING_COMPLETE_AWAITING_USER_ACCEPTANCE\n  final_user_acceptance: once_after_engineering_complete", 1)
         errors = validate_spec_text(changed)
         self.assertTrue(any("S22 claim hoàn tất" in error for error in errors))
+
+
+class ContractArtifactParityTests(unittest.TestCase):
+    def test_committed_schema_and_registry_match_spec(self) -> None:
+        self.assertEqual([], validate_contract_artifacts(SPEC_PATH))
+
+    def test_generated_only_edit_is_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "contracts"
+            write_contract_artifacts(SPEC_PATH, target)
+            registry_path = target / "operations.v1.json"
+            value = json.loads(registry_path.read_text(encoding="utf-8"))
+            del value["GET /workspace"]
+            registry_path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+            errors = validate_contract_artifacts(SPEC_PATH, target)
+            self.assertTrue(any("Contract artifact drift operations.v1.json" in error for error in errors))
+
+    def test_duplicate_member_in_authority_block_is_rejected(self) -> None:
+        start = "<!-- BEGIN MCE4D_OPERATION_REGISTRY_V1 -->"
+        finish = "<!-- END MCE4D_OPERATION_REGISTRY_V1 -->"
+        left = SPEC_TEXT.index(start) + len(start)
+        right = SPEC_TEXT.index(finish, left)
+        registry_text = SPEC_TEXT[left:right]
+        open_fence = registry_text.index("```json") + len("```json")
+        close_fence = registry_text.index("```", open_fence)
+        raw = registry_text[open_fence:close_fence]
+        close_object = raw.rfind("}")
+        duplicate_member = ',\n  "mce4d_workspace_status": ["StatusRequest", "StatusData"]\n'
+        duplicate = (registry_text[:open_fence] + raw[:close_object] + duplicate_member
+                     + raw[close_object:] + registry_text[close_fence:])
+        changed = SPEC_TEXT[:left] + duplicate + SPEC_TEXT[right:]
+        with self.assertRaises(ContractArtifactError):
+            extract_contract_artifacts(changed)
+
+    def test_private_journal_schema_cannot_be_registered_as_operation(self) -> None:
+        start = "<!-- BEGIN MCE4D_OPERATION_REGISTRY_V1 -->"
+        finish = "<!-- END MCE4D_OPERATION_REGISTRY_V1 -->"
+        left = SPEC_TEXT.index(start) + len(start)
+        right = SPEC_TEXT.index(finish, left)
+        block = SPEC_TEXT[left:right]
+        open_fence = block.index("```json") + len("```json")
+        close_fence = block.index("```", open_fence)
+        registry = json.loads(block[open_fence:close_fence])
+        registry["private journal"] = ["VolumeAdmissionJournal", "StatusData"]
+        rewritten = "\n" + json.dumps(registry, ensure_ascii=False, indent=2) + "\n"
+        changed = SPEC_TEXT[:left] + block[:open_fence] + rewritten + block[close_fence:] + SPEC_TEXT[right:]
+        with self.assertRaisesRegex(ContractArtifactError, "Private storage schema"):
+            extract_contract_artifacts(changed)
+
+    def test_object_definitions_must_reject_unknown_properties(self) -> None:
+        start = "<!-- BEGIN MCE4D_CONTRACT_SCHEMA_V1 -->"
+        finish = "<!-- END MCE4D_CONTRACT_SCHEMA_V1 -->"
+        left = SPEC_TEXT.index(start) + len(start)
+        right = SPEC_TEXT.index(finish, left)
+        block = SPEC_TEXT[left:right]
+        changed_block = block.replace('"additionalProperties":false', '"additionalProperties":true', 1)
+        with self.assertRaisesRegex(ContractArtifactError, "additionalProperties"):
+            extract_contract_artifacts(SPEC_TEXT[:left] + changed_block + SPEC_TEXT[right:])
+
+    def test_surrogate_object_key_is_rejected_as_contract_error(self) -> None:
+        with self.assertRaisesRegex(ContractArtifactError, "surrogate"):
+            normalized_json({"\ud800": 1})
+
+
+class CanonicalCodecTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.vectors = strict_json_loads((ROOT / "tests/contract/c14n-vectors.v1.json").read_bytes())
+
+    def test_twenty_shared_c14n_and_raw_source_vectors(self) -> None:
+        self.assertEqual(18, len(self.vectors["vectors"]))
+        self.assertEqual(2, len(self.vectors["raw_source_vectors"]))
+        for vector in self.vectors["vectors"]:
+            with self.subTest(vector=vector["name"]):
+                self.assertEqual(vector["encoding_hex"], encode_value(vector["value"]).hex())
+                self.assertEqual(vector["digest"], hash_value(vector["domain"], vector["value"]))
+        for vector in self.vectors["raw_source_vectors"]:
+            with self.subTest(source=vector["name"]):
+                raw = bytes.fromhex(vector["bytes_hex"])
+                self.assertEqual(vector["sha256"], hashlib.sha256(raw).hexdigest())
+
+    def test_manifest_json_full_and_unicode_bytes_match_reference(self) -> None:
+        for vector in self.vectors["manifest_json_vectors"]:
+            with self.subTest(vector=vector["name"]):
+                raw = canonical_json1(vector["value"])
+                self.assertEqual(vector["canonical_hex"], raw.hex())
+                self.assertEqual(vector["sha256"], hashlib.sha256(raw).hexdigest())
+
+    def test_capture_manifest_json1_normalizes_files_and_dependency_digests(self) -> None:
+        vectors = strict_json_loads((ROOT / "tests/contract/capture-manifest-json1.v1.json").read_bytes())["vectors"]
+        for vector in vectors:
+            with self.subTest(vector=vector["name"]):
+                manifest = vector["manifest"]
+                self.assertEqual(manifest["snapshot_digest"], capture_snapshot_digest(manifest))
+                raw = capture_manifest_json1(manifest)
+                self.assertEqual(vector["canonical_hex"], raw.hex())
+                self.assertEqual(vector["sha256"], hashlib.sha256(raw).hexdigest())
+
+    def test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays(self) -> None:
+        with self.assertRaisesRegex(CanonicalValueError, "duplicate"):
+            capture_manifest_json1({"files": [{"path": "a"}, {"path": "a"}], "dependency_input_digests": []})
+        with self.assertRaisesRegex(CanonicalValueError, "arrays"):
+            capture_manifest_json1({"files": None, "dependency_input_digests": []})
+
+    def test_invalid_identity_lexemes_fail_closed(self) -> None:
+        for vector in self.vectors["negative_vectors"]:
+            with self.subTest(vector=vector["name"]):
+                with self.assertRaises(CanonicalValueError):
+                    hash_json(vector["domain"], vector["raw_json"].encode("utf-8"))
 
 
 class GovernanceSchemaTests(unittest.TestCase):
