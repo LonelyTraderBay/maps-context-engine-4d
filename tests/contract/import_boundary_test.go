@@ -35,6 +35,10 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/paths":  true,
 			modulePath + "/internal/policy": true,
 		},
+		"internal/store/sqlite": {
+			modulePath + "/contracts":      true,
+			modulePath + "/internal/model": true,
+		},
 		"internal/app/config": {
 			modulePath + "/internal/model":          true,
 			modulePath + "/internal/runtime/config": true,
