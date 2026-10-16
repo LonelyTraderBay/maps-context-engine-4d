@@ -1263,7 +1263,7 @@ Cột Cases là truy vết tới oracle nghiệm thu, không có nghĩa một ta
 | T009 | G1 | T008,T010 | Crash/cancel recovery generation BUILDING; last published vẫn đọc được. | R007 | C019,C022,C036 | TODO | UNASSIGNED | NONE |
 | T010 | G1 | T004,T007 | OS writer/lifecycle locks per resource, bounded wait/no TTL steal; ACC-01 shared per-volume admission journal + owner recovery; no global build/index mutex. | R003,R120,R127 | C021,C022,C171,C172,C173,C187 | DONE | Codex | E119,E120,E121,E122,E123,E124,E125,E126,E127,E128,E129,E130,E131,E132,E133;task_revision=5;delivery=110aeaca-5731-4807-84b3-47ddc21a8cc6;supersedes=4c268f5f-9e56-4f4f-988e-8bb9dc53bc1a;base=46b4812c0209467c887288ac0949d56873ccb48b;plan=c6d9ee2dcb31067d503f594fe927921f8615e98ec1102869cc950420197e146b;priority=P0;task_mode=implement;phase=closed;local=PASS(11/11);payload_sha=b6a35e920bc0590cf5587c7a6e2318805e202930;payload_CI=PASS(run:38951919001,4/4);closing_sha=67e5a72cc2cf795ddd3549e19ded8aa29c206be1;closing_parent_sha=b6a35e920bc0590cf5587c7a6e2318805e202930;closing_CI=PASS(run:38952661633,4/4);archive=PASS(manifest:e98145746057decc7a0f05123394d611f5b7be6e85ffc49b0e2fb21fa05c10d0,seal:278643c053121c9fa8267882c2d9b15bdbae55dcc33fec602f9492c90ab2dc3b);live=PASS(c6dbbd0c-d2e5-43b3-8f25-f49e0a96882c);live_verification_id=c6dbbd0c-d2e5-43b3-8f25-f49e0a96882c;candidate=DONE |
 | T011 | G1 | T008,T010,T012 | Multi-process concurrency test: A/B độc lập, reader/writer và profiles. | R003 | C001,C020,C021 | TODO | UNASSIGNED | NONE |
-| T012 | G1 | T004,T005,T006 | Git inventory tracked/untracked/exclusions/nested/sparse + file map. | R019 | C011,C013,C014,C016 | VERIFY | Codex | E134,E135,E136,E137,E138,E139,E140,E141,E142,E143,E144;task_revision=3;delivery=b61c0edb-671c-4047-bc9c-6373107f6f0b;supersedes=b552c3c7-c873-40c7-96e8-4c8ed48bf216;base=6cef121825b0d616a74bee41f50f0abd89723b20;plan=772f4e0ae82a9d1901e65d8f9e729cd59b4f6c3e1110477a0cc26a8e6523d515;priority=P0;task_mode=implement;phase=payload_pending;candidate_local=PASS(11/11)+Linux-WSL=PASS;local=PENDING;payload_sha=PENDING;payload_CI=PENDING;closing_sha=PENDING;closing_CI=PENDING;archive/live=PENDING
+| T012 | G1 | T004,T005,T006 | Git inventory tracked/untracked/exclusions/nested/sparse + file map. | R019 | C011,C013,C014,C016 | VERIFY | Codex | E134,E135,E136,E137,E138,E139,E140,E141,E142,E143,E144;task_revision=3;delivery=b61c0edb-671c-4047-bc9c-6373107f6f0b;supersedes=b552c3c7-c873-40c7-96e8-4c8ed48bf216;base=6cef121825b0d616a74bee41f50f0abd89723b20;plan=772f4e0ae82a9d1901e65d8f9e729cd59b4f6c3e1110477a0cc26a8e6523d515;priority=P0;task_mode=implement;phase=closing_proposed;candidate_local=PASS(11/11)+Linux-WSL=PASS;local=PASS(11/11);payload_sha=PENDING;payload_CI=PENDING;closing_sha=PENDING;closing_CI=PENDING;archive/live=PENDING
 | T013 | G2 | T006,T012 | Go AST declarations/scopes/package variants trên captured bytes. | R008 | C002,C003,C004,C010 | TODO | UNASSIGNED | NONE |
 | T014 | G2 | T013,T020 | Typed Defs/Uses/Selections; local fields/params/locals không mất references. | R008,R009,R099 | C003,C004,C005,C009,C129 | TODO | UNASSIGNED | NONE |
 | T015 | G2 | T014,T007 | Directed multirelation graph, direct/interface/candidate/unresolved edges + source sites. | R005,R010,R011 | C006,C007,C008,C045 | TODO | UNASSIGNED | NONE |
@@ -5118,7 +5118,7 @@ Discrepancy register (điền khi có bằng chứng về docs/source/policy/env
 ```yaml
 resume:
   spec_version: 1.6.13
-  implementation_revision: "67e5a72cc2cf795ddd3549e19ded8aa29c206be1"
+  implementation_revision: "1c98f73d24bee73ee80e5619fb84d5282d800321"
   release_label: NOT_BUILT
   gate: G1
   design_seal: PASS
@@ -5142,11 +5142,11 @@ resume:
   git_delivery:
     repository_status: REMOTE_CONFIGURED_PUBLIC_AUTHENTICATED_BRANCH_UNPROTECTED_ACTIONS_ENABLED
     local_branch: main
-    local_head_sha: "6cef121825b0d616a74bee41f50f0abd89723b20"
+    local_head_sha: "1c98f73d24bee73ee80e5619fb84d5282d800321"
     author_identity_status: CONFIGURED
     approved_remote: origin
     approved_branch: main
-    last_verified_payload_sha: "b6a35e920bc0590cf5587c7a6e2318805e202930"
+    last_verified_payload_sha: "1c98f73d24bee73ee80e5619fb84d5282d800321"
     closing_commit_ref: "67e5a72cc2cf795ddd3549e19ded8aa29c206be1"
     pending_delivery_id: "b61c0edb-671c-4047-bc9c-6373107f6f0b"
     active_delivery_id: "b61c0edb-671c-4047-bc9c-6373107f6f0b"
@@ -5154,17 +5154,17 @@ resume:
     planned_archive_path: "artifacts/git-delivery/b61c0edb-671c-4047-bc9c-6373107f6f0b"
     closing_parent_sha: null
     durable_archive_ref: "artifacts/git-delivery/110aeaca-5731-4807-84b3-47ddc21a8cc6/manifest.json"
-    observed_remote_sha: "6cef121825b0d616a74bee41f50f0abd89723b20"
+    observed_remote_sha: "1c98f73d24bee73ee80e5619fb84d5282d800321"
     expected_check_plan_ref: "artifacts/git-delivery/.staging-b61c0edb-671c-4047-bc9c-6373107f6f0b/check-plan.json"
-    last_ci_result: "T010 P5/C5 exact CI 4/4 PASS; archive sealed and live verification PASS; directory_fsync unsupported; static_verdict UNKNOWN. T012 revision 1 P1 failed 3/4; revision 2 P2 local 11/11 PASS but run 38959142221 failed 3/4 (Ubuntu tracked newline path double-counted); revision 3 candidate Windows 11/11 and Linux WSL targeted PASS; exact payload and CI pending."
+    last_ci_result: "T012 revision 3 code payload 1c98f73d24bee73ee80e5619fb84d5282d800321; local 11/11 PASS; exact-SHA run 38960178174 PASS 4/4. Metadata payload receipt P4 is being prepared; closing C, archive and live verification pending."
     previous_closed_task_live_ref: "artifacts/git-live/110aeaca-5731-4807-84b3-47ddc21a8cc6/c6dbbd0c-d2e5-43b3-8f25-f49e0a96882c/live-verification.json"
     last_live_verification_ref: "artifacts/git-live/110aeaca-5731-4807-84b3-47ddc21a8cc6/c6dbbd0c-d2e5-43b3-8f25-f49e0a96882c/live-verification.json"
     last_live_verification_id: "c6dbbd0c-d2e5-43b3-8f25-f49e0a96882c"
     previous_revision_ci_collection_ref: "artifacts/git-delivery/110aeaca-5731-4807-84b3-47ddc21a8cc6/archive-view/ci/closing-C/collection.json"
-    last_ci_collection_ref: "artifacts/git-delivery/.staging-b552c3c7-c873-40c7-96e8-4c8ed48bf216/history/revision-2-failed-payload/check-runs.json"
+    last_ci_collection_ref: "artifacts/git-delivery/.staging-b61c0edb-671c-4047-bc9c-6373107f6f0b/archive-view/ci/payload-P/collection.json"
     pending_delivery_task: T012
     source_gap_review_ref: null
-    last_delivery_evidence_ref: "artifacts/git-delivery/.staging-b61c0edb-671c-4047-bc9c-6373107f6f0b/candidate-checks-revision-3/summary.json"
+    last_delivery_evidence_ref: "artifacts/git-delivery/.staging-b61c0edb-671c-4047-bc9c-6373107f6f0b/local-checks-P4/summary.json"
   auto_advance_tasks: true
   auto_close_internal_gates: true
   intermediate_user_approval: false
