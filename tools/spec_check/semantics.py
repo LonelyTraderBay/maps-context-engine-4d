@@ -18,6 +18,7 @@ from .ci_order import (
     select_latest_actions_generation,
     select_latest_native_records,
 )
+from .schema import SchemaError, strict_json_loads
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -489,6 +490,10 @@ def _validate_commit_snapshot(value: Any, *, owner: str) -> list[str]:
 
 def _validate_ci_page(endpoint: Any, value: Any, *, owner: str) -> tuple[list[str], list[dict[str, Any]]]:
     errors: list[str] = []
+    if isinstance(value, dict) and value.get("kind") == "github_api_page":
+        if value.get("endpoint") != endpoint:
+            errors.append(f"{owner}: envelope endpoint không khớp collection page")
+        value = value.get("body")
     if endpoint == "commit_statuses":
         if not isinstance(value, list) or any(not isinstance(item, dict) for item in value):
             return [f"{owner}: commit_statuses raw root phải là array of objects"], []
@@ -572,6 +577,7 @@ def _observation_link_errors(
     plan: dict[str, Any],
     records: dict[str, tuple[str, dict[str, Any]]],
     raw_members: dict[str, Any],
+    raw_member_bytes: dict[str, bytes] | None = None,
     *,
     expected_phase: str,
     expected_parent: str | None,
@@ -750,6 +756,7 @@ def _observation_link_errors(
     rows_by_page_ref: dict[str, list[dict[str, Any]]] = {}
     rows_by_page_group: dict[tuple[Any, ...], list[dict[str, Any]]] = {}
     totals_by_page_group: dict[tuple[Any, ...], set[int]] = {}
+    page_envelopes: dict[str, dict[str, Any]] = {}
     workflow_rows: list[dict[str, Any]] = []
     if collection is not None:
         used_refs.add(collection_ref)
@@ -788,6 +795,80 @@ def _observation_link_errors(
                 else:
                     page_errors, raw_rows = _validate_ci_page(endpoint, raw_page, owner=f"collection page {page_ref}")
                     errors.extend(page_errors)
+                    if isinstance(raw_page, dict) and raw_page.get("kind") == "github_api_page":
+                        expected_fields = {
+                            "format_version", "kind", "query_id", "endpoint", "requested_sha",
+                            "page_number", "next_page_number", "requested_url", "next_url",
+                            "request_started_at_utc", "response_received_at_utc", "http_status",
+                            "response_headers", "body_ref", "body_sha256", "body_byte_length", "body",
+                        }
+                        if set(raw_page) != expected_fields or raw_page.get("format_version") != 1:
+                            error(f"collection page {page_ref} envelope thiếu fields hoặc có field lạ")
+                        if (raw_page.get("query_id") != page.get("query_id")
+                                or raw_page.get("requested_sha") != page.get("requested_sha")
+                                or raw_page.get("page_number") != page.get("page_number")
+                                or raw_page.get("next_page_number") != page.get("next_page_number")):
+                            error(f"collection page {page_ref} envelope lệch query identity/pagination")
+                        if raw_page.get("http_status") != 200:
+                            error(f"collection page {page_ref} không phải HTTP 200")
+                        body_ref = raw_page.get("body_ref")
+                        if not _safe_relative_path(body_ref):
+                            error(f"collection page {page_ref} body_ref không an toàn")
+                        else:
+                            used_refs.add(body_ref)
+                            if raw_members.get(body_ref) is None or not _typed_equal(
+                                    raw_members.get(body_ref), raw_page.get("body")):
+                                error(f"collection page {page_ref} parsed body lệch retained raw response")
+                        if (not isinstance(raw_page.get("body_sha256"), str)
+                                or SHA256.fullmatch(raw_page["body_sha256"]) is None
+                                or isinstance(raw_page.get("body_byte_length"), bool)
+                                or not isinstance(raw_page.get("body_byte_length"), int)
+                                or raw_page["body_byte_length"] < 0):
+                            error(f"collection page {page_ref} raw body length/SHA sai shape")
+                        request_start = _parse_time(raw_page.get("request_started_at_utc"))
+                        response_end = _parse_time(raw_page.get("response_received_at_utc"))
+                        if request_start is None or response_end is None or response_end < request_start:
+                            error(f"collection page {page_ref} request interval không hợp lệ")
+                        collection_start = _parse_time(collection.get("started_at_utc"))
+                        collection_end = _parse_time(collection.get("completed_at_utc"))
+                        if ((collection_start is not None and request_start is not None and request_start < collection_start)
+                                or (collection_end is not None and response_end is not None and response_end > collection_end)):
+                            error(f"collection page {page_ref} nằm ngoài collection invocation")
+                        headers = raw_page.get("response_headers")
+                        if (not isinstance(headers, dict) or any(
+                                not isinstance(key, str) or not isinstance(value, str)
+                                for key, value in headers.items())):
+                            error(f"collection page {page_ref} response_headers sai shape")
+                        if not isinstance(raw_page.get("requested_url"), str):
+                            error(f"collection page {page_ref} thiếu requested_url")
+                        next_url = raw_page.get("next_url")
+                        if next_url is not None and not isinstance(next_url, str):
+                            error(f"collection page {page_ref} next_url sai type")
+                        if page.get("next_page_number") is None and next_url is not None:
+                            error(f"collection page cuối vẫn có Link next")
+                        if page.get("next_page_number") is not None and next_url is None:
+                            error(f"collection page thiếu Link next dù khai báo trang sau")
+                        if isinstance(page_ref, str):
+                            page_envelopes[page_ref] = raw_page
+                        if raw_member_bytes is not None:
+                            page_bytes = raw_member_bytes.get(page_ref) if isinstance(page_ref, str) else None
+                            body_bytes = raw_member_bytes.get(body_ref) if isinstance(body_ref, str) else None
+                            if not isinstance(page_bytes, bytes) or not isinstance(body_bytes, bytes):
+                                error(f"collection page {page_ref} thiếu exact envelope/body bytes")
+                            else:
+                                try:
+                                    decoded_page = strict_json_loads(page_bytes)
+                                    decoded_body = strict_json_loads(body_bytes)
+                                except SchemaError:
+                                    error(f"collection page {page_ref} raw envelope/body JSON không strict")
+                                else:
+                                    if not _typed_equal(decoded_page, raw_page):
+                                        error(f"collection page {page_ref} envelope object lệch raw bytes")
+                                    if not _typed_equal(decoded_body, raw_page.get("body")):
+                                        error(f"collection page {page_ref} body object lệch exact raw bytes")
+                                    if (len(body_bytes) != raw_page.get("body_byte_length")
+                                            or hashlib.sha256(body_bytes).hexdigest() != raw_page.get("body_sha256")):
+                                        error(f"collection page {page_ref} body bytes lệch declared length/SHA")
                     if isinstance(endpoint, str):
                         rows_by_endpoint.setdefault(endpoint, []).extend(raw_rows)
                         if isinstance(page_ref, str):
@@ -810,7 +891,8 @@ def _observation_link_errors(
                 grouped_pages.setdefault(identity, []).append(page)
                 rows_by_page_group.setdefault(identity, []).extend(raw_rows)
                 if isinstance(raw_page, dict):
-                    total = raw_page.get("total_count")
+                    page_body = raw_page.get("body") if raw_page.get("kind") == "github_api_page" else raw_page
+                    total = page_body.get("total_count") if isinstance(page_body, dict) else None
                     if isinstance(total, int) and not isinstance(total, bool):
                         totals_by_page_group.setdefault(identity, set()).add(total)
             for identity, grouped in grouped_pages.items():
@@ -822,6 +904,15 @@ def _observation_link_errors(
                     expected_next = numbers[index + 1] if index + 1 < len(numbers) else None
                     if page.get("next_page_number") != expected_next:
                         error(f"collection next_page_number sai cho {identity[0]}")
+                    envelope = page_envelopes.get(page.get("raw_page_ref"))
+                    if envelope is not None:
+                        following = (page_envelopes.get(ordered[index + 1].get("raw_page_ref"))
+                                     if index + 1 < len(ordered) else None)
+                        if expected_next is None:
+                            if envelope.get("next_url") is not None:
+                                error(f"collection {identity[0]} final page có Link next")
+                        elif following is None or envelope.get("next_url") != following.get("requested_url"):
+                            error(f"collection {identity[0]} Link next không trỏ đúng trang kế tiếp")
             for identity, totals in totals_by_page_group.items():
                 if len(totals) != 1:
                     error(f"collection {identity[0]} total_count thay đổi giữa pages")
@@ -1115,7 +1206,7 @@ def _observation_link_errors(
     return errors + [f"{owner}:required-member:{ref}" for ref in sorted(used_refs) if not _safe_relative_path(ref)]
 
 
-def validate_delivery_links(objects: Any, *, raw_members: Any = None) -> dict[str, Any]:
+def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member_bytes: Any = None) -> dict[str, Any]:
     """Evaluate typed delivery links without promoting static records to DONE.
 
     ``objects`` maps private relative evidence refs to ``{kind, value}`` entries.
@@ -1128,6 +1219,12 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None) -> dict[st
         raw_members = {}
     if not isinstance(raw_members, dict):
         return {"verdict": "REJECT", "errors": ["bundle.raw_members phải là object ref→decoded JSON"], "unknowns": []}
+    if raw_member_bytes is not None and not isinstance(raw_member_bytes, dict):
+        return {"verdict": "REJECT", "errors": ["bundle.raw_member_bytes phải là object ref→bytes"], "unknowns": []}
+    if isinstance(raw_member_bytes, dict) and any(
+            not _safe_relative_path(ref) or not isinstance(data, bytes)
+            for ref, data in raw_member_bytes.items()):
+        return {"verdict": "REJECT", "errors": ["bundle.raw_member_bytes chứa locator không an toàn hoặc giá trị non-bytes"], "unknowns": []}
     records: dict[str, tuple[str, dict[str, Any]]] = {}
     errors: list[str] = []
     for raw_ref in raw_members:
@@ -1553,6 +1650,7 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None) -> dict[st
                 if plan is not None:
                     errors.extend(_observation_link_errors(
                         ref + ".payload", payload, plan, records, raw_members,
+                        raw_member_bytes=raw_member_bytes,
                         expected_phase="payload", expected_parent=attempt.get("base_sha"),
                         expected_identity=attempt,
                     ))
@@ -1629,6 +1727,7 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None) -> dict[st
             if plan is not None:
                 errors.extend(_observation_link_errors(
                     ref + ".closing", closing, plan, records, raw_members,
+                    raw_member_bytes=raw_member_bytes,
                     expected_phase="closing", expected_parent=archive.get("verified_payload_sha"),
                     expected_identity=attempt if attempt is not None else archive,
                 ))
@@ -1746,12 +1845,114 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None) -> dict[st
                 for page in collection_pages if isinstance(collection_pages, list) else []:
                     if isinstance(page, dict):
                         require_member(page.get("raw_page_ref"))
+                        page_ref = page.get("raw_page_ref")
+                        raw_page = raw_members.get(page_ref) if isinstance(page_ref, str) else None
+                        if isinstance(raw_page, dict) and raw_page.get("kind") == "github_api_page":
+                            require_member(raw_page.get("body_ref"))
         if commit is not None:
             require_scope_reasons(commit.get("scope_ref"))
             require_member(commit.get("git_evidence_ref"))
         missing_members = sorted(required_members - member_paths)
         if missing_members:
             errors.append(f"{ref}: archive thiếu evidence member: {missing_members[:8]}")
+
+    for live_ref, (kind, verification) in records.items():
+        if kind != "GitLiveVerification":
+            continue
+        matching_archives = [
+            (ref, archive) for ref, archive in archive_refs.items()
+            if archive.get("delivery_id") == verification.get("delivery_id")
+            and archive.get("task_id") == verification.get("task_id")
+            and archive.get("task_revision") == verification.get("task_revision")
+            and archive.get("assignment_ref") == verification.get("assignment_ref")
+        ]
+        if len(matching_archives) != 1:
+            errors.append(f"{live_ref}: cần đúng một archive sealed cùng delivery/task/revision")
+            continue
+        archive_ref, archive = matching_archives[0]
+        attempt = resolve(archive.get("attempt_ref"), "GitDeliveryAttempt", live_ref + ".archive.attempt_ref")
+        selection = resolve(archive.get("selection_ref"), "GitTaskDeliverySelection", live_ref + ".archive.selection_ref")
+        plan = resolve(attempt.get("check_plan_ref"), "GitCheckPlan", live_ref + ".plan") if attempt is not None else None
+        observation = resolve(verification.get("closing_observation_ref"), "GitDeliveryObservation", live_ref + ".closing_observation_ref")
+        collection = resolve(verification.get("collection_evidence_ref"), "GitCICollectionEvidence", live_ref + ".collection_evidence_ref")
+        if selection is not None:
+            if (selection.get("active_delivery_id") != verification.get("delivery_id")
+                    or selection.get("task_revision") != verification.get("task_revision")):
+                errors.append(f"{live_ref}: live verification không bind current selector")
+        if attempt is not None:
+            for field in ("assignment_ref", "task_id", "task_revision", "delivery_id"):
+                if not _typed_equal(verification.get(field), attempt.get(field)):
+                    errors.append(f"{live_ref}: live identity lệch attempt {field}")
+            if verification.get("subject_sha") != archive.get("closing_sha"):
+                errors.append(f"{live_ref}: live subject phải bằng archived closing_sha")
+            if verification.get("check_plan_sha256") != attempt.get("check_plan_sha256"):
+                errors.append(f"{live_ref}: live check-plan hash lệch attempt/archive")
+        if archive.get("archive_path") is not None:
+            expected_archive_path = archive.get("archive_path")
+        else:
+            expected_archive_path = f"artifacts/git-delivery/{archive.get('delivery_id')}"
+        publication = verification.get("archive_publication")
+        if isinstance(publication, dict):
+            if publication.get("planned_archive_path") != expected_archive_path:
+                errors.append(f"{live_ref}: publication path không khớp current archive")
+            try:
+                manifest_sha = hashlib.sha256(_canonical(archive)).hexdigest()
+            except (TypeError, ValueError):
+                manifest_sha = None
+            if manifest_sha is not None and publication.get("archive_manifest_sha256") != manifest_sha:
+                errors.append(f"{live_ref}: publication manifest hash không khớp canonical archive")
+            published = _parse_time(publication.get("published_at_utc"))
+            readback = _parse_time(publication.get("readback_completed_at_utc"))
+            started = _parse_time(verification.get("started_at_utc"))
+            completed = _parse_time(verification.get("completed_at_utc"))
+            if (published is None or readback is None or published > readback
+                    or started is None or started < readback
+                    or completed is None or completed < started):
+                errors.append(f"{live_ref}: live invocation phải bắt đầu sau publication+readback")
+        if collection is not None:
+            if (collection.get("subject_sha") != verification.get("subject_sha")
+                    or collection.get("check_plan_sha256") != verification.get("check_plan_sha256")):
+                errors.append(f"{live_ref}: fresh CI collection lệch live subject/plan")
+        if observation is not None and plan is not None and attempt is not None:
+            if (observation.get("phase") != "closing"
+                    or observation.get("delivery_id") != verification.get("delivery_id")
+                    or observation.get("subject_sha") != verification.get("subject_sha")
+                    or observation.get("collection_evidence_ref") != verification.get("collection_evidence_ref")):
+                errors.append(f"{live_ref}: fresh closing observation lệch invocation")
+            errors.extend(_observation_link_errors(
+                live_ref + ".closing", observation, plan, records, raw_members,
+                raw_member_bytes=raw_member_bytes,
+                expected_phase="closing", expected_parent=archive.get("verified_payload_sha"),
+                expected_identity=attempt,
+            ))
+        files = verification.get("files")
+        file_paths = {item.get("path") for item in files if isinstance(item, dict)} if isinstance(files, list) else set()
+        required_live_refs = {
+            verification.get("closing_observation_ref"),
+            verification.get("collection_evidence_ref"),
+            verification.get("git_evidence_ref"),
+        }
+        if isinstance(verification.get("current_pr_ref"), str):
+            required_live_refs.add(verification["current_pr_ref"])
+        if collection is not None:
+            for page in collection.get("pages", []):
+                if isinstance(page, dict):
+                    page_ref = page.get("raw_page_ref")
+                    required_live_refs.add(page_ref)
+                    page_value = raw_members.get(page_ref) if isinstance(page_ref, str) else None
+                    if isinstance(page_value, dict) and page_value.get("kind") == "github_api_page":
+                        required_live_refs.add(page_value.get("body_ref"))
+        if observation is not None:
+            for check in observation.get("checks", []):
+                if isinstance(check, dict):
+                    required_live_refs.update((check.get("source_evidence_ref"), check.get("execution_evidence_ref")))
+                    required_live_refs.update(check.get("evidence_refs", []) if isinstance(check.get("evidence_refs"), list) else [])
+        required_live_refs.discard(None)
+        if any(not isinstance(ref, str) or ref not in file_paths for ref in required_live_refs):
+            errors.append(f"{live_ref}: files manifest thiếu source graph của fresh invocation")
+        if isinstance(files, list) and len(file_paths) != len(files):
+            errors.append(f"{live_ref}: files manifest chứa path trùng")
+        unknowns.append(f"{live_ref}: freshness GitHub, archive seal/readback bytes và secured caller identity cần observer thật")
 
     seen_markers: dict[str, str] = {}
     for ref, attempt in attempt_refs.items():

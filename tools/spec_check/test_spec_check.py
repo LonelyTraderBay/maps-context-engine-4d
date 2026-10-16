@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import copy
+import contextlib
 import hashlib
+import io
 import json
 import sys
 import tempfile
@@ -21,6 +23,9 @@ from tools.spec_check.manifest import ManifestError, execute_verified_entrypoint
 from tools.spec_check.ci_order import OrderingError, parse_instant, select_latest_actions_attempts, select_latest_actions_generation, select_latest_native_records
 from tools.spec_check.semantics import _canonical, validate_delivery_links, validate_semantics
 from tools.spec_check.spec import validate_spec_text
+from tools.spec_check.archive import ArchiveError, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
+from tools.ci.publish_git_archive import main as publish_git_archive_main
+from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _verify_publication_projection
 
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
@@ -1252,6 +1257,384 @@ class DeliveryLinkTests(unittest.TestCase):
                 result = self._validate(bundle)
                 self.assertEqual("REJECT", result["verdict"])
                 self.assertTrue(result["errors"])
+
+
+class ArchivePublicationTests(unittest.TestCase):
+    @staticmethod
+    def _seed_valid_archive(root: Path) -> dict[str, object]:
+        objects, raw = _delivery_link_bundle()
+        archive = copy.deepcopy(objects["archive"]["value"])
+        typed = {ref: entry for ref, entry in objects.items() if ref != "archive"}
+        raw = dict(raw)
+        raw["authority/task-start.txt"] = "Ủy quyền fixture cho task T003.".encode("utf-8")
+        index = {
+            "format_version": 1,
+            "objects": {ref: entry["kind"] for ref, entry in sorted(typed.items())},
+            "raw_members": sorted(ref for ref, value in raw.items() if isinstance(value, dict)),
+        }
+        paths = {item["path"] for item in archive["files"]}
+        paths.update(typed)
+        paths.update(raw)
+        paths.add("bundle-index.json")
+        member_bytes: dict[str, bytes] = {}
+        for ref in paths:
+            if ref == "bundle-index.json":
+                data = _canonical(index)
+            elif ref in typed:
+                data = _canonical(typed[ref]["value"])
+            elif ref in raw and isinstance(raw[ref], dict):
+                data = _canonical(raw[ref])
+            elif ref in raw and isinstance(raw[ref], bytes):
+                data = raw[ref]
+            elif ref in raw and isinstance(raw[ref], str):
+                data = raw[ref].encode("utf-8")
+            else:
+                data = b"fixture retained output\n"
+            member_bytes[ref] = data
+        archive["files"] = [
+            {"path": ref, "byte_length": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+            for ref, data in sorted(member_bytes.items())
+        ]
+        archive_root = root / "artifacts" / "git-delivery"
+        archive_root.mkdir(parents=True)
+        staging = archive_root / f".staging-{archive['delivery_id']}"
+        staging.mkdir()
+        for ref, data in member_bytes.items():
+            path = staging.joinpath(*ref.split("/"))
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        return archive
+
+    def test_publish_seal_readback_and_cold_verification(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-publish-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            published = publish_archive(root, archive, spec_path=SPEC_PATH)
+            cold = verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
+            self.assertEqual(f"artifacts/git-delivery/{archive['delivery_id']}", published["planned_archive_path"])
+            self.assertIsNotNone(published["published_at_utc"])
+            self.assertIsNone(cold["published_at_utc"])
+            self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
+            self.assertEqual(published["archive_seal_sha256"], cold["archive_seal_sha256"])
+
+    def test_publisher_recovers_fully_staged_members_before_manifest_seal(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-resume-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            resumed = publish_archive(root, archive, spec_path=SPEC_PATH)
+            self.assertIsNotNone(resumed["published_at_utc"])
+            self.assertTrue((root / resumed["planned_archive_path"] / "seal.json").is_file())
+            self.assertFalse((root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}").exists())
+
+    def test_publisher_recovers_after_manifest_and_seal_were_flushed(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-sealed-resume-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
+            manifest_bytes = _canonical(archive)
+            seal = {
+                "format_version": 1, "delivery_id": archive["delivery_id"],
+                "task_id": archive["task_id"], "task_revision": archive["task_revision"],
+                "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
+                "sealed_at_utc": "2026-10-16T00:00:00Z",
+            }
+            (stage / "manifest.json").write_bytes(manifest_bytes)
+            (stage / "seal.json").write_bytes(_canonical(seal))
+            resumed = publish_archive(root, archive, spec_path=SPEC_PATH)
+            self.assertEqual(hashlib.sha256(_canonical(seal)).hexdigest(), resumed["archive_seal_sha256"])
+
+    def test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-cli-") as temp:
+            root = Path(temp)
+            (root / SPEC_PATH.name).write_bytes(SPEC_PATH.read_bytes())
+            archive = self._seed_valid_archive(root)
+            stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
+            (stage / "archive-candidate.json").write_bytes(_canonical(archive))
+            operation_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = publish_git_archive_main([
+                    "--root", str(root), "--delivery", archive["delivery_id"],
+                    "--operation-id", operation_id,
+                ])
+            self.assertEqual(0, result)
+            final = root / "artifacts" / "git-delivery" / archive["delivery_id"]
+            receipt = root / "artifacts" / "git-delivery" / "operations" / operation_id / "publication.json"
+            self.assertTrue(final.is_dir())
+            self.assertFalse(stage.exists())
+            self.assertTrue(receipt.is_file())
+            self.assertEqual(
+                hashlib.sha256(_canonical(strict_json_loads((final / "manifest.json").read_bytes()))).hexdigest(),
+                json.loads(receipt.read_text(encoding="utf-8"))["archive_manifest_sha256"],
+            )
+            with contextlib.redirect_stdout(io.StringIO()):
+                retry = publish_git_archive_main([
+                    "--root", str(root), "--delivery", archive["delivery_id"],
+                    "--operation-id", operation_id,
+                ])
+            self.assertEqual(0, retry)
+
+    def test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-cli-resume-") as temp:
+            root = Path(temp)
+            (root / SPEC_PATH.name).write_bytes(SPEC_PATH.read_bytes())
+            archive = self._seed_valid_archive(root)
+            stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
+            (stage / "manifest.json").write_bytes(_canonical(archive))
+            operation_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = publish_git_archive_main([
+                    "--root", str(root), "--delivery", archive["delivery_id"],
+                    "--operation-id", operation_id,
+                ])
+            self.assertEqual(0, result)
+            self.assertTrue((root / "artifacts" / "git-delivery" / archive["delivery_id"]).is_dir())
+
+    def test_publisher_rejects_changed_manifest_after_staging_seal(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-seal-mismatch-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
+            manifest_bytes = _canonical(archive)
+            seal = {
+                "format_version": 1, "delivery_id": archive["delivery_id"],
+                "task_id": archive["task_id"], "task_revision": archive["task_revision"],
+                "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
+                "sealed_at_utc": "2026-10-16T00:00:00Z",
+            }
+            (stage / "manifest.json").write_bytes(manifest_bytes)
+            (stage / "seal.json").write_bytes(_canonical(seal))
+            changed = copy.deepcopy(archive)
+            changed["created_at_utc"] = "2026-10-16T00:00:01Z"
+            with self.assertRaisesRegex(ArchiveError, "không bind đúng immutable manifest"):
+                publish_archive(root, changed, spec_path=SPEC_PATH)
+            self.assertTrue(stage.is_dir())
+
+    def test_existing_archive_reuse_never_invents_original_publish_time(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-replay-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            first = publish_archive(root, archive, spec_path=SPEC_PATH)
+            second = publish_archive(root, archive, spec_path=SPEC_PATH)
+            self.assertIsNotNone(first["published_at_utc"])
+            self.assertIsNone(second["published_at_utc"])
+            self.assertEqual(first["archive_seal_sha256"], second["archive_seal_sha256"])
+
+    def test_cold_readback_rejects_tampered_member_bytes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-tamper-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root)
+            published = publish_archive(root, archive, spec_path=SPEC_PATH)
+            member = root / published["planned_archive_path"] / "attempt"
+            member.write_bytes(member.read_bytes() + b"tamper")
+            with self.assertRaisesRegex(ArchiveError, "byte_length/SHA"):
+                verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
+
+    def test_publication_projection_is_written_once_after_actual_readback(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-projection-") as temp:
+            root = Path(temp)
+            archive_root = root / "artifacts" / "git-delivery"
+            archive_root.mkdir(parents=True)
+            operation_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            projection = {
+                "format_version": 1, "kind": "archive_publication",
+                "planned_archive_path": "artifacts/git-delivery/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+                "archive_manifest_sha256": "a" * 64, "archive_seal_sha256": "b" * 64,
+                "published_at_utc": "2026-10-16T00:00:00Z",
+                "readback_completed_at_utc": "2026-10-16T00:00:01Z",
+            }
+            path = persist_publication_projection(root, operation_id, projection)
+            self.assertEqual(projection, json.loads(path.read_text(encoding="utf-8")))
+            with self.assertRaises(OSError):
+                persist_publication_projection(root, operation_id, projection)
+
+    def test_atomic_archive_rename_never_replaces_final_directory(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-rename-") as temp:
+            root = Path(temp)
+            source = root / "staging"
+            destination = root / "published"
+            source.mkdir()
+            (source / "marker").write_text("first", encoding="utf-8")
+            _rename_noreplace(source, destination)
+            retry = root / "retry"
+            retry.mkdir()
+            (retry / "marker").write_text("second", encoding="utf-8")
+            with self.assertRaises(OSError):
+                _rename_noreplace(retry, destination)
+            self.assertEqual("first", (destination / "marker").read_text(encoding="utf-8"))
+            self.assertTrue(retry.is_dir())
+
+    def test_live_observer_rejects_projection_outside_owned_operations_root(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-live-projection-path-") as temp:
+            root = Path(temp)
+            outside = root / "publication.json"
+            outside.write_text("{}", encoding="utf-8")
+            with patch("tools.spec_check.github_observer.verify_archive") as verify_archive:
+                with self.assertRaises(GitHubObserverError):
+                    _verify_publication_projection(root, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", outside)
+                verify_archive.assert_not_called()
+
+    def test_live_observer_rejects_symlinked_projection_ancestor(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-live-projection-link-") as temp:
+            root = Path(temp)
+            git_delivery = root / "artifacts" / "git-delivery"
+            operations = git_delivery / "operations"
+            operations.mkdir(parents=True)
+            operation_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            actual = operations / operation_id
+            actual.mkdir()
+            projection = actual / "publication.json"
+            projection.write_text("{}", encoding="utf-8")
+            alias = operations / "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+            try:
+                alias.symlink_to(actual, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("filesystem hiện tại không cho tạo symlink không nâng quyền")
+            with patch("tools.spec_check.github_observer.verify_archive") as verify_archive:
+                with self.assertRaises(GitHubObserverError):
+                    _verify_publication_projection(root, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", alias / "publication.json")
+                verify_archive.assert_not_called()
+
+
+class GitHubObserverTests(unittest.TestCase):
+    @staticmethod
+    def _response(payload: object) -> tuple[dict[str, str], bytes, object, str, str]:
+        body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return {}, body, payload, "2026-10-16T00:00:00Z", "2026-10-16T00:00:01Z"
+
+    def test_current_tracker_reader_rejects_malformed_row_without_index_error(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-live-tracker-") as temp:
+            malformed = Path(temp) / "spec.md"
+            malformed.write_text("## S19 — Tracker\n| T003 | truncated |\n## S20 — Gates\n", encoding="utf-8")
+            with self.assertRaisesRegex(GitHubObserverError, "sai cấu trúc cột"):
+                _current_tracker_identity(malformed, "T003")
+        self.assertEqual(
+            ("T003", 7, "85f71cd9-dd27-4964-8211-c2e89e22cb0f"),
+            _current_tracker_identity(SPEC_PATH, "T003"),
+        )
+
+    def test_api_process_output_is_capped_while_pipes_are_drained(self) -> None:
+        class FakeProcess:
+            returncode = 0
+
+            def __init__(self, stdout: bytes, stderr: bytes = b"") -> None:
+                self.stdout = io.BytesIO(stdout)
+                self.stderr = io.BytesIO(stderr)
+                self.killed = False
+
+            def wait(self, timeout: int) -> int:
+                return self.returncode
+
+            def kill(self) -> None:
+                self.killed = True
+                self.returncode = -9
+
+        accepted = FakeProcess(b"header/body", b"warning")
+        with patch("tools.spec_check.github_observer.subprocess.Popen", return_value=accepted):
+            result = _run_bounded_process(
+                ["gh", "api"], env={}, timeout=1, stdout_limit=20, stderr_limit=10,
+            )
+        self.assertEqual((0, b"header/body", b"warning"), result)
+        self.assertFalse(accepted.killed)
+
+        oversized = FakeProcess(b"x" * 21)
+        with patch("tools.spec_check.github_observer.subprocess.Popen", return_value=oversized):
+            with self.assertRaisesRegex(GitHubObserverError, "vượt giới hạn đọc"):
+                _run_bounded_process(
+                    ["gh", "api"], env={}, timeout=1, stdout_limit=20, stderr_limit=10,
+                )
+        self.assertTrue(oversized.killed)
+
+    def test_pagination_follows_actual_link_and_retains_raw_body(self) -> None:
+        sha = "a" * 40
+        first = {"total_count": 2, "check_runs": [{"id": 11}]}
+        second = {"total_count": 2, "check_runs": [{"id": 12}]}
+        with tempfile.TemporaryDirectory(prefix="mce4d-github-pages-") as temp:
+            client = GitHubApiClient("github.com", Path(temp))
+
+            def response(url: str) -> tuple[dict[str, str], bytes, object, str, str]:
+                if url.endswith("page=1"):
+                    return ({"link": f'<https://api.github.com/repos/o/r/commits/{sha}/check-runs?head_sha={sha}&per_page=100&page=2>; rel="next"'},
+                            *self._response(first)[1:])
+                self.assertIn("page=2", url)
+                return self._response(second)
+
+            with patch.object(client, "_request", side_effect=response):
+                rows = client.paginate(
+                    endpoint="check_runs", requested_sha=sha,
+                    path=f"repos/o/r/commits/{sha}/check-runs", params={"head_sha": sha},
+                    group_id="checks",
+                )
+            self.assertEqual([11, 12], [row["id"] for row in rows])
+            self.assertEqual([1, 2], [page["page_number"] for page in client.collection_pages])
+            for page in client.collection_pages:
+                envelope = client.raw_members[page["raw_page_ref"]]
+                self.assertEqual(envelope["body"], client.raw_members[envelope["body_ref"]])
+
+    def test_pagination_rejects_changed_filter(self) -> None:
+        sha = "a" * 40
+        body = {"total_count": 1, "check_runs": []}
+        with tempfile.TemporaryDirectory(prefix="mce4d-github-pages-") as temp:
+            client = GitHubApiClient("github.com", Path(temp))
+            client._request = lambda url: (
+                {"link": f'<https://api.github.com/repos/o/r/commits/{sha}/check-runs?head_sha={"b" * 40}&per_page=100&page=2>; rel="next"'},
+                *self._response(body)[1:],
+            )
+            with self.assertRaisesRegex(GitHubObserverError, "đổi host/path/filter"):
+                client.paginate(
+                    endpoint="check_runs", requested_sha=sha,
+                    path=f"repos/o/r/commits/{sha}/check-runs", params={"head_sha": sha},
+                    group_id="checks",
+                )
+
+    def test_duplicate_link_relations_are_rejected(self) -> None:
+        with self.assertRaisesRegex(GitHubObserverError, "lặp relation next"):
+            _parse_links('<https://api.github.com/a?page=2>; rel="next", <https://api.github.com/a?page=3>; rel="next"')
+
+    def test_runner_matrix_fails_closed_when_label_is_missing(self) -> None:
+        self.assertTrue(_matrix_matches({"os": "ubuntu-latest"}, {"labels": ["ubuntu-latest", "x64"]}))
+        self.assertFalse(_matrix_matches({"os": "windows-latest"}, {"labels": ["ubuntu-latest", "x64"]}))
+        self.assertFalse(_matrix_matches({"runner": "ubuntu-latest"}, {"labels": ["ubuntu-latest"]}))
+
+    @staticmethod
+    def _byte_bound_bundle() -> tuple[dict[str, object], dict[str, object], dict[str, bytes], str]:
+        bundle, raw = _delivery_link_bundle()
+        payload = bundle["payload"]["value"]
+        collection = bundle[payload["collection_evidence_ref"]]["value"]
+        page = next(item for item in collection["pages"] if item["endpoint"] == "check_runs")
+        page_ref = page["raw_page_ref"]
+        body = raw[page_ref]
+        body_ref = page_ref.removesuffix(".json") + ".body.json"
+        body_bytes = _canonical(body)
+        envelope = {
+            "format_version": 1, "kind": "github_api_page", "query_id": page["query_id"],
+            "endpoint": page["endpoint"], "requested_sha": page["requested_sha"],
+            "page_number": page["page_number"], "next_page_number": page["next_page_number"],
+            "requested_url": f"https://api.github.com/repos/owner/repo/commits/{payload['subject_sha']}/check-runs?per_page=100&page=1",
+            "next_url": None, "request_started_at_utc": "2026-10-16T00:00:03.500Z",
+            "response_received_at_utc": "2026-10-16T00:00:04Z", "http_status": 200,
+            "response_headers": {"content-type": "application/json"}, "body_ref": body_ref,
+            "body_sha256": hashlib.sha256(body_bytes).hexdigest(),
+            "body_byte_length": len(body_bytes), "body": body,
+        }
+        raw[page_ref] = envelope
+        raw[body_ref] = body
+        bundle["archive"]["value"]["files"].append({"path": body_ref, "byte_length": len(body_bytes),
+                                                          "sha256": hashlib.sha256(body_bytes).hexdigest()})
+        return bundle, raw, {page_ref: _canonical(envelope), body_ref: body_bytes}, page_ref
+
+    def test_static_graph_checks_api_page_against_exact_raw_body_bytes(self) -> None:
+        bundle, raw, member_bytes, _ = self._byte_bound_bundle()
+        result = validate_delivery_links(bundle, raw_members=raw, raw_member_bytes=member_bytes)
+        self.assertEqual("UNKNOWN", result["verdict"])
+        self.assertEqual([], result["errors"])
+
+    def test_static_graph_rejects_declared_api_body_hash_mismatch(self) -> None:
+        bundle, raw, member_bytes, page_ref = self._byte_bound_bundle()
+        raw[page_ref]["body_sha256"] = "0" * 64
+        member_bytes[page_ref] = _canonical(raw[page_ref])
+        result = validate_delivery_links(bundle, raw_members=raw, raw_member_bytes=member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("body bytes lệch declared length/SHA" in error for error in result["errors"]))
 
 
 if __name__ == "__main__":
