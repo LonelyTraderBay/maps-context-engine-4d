@@ -194,8 +194,8 @@ func TestAdmissionJournalAccepts256Entries(t *testing.T) {
 
 func TestAdmissionJournalRejectsMoreThan256Entries(t *testing.T) {
 	journal := admissionJournalWithEntryCount(t, 257)
-	if _, err := encodeAdmissionJournal(journal); err == nil {
-		t.Fatal("journal with more than 256 entries was accepted")
+	if _, err := encodeAdmissionJournal(journal); !errors.Is(err, model.ErrInvalidValue) {
+		t.Fatalf("257-entry journal error=%v; want model.ErrInvalidValue", err)
 	}
 }
 
