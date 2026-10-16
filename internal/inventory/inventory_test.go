@@ -278,8 +278,8 @@ func TestScanUsesNULDelimitedPaths(t *testing.T) {
 	}
 	if runtime.GOOS != "windows" {
 		pathsInMap := filePaths(snapshot)
-		if snapshot.Coverage.UnsupportedPath != 1 || slices.Contains(pathsInMap, "line\nbreak.go") {
-			t.Fatalf("control-character path was not retained as unsupported coverage: %+v", snapshot.Coverage)
+		if snapshot.Coverage.UnsupportedPath != 1 || snapshot.Coverage.Untracked != 2 || slices.Contains(pathsInMap, "line\nbreak.go") {
+			t.Fatalf("tracked control-character path was not counted once without entering the map: %+v", snapshot.Coverage)
 		}
 		if slices.Contains(pathsInMap, "line") || slices.Contains(pathsInMap, "break.go") {
 			t.Fatalf("newline path leaked as split path identities: %v", pathsInMap)

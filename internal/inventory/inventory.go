@@ -536,6 +536,12 @@ func walkUntracked(ctx context.Context, root string, pathPolicy *policy.Policy, 
 			}
 			return nil
 		}
+		if !entry.IsDir() {
+			if _, alreadyTracked := tracked[path]; alreadyTracked {
+				// The index pass owns validation and coverage for tracked files.
+				return nil
+			}
+		}
 		if pathErr := paths.ValidateRelative(path); pathErr != nil {
 			if errors.Is(pathErr, paths.ErrUnsupportedEncoding) {
 				counts.UnsupportedPathEncoding++
@@ -574,9 +580,6 @@ func walkUntracked(ctx context.Context, root string, pathPolicy *policy.Policy, 
 				boundaries = append(boundaries, Boundary{Path: path, Reason: BoundaryNestedGit})
 				return filepath.SkipDir
 			}
-			return nil
-		}
-		if _, alreadyTracked := tracked[path]; alreadyTracked {
 			return nil
 		}
 		denied, policyErr := deniedPath(pathPolicy, path, false)
