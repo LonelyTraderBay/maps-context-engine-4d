@@ -1,0 +1,58 @@
+{
+  "destinations": {
+    "repo": "volume-c",
+    "temp": "volume-c",
+    "cache": "volume-d"
+  },
+  "volumes": {
+    "volume-c": {
+      "measured": true,
+      "available_bytes": 400,
+      "block_threshold_bytes": 400,
+      "warning_threshold_bytes": 500,
+      "safety_reserve_bytes": 100,
+      "new_job_peak_remaining_bytes": 200,
+      "other_jobs": [
+        { "peak_bytes": 300, "already_written_bytes": 200 }
+      ]
+    },
+    "volume-d": {
+      "measured": true,
+      "available_bytes": 800,
+      "block_threshold_bytes": 200,
+      "warning_threshold_bytes": 850,
+      "safety_reserve_bytes": 100,
+      "new_job_peak_remaining_bytes": 700,
+      "other_jobs": []
+    }
+  },
+  "cleanup_fresh": {
+    "path_kind": "fresh_synthetic_repo_copy",
+    "authority_ref": "TEARDOWN-FIXTURE-01",
+    "same_run": true,
+    "baseline_absent": true,
+    "reconstructible": true,
+    "exact_candidate_listed": true,
+    "owner_verified": true,
+    "contained": true,
+    "no_links_or_reparse_points": true,
+    "writers_stopped": true,
+    "evidence_retained": true,
+    "not_deliverable": true
+  },
+  "evidence": {
+    "command_ref": "commands/go-test.json",
+    "subject_sha": "0123456789abcdef0123456789abcdef01234567",
+    "task_id": "T107",
+    "task_revision": 1,
+    "delivery_id": "cdad7e47-cad0-4327-a984-0393aa41f84a",
+    "fingerprints": {
+      "source": "sha256:source-a",
+      "config": "sha256:config-a",
+      "fixture": "sha256:fixture-a"
+    },
+    "result": "PASS",
+    "execution_verified": true,
+    "log_refs": ["local-checks/go-test.txt"]
+  }
+}

@@ -34,6 +34,24 @@ from tools.spec_check.spec import validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
 from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _closing_commit_snapshot, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
+from tools.spec_check.t107_contract_fixtures import (
+    FixtureContractError,
+    cleanup_disposition,
+    concurrency_decision,
+    config_cas_decision,
+    continuation_decision,
+    evidence_applicable,
+    finalize_command,
+    group_destinations,
+    measure_serialized_payload,
+    mode_ack_decision,
+    preflight_volumes,
+    preview_status,
+    remaining_reservation,
+    select_delivery_mode,
+    validate_command_contract,
+    validate_dry_run,
+)
 
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
@@ -109,6 +127,215 @@ class SpecContractTests(unittest.TestCase):
         changed = SPEC_TEXT.replace("final_user_acceptance: once_after_engineering_complete", "final_engineering_status: ENGINEERING_COMPLETE_AWAITING_USER_ACCEPTANCE\n  final_user_acceptance: once_after_engineering_complete", 1)
         errors = validate_spec_text(changed)
         self.assertTrue(any("S22 claim hoàn tất" in error for error in errors))
+
+
+class T107ContractFixtureTests(unittest.TestCase):
+    def setUp(self) -> None:
+        fixture_path = ROOT / "testdata" / "fixtures" / "contracts" / "t107" / "run-contracts.json"
+        self.fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+
+    def test_mcp_dual_payload_counts_repeated_text_and_structured_bytes(self) -> None:
+        mode = select_delivery_mode(None, host_version_verified=False)
+        self.assertEqual("mcp_dual", mode)
+        text = "ຂໍ້ມູນ😀" * 30
+        structured = {"required_evidence": ["keep-this"], "status": "partial"}
+
+        def build(byte_count: int) -> bytes:
+            value = {
+                "content": [{"type": "text", "text": json.dumps(structured, ensure_ascii=False, separators=(",", ":"))}],
+                "structuredContent": structured,
+                "budget": {"serialized_bytes": byte_count, "token_count": None, "tokenizer_id": None},
+                "note": text,
+            }
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+        raw, measured = measure_serialized_payload(build, max_bytes=4096)
+        self.assertEqual(len(raw), measured)
+        self.assertEqual(measured, json.loads(raw)["budget"]["serialized_bytes"])
+        self.assertIn(b"keep-this", raw)
+        self.assertIn("ຂໍ້ມູນ😀".encode("utf-8"), raw)
+        self.assertEqual(measured, measure_serialized_payload(build, max_bytes=measured)[1])
+
+    def test_mcp_modes_require_verified_host_and_never_silently_shrink(self) -> None:
+        self.assertEqual("mcp_text", select_delivery_mode("mcp_text", host_version_verified=False))
+        self.assertEqual(
+            "mcp_structured_verified",
+            select_delivery_mode("mcp_structured_verified", host_version_verified=True),
+        )
+        with self.assertRaises(FixtureContractError):
+            select_delivery_mode("mcp_structured_verified", host_version_verified=False)
+        source = {"required_evidence": ["do-not-drop"]}
+        before = copy.deepcopy(source)
+
+        def oversized(_: int) -> bytes:
+            return json.dumps({"structuredContent": source, "content": [{"text": "x" * 200}]}, separators=(",", ":")).encode()
+
+        with self.assertRaises(FixtureContractError):
+            measure_serialized_payload(oversized, max_bytes=64)
+        self.assertEqual(before, source)
+
+    def test_mcp_measurement_rejects_invalid_json_and_nonconvergence(self) -> None:
+        with self.assertRaises(FixtureContractError):
+            measure_serialized_payload(lambda _: b"not-json", max_bytes=100)
+        with self.assertRaises(FixtureContractError):
+            measure_serialized_payload(lambda count: (b"10" if count == 1 else b"1"), max_bytes=100, max_iterations=2)
+
+    def test_destinations_are_grouped_by_observed_volume_and_remaining_only(self) -> None:
+        expected_grouping = {"volume-c": ("repo", "temp"), "volume-d": ("cache",)}
+        self.assertEqual(expected_grouping, group_destinations(self.fixture["destinations"]))
+        self.assertEqual(100, remaining_reservation(300, 200))
+        self.assertEqual(0, remaining_reservation(10, 12))
+        result = preflight_volumes(self.fixture["destinations"], self.fixture["volumes"])
+        self.assertEqual([100], result["volume-c"]["remaining_other_job_reservations"])
+        self.assertEqual(400, result["volume-c"]["required_bytes"])
+        self.assertTrue(result["volume-c"]["admitted"])
+        self.assertTrue(result["volume-c"]["warning"])
+        self.assertEqual(["repo", "temp"], result["volume-c"]["destination_ids"])
+
+    def test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements(self) -> None:
+        observations = copy.deepcopy(self.fixture["volumes"])
+        observations["volume-c"]["available_bytes"] = 399
+        self.assertFalse(preflight_volumes(self.fixture["destinations"], observations)["volume-c"]["admitted"])
+        for mutation in (
+            lambda row: row.update(available_bytes=-1),
+            lambda row: row.update(measured=False),
+            lambda row: row.update(warning_threshold_bytes=399),
+            lambda row: row.update(new_job_peak_remaining_bytes=9_007_199_254_740_991),
+        ):
+            changed = copy.deepcopy(self.fixture["volumes"])
+            mutation(changed["volume-c"])
+            with self.assertRaises(FixtureContractError):
+                preflight_volumes(self.fixture["destinations"], changed)
+        with self.assertRaises(FixtureContractError):
+            preflight_volumes({"repo": "unobserved-volume"}, self.fixture["volumes"])
+
+    def test_concurrency_is_limited_to_shared_outputs_not_a_global_lock(self) -> None:
+        self.assertEqual("SERIALIZE_SHARED_RESOURCE", concurrency_decision(["out-a"], ["out-a"]))
+        self.assertEqual("PARALLEL_ISOLATED_OUTPUTS", concurrency_decision(["out-b"], ["out-a"]))
+        self.assertEqual("UNKNOWN_WRITERS", concurrency_decision(["out-b"], None))
+
+    def test_command_contract_checks_actual_argv_and_side_effect_metadata(self) -> None:
+        command = {
+            "command_id": "run-1", "executable": "tool.exe", "argv": ["tool.exe", "--write"],
+            "cwd": "C:/fixture", "tool_versions": {"tool.exe": "1.2.3"},
+            "command_source_ref": "S51/RUN-02", "expected_writes": ["out"],
+            "temporary_roots": [], "cache_roots": [], "log_roots": [], "download_roots": [],
+            "network_scope": "none", "child_processes": [], "side_effect_class": "durable_write",
+            "permission_ref": "fixture-authority", "dry_run": True, "run_id": "run-1",
+        }
+        self.assertTrue(any("dry-run label conflicts" in error for error in validate_command_contract(command)))
+        command["dry_run"] = False
+        self.assertEqual([], validate_command_contract(command))
+        command["argv"] = ["tool.exe", "<workspace>"]
+        self.assertTrue(any("placeholder" in error for error in validate_command_contract(command)))
+        command["argv"] = ["different.exe"]
+        self.assertTrue(any("argv[0]" in error for error in validate_command_contract(command)))
+
+    def test_dry_run_is_report_only_and_does_not_allocate_or_run(self) -> None:
+        report = {
+            "workload_executed": False, "run_record_created": False, "filesystem_mutated": False,
+            "network_called": False, "installed_or_repaired": False,
+            "candidate_inventory_read_only": True, "report_channel": "stdout",
+        }
+        self.assertEqual([], validate_dry_run(report))
+        report["run_record_created"] = True
+        self.assertTrue(validate_dry_run(report))
+
+    def test_finalization_preserves_primary_command_error_and_cleanup_error(self) -> None:
+        failed = finalize_command(
+            command_exit_status=7, termination_reason=None, writers_stopped=True,
+            cleanup_required=True, cleanup_status="FAILED",
+        )
+        self.assertEqual(7, failed["command_exit_status"])
+        self.assertEqual("FAILED", failed["command_result"])
+        self.assertEqual("FAILED", failed["final_status"])
+        success_cleanup_failure = finalize_command(
+            command_exit_status=0, termination_reason=None, writers_stopped=True,
+            cleanup_required=True, cleanup_status="FAILED",
+        )
+        self.assertEqual(0, success_cleanup_failure["command_exit_status"])
+        self.assertEqual("FAILED", success_cleanup_failure["final_status"])
+        with_writers = finalize_command(
+            command_exit_status=0, termination_reason=None, writers_stopped=False,
+            cleanup_required=True, cleanup_status="SUCCEEDED",
+        )
+        self.assertEqual("NOT_STARTED", with_writers["cleanup_status"])
+        self.assertEqual("FINALIZATION_PENDING", with_writers["final_status"])
+
+    def test_cancellation_and_crash_do_not_invent_exit_status(self) -> None:
+        cancelled = finalize_command(
+            command_exit_status=None, termination_reason="cancelled", writers_stopped=True,
+            cleanup_required=False, cleanup_status="NOT_REQUIRED",
+        )
+        self.assertIsNone(cancelled["command_exit_status"])
+        self.assertEqual("CANCELLED", cancelled["final_status"])
+        crashed = finalize_command(
+            command_exit_status=None, termination_reason="process_lost", writers_stopped=True,
+            cleanup_required=True, cleanup_status="UNKNOWN",
+        )
+        self.assertIsNone(crashed["command_exit_status"])
+        self.assertEqual("UNKNOWN", crashed["final_status"])
+
+    def test_fresh_synthetic_cleanup_requires_every_ownership_gate(self) -> None:
+        candidate = self.fixture["cleanup_fresh"]
+        self.assertEqual("ALLOW_FRESH_SYNTHETIC_FIXTURE_ONLY", cleanup_disposition(candidate))
+        for key, value in (("baseline_absent", False), ("contained", False), ("writers_stopped", False), ("evidence_retained", False)):
+            changed = {**candidate, key: value}
+            self.assertEqual("REFUSE_INCOMPLETE_OWNERSHIP_PROOF", cleanup_disposition(changed))
+        for path_kind in ("source", "golden", "actual_records", "archive", "crash_leftover", "other_run", "linked_path"):
+            changed = {**candidate, "path_kind": path_kind}
+            self.assertEqual("REFUSE_PROTECTED_OR_UNSUPPORTED_KIND", cleanup_disposition(changed))
+        changed = {**candidate, "crash_leftover": True}
+        self.assertEqual("REFUSE_STALE_OR_OTHER_RUN", cleanup_disposition(changed))
+
+    def test_reused_evidence_requires_exact_subject_and_complete_fingerprints(self) -> None:
+        evidence = self.fixture["evidence"]
+        expected = {key: evidence[key] for key in ("command_ref", "subject_sha", "task_id", "task_revision", "delivery_id", "fingerprints")}
+        self.assertTrue(evidence_applicable(evidence, expected))
+        for key, value in (("subject_sha", "f" * 40), ("result", "NOT_RUN"), ("execution_verified", False), ("log_refs", [])):
+            changed = {**evidence, key: value}
+            self.assertFalse(evidence_applicable(changed, expected))
+        changed_expected = {**expected, "task_revision": True}
+        self.assertFalse(evidence_applicable(evidence, changed_expected))
+
+    def test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness(self) -> None:
+        state = {"server_state": "bound", "revision": 4, "permission_epoch": 2, "session_expiry": "fixed"}
+        before = copy.deepcopy(state)
+        server_only = preview_status(state, permission_valid=True, sdk_live=False)
+        self.assertFalse(server_only["ready"])
+        self.assertTrue(server_only["shielded"])
+        self.assertEqual(before, state)
+        sdk_live = preview_status(state, permission_valid=True, sdk_live=True)
+        self.assertTrue(sdk_live["ready"])
+        self.assertEqual(before, sdk_live["state"])
+
+    def test_preview_ack_requires_current_identity_permission_and_liveness(self) -> None:
+        expected = {"session_id": "s1", "build_id": "b1", "doc_epoch": 3, "hmr_epoch": 2,
+                    "command_id": "c1", "auth_epoch": 8, "origin_valid": True, "deadline_passed": False}
+        ack = {key: expected[key] for key in ("session_id", "build_id", "doc_epoch", "hmr_epoch", "command_id", "auth_epoch")}
+        self.assertEqual("ALLOW_BOUND_ACK_ONLY", mode_ack_decision(expected, ack, permission_valid=True, sdk_live=True))
+        for key, value in (("session_id", "old"), ("hmr_epoch", 1), ("command_id", "replay"), ("auth_epoch", 7)):
+            changed = {**ack, key: value}
+            self.assertEqual("KEEP_SHIELDED_DISARM", mode_ack_decision(expected, changed, permission_valid=True, sdk_live=True))
+        self.assertEqual("KEEP_SHIELDED_DISARM", mode_ack_decision(expected, ack, permission_valid=False, sdk_live=True))
+        self.assertEqual("KEEP_SHIELDED_DISARM", mode_ack_decision(expected, ack, permission_valid=True, sdk_live=False))
+
+    def test_continuation_keeps_exact_vector_and_never_recomputes_expired_result(self) -> None:
+        scope = {"vector_digest": "v1", "binding_revision": 9, "request_hash": "q1", "order_version": 1}
+        self.assertEqual("CONTINUE_PINNED_RESULT", continuation_decision(scope, dict(scope), expired=False, spool_available=True))
+        self.assertEqual("SNAPSHOT_EXPIRED", continuation_decision(scope, dict(scope), expired=True, spool_available=True))
+        self.assertEqual("RESULT_EXPIRED", continuation_decision(scope, dict(scope), expired=False, spool_available=False))
+        changed = {**scope, "vector_digest": "v2"}
+        self.assertEqual("SCOPE_OR_REQUEST_CHANGED", continuation_decision(scope, changed, expired=False, spool_available=True))
+        self.assertEqual("SCOPE_OR_REQUEST_CHANGED", continuation_decision({"limit": 20}, {"limit": 20.0}, expired=False, spool_available=True))
+
+    def test_runtime_config_validation_and_cas_are_separate_whole_replace_steps(self) -> None:
+        self.assertEqual("VALIDATED_NO_WRITE", config_cas_decision(expected_revision=4, current_revision=4, candidate_valid=True, validate_only=True))
+        self.assertEqual("CONFIG_CONFLICT_NO_WRITE", config_cas_decision(expected_revision=3, current_revision=4, candidate_valid=True, validate_only=False))
+        self.assertEqual("CAS_REPLACE_WHOLE_CONFIG", config_cas_decision(expected_revision=4, current_revision=4, candidate_valid=True, validate_only=False))
+        self.assertEqual("REJECT_INVALID_NO_WRITE", config_cas_decision(expected_revision=4, current_revision=4, candidate_valid=False, validate_only=False))
+        with self.assertRaises(FixtureContractError):
+            config_cas_decision(expected_revision=True, current_revision=4, candidate_valid=True, validate_only=False)
 
 
 class ContractArtifactParityTests(unittest.TestCase):
