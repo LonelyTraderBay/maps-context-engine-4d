@@ -20,7 +20,8 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join(filepath.Dir(sourceFile), "..", ".."))
 	allowed := map[string]map[string]bool{
-		"internal/model": {},
+		"internal/model":           {},
+		"internal/analysis/golang": {modulePath + "/internal/model": true},
 		"internal/catalog": {
 			modulePath + "/internal/model":  true,
 			modulePath + "/internal/policy": true,
