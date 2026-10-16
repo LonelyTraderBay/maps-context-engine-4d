@@ -186,6 +186,30 @@ def _parse_links(value: str | None) -> dict[str, str]:
     return result
 
 
+def _closing_commit_snapshot(commit_body: dict[str, Any], *, expected_sha: str, payload_sha: str) -> dict[str, Any]:
+    parents = commit_body.get("parents")
+    commit_detail = commit_body.get("commit")
+    files = commit_body.get("files")
+    message = commit_detail.get("message") if isinstance(commit_detail, dict) else None
+    if (commit_body.get("sha") != expected_sha
+            or not isinstance(parents, list) or len(parents) != 1 or not isinstance(parents[0], dict)
+            or parents[0].get("sha") != payload_sha
+            or not isinstance(message, str)
+            or not isinstance(files, list) or len(files) >= 300
+            or any(not isinstance(item, dict) or not isinstance(item.get("filename"), str) for item in files)):
+        raise GitHubObserverError("fresh closing commit source thiếu exact parent/message/file graph")
+    message_lines = message.splitlines()
+    return {
+        "kind": "git_commit_snapshot", "sha": expected_sha,
+        "parents": [item["sha"] for item in parents],
+        "subject": message_lines[0] if message_lines else "",
+        # GitCommitSnapshot.body retains the complete `%B` message, matching
+        # the local Git snapshot and the GitHub REST `commit.message` field.
+        "body": message,
+        "changed_paths": sorted(item["filename"] for item in files),
+    }
+
+
 class GitHubApiClient:
     """Small bounded GitHub REST reader; never exposes its credential to evidence."""
 
@@ -951,23 +975,10 @@ def verify_live_delivery(
     commit_body = commit_source["body"]
     if not isinstance(commit_body, dict) or commit_body.get("sha") != expected_sha:
         raise GitHubObserverError("fresh GitHub commit source không khớp closing C")
-    parents = commit_body.get("parents")
-    commit_detail = commit_body.get("commit")
-    files = commit_body.get("files")
-    if (not isinstance(parents, list) or len(parents) != 1 or not isinstance(parents[0], dict)
-            or parents[0].get("sha") != archive.get("verified_payload_sha")
-            or not isinstance(commit_detail, dict) or not isinstance(commit_detail.get("message"), str)
-            or not isinstance(files, list) or len(files) >= 300
-            or any(not isinstance(item, dict) or not isinstance(item.get("filename"), str) for item in files)):
-        raise GitHubObserverError("fresh closing commit source thiếu exact parent/message/file graph")
-    message_lines = commit_detail["message"].splitlines()
-    actual_snapshot = {
-        "kind": "git_commit_snapshot", "sha": expected_sha,
-        "parents": [item["sha"] for item in parents],
-        "subject": message_lines[0] if message_lines else "",
-        "body": "\n".join(message_lines[1:]).lstrip("\n"),
-        "changed_paths": sorted(item["filename"] for item in files),
-    }
+    actual_snapshot = _closing_commit_snapshot(
+        commit_body, expected_sha=expected_sha,
+        payload_sha=archive.get("verified_payload_sha"),
+    )
     archived_git_ref = closing_commit.get("git_evidence_ref")
     archived_git = raw_members.get(archived_git_ref) if isinstance(archived_git_ref, str) else None
     if (not isinstance(archived_git, dict)

@@ -33,7 +33,7 @@ from tools.spec_check.semantics import _canonical, validate_delivery_links, vali
 from tools.spec_check.spec import validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
-from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
+from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _closing_commit_snapshot, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
 
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
@@ -1676,6 +1676,20 @@ class GitHubObserverTests(unittest.TestCase):
     def _response(payload: object) -> tuple[dict[str, str], bytes, object, str, str]:
         body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return {}, body, payload, "2026-10-16T00:00:00Z", "2026-10-16T00:00:01Z"
+
+    def test_closing_commit_snapshot_preserves_full_git_message(self) -> None:
+        payload_sha = "a" * 40
+        closing_sha = "b" * 40
+        message = "docs(progress): Đóng task\n\nNội dung và trailer đầy đủ"
+        snapshot = _closing_commit_snapshot({
+            "sha": closing_sha,
+            "parents": [{"sha": payload_sha}],
+            "commit": {"message": message},
+            "files": [{"filename": "Maps-Context-Engine-4D_SPEC.md"}],
+        }, expected_sha=closing_sha, payload_sha=payload_sha)
+
+        self.assertEqual("docs(progress): Đóng task", snapshot["subject"])
+        self.assertEqual(message, snapshot["body"])
 
     def test_current_tracker_reader_rejects_malformed_row_without_index_error(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-live-tracker-") as temp:
