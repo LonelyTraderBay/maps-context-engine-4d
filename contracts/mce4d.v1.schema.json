@@ -1,0 +1,7647 @@
+{
+  "$defs": {
+    "AdmissionOwnedPath": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Path"
+        },
+        {
+          "maxLength": 256
+        }
+      ]
+    },
+    "AnchorEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "kind": {
+          "enum": [
+            "element_site",
+            "component_definition",
+            "component_render_site",
+            "event_binding_site"
+          ]
+        },
+        "owner_anchor_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "kind",
+        "path",
+        "content_hash",
+        "range",
+        "owner_anchor_id"
+      ],
+      "type": "object"
+    },
+    "AnchorRef": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "kind": {
+          "const": "source_anchor"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "kind",
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "build_map_id",
+        "anchor_id",
+        "binding_id"
+      ],
+      "type": "object"
+    },
+    "BootstrapData": {
+      "additionalProperties": false,
+      "properties": {
+        "bearer": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/ID"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "operation": {
+          "const": "bootstrap"
+        }
+      },
+      "required": [
+        "operation",
+        "bearer",
+        "expires_at",
+        "capabilities"
+      ],
+      "type": "object"
+    },
+    "BootstrapRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "type": "object"
+    },
+    "BridgeMessage": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Bridge_CHALLENGE"
+        },
+        {
+          "$ref": "#/$defs/Bridge_READY"
+        },
+        {
+          "$ref": "#/$defs/Bridge_BOUND"
+        },
+        {
+          "$ref": "#/$defs/Bridge_BOUND_ACK"
+        },
+        {
+          "$ref": "#/$defs/Bridge_PICK_AT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_PICK_RESULT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_LIST_INSTANCES"
+        },
+        {
+          "$ref": "#/$defs/Bridge_INSTANCES"
+        },
+        {
+          "$ref": "#/$defs/Bridge_HIGHLIGHT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_HIGHLIGHT_RESULT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_CLEAR_HIGHLIGHT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_REQUEST_SCROLL"
+        },
+        {
+          "$ref": "#/$defs/Bridge_SCROLL_RESULT"
+        },
+        {
+          "$ref": "#/$defs/Bridge_SET_MODE"
+        },
+        {
+          "$ref": "#/$defs/Bridge_MODE_ACK"
+        },
+        {
+          "$ref": "#/$defs/Bridge_BUILD_CHANGED"
+        },
+        {
+          "$ref": "#/$defs/Bridge_INSTANCE_INVALIDATED"
+        },
+        {
+          "$ref": "#/$defs/Bridge_CAPABILITY_STATUS"
+        },
+        {
+          "$ref": "#/$defs/Bridge_ERROR"
+        },
+        {
+          "$ref": "#/$defs/Bridge_DISPOSE"
+        },
+        {
+          "$ref": "#/$defs/Bridge_DISPOSED"
+        },
+        {
+          "$ref": "#/$defs/Bridge_PING"
+        },
+        {
+          "$ref": "#/$defs/Bridge_PONG"
+        }
+      ]
+    },
+    "Bridge_BOUND": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "authorization_epoch": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "build_map_id": {
+              "$ref": "#/$defs/Hash"
+            }
+          },
+          "required": [
+            "build_map_id",
+            "authorization_epoch"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "BOUND"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_BOUND_ACK": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "authorization_epoch": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "build_map_id": {
+              "$ref": "#/$defs/Hash"
+            }
+          },
+          "required": [
+            "build_map_id",
+            "authorization_epoch"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "BOUND_ACK"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_BUILD_CHANGED": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "build_map_id": {
+              "$ref": "#/$defs/Hash"
+            },
+            "new_hmr_epoch": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "build_map_id",
+            "new_hmr_epoch"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "BUILD_CHANGED"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_CAPABILITY_STATUS": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "capabilities": {
+              "items": {
+                "$ref": "#/$defs/ID"
+              },
+              "maxItems": 64,
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "required": [
+            "capabilities"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "CAPABILITY_STATUS"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_CHALLENGE": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "approved_origin": {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            "nonce": {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "nonce",
+            "approved_origin"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "CHALLENGE"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_CLEAR_HIGHLIGHT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "CLEAR_HIGHLIGHT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_DISPOSE": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "DISPOSE"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_DISPOSED": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "DISPOSED"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_ERROR": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/ID"
+            },
+            "reason": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "ERROR"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_HIGHLIGHT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "instance_refs": {
+              "items": {
+                "$ref": "#/$defs/InstanceRef"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "required": [
+            "instance_refs"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "HIGHLIGHT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_HIGHLIGHT_RESULT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "matched": {
+              "items": {
+                "$ref": "#/$defs/InstanceRef"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            },
+            "unavailable": {
+              "items": {
+                "$ref": "#/$defs/InstanceRef"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "required": [
+            "matched",
+            "unavailable"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "HIGHLIGHT_RESULT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_INSTANCES": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "anchor_ref": {
+                    "$ref": "#/$defs/DOMAnchorRef"
+                  },
+                  "instance_ref": {
+                    "$ref": "#/$defs/InstanceRef"
+                  },
+                  "rects": {
+                    "items": {
+                      "$ref": "#/$defs/Rect"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "visibility": {
+                    "enum": [
+                      "visible",
+                      "mounted_offscreen",
+                      "hidden",
+                      "not_rendered",
+                      "detached",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "instance_ref",
+                  "anchor_ref",
+                  "visibility",
+                  "rects"
+                ],
+                "type": "object"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            },
+            "next_cursor": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pending": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "items",
+            "next_cursor",
+            "pending"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "INSTANCES"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_INSTANCE_INVALIDATED": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "instance_refs": {
+              "items": {
+                "$ref": "#/$defs/InstanceRef"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "required": [
+            "instance_refs"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "INSTANCE_INVALIDATED"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_LIST_INSTANCES": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "anchor_refs": {
+              "items": {
+                "$ref": "#/$defs/DOMAnchorRef"
+              },
+              "maxItems": 100,
+              "minItems": 0,
+              "type": "array"
+            },
+            "cursor": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "limit": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "anchor_refs",
+            "limit",
+            "cursor"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "LIST_INSTANCES"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_MODE_ACK": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "accepted": {
+              "type": "boolean"
+            },
+            "authorization_epoch": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "command_id": {
+              "$ref": "#/$defs/UUID"
+            },
+            "mode": {
+              "enum": [
+                "inspect",
+                "interact"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "authorization_epoch",
+            "command_id",
+            "accepted"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "MODE_ACK"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_PICK_AT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "selection_kind": {
+              "enum": [
+                "element",
+                "component"
+              ]
+            },
+            "x_css": {
+              "type": "number"
+            },
+            "y_css": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x_css",
+            "y_css",
+            "selection_kind"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "PICK_AT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_PICK_RESULT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "exact_in_supported_scope",
+                "ancestor_fallback",
+                "unmapped",
+                "unsupported"
+              ]
+            },
+            "targets": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "anchor_ref": {
+                    "$ref": "#/$defs/DOMAnchorRef"
+                  },
+                  "instance_ref": {
+                    "$ref": "#/$defs/InstanceRef"
+                  },
+                  "parent_instance_ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/InstanceRef"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "rects": {
+                    "items": {
+                      "$ref": "#/$defs/Rect"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "instance_ref",
+                  "anchor_ref",
+                  "rects",
+                  "parent_instance_ref"
+                ],
+                "type": "object"
+              },
+              "maxItems": 32,
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "required": [
+            "targets",
+            "status"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "PICK_RESULT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_PING": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "probe_id": {
+              "$ref": "#/$defs/UUID"
+            }
+          },
+          "required": [
+            "probe_id"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "PING"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_PONG": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "probe_id": {
+              "$ref": "#/$defs/UUID"
+            }
+          },
+          "required": [
+            "probe_id"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "PONG"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_READY": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "build_map_id": {
+              "$ref": "#/$defs/Hash"
+            },
+            "capabilities": {
+              "items": {
+                "$ref": "#/$defs/ID"
+              },
+              "maxItems": 64,
+              "minItems": 0,
+              "type": "array"
+            },
+            "nonce": {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "nonce",
+            "build_map_id",
+            "capabilities"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "READY"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_REQUEST_SCROLL": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "instance_ref": {
+              "$ref": "#/$defs/InstanceRef"
+            }
+          },
+          "required": [
+            "instance_ref"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "REQUEST_SCROLL"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_SCROLL_RESULT": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "done",
+                "not_permitted",
+                "not_rendered"
+              ]
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "SCROLL_RESULT"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Bridge_SET_MODE": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "authorization_epoch": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "command_id": {
+              "$ref": "#/$defs/UUID"
+            },
+            "mode": {
+              "enum": [
+                "inspect",
+                "interact"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "authorization_epoch",
+            "command_id"
+          ],
+          "type": "object"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "type": {
+          "const": "SET_MODE"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "message_id",
+        "reply_to",
+        "selection_id",
+        "seq",
+        "type",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "Budget": {
+      "additionalProperties": false,
+      "properties": {
+        "delivery_mode": {
+          "enum": [
+            "http",
+            "cli",
+            "mcp_text",
+            "mcp_dual",
+            "mcp_structured_verified"
+          ]
+        },
+        "estimate_only": {
+          "type": "boolean"
+        },
+        "max_output_bytes": {
+          "maximum": 1048576,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "serialized_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "token_count": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "token_estimate": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tokenizer_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "max_output_bytes",
+        "serialized_bytes",
+        "token_count",
+        "token_estimate",
+        "tokenizer_id",
+        "estimate_only",
+        "delivery_mode"
+      ],
+      "type": "object"
+    },
+    "BuildManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "anchors": {
+          "items": {
+            "$ref": "#/$defs/AnchorEntry"
+          },
+          "maxItems": 100000,
+          "minItems": 0,
+          "type": "array"
+        },
+        "build_config_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "input_manifest_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "mode": {
+          "enum": [
+            "development",
+            "test"
+          ]
+        },
+        "module_coverage": {
+          "enum": [
+            "all_declared_modules",
+            "loaded_modules_only",
+            "partial"
+          ]
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/ManifestSource"
+          },
+          "maxItems": 100000,
+          "minItems": 0,
+          "type": "array"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "schema_version",
+        "worktree_id",
+        "profile_id",
+        "build_map_id",
+        "provider_version",
+        "build_config_digest",
+        "input_manifest_digest",
+        "mode",
+        "module_coverage",
+        "sources",
+        "anchors",
+        "provider_digest"
+      ],
+      "type": "object"
+    },
+    "ByteRange": {
+      "additionalProperties": false,
+      "properties": {
+        "end_byte": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "start_byte": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_byte",
+        "end_byte"
+      ],
+      "type": "object"
+    },
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "name": {
+          "maxLength": 512,
+          "minLength": 0,
+          "type": "string"
+        },
+        "qualified_name": {
+          "maxLength": 2048,
+          "minLength": 0,
+          "type": "string"
+        },
+        "ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "name",
+        "qualified_name",
+        "source_refs",
+        "evidence_refs"
+      ],
+      "type": "object"
+    },
+    "Capability": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/ID"
+        },
+        "provider_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "provider_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "supported_scope_complete",
+            "partial",
+            "unsupported",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "provider_id",
+        "provider_version",
+        "status"
+      ],
+      "type": "object"
+    },
+    "CaptureManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_input_digests": {
+          "items": {
+            "$ref": "#/$defs/Hash"
+          },
+          "maxItems": 1000000,
+          "minItems": 0,
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/ManifestFile"
+          },
+          "maxItems": 1000000,
+          "minItems": 0,
+          "type": "array"
+        },
+        "policy_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "snapshot_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "schema_version",
+        "worktree_id",
+        "profile_id",
+        "policy_digest",
+        "provider_digest",
+        "files",
+        "dependency_input_digests",
+        "snapshot_digest"
+      ],
+      "type": "object"
+    },
+    "CoreRuntimeLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "full_reconcile_interval_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "index_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "keep_generations": {
+          "maximum": 128,
+          "minimum": 2,
+          "type": "integer"
+        },
+        "log_file_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "log_files": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "lsp_startup_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "maintenance_wait_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_capture_manifest_bytes": {
+          "maximum": 34359738368,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_file_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_graph_depth": {
+          "maximum": 8,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "max_graph_edges": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_graph_nodes": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_indexed_files": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_lsp_sessions": {
+          "maximum": 8,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "max_parallel_index_jobs": {
+          "maximum": 16,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_parse_workers": {
+          "maximum": 64,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "max_retained_query_results": {
+          "maximum": 32,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_source_bytes_per_snapshot": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_worktree_cache_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pack_ttl_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "process_tree_rss_budget_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "query_result_cache_bytes": {
+          "maximum": 33554432,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "query_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rename_max_edits": {
+          "maximum": 10000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rename_result_max_bytes": {
+          "maximum": 33554432,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rename_result_ttl_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rename_results_max_bytes": {
+          "maximum": 134217728,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rename_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "resource_monitor_interval_ms": {
+          "maximum": 5000,
+          "minimum": 10,
+          "type": "integer"
+        },
+        "result_ttl_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sqlite_busy_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "volume_reserve_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "volume_warning_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "watch_poll_interval_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "writer_lock_wait_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "Count": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "Coverage": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "gaps": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        },
+        "scope_description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "supported_scope_complete",
+            "partial",
+            "unsupported",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "capabilities",
+        "gaps",
+        "scope_description"
+      ],
+      "type": "object"
+    },
+    "DOMAnchorRef": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "build_map_id",
+        "anchor_id"
+      ],
+      "type": "object"
+    },
+    "DiagnosticFact": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ID"
+        },
+        "diagnostic_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "message": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "package_key": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Path"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        }
+      },
+      "required": [
+        "diagnostic_id",
+        "path",
+        "package_key",
+        "code",
+        "severity",
+        "message",
+        "scope_description"
+      ],
+      "type": "object"
+    },
+    "DocumentSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "kind": {
+          "const": "document_anchor"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "content_hash",
+        "range"
+      ],
+      "type": "object"
+    },
+    "EffectiveProfile": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/GoProfile"
+        },
+        {
+          "$ref": "#/$defs/TSProfile"
+        }
+      ]
+    },
+    "EntityRef": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "kind": {
+          "const": "entity"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "kind",
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "entity_id"
+      ],
+      "type": "object"
+    },
+    "EntitySelector": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "kind": {
+          "const": "entity"
+        }
+      },
+      "required": [
+        "kind",
+        "entity_id"
+      ],
+      "type": "object"
+    },
+    "Error": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_ARGUMENT",
+            "UNSUPPORTED_SCHEMA",
+            "UNKNOWN_WORKTREE",
+            "ROOT_IDENTITY_CHANGED",
+            "ACCESS_DENIED",
+            "SECRET_BLOCKED",
+            "PATH_ESCAPE",
+            "INDEX_MISSING",
+            "INDEX_STALE",
+            "FRESHNESS_UNKNOWN",
+            "WORKTREE_CHANGED_DURING_INDEX",
+            "AMBIGUOUS_SYMBOL",
+            "UNSUPPORTED_CAPABILITY",
+            "DEPENDENCY_UNAVAILABLE",
+            "WORKTREE_BUSY",
+            "RESOURCE_LIMIT",
+            "TIMEOUT",
+            "CANCELLED",
+            "BUDGET_TOO_SMALL",
+            "CONTEXT_INCOMPLETE",
+            "CURSOR_INVALID",
+            "CURSOR_EXPIRED",
+            "SNAPSHOT_EXPIRED",
+            "POLICY_CHANGED",
+            "PROFILE_MISMATCH",
+            "SOURCE_PRECONDITION_FAILED",
+            "SCHEMA_TOO_NEW",
+            "INDEX_CORRUPT",
+            "DISK_FULL",
+            "INTERNAL_ERROR",
+            "PREVIEW_NOT_APPROVED",
+            "PREVIEW_UNAVAILABLE",
+            "PREVIEW_EMBED_BLOCKED",
+            "PREVIEW_ORIGIN_MISMATCH",
+            "PREVIEW_BUILD_MISMATCH",
+            "BRIDGE_NOT_READY",
+            "BRIDGE_PROTOCOL_MISMATCH",
+            "STALE_INSTANCE",
+            "AMBIGUOUS_UI_MAPPING",
+            "UI_TARGET_NOT_RENDERED",
+            "BUILD_MAP_MISSING",
+            "BUILD_MAP_EXPIRED",
+            "UNSUPPORTED_FRAMEWORK",
+            "TRACE_UNBOUND",
+            "INTERACTION_NOT_APPROVED",
+            "EXPLORER_ASSETS_UNAVAILABLE",
+            "RECORD_CONFLICT",
+            "RECORD_CHANGED",
+            "MODE_ACK_TIMEOUT",
+            "AUTH_REQUIRED",
+            "AUTH_EXPIRED",
+            "AUTH_INVALID",
+            "RATE_LIMITED",
+            "CONTRACT_NOT_FROZEN",
+            "UNEXPECTED_FIELD",
+            "DUPLICATE_FIELD",
+            "SOURCE_CAPTURE_MISMATCH",
+            "RESULT_TOO_LARGE",
+            "SOURCE_RANGE_INVALID",
+            "RESULT_EXPIRED",
+            "STORE_REPLACED",
+            "STORE_MAINTENANCE",
+            "CONFIG_CONFLICT",
+            "PERMISSION_REVOKED",
+            "PERMISSION_EXPIRED",
+            "STORE_RECOVERY_REQUIRED"
+          ]
+        },
+        "details": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "message": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "suggested_action": {
+          "enum": [
+            "fix_request",
+            "reauthenticate",
+            "register_scope",
+            "explicit_index",
+            "recreate_pack",
+            "expand",
+            "review_candidates",
+            "verify_dependency",
+            "retry_bounded",
+            "review_policy",
+            "recover_store",
+            "cancel",
+            "none"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "suggested_action",
+        "details"
+      ],
+      "type": "object"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "anyOf": [
+            {
+              "maxLength": 131072,
+              "minLength": 0,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "fragment_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "item_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "kind": {
+          "enum": [
+            "source_range",
+            "reference_catalog",
+            "constraint_excerpt",
+            "boundary",
+            "overview",
+            "validation_obligation",
+            "source_range_fragment"
+          ]
+        },
+        "limitations": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "required_for_review": {
+          "type": "boolean"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "why_included": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "item_id",
+        "kind",
+        "required_for_review",
+        "why_included",
+        "source_refs",
+        "content",
+        "evidence_refs",
+        "limitations",
+        "fragment_of"
+      ],
+      "type": "object"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "kind": {
+          "enum": [
+            "syntax_exact",
+            "type_resolved",
+            "type_possible",
+            "explicit_document",
+            "text_match",
+            "unresolved",
+            "build_anchored",
+            "runtime_observed",
+            "manual_declared",
+            "proposed"
+          ]
+        },
+        "origin": {
+          "enum": [
+            "static_analyzer",
+            "build_instrumentation",
+            "runtime_observation",
+            "manual_approved",
+            "ai_proposal"
+          ]
+        },
+        "record_ref": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "record_id": {
+                  "$ref": "#/$defs/UUID"
+                },
+                "version": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "record_id",
+                "version"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "origin",
+        "kind",
+        "source_refs",
+        "record_ref",
+        "artifact_id"
+      ],
+      "type": "object"
+    },
+    "ExpandRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "next_cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "pack_token": {
+          "$ref": "#/$defs/Token"
+        }
+      },
+      "required": [
+        "pack_token",
+        "next_cursor"
+      ],
+      "type": "object"
+    },
+    "ExplorerRuntimeLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "ack_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "bearer_ttl_seconds": {
+          "maximum": 1800,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "bridge_message_bytes": {
+          "maximum": 16384,
+          "minimum": 1024,
+          "type": "integer"
+        },
+        "detach_timeout_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "flow_max_edges": {
+          "maximum": 300,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "flow_max_steps": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "graph_default_edges": {
+          "maximum": 1500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "graph_default_nodes": {
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "graph_hard_edges": {
+          "maximum": 1500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "graph_hard_nodes": {
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hover_hz": {
+          "maximum": 15,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "map_artifact_max_bytes": {
+          "maximum": 67108864,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "map_pending_max": {
+          "maximum": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "map_watch_debounce_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "map_watch_poll_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_preview_sessions": {
+          "maximum": 16,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "poll_hidden_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "poll_miss_limit": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "poll_visible_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_ttl_seconds": {
+          "maximum": 1800,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "FileRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "kind": {
+          "const": "file"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "kind",
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "path",
+        "content_hash"
+      ],
+      "type": "object"
+    },
+    "FlowData": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/FlowEdge"
+          },
+          "maxItems": 300,
+          "minItems": 0,
+          "type": "array"
+        },
+        "mode": {
+          "enum": [
+            "static",
+            "observed"
+          ]
+        },
+        "operation": {
+          "const": "flow_query"
+        },
+        "projection_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "root_ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/FlowStep"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation",
+        "projection_id",
+        "root_ref",
+        "mode",
+        "steps",
+        "edges"
+      ],
+      "type": "object"
+    },
+    "FlowEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "condition_source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "edge_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "from_step_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "kind": {
+          "enum": [
+            "call",
+            "control",
+            "return",
+            "async",
+            "contract",
+            "transaction_link",
+            "candidate"
+          ]
+        },
+        "to_step_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "edge_id",
+        "from_step_id",
+        "to_step_id",
+        "kind",
+        "condition_source_ref",
+        "evidence_refs"
+      ],
+      "type": "object"
+    },
+    "FlowQueryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "edge_limit": {
+          "maximum": 300,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "static",
+            "observed"
+          ]
+        },
+        "root_ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "step_limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "root_ref"
+      ],
+      "type": "object"
+    },
+    "FlowStep": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_refs": {
+          "items": {
+            "$ref": "#/$defs/GraphRef"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "order_semantics": {
+          "enum": [
+            "source_sequence",
+            "control_flow_supported",
+            "call_relationship_only",
+            "causal_trace",
+            "unknown"
+          ]
+        },
+        "outcome_status": {
+          "enum": [
+            "declared_operation",
+            "statically_possible",
+            "attempt_observed",
+            "statement_success_observed",
+            "commit_observed",
+            "rollback_observed",
+            "outcome_unknown"
+          ]
+        },
+        "possible_or_observed": {
+          "enum": [
+            "statically_possible",
+            "observed"
+          ]
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "step_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "step_kind": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "step_id",
+        "canonical_refs",
+        "source_refs",
+        "step_kind",
+        "order_semantics",
+        "possible_or_observed",
+        "outcome_status",
+        "evidence_refs",
+        "limitations"
+      ],
+      "type": "object"
+    },
+    "Freshness": {
+      "additionalProperties": false,
+      "properties": {
+        "buffer_scope": {
+          "enum": [
+            "disk_only",
+            "editor_session"
+          ]
+        },
+        "changed_count": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "consistency": {
+          "enum": [
+            "captured_bytes_with_observed_stability",
+            "captured_buffer_version"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "workspace",
+            "returned_files",
+            "none"
+          ]
+        },
+        "source_view": {
+          "enum": [
+            "indexed_snapshot",
+            "editor_snapshot"
+          ]
+        },
+        "status": {
+          "enum": [
+            "observed_current",
+            "changed",
+            "unknown",
+            "not_checked"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "scope",
+        "checked_at",
+        "buffer_scope",
+        "consistency",
+        "changed_count",
+        "source_view"
+      ],
+      "type": "object"
+    },
+    "Gap": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ID"
+        },
+        "count": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "reason",
+        "count",
+        "source_refs"
+      ],
+      "type": "object"
+    },
+    "GoProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_mode": {
+          "enum": [
+            "syntax",
+            "typed_when_available"
+          ]
+        },
+        "build_tags": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "cgo_enabled": {
+          "type": "boolean"
+        },
+        "dependency_roots": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "goarch": {
+          "maxLength": 32,
+          "minLength": 1,
+          "type": "string"
+        },
+        "goos": {
+          "maxLength": 32,
+          "minLength": 1,
+          "type": "string"
+        },
+        "language": {
+          "const": "go"
+        },
+        "module_mode": {
+          "enum": [
+            "readonly",
+            "vendor_explicit"
+          ]
+        },
+        "module_roots": {
+          "items": {
+            "$ref": "#/$defs/Path"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array"
+        },
+        "provider_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "tests_enabled": {
+          "type": "boolean"
+        },
+        "toolchain_digest": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "schema_version",
+        "language",
+        "goos",
+        "goarch",
+        "build_tags",
+        "cgo_enabled",
+        "tests_enabled",
+        "module_roots",
+        "toolchain_digest",
+        "provider_digest",
+        "module_mode",
+        "analysis_mode",
+        "dependency_roots"
+      ],
+      "type": "object"
+    },
+    "GraphData": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/GraphEdge"
+          },
+          "maxItems": 1500,
+          "minItems": 0,
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          },
+          "maxItems": 500,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "graph_query"
+        },
+        "subgraph_digest": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "operation",
+        "nodes",
+        "edges",
+        "subgraph_digest"
+      ],
+      "type": "object"
+    },
+    "GraphEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "expand_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Token"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "from_node_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "relation_kind": {
+          "$ref": "#/$defs/ID"
+        },
+        "resolution_status": {
+          "enum": [
+            "exact_in_supported_scope",
+            "candidate",
+            "unresolved"
+          ]
+        },
+        "to_node_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "edge_id",
+        "from_node_id",
+        "to_node_id",
+        "relation_kind",
+        "resolution_status",
+        "evidence_refs",
+        "expand_ref"
+      ],
+      "type": "object"
+    },
+    "GraphNode": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "expandable_count": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "$ref": "#/$defs/ID"
+        },
+        "label": {
+          "maxLength": 512,
+          "minLength": 0,
+          "type": "string"
+        },
+        "node_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "plane": {
+          "enum": [
+            "intended",
+            "observed_static",
+            "observed_runtime",
+            "annotation"
+          ]
+        },
+        "ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "node_id",
+        "ref",
+        "kind",
+        "label",
+        "plane",
+        "evidence_refs",
+        "source_refs",
+        "expandable_count"
+      ],
+      "type": "object"
+    },
+    "GraphQueryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "depth": {
+          "maximum": 8,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "edge_limit": {
+          "maximum": 1500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "kinds": {
+          "items": {
+            "$ref": "#/$defs/ID"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "node_limit": {
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "root": {
+          "$ref": "#/$defs/Selector"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        }
+      },
+      "required": [
+        "root"
+      ],
+      "type": "object"
+    },
+    "GraphRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SymbolRef"
+        },
+        {
+          "$ref": "#/$defs/EntityRef"
+        },
+        {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        {
+          "$ref": "#/$defs/AnchorRef"
+        },
+        {
+          "$ref": "#/$defs/FileRef"
+        }
+      ]
+    },
+    "GroupAdminData": {
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/GroupSummary"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "group_admin"
+        }
+      },
+      "required": [
+        "operation",
+        "groups"
+      ],
+      "type": "object"
+    },
+    "GroupAdminRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "get",
+            "list",
+            "put",
+            "remove"
+          ]
+        },
+        "config": {
+          "$ref": "#/$defs/GroupConfig"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "group_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "GroupConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/GroupMemberConfig"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "group_id",
+        "name",
+        "members"
+      ],
+      "type": "object"
+    },
+    "GroupMemberConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/ServiceNamespace"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "service_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "service_id",
+        "worktree_id",
+        "profile_id",
+        "namespace"
+      ],
+      "type": "object"
+    },
+    "GroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "$ref": "#/$defs/GroupConfig"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "removed"
+          ]
+        }
+      },
+      "required": [
+        "config",
+        "revision",
+        "status"
+      ],
+      "type": "object"
+    },
+    "Hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "ID": {
+      "maxLength": 192,
+      "minLength": 1,
+      "type": "string"
+    },
+    "InstanceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "instance_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "document_epoch",
+        "hmr_epoch",
+        "instance_id"
+      ],
+      "type": "object"
+    },
+    "LocateData": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/Candidate"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "locate"
+        }
+      },
+      "required": [
+        "operation",
+        "candidates"
+      ],
+      "type": "object"
+    },
+    "LocateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "kinds": {
+          "items": {
+            "$ref": "#/$defs/ID"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "symbol",
+            "file",
+            "module",
+            "topic",
+            "text"
+          ]
+        },
+        "package": {
+          "maxLength": 512,
+          "minLength": 1,
+          "type": "string"
+        },
+        "position": {
+          "$ref": "#/$defs/PositionSelector"
+        },
+        "query": {
+          "maxLength": 512,
+          "minLength": 1,
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "ManifestFile": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "captured",
+            "metadata_only",
+            "excluded",
+            "missing",
+            "read_error"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "status",
+        "content_hash",
+        "byte_length",
+        "reason_code"
+      ],
+      "type": "object"
+    },
+    "ManifestSource": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        }
+      },
+      "required": [
+        "path",
+        "content_hash"
+      ],
+      "type": "object"
+    },
+    "MappingData": {
+      "additionalProperties": false,
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "mapping_status": {
+          "enum": [
+            "exact_in_supported_scope",
+            "candidate",
+            "ambiguous",
+            "ancestor_fallback",
+            "unmapped",
+            "stale",
+            "unsupported"
+          ]
+        },
+        "matches": {
+          "items": {
+            "$ref": "#/$defs/MappingMatch"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "mapping_resolve"
+        },
+        "requested_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/GraphRef"
+            },
+            {
+              "$ref": "#/$defs/DOMAnchorRef"
+            }
+          ]
+        },
+        "resolver_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "why_matched": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation",
+        "requested_ref",
+        "matches",
+        "build_map_id",
+        "binding_id",
+        "resolver_digest",
+        "mapping_status",
+        "why_matched"
+      ],
+      "type": "object"
+    },
+    "MappingMatch": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_ref": {
+          "$ref": "#/$defs/AnchorRef"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "mapping_status": {
+          "enum": [
+            "exact_in_supported_scope",
+            "candidate",
+            "ancestor_fallback",
+            "unmapped",
+            "unsupported"
+          ]
+        },
+        "match_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "target_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GraphRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "match_id",
+        "anchor_ref",
+        "target_ref",
+        "source_refs",
+        "mapping_status",
+        "evidence_refs"
+      ],
+      "type": "object"
+    },
+    "MappingProposeRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "client_mutation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "destination_ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "rationale": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/SourceRef"
+        }
+      },
+      "required": [
+        "source_ref",
+        "destination_ref",
+        "rationale",
+        "client_mutation_id"
+      ],
+      "type": "object"
+    },
+    "MappingResolveRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/GraphRef"
+            },
+            {
+              "$ref": "#/$defs/DOMAnchorRef"
+            }
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "build_map_id",
+        "document_epoch",
+        "hmr_epoch",
+        "ref"
+      ],
+      "type": "object"
+    },
+    "MappingReviewRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "approve",
+            "revoke",
+            "supersede"
+          ]
+        },
+        "client_mutation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "expected_version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "record_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        }
+      },
+      "required": [
+        "record_id",
+        "expected_version",
+        "action",
+        "reason",
+        "client_mutation_id"
+      ],
+      "type": "object"
+    },
+    "MemberUnavailable": {
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_code": {
+          "$ref": "#/$defs/ID"
+        },
+        "service_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "index_missing",
+            "unavailable",
+            "access_denied",
+            "profile_missing"
+          ]
+        },
+        "worktree_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "service_id",
+        "worktree_id",
+        "profile_id",
+        "status",
+        "reason_code"
+      ],
+      "type": "object"
+    },
+    "ModuleRef": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "kind": {
+          "const": "module"
+        },
+        "module_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "kind",
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "module_id"
+      ],
+      "type": "object"
+    },
+    "ModuleSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "module"
+        },
+        "module_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "kind",
+        "module_id"
+      ],
+      "type": "object"
+    },
+    "PackData": {
+      "additionalProperties": false,
+      "properties": {
+        "edit_precondition_validated": {
+          "type": "boolean"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "maxItems": 512,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "enum": [
+            "context_pack",
+            "expand_pack"
+          ]
+        },
+        "pack_token": {
+          "$ref": "#/$defs/Token"
+        },
+        "target_refs": {
+          "items": {
+            "$ref": "#/$defs/GraphRef"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation",
+        "pack_token",
+        "target_refs",
+        "items",
+        "edit_precondition_validated"
+      ],
+      "type": "object"
+    },
+    "PackRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "items": {
+            "enum": [
+              "preserve_json_keys",
+              "preserve_db_schema",
+              "no_public_api_change",
+              "preserve_message_schema",
+              "no_source_mutation"
+            ]
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "freshness_mode": {
+          "enum": [
+            "checked_workspace",
+            "analysis_snapshot"
+          ]
+        },
+        "intent": {
+          "maxLength": 2048,
+          "minLength": 0,
+          "type": "string"
+        },
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "selector": {
+          "$ref": "#/$defs/Selector"
+        },
+        "task_kind": {
+          "enum": [
+            "explore",
+            "plan",
+            "rename",
+            "type_change",
+            "behavior_change",
+            "contract_change",
+            "debug"
+          ]
+        },
+        "view": {
+          "enum": [
+            "overview",
+            "symbol",
+            "flow",
+            "state",
+            "contract",
+            "change",
+            "architecture",
+            "ai_lineage"
+          ]
+        }
+      },
+      "required": [
+        "selector",
+        "task_kind"
+      ],
+      "type": "object"
+    },
+    "PackageFact": {
+      "additionalProperties": false,
+      "properties": {
+        "import_path": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "input_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "module_key": {
+          "$ref": "#/$defs/ID"
+        },
+        "package_key": {
+          "$ref": "#/$defs/ID"
+        },
+        "semantic_status": {
+          "enum": [
+            "complete_in_profile",
+            "partial",
+            "unsupported",
+            "unknown"
+          ]
+        },
+        "variant": {
+          "enum": [
+            "production",
+            "internal_test",
+            "external_test",
+            "other_supported"
+          ]
+        }
+      },
+      "required": [
+        "package_key",
+        "import_path",
+        "module_key",
+        "variant",
+        "input_digest",
+        "semantic_status"
+      ],
+      "type": "object"
+    },
+    "Pagination": {
+      "additionalProperties": false,
+      "properties": {
+        "enumeration_complete": {
+          "type": "boolean"
+        },
+        "limit_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Token"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "optional_pending": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "required_pending": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "returned_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "truncated",
+        "enumeration_complete",
+        "returned_count",
+        "required_pending",
+        "optional_pending",
+        "next_cursor",
+        "limit_reason"
+      ],
+      "type": "object"
+    },
+    "Path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PolicyAdminData": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "policy_admin"
+        },
+        "policy_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "policy_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "operation",
+        "worktree_id",
+        "policy_digest",
+        "policy_epoch"
+      ],
+      "type": "object"
+    },
+    "PolicyAdminRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyConfig"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "worktree_id",
+        "expected_epoch",
+        "policy"
+      ],
+      "type": "object"
+    },
+    "PolicyConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_runtime_download": {
+          "const": false
+        },
+        "allow_target_execution": {
+          "const": false
+        },
+        "allowed_executables": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string"
+              },
+              "sha256": {
+                "$ref": "#/$defs/Hash"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "type": "object"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "allowed_roots": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        "denied_globs": {
+          "items": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 256,
+          "minItems": 0,
+          "type": "array"
+        },
+        "dependency_roots": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "max_file_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "max_source_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "secret_rules_version": {
+          "$ref": "#/$defs/ID"
+        },
+        "trusted_rule_paths": {
+          "items": {
+            "$ref": "#/$defs/Path"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "allowed_roots",
+        "denied_globs",
+        "trusted_rule_paths",
+        "dependency_roots",
+        "allowed_executables",
+        "allow_target_execution",
+        "allow_runtime_download",
+        "max_file_bytes",
+        "max_source_bytes",
+        "max_output_bytes",
+        "secret_rules_version"
+      ],
+      "type": "object"
+    },
+    "PositionSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_offset": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "kind": {
+          "const": "source_position"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "content_hash",
+        "byte_offset"
+      ],
+      "type": "object"
+    },
+    "PreviewAckRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "authorization_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "command_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "expected_revision",
+        "authorization_epoch",
+        "command_id",
+        "acknowledged"
+      ],
+      "type": "object"
+    },
+    "PreviewAttachRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "origin": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "permission_profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        }
+      },
+      "required": [
+        "origin",
+        "path",
+        "build_map_id",
+        "permission_profile_id"
+      ],
+      "type": "object"
+    },
+    "PreviewBindRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "build_map_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/ID"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        },
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pairing_nonce": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "expected_revision",
+        "document_epoch",
+        "hmr_epoch",
+        "build_map_id",
+        "pairing_nonce",
+        "capabilities"
+      ],
+      "type": "object"
+    },
+    "PreviewData": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "binding_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "command_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "mode_state": {
+          "enum": [
+            "inspect",
+            "arming",
+            "interact",
+            "disarming"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "preview_attach",
+            "preview_bind",
+            "preview_mode",
+            "preview_ack",
+            "preview_invalidate",
+            "preview_detach"
+          ]
+        },
+        "pairing_nonce": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "permission_version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "resolver_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "state": {
+          "enum": [
+            "pairing",
+            "bound",
+            "stale",
+            "detached",
+            "blocked"
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "session_id",
+        "revision",
+        "document_epoch",
+        "hmr_epoch",
+        "authorization_epoch",
+        "state",
+        "mode_state",
+        "pairing_nonce",
+        "command_id",
+        "expires_at",
+        "binding_id",
+        "permission_version",
+        "resolver_digest"
+      ],
+      "type": "object"
+    },
+    "PreviewDetachRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "PreviewInvalidateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "enum": [
+            "hmr",
+            "navigation",
+            "heartbeat_lost",
+            "policy_changed",
+            "build_changed",
+            "client_error"
+          ]
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "expected_revision",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "PreviewModeRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_authorization_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "inspect",
+            "interact"
+          ]
+        },
+        "permission_profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "expected_revision",
+        "expected_authorization_epoch",
+        "mode",
+        "permission_profile_id"
+      ],
+      "type": "object"
+    },
+    "PreviewPermissionAdminData": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "preview_permission_admin"
+        },
+        "profiles": {
+          "items": {
+            "$ref": "#/$defs/PreviewPermissionSummary"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation",
+        "profiles"
+      ],
+      "type": "object"
+    },
+    "PreviewPermissionAdminRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "get",
+            "list",
+            "put",
+            "revoke"
+          ]
+        },
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "expected_version": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "profile": {
+          "$ref": "#/$defs/PreviewPermissionProfile"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "reason": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "PreviewPermissionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_attach": {
+          "type": "boolean"
+        },
+        "allow_interact": {
+          "type": "boolean"
+        },
+        "allow_scroll": {
+          "type": "boolean"
+        },
+        "allowed_dev_destinations": {
+          "items": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        },
+        "approved_origin": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "approved_path_prefix": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "attestation_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "attested_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "attested_by": {
+          "$ref": "#/$defs/ID"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "source_worktree_ids": {
+          "items": {
+            "$ref": "#/$defs/UUID"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        "target_environment": {
+          "enum": [
+            "isolated_test",
+            "local_mock"
+          ]
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "profile_id",
+        "approved_origin",
+        "approved_path_prefix",
+        "target_environment",
+        "source_worktree_ids",
+        "allow_attach",
+        "allow_interact",
+        "allow_scroll",
+        "allowed_dev_destinations",
+        "attestation_id",
+        "attested_by",
+        "attested_at",
+        "expires_at",
+        "version"
+      ],
+      "type": "object"
+    },
+    "PreviewPermissionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_status": {
+          "enum": [
+            "approved",
+            "revoked"
+          ]
+        },
+        "digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "effective_status": {
+          "enum": [
+            "approved",
+            "revoked",
+            "expired"
+          ]
+        },
+        "profile": {
+          "$ref": "#/$defs/PreviewPermissionProfile"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile_id",
+        "version",
+        "declared_status",
+        "effective_status",
+        "digest",
+        "profile"
+      ],
+      "type": "object"
+    },
+    "PreviewStatusData": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "binding_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "hmr_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "interaction_allowed": {
+          "type": "boolean"
+        },
+        "mode_state": {
+          "enum": [
+            "inspect",
+            "arming",
+            "interact",
+            "disarming"
+          ]
+        },
+        "operation": {
+          "const": "preview_status"
+        },
+        "permission_profile_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "permission_status": {
+          "enum": [
+            "approved",
+            "revoked",
+            "expired",
+            "unavailable"
+          ]
+        },
+        "permission_version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "server_time": {
+          "$ref": "#/$defs/Time"
+        },
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "state": {
+          "enum": [
+            "pairing",
+            "bound",
+            "stale",
+            "detached",
+            "blocked"
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "session_id",
+        "revision",
+        "authorization_epoch",
+        "document_epoch",
+        "hmr_epoch",
+        "state",
+        "mode_state",
+        "binding_id",
+        "permission_profile_id",
+        "permission_version",
+        "permission_status",
+        "expires_at",
+        "server_time",
+        "interaction_allowed"
+      ],
+      "type": "object"
+    },
+    "PreviewStatusRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "ProfileAdminData": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "profile_admin"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "profile_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "operation",
+        "worktree_id",
+        "profile_name",
+        "profile_id",
+        "revision"
+      ],
+      "type": "object"
+    },
+    "ProfileAdminRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "profile": {
+          "$ref": "#/$defs/EffectiveProfile"
+        },
+        "profile_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "worktree_id",
+        "profile_name",
+        "expected_revision",
+        "profile"
+      ],
+      "type": "object"
+    },
+    "ProposedEdit": {
+      "additionalProperties": false,
+      "properties": {
+        "new_text": {
+          "maxLength": 131072,
+          "minLength": 0,
+          "type": "string"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/SourceRef"
+        }
+      },
+      "required": [
+        "source_ref",
+        "new_text"
+      ],
+      "type": "object"
+    },
+    "ProviderBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/DiagnosticFact"
+          },
+          "maxItems": 512,
+          "minItems": 0,
+          "type": "array"
+        },
+        "job_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "packages": {
+          "items": {
+            "$ref": "#/$defs/PackageFact"
+          },
+          "maxItems": 512,
+          "minItems": 0,
+          "type": "array"
+        },
+        "provider_protocol": {
+          "const": 1
+        },
+        "relations": {
+          "items": {
+            "$ref": "#/$defs/RelationFact"
+          },
+          "maxItems": 4096,
+          "minItems": 0,
+          "type": "array"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "symbols": {
+          "items": {
+            "$ref": "#/$defs/SymbolFact"
+          },
+          "maxItems": 2048,
+          "minItems": 0,
+          "type": "array"
+        },
+        "type": {
+          "const": "analyze_batch"
+        }
+      },
+      "required": [
+        "provider_protocol",
+        "type",
+        "job_id",
+        "sequence",
+        "packages",
+        "symbols",
+        "relations",
+        "diagnostics"
+      ],
+      "type": "object"
+    },
+    "ProviderCancel": {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "provider_protocol": {
+          "const": 1
+        },
+        "type": {
+          "const": "cancel"
+        }
+      },
+      "required": [
+        "provider_protocol",
+        "type",
+        "job_id"
+      ],
+      "type": "object"
+    },
+    "ProviderDone": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gaps": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        },
+        "input_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "job_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "provider_protocol": {
+          "const": 1
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "complete_in_supported_scope",
+            "partial",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "type": {
+          "const": "analyze_done"
+        }
+      },
+      "required": [
+        "provider_protocol",
+        "type",
+        "job_id",
+        "sequence",
+        "status",
+        "input_digest",
+        "capabilities",
+        "gaps",
+        "error"
+      ],
+      "type": "object"
+    },
+    "ProviderMessage": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProviderStart"
+        },
+        {
+          "$ref": "#/$defs/ProviderBatch"
+        },
+        {
+          "$ref": "#/$defs/ProviderDone"
+        },
+        {
+          "$ref": "#/$defs/ProviderCancel"
+        }
+      ]
+    },
+    "ProviderStart": {
+      "additionalProperties": false,
+      "properties": {
+        "deadline_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "job_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "manifest_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "manifest_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "max_frame_bytes": {
+          "maximum": 16777216,
+          "minimum": 65536,
+          "type": "integer"
+        },
+        "profile": {
+          "$ref": "#/$defs/EffectiveProfile"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "provider_protocol": {
+          "const": 1
+        },
+        "snapshot_root": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "analyze_start"
+        }
+      },
+      "required": [
+        "provider_protocol",
+        "type",
+        "job_id",
+        "provider_id",
+        "provider_digest",
+        "profile_id",
+        "generation_id",
+        "snapshot_root",
+        "manifest_path",
+        "manifest_digest",
+        "profile",
+        "max_frame_bytes",
+        "deadline_at"
+      ],
+      "type": "object"
+    },
+    "RecordData": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "revoked",
+            "superseded"
+          ]
+        },
+        "effective_status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "revoked",
+            "superseded",
+            "needs_review"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "mapping_propose",
+            "mapping_review"
+          ]
+        },
+        "record_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "record_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "operation",
+        "record_id",
+        "version",
+        "record_epoch",
+        "declared_status",
+        "effective_status"
+      ],
+      "type": "object"
+    },
+    "RecordListData": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "records_list"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/$defs/RecordSummary"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation",
+        "records"
+      ],
+      "type": "object"
+    },
+    "RecordListRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "record_kind": {
+          "$ref": "#/$defs/ID"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "revoked",
+            "superseded",
+            "needs_review"
+          ]
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "RecordReadData": {
+      "additionalProperties": false,
+      "properties": {
+        "limitations": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "records_read"
+        },
+        "record": {
+          "$ref": "#/$defs/RecordSummary"
+        },
+        "ui_mapping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UIMappingPayload"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "record",
+        "ui_mapping",
+        "limitations"
+      ],
+      "type": "object"
+    },
+    "RecordReadRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "record_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_id"
+      ],
+      "type": "object"
+    },
+    "RecordSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "revoked",
+            "superseded"
+          ]
+        },
+        "effective_status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "revoked",
+            "superseded",
+            "needs_review"
+          ]
+        },
+        "provenance_status": {
+          "enum": [
+            "retained_snapshot",
+            "snapshot_expired",
+            "source_changed",
+            "access_denied",
+            "unverified"
+          ]
+        },
+        "record_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "record_kind": {
+          "$ref": "#/$defs/ID"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_id",
+        "version",
+        "record_kind",
+        "declared_status",
+        "effective_status",
+        "provenance_status",
+        "source_refs"
+      ],
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "width": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "RefSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "ref"
+        },
+        "ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "service_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "ref",
+        "service_id"
+      ],
+      "type": "object"
+    },
+    "RegisteredScopeStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "index_state": {
+          "enum": [
+            "missing",
+            "published",
+            "building_with_previous",
+            "unavailable"
+          ]
+        },
+        "profile_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "root_status": {
+          "enum": [
+            "registered",
+            "unavailable",
+            "removed"
+          ]
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "worktree_id",
+        "profile_id",
+        "root_status",
+        "index_state"
+      ],
+      "type": "object"
+    },
+    "RelationFact": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_kind": {
+          "enum": [
+            "syntax_exact",
+            "type_resolved",
+            "type_possible",
+            "explicit_document",
+            "text_match",
+            "unresolved"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "CONTAINS",
+            "IMPORTS",
+            "REFERS_TO",
+            "READS",
+            "WRITES",
+            "CALLS_DIRECT",
+            "CALLS_INTERFACE",
+            "MAY_DISPATCH_TO",
+            "UNRESOLVED_REF",
+            "UNRESOLVED_CALL",
+            "TEST_REF",
+            "DOC_LINK"
+          ]
+        },
+        "range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "reason": {
+          "maxLength": 1024,
+          "minLength": 0,
+          "type": "string"
+        },
+        "relation_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "site_path": {
+          "$ref": "#/$defs/Path"
+        },
+        "source_symbol_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "target_symbol_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unresolved_label": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "relation_id",
+        "source_symbol_id",
+        "target_symbol_id",
+        "kind",
+        "evidence_kind",
+        "site_path",
+        "range",
+        "reason",
+        "unresolved_label"
+      ],
+      "type": "object"
+    },
+    "RenameContinueRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "$ref": "#/$defs/Token"
+        },
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "result_token": {
+          "$ref": "#/$defs/Token"
+        }
+      },
+      "required": [
+        "result_token",
+        "cursor"
+      ],
+      "type": "object"
+    },
+    "RenameData": {
+      "additionalProperties": false,
+      "properties": {
+        "applied": {
+          "const": false
+        },
+        "computation_complete": {
+          "const": true
+        },
+        "conflicts": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "edits": {
+          "items": {
+            "$ref": "#/$defs/ProposedEdit"
+          },
+          "maxItems": 512,
+          "minItems": 0,
+          "type": "array"
+        },
+        "operation": {
+          "const": "rename_preview"
+        },
+        "preview_complete": {
+          "type": "boolean"
+        },
+        "result_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "result_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "result_token": {
+          "$ref": "#/$defs/Token"
+        },
+        "source_mutation_count": {
+          "const": 0
+        },
+        "total_edits": {
+          "maximum": 10000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "validation_required": {
+          "const": true
+        }
+      },
+      "required": [
+        "operation",
+        "applied",
+        "source_mutation_count",
+        "validation_required",
+        "edits",
+        "conflicts",
+        "preview_complete",
+        "result_token",
+        "result_id",
+        "result_digest",
+        "total_edits",
+        "computation_complete"
+      ],
+      "type": "object"
+    },
+    "RenameInitialRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "new_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "preserve_contracts": {
+          "type": "boolean"
+        },
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "selector": {
+          "$ref": "#/$defs/PositionSelector"
+        }
+      },
+      "required": [
+        "selector",
+        "new_name"
+      ],
+      "type": "object"
+    },
+    "RenameRequest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/RenameInitialRequest"
+        },
+        {
+          "$ref": "#/$defs/RenameContinueRequest"
+        }
+      ]
+    },
+    "Response": {
+      "additionalProperties": false,
+      "properties": {
+        "budget": {
+          "$ref": "#/$defs/Budget"
+        },
+        "coverage": {
+          "$ref": "#/$defs/Coverage"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResponseData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "freshness": {
+          "$ref": "#/$defs/Freshness"
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        },
+        "readiness": {
+          "enum": [
+            "reviewable",
+            "needs_context",
+            "blocked"
+          ]
+        },
+        "request_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScopeVector"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "partial",
+            "blocked",
+            "error"
+          ]
+        },
+        "warnings": {
+          "items": {
+            "$ref": "#/$defs/Gap"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "request_id",
+        "status",
+        "scope",
+        "freshness",
+        "coverage",
+        "readiness",
+        "data",
+        "pagination",
+        "budget",
+        "warnings",
+        "error"
+      ],
+      "type": "object"
+    },
+    "ResponseData": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/StatusData"
+        },
+        {
+          "$ref": "#/$defs/LocateData"
+        },
+        {
+          "$ref": "#/$defs/PackData"
+        },
+        {
+          "$ref": "#/$defs/ValidateData"
+        },
+        {
+          "$ref": "#/$defs/RenameData"
+        },
+        {
+          "$ref": "#/$defs/GraphData"
+        },
+        {
+          "$ref": "#/$defs/SourceData"
+        },
+        {
+          "$ref": "#/$defs/MappingData"
+        },
+        {
+          "$ref": "#/$defs/FlowData"
+        },
+        {
+          "$ref": "#/$defs/BootstrapData"
+        },
+        {
+          "$ref": "#/$defs/PreviewData"
+        },
+        {
+          "$ref": "#/$defs/RecordData"
+        },
+        {
+          "$ref": "#/$defs/PreviewStatusData"
+        },
+        {
+          "$ref": "#/$defs/PreviewPermissionAdminData"
+        },
+        {
+          "$ref": "#/$defs/GroupAdminData"
+        },
+        {
+          "$ref": "#/$defs/RuntimeConfigData"
+        },
+        {
+          "$ref": "#/$defs/RecordListData"
+        },
+        {
+          "$ref": "#/$defs/RecordReadData"
+        },
+        {
+          "$ref": "#/$defs/ProfileAdminData"
+        },
+        {
+          "$ref": "#/$defs/PolicyAdminData"
+        }
+      ]
+    },
+    "RuntimeConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/CoreRuntimeLimits"
+        },
+        "explorer": {
+          "$ref": "#/$defs/ExplorerRuntimeLimits"
+        },
+        "schema_version": {
+          "const": 1
+        }
+      },
+      "required": [
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "RuntimeConfigData": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "source_digest": {
+                "$ref": "#/$defs/Hash"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "built_in"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_digest": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "config": {
+          "$ref": "#/$defs/RuntimeConfig"
+        },
+        "config_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "effective_sources": {
+          "items": {
+            "enum": [
+              "built_in",
+              "canonical_home",
+              "approved_alternate",
+              "cli_process",
+              "candidate_input"
+            ]
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "operation": {
+          "const": "runtime_config"
+        },
+        "restart_required": {
+          "type": "boolean"
+        },
+        "source_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_kind": {
+          "enum": [
+            "built_in",
+            "canonical_home"
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "config",
+        "config_digest",
+        "restart_required",
+        "source_kind",
+        "source_digest",
+        "effective_sources"
+      ],
+      "type": "object"
+    },
+    "RuntimeConfigRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "show",
+            "validate",
+            "set"
+          ]
+        },
+        "config": {
+          "$ref": "#/$defs/RuntimeConfig"
+        },
+        "expected_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "ScopeMember": {
+      "additionalProperties": false,
+      "properties": {
+        "binding_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "index_incarnation": {
+          "$ref": "#/$defs/UUID"
+        },
+        "policy_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "policy_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "record_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "records_incarnation": {
+          "$ref": "#/$defs/UUID"
+        },
+        "service_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "snapshot_digest",
+        "policy_digest",
+        "policy_epoch",
+        "binding_revision",
+        "record_epoch",
+        "service_id",
+        "index_incarnation",
+        "records_incarnation"
+      ],
+      "type": "object"
+    },
+    "ScopeRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "group_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "pinned_vector": {
+          "$ref": "#/$defs/ScopeVector"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "ScopeVector": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_incarnation": {
+          "$ref": "#/$defs/UUID"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "group_revision": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "single",
+            "federated"
+          ]
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/ScopeMember"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "unavailable_members": {
+          "items": {
+            "$ref": "#/$defs/MemberUnavailable"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "vector_digest": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "kind",
+        "members",
+        "vector_digest",
+        "group_id",
+        "group_revision",
+        "catalog_incarnation",
+        "unavailable_members"
+      ],
+      "type": "object"
+    },
+    "Selector": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/WorkspaceSelector"
+        },
+        {
+          "$ref": "#/$defs/SymbolSelector"
+        },
+        {
+          "$ref": "#/$defs/ModuleSelector"
+        },
+        {
+          "$ref": "#/$defs/EntitySelector"
+        },
+        {
+          "$ref": "#/$defs/PositionSelector"
+        },
+        {
+          "$ref": "#/$defs/DocumentSelector"
+        },
+        {
+          "$ref": "#/$defs/RefSelector"
+        }
+      ]
+    },
+    "ServiceNamespace": {
+      "additionalProperties": false,
+      "properties": {
+        "base_origin": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contract_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "environment": {
+          "$ref": "#/$defs/ID"
+        },
+        "protocol": {
+          "enum": [
+            "http",
+            "websocket",
+            "event",
+            "sql"
+          ]
+        },
+        "route_prefix": {
+          "anyOf": [
+            {
+              "maxLength": 1024,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "environment",
+        "protocol",
+        "base_origin",
+        "route_prefix",
+        "contract_version"
+      ],
+      "type": "object"
+    },
+    "SourceData": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "maxLength": 131072,
+          "minLength": 0,
+          "type": "string"
+        },
+        "operation": {
+          "const": "source_read"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/SourceRef"
+        }
+      },
+      "required": [
+        "operation",
+        "source_ref",
+        "content"
+      ],
+      "type": "object"
+    },
+    "SourceReadRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "max_output_bytes": {
+          "maximum": 131072,
+          "minimum": 4096,
+          "type": "integer"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/SourceRef"
+        }
+      },
+      "required": [
+        "source_ref"
+      ],
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "path",
+        "content_hash",
+        "range"
+      ],
+      "type": "object"
+    },
+    "StatusData": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "maxItems": 128,
+          "minItems": 0,
+          "type": "array"
+        },
+        "index_state": {
+          "enum": [
+            "missing",
+            "published",
+            "building_with_previous",
+            "unavailable"
+          ]
+        },
+        "operation": {
+          "const": "status"
+        },
+        "project_stage": {
+          "enum": [
+            "spec_only",
+            "mixed",
+            "implemented_scope",
+            "unknown"
+          ]
+        },
+        "registered_scopes": {
+          "items": {
+            "$ref": "#/$defs/RegisteredScopeStatus"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        },
+        "scopes": {
+          "items": {
+            "$ref": "#/$defs/ScopeMember"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation",
+        "scopes",
+        "capabilities",
+        "project_stage",
+        "index_state",
+        "registered_scopes"
+      ],
+      "type": "object"
+    },
+    "StatusRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/ScopeRequest"
+        },
+        "verify": {
+          "enum": [
+            "none",
+            "workspace"
+          ]
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "StoredCaptureManifestRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "byte_length": {
+          "maximum": 34359738368,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "format_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "external_capture_manifest"
+        },
+        "path": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Path"
+            },
+            {
+              "pattern": "^manifests/[0-9a-f]{64}\\.json$"
+            }
+          ]
+        },
+        "snapshot_digest": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "format_version",
+        "kind",
+        "path",
+        "byte_length",
+        "artifact_sha256",
+        "snapshot_digest"
+      ],
+      "type": "object"
+    },
+    "SymbolFact": {
+      "additionalProperties": false,
+      "properties": {
+        "exported": {
+          "type": "boolean"
+        },
+        "kind": {
+          "enum": [
+            "file",
+            "package",
+            "function",
+            "method",
+            "type",
+            "interface",
+            "field",
+            "variable",
+            "parameter",
+            "receiver",
+            "result",
+            "constant",
+            "closure",
+            "external"
+          ]
+        },
+        "name": {
+          "maxLength": 512,
+          "minLength": 0,
+          "type": "string"
+        },
+        "package_key": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Path"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "qualified_name": {
+          "maxLength": 2048,
+          "minLength": 0,
+          "type": "string"
+        },
+        "range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ByteRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_key": {
+          "$ref": "#/$defs/ID"
+        },
+        "signature": {
+          "maxLength": 32768,
+          "minLength": 0,
+          "type": "string"
+        },
+        "symbol_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "symbol_id",
+        "path",
+        "package_key",
+        "kind",
+        "name",
+        "qualified_name",
+        "scope_key",
+        "range",
+        "signature",
+        "exported"
+      ],
+      "type": "object"
+    },
+    "SymbolRef": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "kind": {
+          "const": "symbol"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "symbol_id": {
+          "$ref": "#/$defs/ID"
+        },
+        "worktree_id": {
+          "$ref": "#/$defs/UUID"
+        }
+      },
+      "required": [
+        "kind",
+        "worktree_id",
+        "profile_id",
+        "generation_id",
+        "symbol_id"
+      ],
+      "type": "object"
+    },
+    "SymbolSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "symbol"
+        },
+        "symbol_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "kind",
+        "symbol_id"
+      ],
+      "type": "object"
+    },
+    "TSProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_project_plugins": {
+          "const": false
+        },
+        "analysis_mode": {
+          "enum": [
+            "syntax",
+            "typed_when_available"
+          ]
+        },
+        "compiler_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "language": {
+          "const": "typescript_javascript"
+        },
+        "node_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "provider_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "tsconfig_paths": {
+          "items": {
+            "$ref": "#/$defs/Path"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "language",
+        "tsconfig_paths",
+        "compiler_digest",
+        "node_digest",
+        "provider_digest",
+        "allow_project_plugins",
+        "analysis_mode"
+      ],
+      "type": "object"
+    },
+    "Time": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "Token": {
+      "maxLength": 32768,
+      "minLength": 1,
+      "type": "string"
+    },
+    "UIMappingPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "destination_ref": {
+          "$ref": "#/$defs/GraphRef"
+        },
+        "rationale": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/SourceRef"
+        }
+      },
+      "required": [
+        "source_ref",
+        "destination_ref",
+        "rationale"
+      ],
+      "type": "object"
+    },
+    "UUID": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "ValidateData": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 256,
+          "minItems": 0,
+          "type": "array"
+        },
+        "configuration_changed": {
+          "type": "boolean"
+        },
+        "edit_precondition_validated": {
+          "type": "boolean"
+        },
+        "membership_changed": {
+          "type": "boolean"
+        },
+        "operation": {
+          "const": "validate_pack"
+        },
+        "record_set_changed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operation",
+        "edit_precondition_validated",
+        "changed_sources",
+        "membership_changed",
+        "configuration_changed",
+        "record_set_changed"
+      ],
+      "type": "object"
+    },
+    "ValidateRequest": {
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "not": {
+            "required": [
+              "result_token"
+            ]
+          },
+          "required": [
+            "pack_token"
+          ]
+        },
+        {
+          "not": {
+            "required": [
+              "pack_token"
+            ]
+          },
+          "required": [
+            "result_token"
+          ]
+        }
+      ],
+      "properties": {
+        "pack_token": {
+          "$ref": "#/$defs/Token"
+        },
+        "result_token": {
+          "$ref": "#/$defs/Token"
+        },
+        "verify": {
+          "const": "workspace"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "VolumeAdmissionEntry": {
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "cache_reserved_remaining_bytes": {
+              "const": 0
+            },
+            "operation_kind": {
+              "enum": [
+                "catalog_write",
+                "config_write",
+                "maintenance",
+                "backup"
+              ]
+            },
+            "scope_kind": {
+              "const": "home"
+            },
+            "worktree_id": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "operation_kind": {
+              "enum": [
+                "index",
+                "map_import",
+                "rename_result",
+                "partition",
+                "maintenance",
+                "record_write",
+                "evidence_import",
+                "backup",
+                "log_write"
+              ]
+            },
+            "scope_kind": {
+              "const": "worktree"
+            },
+            "worktree_id": {
+              "$ref": "#/$defs/UUID"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "allowed_paths": {
+          "items": {
+            "$ref": "#/$defs/AdmissionOwnedPath"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "cache_reserved_remaining_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Time"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "operation_kind": {
+          "enum": [
+            "index",
+            "map_import",
+            "rename_result",
+            "partition",
+            "maintenance",
+            "record_write",
+            "evidence_import",
+            "catalog_write",
+            "config_write",
+            "backup",
+            "log_write"
+          ]
+        },
+        "owner_identity": {
+          "$ref": "#/$defs/ID"
+        },
+        "ownership_ref": {
+          "$ref": "#/$defs/AdmissionOwnedPath"
+        },
+        "scope_kind": {
+          "enum": [
+            "home",
+            "worktree"
+          ]
+        },
+        "volume_reserved_remaining_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "worktree_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_id",
+        "scope_kind",
+        "worktree_id",
+        "owner_identity",
+        "ownership_ref",
+        "operation_kind",
+        "allowed_paths",
+        "volume_reserved_remaining_bytes",
+        "cache_reserved_remaining_bytes",
+        "created_at"
+      ],
+      "type": "object"
+    },
+    "VolumeAdmissionJournal": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_config_digest": {
+          "$ref": "#/$defs/Hash"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/VolumeAdmissionEntry"
+          },
+          "maxItems": 256,
+          "minItems": 0,
+          "type": "array"
+        },
+        "format_version": {
+          "const": 1
+        },
+        "home_identity": {
+          "$ref": "#/$defs/ID"
+        },
+        "volume_id": {
+          "$ref": "#/$defs/ID"
+        }
+      },
+      "required": [
+        "format_version",
+        "volume_id",
+        "home_identity",
+        "admission_config_digest",
+        "entries"
+      ],
+      "type": "object"
+    },
+    "WorkspaceSelector": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "workspace"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:mce4d:contracts:1",
+  "$ref": "#/$defs/Response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

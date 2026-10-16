@@ -1,0 +1,239 @@
+{
+  "format_version": 1,
+  "kind": "mce4d_c14n1_test_vectors",
+  "manifest_json_vectors": [
+    {
+      "canonical_hex": "7b22636f756e74223a332c22656e61626c6564223a747275652c226974656d73223a5b2261222c6e756c6c5d2c226e616d65223a226d63653464222c22736368656d615f76657273696f6e223a317d",
+      "name": "full",
+      "sha256": "6fa947901d4c8dbf4bab14fd5a6a0551e0a888e416a573ea3abc96b166164e2c",
+      "value": {
+        "count": 3,
+        "enabled": true,
+        "items": [
+          "a",
+          null
+        ],
+        "name": "mce4d",
+        "schema_version": 1
+      }
+    },
+    {
+      "canonical_hex": "7b226c696e65223a22785c753230323879222c226d61726b7570223a223cc3a93e26222c226e616d65223a22c491c6b0e1bb9d6e672064e1baab6e222c226e6573746564223a7b2261223a66616c73652c227a223a317d2c2271756f7465223a22615c6e62227d",
+      "name": "unicode",
+      "sha256": "fa11544e9c346193cea73e943a6518ff657d23523f96ba79e82ef1f212132dc9",
+      "value": {
+        "line": "x y",
+        "markup": "<é>&",
+        "name": "đường dẫn",
+        "nested": {
+          "a": false,
+          "z": 1
+        },
+        "quote": "a\nb"
+      }
+    }
+  ],
+  "negative_vectors": [
+    {
+      "domain": "test-v1",
+      "name": "fraction",
+      "raw_json": "1.0"
+    },
+    {
+      "domain": "test-v1",
+      "name": "exponent",
+      "raw_json": "1e0"
+    },
+    {
+      "domain": "test-v1",
+      "name": "safe-overflow",
+      "raw_json": "9007199254740992"
+    },
+    {
+      "domain": "test-v1",
+      "name": "lone-high-surrogate",
+      "raw_json": "{\"text\":\"\\uD800\"}"
+    },
+    {
+      "domain": "test-v1",
+      "name": "duplicate-key",
+      "raw_json": "{\"a\":1,\"a\":2}"
+    },
+    {
+      "domain": "test-v1",
+      "name": "escaped-duplicate-key",
+      "raw_json": "{\"a\":1,\"\\u0061\":2}"
+    },
+    {
+      "domain": "test-v1",
+      "name": "trailing-value",
+      "raw_json": "null false"
+    }
+  ],
+  "raw_source_vectors": [
+    {
+      "bytes_hex": "7061636b61676520700a",
+      "name": "lf",
+      "sha256": "0ad6261536f6380b14ade1a508ac911b8c48230731746e0c76abd26bf3e3a15d"
+    },
+    {
+      "bytes_hex": "7061636b61676520700d0a",
+      "name": "crlf",
+      "sha256": "d525f3024131fc966c4dcccffcae21e7291950049f5d3322c2be0e03a096431e"
+    }
+  ],
+  "vectors": [
+    {
+      "digest": "17291b9b549ee7285a2669a79fc61f802e94e8cfb4f98caa8c5efeecb5f164d4",
+      "domain": "test-v1",
+      "encoding_hex": "6e",
+      "name": "null",
+      "value": null
+    },
+    {
+      "digest": "2962d8598cbb9b3753fa971b4b9b907cb846f3e86206a5d635c13da3f8464f17",
+      "domain": "test-v1",
+      "encoding_hex": "66",
+      "name": "false",
+      "value": false
+    },
+    {
+      "digest": "51d1f0900763a6d368097614d2e8a47362ba7c651282343a070600871e50c9b2",
+      "domain": "test-v1",
+      "encoding_hex": "74",
+      "name": "true",
+      "value": true
+    },
+    {
+      "digest": "6a2a28633d72dbb964391631eb1d9e38f2678a764ea85109e38ef04f39c16538",
+      "domain": "test-v1",
+      "encoding_hex": "69303b",
+      "name": "zero",
+      "value": 0
+    },
+    {
+      "digest": "54163d01ff05b7ecc8a57c842064f2753d04854e6daad271c4c7f99a6ddffa08",
+      "domain": "test-v1",
+      "encoding_hex": "692d31373b",
+      "name": "negative",
+      "value": -17
+    },
+    {
+      "digest": "4ba17a669e3e1b39c97b95e4b3caf65d0437bb2e546785e1f1092733830b2ec7",
+      "domain": "test-v1",
+      "encoding_hex": "69393030373139393235343734303939313b",
+      "name": "max-safe",
+      "value": 9007199254740991
+    },
+    {
+      "digest": "cf04d22e8a0f399b2a0a0572a0517c015f29a499d2b358cfdeafb8b31330b89f",
+      "domain": "test-v1",
+      "encoding_hex": "73303a",
+      "name": "empty-string",
+      "value": ""
+    },
+    {
+      "digest": "b8e9f7680d7603db7fa91eb1261767eff2056a8d9658c7981732f274f725464d",
+      "domain": "test-v1",
+      "encoding_hex": "7332313ae0baaae0bab0e0ba9ae0bab2e0ba8de0ba94e0bab5",
+      "name": "lao-unicode",
+      "value": "ສະບາຍດີ"
+    },
+    {
+      "digest": "c073a5ffd46ce1fc335aed066462e3bd517b4588f257fe8bd41481f048f5d870",
+      "domain": "test-v1",
+      "encoding_hex": "73323ac3a9",
+      "name": "precomposed",
+      "value": "é"
+    },
+    {
+      "digest": "d662ddee0eb0f3d9fe1f952207302e211387f59b317be2a5358c8b5e0783178c",
+      "domain": "test-v1",
+      "encoding_hex": "73333a65cc81",
+      "name": "combining",
+      "value": "é"
+    },
+    {
+      "digest": "ae51db8d34f92441a6c8e547b0806db13e43abc5f529698019273197c5be9259",
+      "domain": "test-v1",
+      "encoding_hex": "61303a",
+      "name": "empty-array",
+      "value": []
+    },
+    {
+      "digest": "7580b2d0cbdbcd887c12f3049c4db3ea2dc25977270e0358827fc20eded25560",
+      "domain": "test-v1",
+      "encoding_hex": "61333a69313b73313a616e",
+      "name": "array-order",
+      "value": [
+        1,
+        "a",
+        null
+      ]
+    },
+    {
+      "digest": "6efb088f58c727841f09c7bf471727ee84f89e6984c8946b1939e876598c3ea8",
+      "domain": "test-v1",
+      "encoding_hex": "6f303a",
+      "name": "empty-object",
+      "value": {}
+    },
+    {
+      "digest": "9701feb39a4c83fd2ec3a6db7434c85ad5b805804f3b272be8c0c30624b7008e",
+      "domain": "test-v1",
+      "encoding_hex": "6f323a73313a616e73313a7a74",
+      "name": "ascii-key-order",
+      "value": {
+        "a": null,
+        "z": true
+      }
+    },
+    {
+      "digest": "880c5a006d3fa85ce3fd0cf05ae342d0d6774ad4f84b8c0ccc591cdb37211bdc",
+      "domain": "test-v1",
+      "encoding_hex": "6f333a73323a616169303b73313a7a7473323ac3a96e",
+      "name": "utf8-key-order",
+      "value": {
+        "aa": 0,
+        "z": true,
+        "é": null
+      }
+    },
+    {
+      "digest": "2a9f99177c23c0f554689d3710a977180a909c10e653a09af078c305e3ee10f4",
+      "domain": "test-v1",
+      "encoding_hex": "6f313a73313a6161323a666f323a73313a6269323b73313a7a73323a6f6b",
+      "name": "nested",
+      "value": {
+        "a": [
+          false,
+          {
+            "b": 2,
+            "z": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "digest": "21c036e8efac869d4b51dccdf129f28f31c45e57585ec016367431d43b0f8856",
+      "domain": "admission-config-v1",
+      "encoding_hex": "6f343a7332343a6d61785f776f726b747265655f63616368655f627974657369313030303030303b7331343a736368656d615f76657273696f6e69313b7332303a766f6c756d655f726573657276655f6279746573693130303030303b7332303a766f6c756d655f7761726e696e675f6279746573693230303030303b",
+      "name": "admission-config",
+      "value": {
+        "max_worktree_cache_bytes": 1000000,
+        "schema_version": 1,
+        "volume_reserve_bytes": 100000,
+        "volume_warning_bytes": 200000
+      }
+    },
+    {
+      "digest": "f10704a9c614ec7c2fbc719a2c1dbd38d79c61f7297de045422e653757a243a3",
+      "domain": "test-v1",
+      "encoding_hex": "6f313a73353a76616c75656e",
+      "name": "null-versus-missing",
+      "value": {
+        "value": null
+      }
+    }
+  ]
+}
