@@ -837,6 +837,16 @@ def _verify_publication_projection(repo_root: Path, delivery_id: str, projection
     return projection, archive_projection
 
 
+def _validate_live_verification_record(
+    verification: dict[str, Any], schema: dict[str, Any],
+) -> list[str]:
+    errors = validate_schema(
+        verification, schema["$defs"]["GitLiveVerification"], root_schema=schema,
+    )
+    errors.extend(validate_semantics("GitLiveVerification", verification))
+    return errors
+
+
 def verify_live_delivery(
     repo_root: Path,
     delivery_id: str,
@@ -1019,10 +1029,10 @@ def verify_live_delivery(
             "readback_completed_at_utc": projection["readback_completed_at_utc"],
         },
     }
-    verification_errors = validate_schema(
-        verification, extract_governance_schema((root / "Maps-Context-Engine-4D_SPEC.md").read_text(encoding="utf-8"))["$defs"]["GitLiveVerification"],
+    governance_schema = extract_governance_schema(
+        (root / "Maps-Context-Engine-4D_SPEC.md").read_text(encoding="utf-8")
     )
-    verification_errors.extend(validate_semantics("GitLiveVerification", verification))
+    verification_errors = _validate_live_verification_record(verification, governance_schema)
     if verification_errors:
         raise GitHubObserverError("live verification record schema/semantics REJECT: " + "; ".join(verification_errors[:8]))
     combined_objects = dict(objects)

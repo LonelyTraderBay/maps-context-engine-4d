@@ -25,7 +25,7 @@ from tools.spec_check.semantics import _canonical, validate_delivery_links, vali
 from tools.spec_check.spec import validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
-from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _verify_publication_projection
+from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
 
 
 SPEC_PATH = ROOT / "Maps-Context-Engine-4D_SPEC.md"
@@ -109,6 +109,35 @@ class GovernanceSchemaTests(unittest.TestCase):
 
     def test_schema_has_24_closed_definitions(self) -> None:
         self.assertEqual(24, len(self.schema["$defs"]))
+
+    def test_live_verification_resolves_file_refs_from_root_schema(self) -> None:
+        record = {
+            "format_version": 1, "kind": "live_verification",
+            "verification_id": "12345678-1234-4234-8234-123456789abc",
+            "assignment_ref": "S53/AW-01/AW-08:user-assignment",
+            "task_id": "T003", "task_revision": 11,
+            "delivery_id": "22345678-1234-4234-8234-123456789abc",
+            "check_plan_sha256": "a" * 64, "subject_sha": "b" * 40,
+            "observed_remote_sha": "b" * 40,
+            "started_at_utc": "2026-10-16T01:00:02Z",
+            "completed_at_utc": "2026-10-16T01:00:03Z",
+            "closing_observation_ref": "closing-observation.json",
+            "collection_evidence_ref": "collection.json",
+            "git_evidence_ref": "git/closing-commit.json",
+            "current_pr_ref": None,
+            "files": [
+                {"path": f"source-{index}.json", "byte_length": 1, "sha256": "c" * 64}
+                for index in range(3)
+            ],
+            "archive_publication": {
+                "format_version": 1, "kind": "archive_publication",
+                "planned_archive_path": "artifacts/git-delivery/22345678-1234-4234-8234-123456789abc",
+                "archive_manifest_sha256": "d" * 64, "archive_seal_sha256": "e" * 64,
+                "published_at_utc": "2026-10-16T01:00:00Z",
+                "readback_completed_at_utc": "2026-10-16T01:00:01Z",
+            },
+        }
+        self.assertEqual([], _validate_live_verification_record(record, self.schema))
         self.assertTrue(all(item.get("additionalProperties") is False for item in self.schema["$defs"].values()))
 
     def test_valid_repository_identity_passes(self) -> None:
