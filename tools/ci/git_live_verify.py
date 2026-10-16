@@ -43,6 +43,15 @@ def _retain_blocker(delivery_id: str, exc: BaseException) -> str | None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # argparse renders Vietnamese help text; Windows consoles may default to
+    # CP1252, which otherwise raises UnicodeEncodeError before the CLI starts.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8", errors="backslashreplace")
+            except (OSError, ValueError):
+                pass
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--delivery", required=True)
