@@ -1365,9 +1365,9 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
             invalidated_refs = reason.get("invalidated_refs")
             if isinstance(invalidated_refs, list):
                 if (any(not isinstance(item, str) or not _safe_relative_path(item)
-                        or item not in raw_members for item in invalidated_refs)
+                        or (item not in raw_members and item not in records) for item in invalidated_refs)
                         or len(invalidated_refs) != len(set(item for item in invalidated_refs if isinstance(item, str)))):
-                    errors.append(f"{ref}: invalidated refs phải là unique retained members")
+                    errors.append(f"{ref}: invalidated refs phải là unique retained raw/typed members")
             reason_time = _parse_time(reason.get("recorded_at_utc"))
             if reason_time is None or (allocated is not None and reason_time > allocated):
                 errors.append(f"{ref}: invalidation reason phải được ghi trước allocation revision mới")

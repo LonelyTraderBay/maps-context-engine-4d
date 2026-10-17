@@ -1738,7 +1738,7 @@ class DeliveryLinkTests(unittest.TestCase):
             "format_version": 1, "kind": "delivery_selection_invalidation", "task_id": "T003",
             "previous_task_revision": 1, "task_revision": 2, "previous_delivery_id": old_id,
             "active_delivery_id": new_id, "reason": "Kế hoạch kiểm tra đổi sau khi khóa revision 1.",
-            "invalidated_refs": ["history/check-plan-revision-1.json"],
+            "invalidated_refs": ["history/check-plan-revision-1.json", "history/selection-r1.json"],
             "recorded_at_utc": "2026-10-15T20:01:00Z",
         }
         current = {
@@ -1754,13 +1754,47 @@ class DeliveryLinkTests(unittest.TestCase):
                 "selection-r2.json": {"kind": "GitTaskDeliverySelection", "value": current},
             },
             raw_members={
-                "history/selection-r1.json": previous,
                 reason_ref: reason,
                 "history/check-plan-revision-1.json": {"check_plan_sha256": "1" * 64},
             },
         )
         self.assertEqual("UNKNOWN", result["verdict"])
         self.assertEqual([], result["errors"])
+
+    def test_selection_history_rejects_missing_invalidated_typed_or_raw_member(self) -> None:
+        old_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+        new_id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+        previous = {
+            "format_version": 1, "assignment_ref": "assignment:T003", "task_id": "T003",
+            "task_revision": 1, "active_delivery_id": old_id, "supersedes_delivery_id": None,
+            "invalidation_refs": [], "reason_ref": "assignment:T003",
+            "updated_at_utc": "2026-10-15T19:24:54Z", "previous_selection_ref": None,
+            "allocated_at_utc": "2026-10-15T19:24:54Z",
+        }
+        reason_ref = "history/plan-invalidation.json"
+        reason = {
+            "format_version": 1, "kind": "delivery_selection_invalidation", "task_id": "T003",
+            "previous_task_revision": 1, "task_revision": 2, "previous_delivery_id": old_id,
+            "active_delivery_id": new_id, "reason": "Giữ selector revision trước trong history.",
+            "invalidated_refs": ["history/selection-r1.json", "history/missing-plan.json"],
+            "recorded_at_utc": "2026-10-15T20:01:00Z",
+        }
+        current = {
+            "format_version": 1, "assignment_ref": "assignment:T003", "task_id": "T003",
+            "task_revision": 2, "active_delivery_id": new_id, "supersedes_delivery_id": old_id,
+            "invalidation_refs": [reason_ref], "reason_ref": reason_ref,
+            "updated_at_utc": "2026-10-15T20:01:00Z", "previous_selection_ref": "history/selection-r1.json",
+            "allocated_at_utc": "2026-10-15T20:01:00Z",
+        }
+        result = validate_delivery_links(
+            {
+                "history/selection-r1.json": {"kind": "GitTaskDeliverySelection", "value": previous},
+                "selection-r2.json": {"kind": "GitTaskDeliverySelection", "value": current},
+            },
+            raw_members={reason_ref: reason},
+        )
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("unique retained raw/typed members" in error for error in result["errors"]))
 
     def test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid(self) -> None:
         old_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
