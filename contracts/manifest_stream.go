@@ -222,15 +222,53 @@ func verifiedScratchRoot(value string) (string, error) {
 	if err != nil {
 		return "", ErrManifestSpoolNotAdmitted
 	}
+	resolved, err := canonicalDirectoryPath(absolute)
+	if err != nil {
+		return "", ErrManifestSpoolNotAdmitted
+	}
+	return resolved, nil
+}
+
+func canonicalDirectoryPath(value string) (string, error) {
+	absolute := filepath.Clean(value)
+	if !filepath.IsAbs(absolute) || hasSymlinkComponent(absolute) {
+		return "", ErrManifestSpoolNotAdmitted
+	}
 	info, err := os.Lstat(absolute)
 	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
 		return "", ErrManifestSpoolNotAdmitted
 	}
 	resolved, err := filepath.EvalSymlinks(absolute)
-	if err != nil || filepath.Clean(resolved) != filepath.Clean(absolute) {
+	if err != nil {
 		return "", ErrManifestSpoolNotAdmitted
 	}
-	return absolute, nil
+	resolved = filepath.Clean(resolved)
+	resolvedInfo, err := os.Stat(resolved)
+	if err != nil || !resolvedInfo.IsDir() || !os.SameFile(info, resolvedInfo) {
+		return "", ErrManifestSpoolNotAdmitted
+	}
+	return resolved, nil
+}
+
+func hasSymlinkComponent(path string) bool {
+	volume := filepath.VolumeName(path)
+	root := volume + string(filepath.Separator)
+	if volume == "" {
+		root = string(filepath.Separator)
+	}
+	remainder := strings.TrimPrefix(path, root)
+	current := root
+	for _, component := range strings.Split(remainder, string(filepath.Separator)) {
+		if component == "" {
+			continue
+		}
+		current = filepath.Join(current, component)
+		info, err := os.Lstat(current)
+		if err != nil || info.Mode()&os.ModeSymlink != 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func spoolInput(ctx context.Context, src io.Reader, path string, lease ManifestSpoolLease, maxBytes int64) (int64, error) {

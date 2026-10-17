@@ -801,15 +801,56 @@ func validateCanonicalDirectory(path string) error {
 	if path == "" || !filepath.IsAbs(path) {
 		return errors.New("directory path must be absolute")
 	}
-	info, err := os.Lstat(path)
-	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
-		return errors.New("directory must exist and cannot be a link")
-	}
-	resolved, err := filepath.EvalSymlinks(path)
-	if err != nil || !samePath(resolved, path) {
-		return errors.New("directory path is not canonical")
+	if _, err := canonicalDirectoryPath(path); err != nil {
+		return errors.New("directory must exist and contain no linked path components")
 	}
 	return nil
+}
+
+func canonicalDirectoryPath(path string) (string, error) {
+	absolute, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	absolute = filepath.Clean(absolute)
+	if hasSymlinkComponent(absolute) {
+		return "", errors.New("directory contains a linked path component")
+	}
+	info, err := os.Lstat(absolute)
+	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+		return "", errors.New("directory must exist and cannot be a link")
+	}
+	resolved, err := filepath.EvalSymlinks(absolute)
+	if err != nil {
+		return "", err
+	}
+	resolved = filepath.Clean(resolved)
+	resolvedInfo, err := os.Stat(resolved)
+	if err != nil || !resolvedInfo.IsDir() || !os.SameFile(info, resolvedInfo) {
+		return "", errors.New("directory path resolves to a different object")
+	}
+	return resolved, nil
+}
+
+func hasSymlinkComponent(path string) bool {
+	volume := filepath.VolumeName(path)
+	root := volume + string(filepath.Separator)
+	if volume == "" {
+		root = string(filepath.Separator)
+	}
+	remainder := strings.TrimPrefix(path, root)
+	current := root
+	for _, component := range strings.Split(remainder, string(filepath.Separator)) {
+		if component == "" {
+			continue
+		}
+		current = filepath.Join(current, component)
+		info, err := os.Lstat(current)
+		if err != nil || info.Mode()&os.ModeSymlink != 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func goEnvironment(profile LoadProfile, cacheRoot string) map[string]string {
@@ -874,12 +915,16 @@ func resolveModuleRoot(request LoadRequest) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	root, err = canonicalDirectoryPath(root)
+	if err != nil {
+		return "", fmt.Errorf("%w: invalid snapshot root", ErrInvalidLoadRequest)
+	}
 	moduleRoot := root
 	if request.ModuleRoot != "." {
 		moduleRoot = filepath.Join(root, filepath.FromSlash(request.ModuleRoot))
 	}
-	resolved, err := filepath.EvalSymlinks(moduleRoot)
-	if err != nil || !isWithin(root, resolved) || !samePath(moduleRoot, resolved) {
+	resolved, err := canonicalDirectoryPath(moduleRoot)
+	if err != nil || !isWithin(root, resolved) {
 		return "", fmt.Errorf("%w: module root is missing, linked, or outside the snapshot", ErrInvalidLoadRequest)
 	}
 	return resolved, nil
@@ -940,6 +985,15 @@ func uniqueStrings(values []string) bool {
 }
 
 func isWithin(root, path string) bool {
+	if runtime.GOOS == "windows" {
+		resolvedRoot, rootErr := filepath.EvalSymlinks(root)
+		resolvedPath, pathErr := filepath.EvalSymlinks(path)
+		if rootErr != nil || pathErr != nil {
+			return false
+		}
+		root = filepath.Clean(resolvedRoot)
+		path = filepath.Clean(resolvedPath)
+	}
 	relative, err := filepath.Rel(root, path)
 	return err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) && !filepath.IsAbs(relative)
 }
@@ -948,7 +1002,9 @@ func samePath(left, right string) bool {
 	left = filepath.Clean(left)
 	right = filepath.Clean(right)
 	if runtime.GOOS == "windows" {
-		return strings.EqualFold(left, right)
+		leftInfo, leftErr := os.Stat(left)
+		rightInfo, rightErr := os.Stat(right)
+		return leftErr == nil && rightErr == nil && os.SameFile(leftInfo, rightInfo)
 	}
 	return left == right
 }
