@@ -195,7 +195,9 @@ func TestCyclesAndTraversalLimitsRemainExplicit(t *testing.T) {
 		t.Fatal(err)
 	}
 	if relationLimited.EnumerationComplete || !relationLimited.ContinuationRequired || relationLimited.RequiredPending != nil ||
-		!hasGap(relationLimited.Gaps, "traversal_relation_limit") {
+		!hasGap(relationLimited.Gaps, "traversal_relation_limit") ||
+		!hasBoundary(relationLimited.Boundaries, "traversal_relation_limit") ||
+		!hasItemKind(relationLimited.Items, "boundary") {
 		t.Fatalf("relation cap hid unknown pending work: %#v", relationLimited)
 	}
 
@@ -474,6 +476,15 @@ func hasGap(gaps []Gap, code string) bool {
 func hasItemKind(items []Item, kind string) bool {
 	for _, item := range items {
 		if item.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+func hasBoundary(boundaries []Boundary, code string) bool {
+	for _, boundary := range boundaries {
+		if boundary.Code == code {
 			return true
 		}
 	}

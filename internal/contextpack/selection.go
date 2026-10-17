@@ -523,13 +523,18 @@ func walkGraph(ctx context.Context, graph indexedGraph, request Request, target 
 			if _, seen := visitedRelations[relationIdentity]; seen || !relationRelevant(request.TaskKind, relation.Kind) {
 				continue
 			}
+			depth := current.depth + 1
+			required := current.depth == 0 && relationRequired(request.TaskKind, relation.Kind)
 			if len(visitedRelations) >= request.Limits.MaxRelations {
+				result.Boundaries = append(result.Boundaries, Boundary{
+					RelationID: relation.ID, RelationFrom: cloneRef(relation.From), RelationTo: cloneRefPointer(relation.To),
+					Code: "traversal_relation_limit", Depth: depth, SourceRefs: cloneSourceRefs(relation.SourceRefs),
+				})
+				result.Items = append(result.Items, boundaryItem(relation, depth, required, "traversal_relation_limit"))
 				markLimit(result, "traversal_relation_limit", "relevant relations exceed the frozen traversal limit")
 				return nil
 			}
 			visitedRelations[relationIdentity] = struct{}{}
-			depth := current.depth + 1
-			required := current.depth == 0 && relationRequired(request.TaskKind, relation.Kind)
 			relationItem := relationEvidenceItem(relation, depth, required)
 			result.Items = append(result.Items, relationItem)
 
@@ -883,11 +888,15 @@ func relationEvidenceItem(relation Relation, depth int, required bool) Item {
 func boundaryItem(relation Relation, depth int, required bool, code string) Item {
 	id := relation.ID
 	from := cloneRef(relation.From)
+	why := "scope_or_resolution_boundary"
+	if strings.HasPrefix(code, "traversal_") {
+		why = "bounded_traversal_boundary"
+	}
 	return Item{
 		ID: stableItemID("boundary", relationKey(relation)+":"+code), Kind: "boundary",
 		RelationID: &id, RelationFrom: &from, RelationTo: cloneRefPointer(relation.To),
 		RelationKind: relation.Kind, Depth: depth,
-		RequiredForReview: required, WhyIncluded: "scope_or_resolution_boundary",
+		RequiredForReview: required, WhyIncluded: why,
 		SourceRefs: cloneSourceRefs(relation.SourceRefs),
 	}
 }
