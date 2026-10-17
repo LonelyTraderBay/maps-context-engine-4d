@@ -16,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 )
 
@@ -35,7 +36,9 @@ func TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile(t *testing.T) {
 	}
 	goMod := []byte("module example.test/captured\n\ngo 1.27.0\n")
 	capturedSource := []byte(`package captured
-import "example.test/captured/dep"
+import (
+	"example.test/captured/dep"
+)
 type Inner struct { Value int }
 func (i *Inner) Read() int { return i.Value }
 type Box[T any] struct { *Inner; Value T }
@@ -52,6 +55,16 @@ func (b *Box[T]) Use(item T) (result T) {
 }
 func Add(left, right int) int { return left + right }
 func External(record dep.Record) int { _ = record.Value; return record.Read() }
+type Reader interface { Read() int; Name() string }
+type LocalReader struct{}
+func (LocalReader) Read() int { return 1 }
+func (LocalReader) Name() string { return "local" }
+type PointerReader struct{}
+func (*PointerReader) Read() int { return 2 }
+func (*PointerReader) Name() string { return "pointer" }
+func UseReader(reader Reader) int { _ = reader.Name(); return reader.Read() }
+func Invoke(callback func()) { callback() }
+func ClosureCall() { func() {}() }
 `)
 	diskSource := []byte("package captured\nfunc Add(left, right int) int { panic(\"disk source must not win\") }\n")
 	diskDependency := []byte("package dep\ntype Record struct { Value int }\nfunc (Record) Read() int { panic(\"disk dependency must not win\") }\n")
@@ -113,6 +126,78 @@ func External(record dep.Record) int { _ = record.Value; return record.Read() }
 	}
 	if facts.TypedStatus != TypedComplete || len(facts.Defs) == 0 || len(facts.Uses) == 0 || len(facts.Selections) < 3 {
 		t.Fatalf("typed definitions, uses, and selections are incomplete: status=%s defs=%d uses=%d selections=%d diagnostics=%+v", facts.TypedStatus, len(facts.Defs), len(facts.Uses), len(facts.Selections), facts.Diagnostics)
+	}
+	for _, relation := range facts.Relations {
+		if err := relation.Validate(capturedSource); err != nil {
+			t.Fatalf("Go relation does not bind its captured source: %+v: %v", relation, err)
+		}
+	}
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationCallsInterface, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationMayDispatchTo, 2)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationCallsDirect, 0)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", indexerfacts.RelationCallsInterface, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", indexerfacts.RelationMayDispatchTo, 2)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "callback()", indexerfacts.RelationUnresolvedCall, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "func() {}()", indexerfacts.RelationCallsDirect, 1)
+	closureCount := 0
+	for _, declaration := range facts.Declarations {
+		if declaration.Kind == "closure" {
+			closureCount++
+		}
+	}
+	if closureCount != 1 {
+		t.Fatalf("direct function literal calls need a syntax closure owner, got %d", closureCount)
+	}
+	dependencyPackage := pkg.Imports["example.test/captured/dep"]
+	if dependencyPackage == nil {
+		t.Fatal("loaded root package has no captured dependency package")
+	}
+	dependencyInput := PackageInput{
+		GenerationID: testGeneration, ProfileID: run.ProfileID, ImportPath: "example.test/captured/dep",
+		ModuleKey: "example.test/captured", Variant: VariantProduction, MaxFileBytes: DefaultMaxFileBytes,
+		Files: []CapturedFile{{Path: "dep/record.go", Source: capturedDependency}},
+	}
+	aggregate, err := AnalyzeLoadedPackages([]LoadedPackageInput{{Input: input, Package: pkg}, {Input: dependencyInput, Package: dependencyPackage}}, run)
+	if err != nil {
+		t.Fatalf("aggregate root and imported package relations: %v", err)
+	}
+	dependencyFacts := packageFactsByPath(t, aggregate.Packages, dependencyInput.ImportPath)
+	dependencyReadID := model.Hash("")
+	for _, declaration := range dependencyFacts.Declarations {
+		if declaration.Name == "Read" && declaration.Kind == "method" {
+			dependencyReadID = declaration.SymbolID
+		}
+	}
+	if dependencyReadID == "" {
+		t.Fatal("captured dependency Read method has no local syntax symbol")
+	}
+	rootFacts := packageFactsByPath(t, aggregate.Packages, input.ImportPath)
+	crossPackageCall := relationAtCall(rootFacts.Relations, capturedSource, "record.Read()", indexerfacts.RelationCallsDirect)
+	if crossPackageCall == nil || crossPackageCall.TargetSymbolID == nil || *crossPackageCall.TargetSymbolID != dependencyReadID {
+		t.Fatal("aggregate analysis did not link the cross-package call to the dependency syntax symbol")
+	}
+	dependencyReadOccurrence := model.Hash("")
+	for _, declaration := range dependencyFacts.Declarations {
+		if declaration.SymbolID == dependencyReadID {
+			dependencyReadOccurrence = declaration.OccurrenceID
+		}
+	}
+	projectedCrossPackageCall := relationOccurrenceAtCall(aggregate.RelationOccurrences, capturedSource, "record.Read()", indexerfacts.RelationCallsDirect)
+	if dependencyReadOccurrence == "" || projectedCrossPackageCall == nil || projectedCrossPackageCall.TargetOccurrenceID == nil ||
+		*projectedCrossPackageCall.TargetOccurrenceID != dependencyReadOccurrence {
+		t.Fatal("relation occurrence projection did not bind the imported method occurrence")
+	}
+	repeatedAggregate, err := AnalyzeLoadedPackages([]LoadedPackageInput{{Input: input, Package: pkg}, {Input: dependencyInput, Package: dependencyPackage}}, run)
+	if err != nil || !reflect.DeepEqual(aggregate, repeatedAggregate) {
+		t.Fatalf("aggregate typed relations are not deterministic: err=%v", err)
+	}
+	if _, err := AnalyzeLoadedPackages([]LoadedPackageInput{{Input: input, Package: pkg}, {Input: input, Package: pkg}}, run); !errors.Is(err, ErrLoadRunMismatch) {
+		t.Fatalf("aggregate analysis accepted the same loaded package twice: %v", err)
+	}
+	mixedGeneration := dependencyInput
+	mixedGeneration.GenerationID = model.UUID("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
+	if _, err := AnalyzeLoadedPackages([]LoadedPackageInput{{Input: input, Package: pkg}, {Input: mixedGeneration, Package: dependencyPackage}}, run); !errors.Is(err, ErrLoadRunMismatch) {
+		t.Fatalf("aggregate analysis accepted packages from different generations: %v", err)
 	}
 	shadowDeclarations := declarationsNamed(facts, "shadow", "short_var_candidate")
 	if len(shadowDeclarations) != 2 {
@@ -290,6 +375,50 @@ func External(record dep.Record) int { _ = record.Value; return record.Read() }
 	if len(entries) != 0 {
 		t.Fatalf("per-run Go cache was not removed: %v", entries)
 	}
+}
+
+func assertRelationsAtCall(t *testing.T, relations []indexerfacts.RelationFact, source []byte, call string, kind indexerfacts.RelationKind, expected int) {
+	t.Helper()
+	count := 0
+	for _, relation := range relations {
+		if string(source[relation.Range.StartByte:relation.Range.EndByte]) == call && relation.Kind == kind {
+			count++
+		}
+	}
+	if count != expected {
+		t.Errorf("call %q has %d %s relations, want %d", call, count, kind, expected)
+	}
+}
+
+func relationAtCall(relations []indexerfacts.RelationFact, source []byte, call string, kind indexerfacts.RelationKind) *indexerfacts.RelationFact {
+	for index := range relations {
+		relation := &relations[index]
+		if string(source[relation.Range.StartByte:relation.Range.EndByte]) == call && relation.Kind == kind {
+			return relation
+		}
+	}
+	return nil
+}
+
+func packageFactsByPath(t *testing.T, packages []PackageFacts, importPath string) PackageFacts {
+	t.Helper()
+	for _, facts := range packages {
+		if facts.ImportPath == importPath {
+			return facts
+		}
+	}
+	t.Fatalf("analysis has no package %q", importPath)
+	return PackageFacts{}
+}
+
+func relationOccurrenceAtCall(relations []RelationOccurrence, source []byte, call string, kind indexerfacts.RelationKind) *RelationOccurrence {
+	for index := range relations {
+		relation := &relations[index]
+		if string(source[relation.Range.StartByte:relation.Range.EndByte]) == call && relation.Kind == kind {
+			return relation
+		}
+	}
+	return nil
 }
 
 func TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing(t *testing.T) {

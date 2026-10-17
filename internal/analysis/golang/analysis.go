@@ -14,6 +14,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 )
 
@@ -78,6 +79,7 @@ type PackageFacts struct {
 	Defs         []DefFact
 	Uses         []UseFact
 	Selections   []SelectionFact
+	Relations    []indexerfacts.RelationFact
 	Diagnostics  []Diagnostic
 }
 
@@ -145,8 +147,25 @@ type DeclarationOccurrence struct {
 }
 
 type Analysis struct {
-	Packages    []PackageFacts
-	Occurrences []DeclarationOccurrence
+	Packages            []PackageFacts
+	Occurrences         []DeclarationOccurrence
+	RelationOccurrences []RelationOccurrence
+}
+
+// RelationOccurrence is the source-level projection used for counts across Go
+// test variants. RelationFact IDs remain variant-specific within PackageFacts.
+type RelationOccurrence struct {
+	ID                 model.Hash
+	SourceOccurrenceID model.Hash
+	TargetOccurrenceID *model.Hash
+	TargetSymbolID     *model.Hash
+	Kind               indexerfacts.RelationKind
+	EvidenceKind       indexerfacts.EvidenceKind
+	SitePath           string
+	Range              model.ByteRange
+	Reason             string
+	UnresolvedLabel    *string
+	Variants           []PackageVariant
 }
 
 var (
@@ -204,6 +223,10 @@ func AnalyzePackages(inputs []PackageInput) (Analysis, error) {
 	}
 	sort.Slice(packages, func(i, j int) bool { return packages[i].Key < packages[j].Key })
 
+	return Analysis{Packages: packages, Occurrences: declarationOccurrences(packages)}, nil
+}
+
+func declarationOccurrences(packages []PackageFacts) []DeclarationOccurrence {
 	occurrences := make(map[model.Hash]*DeclarationOccurrence)
 	for _, pkg := range packages {
 		for _, declaration := range pkg.Declarations {
@@ -224,14 +247,14 @@ func AnalyzePackages(inputs []PackageInput) (Analysis, error) {
 			occurrence.SymbolIDs = append(occurrence.SymbolIDs, declaration.SymbolID)
 		}
 	}
-	result := Analysis{Packages: packages, Occurrences: make([]DeclarationOccurrence, 0, len(occurrences))}
+	result := make([]DeclarationOccurrence, 0, len(occurrences))
 	for _, occurrence := range occurrences {
 		sort.Slice(occurrence.Variants, func(i, j int) bool { return occurrence.Variants[i] < occurrence.Variants[j] })
 		sort.Slice(occurrence.SymbolIDs, func(i, j int) bool { return occurrence.SymbolIDs[i] < occurrence.SymbolIDs[j] })
-		result.Occurrences = append(result.Occurrences, *occurrence)
+		result = append(result, *occurrence)
 	}
-	sort.Slice(result.Occurrences, func(i, j int) bool { return result.Occurrences[i].ID < result.Occurrences[j].ID })
-	return result, nil
+	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
+	return result
 }
 
 func validateInput(input PackageInput) error {
@@ -333,6 +356,7 @@ func analyzeOne(input PackageInput) (PackageFacts, error) {
 		Defs:         make([]DefFact, 0),
 		Uses:         make([]UseFact, 0),
 		Selections:   make([]SelectionFact, 0),
+		Relations:    make([]indexerfacts.RelationFact, 0),
 		Diagnostics:  make([]Diagnostic, 0),
 	}
 	packageOccurrence, err := model.HashValue("go-scope-occurrence-v1", map[string]any{
@@ -722,6 +746,7 @@ func (visitor *fileVisitor) walkFuncLit(literal *ast.FuncLit, parent *Scope) {
 	if literal == nil || visitor.err != nil {
 		return
 	}
+	visitor.addClosureDeclaration(literal, parent)
 	functionScope := visitor.addScope(literal, parent, "closure", model.ByteRange{})
 	if functionScope == nil {
 		return
@@ -730,6 +755,52 @@ func (visitor *fileVisitor) walkFuncLit(literal *ast.FuncLit, parent *Scope) {
 	if literal.Body != nil {
 		visitor.walkStatements(literal.Body.List, functionScope, functionScope)
 	}
+}
+
+func (visitor *fileVisitor) addClosureDeclaration(literal *ast.FuncLit, parent *Scope) {
+	if visitor.err != nil || literal == nil || literal.Type == nil || parent == nil {
+		return
+	}
+	declarationRange, ok := visitor.rangeOf(literal)
+	if !ok {
+		return
+	}
+	tokenFile := visitor.fileSet.File(literal.Type.Func)
+	if tokenFile == nil {
+		visitor.err = ErrInvalidASTRange
+		return
+	}
+	nameOffset := int64(tokenFile.Offset(literal.Type.Func))
+	nameRange := model.ByteRange{StartByte: nameOffset, EndByte: nameOffset}
+	identity, err := model.HashValue("go-symbol-v1", map[string]any{
+		"generation_id": visitor.input.GenerationID, "profile_id": visitor.input.ProfileID,
+		"package_key": visitor.packageKey, "package_variant": string(visitor.input.Variant),
+		"language": "go", "path": visitor.path, "kind": "closure",
+		"lexical_owner":          parent.ID,
+		"declaration_start_byte": declarationRange.StartByte, "declaration_end_byte": declarationRange.EndByte,
+		"name_start_byte": nameRange.StartByte, "name_end_byte": nameRange.EndByte,
+	})
+	if err != nil {
+		visitor.err = err
+		return
+	}
+	occurrence, err := model.HashValue("go-symbol-occurrence-v1", map[string]any{
+		"generation_id": visitor.input.GenerationID, "profile_id": visitor.input.ProfileID,
+		"import_path": visitor.input.ImportPath, "module_key": visitor.input.ModuleKey,
+		"path": visitor.path, "kind": "closure", "lexical_owner": parent.OccurrenceID,
+		"content_hash":           model.SHA256(visitor.source),
+		"declaration_start_byte": declarationRange.StartByte, "declaration_end_byte": declarationRange.EndByte,
+		"name_start_byte": nameRange.StartByte, "name_end_byte": nameRange.EndByte,
+	})
+	if err != nil {
+		visitor.err = err
+		return
+	}
+	visitor.facts.Declarations = append(visitor.facts.Declarations, Declaration{
+		SymbolID: identity, OccurrenceID: occurrence, PackageKey: visitor.packageKey,
+		ScopeID: parent.ID, ScopeOccurrenceID: parent.OccurrenceID, Path: visitor.path,
+		Kind: "closure", NameRange: nameRange, DeclarationRange: declarationRange,
+	})
 }
 
 func (visitor *fileVisitor) addFuncSignature(functionType *ast.FuncType, scope *Scope) {

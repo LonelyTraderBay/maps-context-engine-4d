@@ -47,6 +47,14 @@ type SelectionFact struct {
 	Indirect bool
 }
 
+// LoadedPackageInput binds captured source facts to one exact package object
+// from a LoadRun. The package pointer is explicit so test variants are never
+// selected by import path alone.
+type LoadedPackageInput struct {
+	Input   PackageInput
+	Package *packages.Package
+}
+
 var ErrLoadRunMismatch = errors.New("Go typed package does not belong to this LoadRun")
 
 type typedSite struct {
@@ -66,7 +74,103 @@ type typedSiteKey struct {
 // Source bytes and go/types identities are checked before they can be joined
 // with syntax declarations.
 func AnalyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Package) (PackageFacts, error) {
-	facts, err := AnalyzePackage(input)
+	return analyzeLoadedPackage(input, run, pkg, nil, nil, []*packages.Package{pkg})
+}
+
+// AnalyzeLoadedPackages analyzes an explicitly selected set from one LoadRun.
+// It links cross-package typed targets to local declaration IDs when those
+// target packages are included, while keeping absent packages as stable typed
+// object identities.
+func AnalyzeLoadedPackages(inputs []LoadedPackageInput, run *LoadRun) (Analysis, error) {
+	if run == nil || len(inputs) == 0 {
+		return Analysis{}, fmt.Errorf("%w: a LoadRun and at least one package are required", ErrLoadRunMismatch)
+	}
+	candidatePackages := make([]*packages.Package, 0, len(inputs))
+	bases := make([]PackageFacts, len(inputs))
+	aliases := make(map[types.Object]model.Hash)
+	seenPackages := make(map[*types.Package]struct{}, len(inputs))
+	seenPackagePointers := make(map[*packages.Package]struct{}, len(inputs))
+	generationID := inputs[0].Input.GenerationID
+	for index, loaded := range inputs {
+		input, pkg := loaded.Input, loaded.Package
+		if pkg == nil || input.ProfileID != run.ProfileID || input.GenerationID != generationID ||
+			!runOwnsPackage(run, pkg) || !packageIdentityMatches(input, pkg) {
+			return Analysis{}, ErrLoadRunMismatch
+		}
+		if _, duplicate := seenPackagePointers[pkg]; duplicate {
+			return Analysis{}, fmt.Errorf("%w: duplicate loaded package input", ErrLoadRunMismatch)
+		}
+		seenPackagePointers[pkg] = struct{}{}
+		if pkg.Types != nil {
+			if _, owned := run.typesRegistry[pkg.Types]; !owned {
+				return Analysis{}, ErrLoadRunMismatch
+			}
+			if _, duplicate := seenPackages[pkg.Types]; duplicate {
+				return Analysis{}, fmt.Errorf("%w: duplicate loaded package input", ErrLoadRunMismatch)
+			}
+			seenPackages[pkg.Types] = struct{}{}
+		}
+		for _, file := range input.Files {
+			if run.capturedSourceHashes[file.Path] != model.SHA256(file.Source) {
+				return Analysis{}, fmt.Errorf("%w: %s", ErrCapturedSource, file.Path)
+			}
+		}
+		base, err := AnalyzePackage(input)
+		if err != nil {
+			return Analysis{}, err
+		}
+		bases[index] = base
+		candidatePackages = append(candidatePackages, pkg)
+		if pkg.Types == nil || pkg.TypesInfo == nil || pkg.Fset == nil || pkg.TypesInfo.Defs == nil {
+			continue
+		}
+		captured := capturedFiles(input)
+		declarations := declarationIDsBySite(base.Declarations)
+		for ident, object := range pkg.TypesInfo.Defs {
+			if ident == nil || object == nil || ident.Name == "_" {
+				continue
+			}
+			site, err := typedIdentifierSite(run, pkg.Fset, captured, ident)
+			if err != nil {
+				return Analysis{}, err
+			}
+			id, ok := declarations[typedSiteKey{path: site.path, name: site.name, start: site.range_.StartByte, end: site.range_.EndByte}]
+			if !ok {
+				continue
+			}
+			if previous, exists := aliases[object]; exists && previous != id {
+				return Analysis{}, fmt.Errorf("%w: one type object maps to multiple syntax declarations", ErrLoadRunMismatch)
+			}
+			aliases[object] = id
+		}
+	}
+
+	packagesFacts := make([]PackageFacts, len(inputs))
+	for index, loaded := range inputs {
+		facts, err := analyzeLoadedPackage(loaded.Input, run, loaded.Package, &bases[index], aliases, candidatePackages)
+		if err != nil {
+			return Analysis{}, err
+		}
+		packagesFacts[index] = facts
+	}
+	sort.Slice(packagesFacts, func(i, j int) bool { return packagesFacts[i].Key < packagesFacts[j].Key })
+	occurrences := declarationOccurrences(packagesFacts)
+	relationOccurrences, err := aggregateRelationOccurrences(packagesFacts)
+	if err != nil {
+		return Analysis{}, err
+	}
+	return Analysis{Packages: packagesFacts, Occurrences: occurrences, RelationOccurrences: relationOccurrences}, nil
+}
+
+func analyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Package, base *PackageFacts,
+	externalSymbols map[types.Object]model.Hash, candidatePackages []*packages.Package) (PackageFacts, error) {
+	var facts PackageFacts
+	var err error
+	if base == nil {
+		facts, err = AnalyzePackage(input)
+	} else {
+		facts = *base
+	}
 	if err != nil {
 		return PackageFacts{}, err
 	}
@@ -157,6 +261,10 @@ func AnalyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Packag
 		if id, ok := objectIDs[object]; ok {
 			return id, nil
 		}
+		if id, ok := externalSymbols[object]; ok {
+			objectIDs[object] = id
+			return id, nil
+		}
 		if object == nil {
 			return "", errors.New("Go type information contains an empty object")
 		}
@@ -222,6 +330,9 @@ func AnalyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Packag
 			Kind: selectionKind(selection.Kind()), Index: append([]int(nil), selection.Index()...), Indirect: selection.Indirect(),
 		})
 	}
+	if err := collectCallRelations(input, run, pkg, &facts, objectID, candidatePackages); err != nil {
+		return PackageFacts{}, err
+	}
 
 	facts.TypedStatus = TypedComplete
 	if !complete {
@@ -261,9 +372,26 @@ func partialTypedFacts(facts PackageFacts) PackageFacts {
 }
 
 func runOwnsPackage(run *LoadRun, target *packages.Package) bool {
-	for _, pkg := range run.packages {
+	if run == nil || target == nil {
+		return false
+	}
+	seen := make(map[*packages.Package]struct{})
+	stack := append([]*packages.Package(nil), run.packages...)
+	for len(stack) > 0 {
+		pkg := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if pkg == nil {
+			continue
+		}
 		if pkg == target {
 			return true
+		}
+		if _, visited := seen[pkg]; visited {
+			continue
+		}
+		seen[pkg] = struct{}{}
+		for _, imported := range pkg.Imports {
+			stack = append(stack, imported)
 		}
 	}
 	return false
