@@ -1969,7 +1969,7 @@ class ArchivePublicationTests(unittest.TestCase):
             (root / SPEC_PATH.name).write_bytes(SPEC_PATH.read_bytes())
             archive = self._seed_valid_archive(root)
             stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
-            relative = "/".join(["n" * 45, "m" * 45, "retained-" + "x" * 45 + ".txt"])
+            relative = "/".join(["n" * 55, "m" * 55, "retained-" + "x" * 55 + ".txt"])
             payload = b"deep candidate member retained\n"
             member = _member_path(stage, relative, create_parent=True)
             member.write_bytes(payload)
