@@ -2138,7 +2138,7 @@ class GitHubObserverTests(unittest.TestCase):
         body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return {}, body, payload, "2026-10-16T00:00:00Z", "2026-10-16T00:00:01Z"
 
-    def test_closing_commit_snapshot_preserves_full_git_message(self) -> None:
+    def test_closing_commit_snapshot_projects_git_body_without_subject(self) -> None:
         payload_sha = "a" * 40
         closing_sha = "b" * 40
         message = "docs(progress): Đóng task\n\nNội dung và trailer đầy đủ"
@@ -2150,7 +2150,22 @@ class GitHubObserverTests(unittest.TestCase):
         }, expected_sha=closing_sha, payload_sha=payload_sha)
 
         self.assertEqual("docs(progress): Đóng task", snapshot["subject"])
-        self.assertEqual(message, snapshot["body"])
+        self.assertEqual("\nNội dung và trailer đầy đủ", snapshot["body"])
+
+    def test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body(self) -> None:
+        payload_sha = "a" * 40
+        closing_sha = "b" * 40
+
+        def project(message: str) -> dict[str, object]:
+            return _closing_commit_snapshot({
+                "sha": closing_sha,
+                "parents": [{"sha": payload_sha}],
+                "commit": {"message": message},
+                "files": [{"filename": "Maps-Context-Engine-4D_SPEC.md"}],
+            }, expected_sha=closing_sha, payload_sha=payload_sha)
+
+        self.assertEqual("\r\nbody", project("subject\r\n\r\nbody")["body"])
+        self.assertEqual("", project("subject only")["body"])
 
     def test_current_tracker_reader_rejects_malformed_row_without_index_error(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-live-tracker-") as temp:

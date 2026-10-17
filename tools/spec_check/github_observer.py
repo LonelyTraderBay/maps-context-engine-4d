@@ -198,14 +198,16 @@ def _closing_commit_snapshot(commit_body: dict[str, Any], *, expected_sha: str, 
             or not isinstance(files, list) or len(files) >= 300
             or any(not isinstance(item, dict) or not isinstance(item.get("filename"), str) for item in files)):
         raise GitHubObserverError("fresh closing commit source thiếu exact parent/message/file graph")
-    message_lines = message.splitlines()
+    subject_line, separator, remainder = message.partition("\n")
+    subject = subject_line.removesuffix("\r")
+    body = remainder if separator else ""
     return {
         "kind": "git_commit_snapshot", "sha": expected_sha,
         "parents": [item["sha"] for item in parents],
-        "subject": message_lines[0] if message_lines else "",
-        # GitCommitSnapshot.body retains the complete `%B` message, matching
-        # the local Git snapshot and the GitHub REST `commit.message` field.
-        "body": message,
+        "subject": subject,
+        # REST exposes subject + separator + body in commit.message; the
+        # retained GitCommitSnapshot stores subject separately and `%b` here.
+        "body": body,
         "changed_paths": sorted(item["filename"] for item in files),
     }
 
