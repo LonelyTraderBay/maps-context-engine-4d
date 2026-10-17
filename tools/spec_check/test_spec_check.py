@@ -194,6 +194,9 @@ class SpecContractTests(unittest.TestCase):
             if line.startswith("| T") and "| G0 |" in line and "| DONE | Codex |" in line
         )
         lines[g0_index] = lines[g0_index].replace("| DONE | Codex |", "| VERIFY | Codex |", 1)
+        seal_indexes = [i for i, line in enumerate(lines) if line == "  design_seal: IN_PROGRESS"]
+        self.assertEqual(1, len(seal_indexes))
+        lines[seal_indexes[0]] = "  design_seal: PASS"
         changed = "\n".join(lines) + "\n"
         errors = validate_spec_text(changed)
         self.assertTrue(any("design_seal PASS khi foundation G0 chưa effective DONE" in error for error in errors))
