@@ -187,12 +187,16 @@ func LoadTrustedPackages(ctx context.Context, request LoadRequest) (*LoadRun, er
 
 	overlay := make(map[string][]byte, len(request.CapturedFiles))
 	captured := make(map[string][]byte, len(request.CapturedFiles))
+	snapshotRoot, err := canonicalDirectoryPath(request.SnapshotRoot)
+	if err != nil {
+		return nil, fmt.Errorf("%w: invalid snapshot root", ErrInvalidLoadRequest)
+	}
 	for relative, source := range request.CapturedFiles {
-		absolute := filepath.Join(request.SnapshotRoot, filepath.FromSlash(relative))
-		if !isWithin(request.SnapshotRoot, absolute) {
+		absolute := filepath.Join(snapshotRoot, filepath.FromSlash(relative))
+		canonical, err := canonicalFilePath(absolute)
+		if err != nil || !isWithin(snapshotRoot, canonical) {
 			return nil, fmt.Errorf("%w: captured path escapes snapshot root", ErrInvalidLoadRequest)
 		}
-		canonical := filepath.Clean(absolute)
 		overlay[canonical] = append([]byte(nil), source...)
 		captured[canonical] = source
 	}
@@ -249,7 +253,14 @@ func LoadTrustedPackages(ctx context.Context, request LoadRequest) (*LoadRun, er
 		}
 		if pkg.Module != nil && pkg.Module.Path == modulePrefix {
 			for _, sourcePath := range pkg.CompiledGoFiles {
-				if _, exists := captured[filepath.Clean(sourcePath)]; !exists {
+				canonical, err := canonicalFilePath(sourcePath)
+				if err != nil {
+					addLoadDiagnostic(run, "package_closure_incomplete", "package chứa file ngoài snapshot; type facts bị hạ xuống partial")
+					pkg.Types = nil
+					pkg.TypesInfo = nil
+					break
+				}
+				if _, exists := captured[canonical]; !exists {
 					addLoadDiagnostic(run, "package_closure_incomplete", "package chứa file ngoài snapshot; type facts bị hạ xuống partial")
 					pkg.Types = nil
 					pkg.TypesInfo = nil
@@ -832,6 +843,31 @@ func canonicalDirectoryPath(path string) (string, error) {
 	return resolved, nil
 }
 
+func canonicalFilePath(path string) (string, error) {
+	absolute, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	absolute = filepath.Clean(absolute)
+	if hasSymlinkComponent(absolute) {
+		return "", errors.New("file path contains a linked path component")
+	}
+	info, err := os.Lstat(absolute)
+	if err != nil || !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 {
+		return "", errors.New("file must exist and cannot be a link")
+	}
+	resolved, err := filepath.EvalSymlinks(absolute)
+	if err != nil {
+		return "", err
+	}
+	resolved = filepath.Clean(resolved)
+	resolvedInfo, err := os.Stat(resolved)
+	if err != nil || !resolvedInfo.Mode().IsRegular() || !os.SameFile(info, resolvedInfo) {
+		return "", errors.New("file path resolves to a different object")
+	}
+	return resolved, nil
+}
+
 func hasSymlinkComponent(path string) bool {
 	volume := filepath.VolumeName(path)
 	root := volume + string(filepath.Separator)
@@ -901,7 +937,10 @@ func newLoadRunID() (model.UUID, error) {
 
 func capturedParseFile(captured map[string][]byte) func(*token.FileSet, string, []byte) (*ast.File, error) {
 	return func(fset *token.FileSet, filename string, supplied []byte) (*ast.File, error) {
-		key := filepath.Clean(filename)
+		key, err := canonicalFilePath(filename)
+		if err != nil {
+			return nil, fmt.Errorf("%w: %s", ErrCapturedSource, filepath.Base(filename))
+		}
 		source, ok := captured[key]
 		if !ok || supplied == nil || !bytes.Equal(source, supplied) {
 			return nil, fmt.Errorf("%w: %s", ErrCapturedSource, filepath.Base(filename))

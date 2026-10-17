@@ -107,22 +107,26 @@ func Run(ctx context.Context, spec Spec) (Result, error) {
 }
 
 type boundedBuffer struct {
-	bytes.Buffer
+	buffer   bytes.Buffer
 	limit    int
 	exceeded bool
 }
 
+func (buffer *boundedBuffer) Bytes() []byte {
+	return buffer.buffer.Bytes()
+}
+
 func (buffer *boundedBuffer) Write(value []byte) (int, error) {
-	remaining := buffer.limit - buffer.Len()
+	remaining := buffer.limit - buffer.buffer.Len()
 	if remaining <= 0 {
 		buffer.exceeded = buffer.exceeded || len(value) > 0
 		return len(value), nil
 	}
 	if len(value) > remaining {
 		buffer.exceeded = true
-		_, _ = buffer.Buffer.Write(value[:remaining])
+		_, _ = buffer.buffer.Write(value[:remaining])
 		return len(value), nil
 	}
-	_, _ = buffer.Buffer.Write(value)
+	_, _ = buffer.buffer.Write(value)
 	return len(value), nil
 }
