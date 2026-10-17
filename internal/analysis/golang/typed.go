@@ -118,7 +118,7 @@ func AnalyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Packag
 		}] = declaration.SymbolID
 	}
 	objectIDs := make(map[types.Object]model.Hash, len(pkg.TypesInfo.Defs))
-	complete := true
+	complete := !pkg.IllTyped && len(pkg.Errors) == 0 && len(pkg.TypeErrors) == 0
 
 	for ident, object := range pkg.TypesInfo.Defs {
 		if ident == nil || object == nil || ident.Name == "_" {
@@ -226,6 +226,12 @@ func AnalyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Packag
 	facts.TypedStatus = TypedComplete
 	if !complete {
 		facts.TypedStatus = TypedPartial
+	}
+	if pkg.IllTyped || len(pkg.Errors) > 0 || len(pkg.TypeErrors) > 0 {
+		facts.Diagnostics = append(facts.Diagnostics, Diagnostic{
+			Code: "GO_TYPES_INCOMPLETE", Severity: "warning",
+			Message: "typed facts are partial because the package or a dependency has type-check errors",
+		})
 	}
 	sortFacts(&facts)
 	sortTypedFacts(&facts)

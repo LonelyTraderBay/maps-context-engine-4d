@@ -226,6 +226,16 @@ func External(record dep.Record) int { _ = record.Value; return record.Read() }
 	if secondRun.Packages()[0].Types == pkg.Types {
 		t.Fatal("go/types package object was reused across independent loads")
 	}
+	originalIllTyped := pkg.IllTyped
+	pkg.IllTyped = true
+	partialFacts, partialErr := AnalyzeLoadedPackage(input, run, pkg)
+	pkg.IllTyped = originalIllTyped
+	if partialErr != nil || partialFacts.TypedStatus != TypedPartial || partialFacts.SyntaxStatus != SyntaxComplete || len(partialFacts.Declarations) == 0 {
+		t.Fatalf("ill-typed package must retain syntax facts and never claim complete types: status=%s syntax=%s declarations=%d err=%v", partialFacts.TypedStatus, partialFacts.SyntaxStatus, len(partialFacts.Declarations), partialErr)
+	}
+	if !hasDiagnostic(partialFacts, "GO_TYPES_INCOMPLETE") {
+		t.Fatalf("ill-typed package must explain partial typed status: %+v", partialFacts.Diagnostics)
+	}
 	independentFacts, err := AnalyzeLoadedPackage(input, secondRun, secondRun.Packages()[0])
 	if err != nil || !reflect.DeepEqual(facts, independentFacts) {
 		t.Fatalf("identical captured input produced different typed facts across LoadRuns: err=%v", err)
