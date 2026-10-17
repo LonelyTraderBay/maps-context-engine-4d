@@ -19,7 +19,7 @@ if str(ROOT) not in sys.path:
 
 from tools.spec_check.archive import (
     MAX_ARCHIVE_BYTES, MAX_ARCHIVE_FILES, MAX_MEMBER_BYTES, ArchiveError,
-    _canonical, _is_reparse, _read_bounded, _safe_relative, _validate_graph,
+    _canonical, _is_reparse, _member_path, _native_path, _read_bounded, _safe_relative, _validate_graph,
     persist_publication_projection, publish_archive, verify_archive,
 )
 from tools.spec_check.schema import strict_json_loads
@@ -110,7 +110,7 @@ def main(argv: list[str] | None = None) -> int:
             if ref in expected_members or ref in {"manifest.json", "seal.json", "archive-candidate.json"}:
                 raise ArchiveError(f"archive candidate member bị trùng hoặc dành riêng: {ref}")
             expected_members.add(ref)
-            member = staging.joinpath(*ref.split("/"))
+            member = _member_path(staging, ref)
             data = _read_bounded(member)
             expected_length, expected_sha = item.get("byte_length"), item.get("sha256")
             if (isinstance(expected_length, bool) or not isinstance(expected_length, int)
@@ -126,7 +126,8 @@ def main(argv: list[str] | None = None) -> int:
         if candidate_exists:
             allowed_extra.add("archive-candidate.json")
         actual_members: set[str] = set()
-        for directory, dirs, names in os.walk(staging, followlinks=False):
+        native_staging = _native_path(staging)
+        for directory, dirs, names in os.walk(native_staging, followlinks=False):
             base = Path(directory)
             for name in dirs:
                 if _is_reparse((base / name).lstat()):
@@ -135,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
                 member = base / name
                 if _is_reparse(member.lstat()):
                     raise ArchiveError(f"archive staging chứa file link/reparse: {member}")
-                actual_members.add(member.relative_to(staging).as_posix())
+                actual_members.add(member.relative_to(native_staging).as_posix())
         if len(actual_members) > MAX_ARCHIVE_FILES + 3:
             raise ArchiveError("archive staging vượt giới hạn files")
         permitted = expected_members | allowed_extra

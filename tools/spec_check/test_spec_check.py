@@ -1969,29 +1969,46 @@ class ArchivePublicationTests(unittest.TestCase):
             (root / SPEC_PATH.name).write_bytes(SPEC_PATH.read_bytes())
             archive = self._seed_valid_archive(root)
             stage = root / "artifacts" / "git-delivery" / f".staging-{archive['delivery_id']}"
+            relative = "/".join(["n" * 45, "m" * 45, "retained-" + "x" * 45 + ".txt"])
+            payload = b"deep candidate member retained\n"
+            member = _member_path(stage, relative, create_parent=True)
+            member.write_bytes(payload)
+            archive["files"].append({
+                "path": relative,
+                "byte_length": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            })
+            archive["files"].sort(key=lambda item: item["path"])
+            self.assertGreater(len(str(stage.joinpath(*relative.split("/")))), 260)
             (stage / "archive-candidate.json").write_bytes(_canonical(archive))
             operation_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
-            with contextlib.redirect_stdout(io.StringIO()):
-                result = publish_git_archive_main([
-                    "--root", str(root), "--delivery", archive["delivery_id"],
-                    "--operation-id", operation_id,
-                ])
-            self.assertEqual(0, result)
             final = root / "artifacts" / "git-delivery" / archive["delivery_id"]
             receipt = root / "artifacts" / "git-delivery" / "operations" / operation_id / "publication.json"
-            self.assertTrue(final.is_dir())
-            self.assertFalse(stage.exists())
-            self.assertTrue(receipt.is_file())
-            self.assertEqual(
-                hashlib.sha256(_canonical(strict_json_loads((final / "manifest.json").read_bytes()))).hexdigest(),
-                json.loads(receipt.read_text(encoding="utf-8"))["archive_manifest_sha256"],
-            )
-            with contextlib.redirect_stdout(io.StringIO()):
-                retry = publish_git_archive_main([
-                    "--root", str(root), "--delivery", archive["delivery_id"],
-                    "--operation-id", operation_id,
-                ])
-            self.assertEqual(0, retry)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    result = publish_git_archive_main([
+                        "--root", str(root), "--delivery", archive["delivery_id"],
+                        "--operation-id", operation_id,
+                    ])
+                self.assertEqual(0, result)
+                self.assertTrue(final.is_dir())
+                self.assertEqual(_read_bounded(_member_path(final, relative)), payload)
+                self.assertFalse(stage.exists())
+                self.assertTrue(receipt.is_file())
+                self.assertEqual(
+                    hashlib.sha256(_canonical(strict_json_loads((final / "manifest.json").read_bytes()))).hexdigest(),
+                    json.loads(receipt.read_text(encoding="utf-8"))["archive_manifest_sha256"],
+                )
+                with contextlib.redirect_stdout(io.StringIO()):
+                    retry = publish_git_archive_main([
+                        "--root", str(root), "--delivery", archive["delivery_id"],
+                        "--operation-id", operation_id,
+                    ])
+                self.assertEqual(0, retry)
+            finally:
+                member.unlink(missing_ok=True)
+                if final.is_dir():
+                    _member_path(final, relative).unlink(missing_ok=True)
 
     def test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-archive-cli-resume-") as temp:

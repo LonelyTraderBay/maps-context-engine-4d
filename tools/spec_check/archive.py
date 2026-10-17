@@ -288,7 +288,8 @@ def _verify_tree(root: Path, archive: dict[str, Any], seal: dict[str, Any], spec
         if total > MAX_ARCHIVE_BYTES:
             raise ArchiveError("archive tổng vượt 100 MiB")
     actual_paths: set[str] = set()
-    for directory, dirs, names in os.walk(root, followlinks=False):
+    native_root = _native_path(root)
+    for directory, dirs, names in os.walk(native_root, followlinks=False):
         base = Path(directory)
         for name in dirs:
             if _is_reparse((base / name).lstat()):
@@ -297,7 +298,7 @@ def _verify_tree(root: Path, archive: dict[str, Any], seal: dict[str, Any], spec
             path = base / name
             if _is_reparse(path.lstat()):
                 raise ArchiveError(f"archive chứa file link/reparse: {path}")
-            actual_paths.add(path.relative_to(root).as_posix())
+            actual_paths.add(path.relative_to(native_root).as_posix())
     if actual_paths != expected_paths | {"manifest.json", "seal.json"}:
         raise ArchiveError("archive tree có member thiếu hoặc ngoài manifest")
     _validate_graph(root, archive, spec_path)
