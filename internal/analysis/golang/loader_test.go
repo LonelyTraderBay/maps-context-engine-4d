@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -226,14 +227,40 @@ func External(record dep.Record) int { _ = record.Value; return record.Read() }
 	if secondRun.Packages()[0].Types == pkg.Types {
 		t.Fatal("go/types package object was reused across independent loads")
 	}
-	originalIllTyped := pkg.IllTyped
-	pkg.IllTyped = true
-	partialFacts, partialErr := AnalyzeLoadedPackage(input, run, pkg)
-	pkg.IllTyped = originalIllTyped
+	typeErrorSource := []byte(strings.Replace(string(capturedSource), "return left + right", "return left + missing + right", 1))
+	if bytes.Equal(typeErrorSource, capturedSource) {
+		t.Fatal("type-error fixture did not change the captured Add function")
+	}
+	typeErrorRequest := request
+	typeErrorRequest.CapturedFiles = make(map[string][]byte, len(request.CapturedFiles))
+	typeErrorRequest.CaptureHashes = make(map[string]model.Hash, len(request.CaptureHashes))
+	for path, source := range request.CapturedFiles {
+		typeErrorRequest.CapturedFiles[path] = append([]byte(nil), source...)
+	}
+	for path, digest := range request.CaptureHashes {
+		typeErrorRequest.CaptureHashes[path] = digest
+	}
+	typeErrorRequest.CapturedFiles["main.go"] = typeErrorSource
+	typeErrorRequest.CaptureHashes["main.go"] = hashBytes(typeErrorSource)
+	typeErrorRun, err := LoadTrustedPackages(ctx, typeErrorRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	typeErrorPackages := typeErrorRun.Packages()
+	if len(typeErrorPackages) != 1 {
+		t.Fatalf("type-error load should retain one root package, got %d: %+v", len(typeErrorPackages), typeErrorRun.Diagnostics)
+	}
+	typeErrorPackage := typeErrorPackages[0]
+	if !typeErrorPackage.IllTyped && len(typeErrorPackage.Errors) == 0 && len(typeErrorPackage.TypeErrors) == 0 {
+		t.Fatalf("type-error source was accepted by go/packages: run=%+v package=%+v", typeErrorRun, typeErrorPackage)
+	}
+	typeErrorInput := input
+	typeErrorInput.Files = []CapturedFile{{Path: "main.go", Source: typeErrorSource}}
+	partialFacts, partialErr := AnalyzeLoadedPackage(typeErrorInput, typeErrorRun, typeErrorPackage)
 	if partialErr != nil || partialFacts.TypedStatus != TypedPartial || partialFacts.SyntaxStatus != SyntaxComplete || len(partialFacts.Declarations) == 0 {
 		t.Fatalf("ill-typed package must retain syntax facts and never claim complete types: status=%s syntax=%s declarations=%d err=%v", partialFacts.TypedStatus, partialFacts.SyntaxStatus, len(partialFacts.Declarations), partialErr)
 	}
-	if !hasDiagnostic(partialFacts, "GO_TYPES_INCOMPLETE") {
+	if !hasDiagnostic(partialFacts, "GO_TYPES_UNAVAILABLE") && !hasDiagnostic(partialFacts, "GO_TYPES_INCOMPLETE") {
 		t.Fatalf("ill-typed package must explain partial typed status: %+v", partialFacts.Diagnostics)
 	}
 	independentFacts, err := AnalyzeLoadedPackage(input, secondRun, secondRun.Packages()[0])
