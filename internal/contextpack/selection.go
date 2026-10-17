@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
@@ -155,17 +156,23 @@ const (
 )
 
 type Item struct {
-	ID                model.Hash
-	Kind              string
-	Ref               *Ref
-	RelationID        *model.Hash
-	RelationFrom      *Ref
-	RelationTo        *Ref
-	RelationKind      string
-	Depth             int
-	RequiredForReview bool
-	WhyIncluded       string
-	SourceRefs        []model.SourceRef
+	ID                                       model.Hash
+	Kind                                     string
+	NodeKind                                 string
+	Plane                                    string
+	PotentialImplicitSerializationNameChange bool
+	Ref                                      *Ref
+	RelationID                               *model.Hash
+	RelationFrom                             *Ref
+	RelationTo                               *Ref
+	RelationKind                             string
+	EvidenceKind                             string
+	ResolutionStatus                         string
+	BoundaryCode                             string
+	Depth                                    int
+	RequiredForReview                        bool
+	WhyIncluded                              string
+	SourceRefs                               []model.SourceRef
 }
 
 type Boundary struct {
@@ -179,6 +186,8 @@ type Boundary struct {
 
 type Result struct {
 	Status               SelectionStatus
+	TaskKind             TaskKind
+	ScopeIdentities      []ScopeIdentity
 	Target               *Ref
 	Candidates           []Ref
 	Items                []Item
@@ -223,7 +232,9 @@ func Build(ctx context.Context, input Input) (Result, error) {
 	}
 
 	result := Result{
-		Status: StatusNotFound, Candidates: make([]Ref, 0), Items: make([]Item, 0),
+		Status: StatusNotFound, TaskKind: input.Request.TaskKind,
+		ScopeIdentities: scopeIdentities(input.Scope),
+		Candidates:      make([]Ref, 0), Items: make([]Item, 0),
 		Boundaries: make([]Boundary, 0), Gaps: cloneGaps(input.Graph.Gaps),
 		EnumerationComplete: input.Graph.Complete && len(input.Scope.UnavailableMembers) == 0 && len(input.Graph.Gaps) == 0,
 	}
@@ -867,8 +878,11 @@ func nodeItem(node Node, depth int, required bool, why string) Item {
 		kind = "source_range"
 	}
 	return Item{
-		ID: stableItemID("node", refKey(node.Ref)), Kind: kind, Ref: &ref,
-		Depth: depth, RequiredForReview: required, WhyIncluded: why,
+		ID: stableItemID("node", refKey(node.Ref)), Kind: kind,
+		NodeKind: normalizedNodeKind(node.Kind), Plane: node.Plane,
+		PotentialImplicitSerializationNameChange: potentialImplicitSerializationNameChange(node),
+		Ref:                                      &ref,
+		Depth:                                    depth, RequiredForReview: required, WhyIncluded: why,
 		SourceRefs: cloneSourceRefs(node.SourceRefs),
 	}
 }
@@ -879,7 +893,8 @@ func relationEvidenceItem(relation Relation, depth int, required bool) Item {
 	return Item{
 		ID: stableItemID("relation", relationKey(relation)), Kind: "reference_catalog",
 		RelationID: &id, RelationFrom: &from, RelationTo: cloneRefPointer(relation.To),
-		RelationKind: relation.Kind, Depth: depth,
+		RelationKind: relation.Kind, EvidenceKind: relation.EvidenceKind,
+		ResolutionStatus: relation.ResolutionStatus, Depth: depth,
 		RequiredForReview: required, WhyIncluded: chooseRelationWhy(required, depth),
 		SourceRefs: cloneSourceRefs(relation.SourceRefs),
 	}
@@ -895,10 +910,68 @@ func boundaryItem(relation Relation, depth int, required bool, code string) Item
 	return Item{
 		ID: stableItemID("boundary", relationKey(relation)+":"+code), Kind: "boundary",
 		RelationID: &id, RelationFrom: &from, RelationTo: cloneRefPointer(relation.To),
-		RelationKind: relation.Kind, Depth: depth,
+		RelationKind: relation.Kind, EvidenceKind: relation.EvidenceKind,
+		ResolutionStatus: relation.ResolutionStatus, BoundaryCode: code, Depth: depth,
 		RequiredForReview: required, WhyIncluded: why,
 		SourceRefs: cloneSourceRefs(relation.SourceRefs),
 	}
+}
+
+func scopeIdentities(scope model.ScopeVector) []ScopeIdentity {
+	identities := make([]ScopeIdentity, 0, len(scope.Members))
+	for _, member := range scope.Members {
+		identities = append(identities, ScopeIdentity{
+			WorktreeID: member.WorktreeID, ProfileID: member.ProfileID,
+			GenerationID: member.GenerationID, ServiceID: cloneIdentifier(member.ServiceID),
+		})
+	}
+	sort.Slice(identities, func(i, j int) bool {
+		return scopeIdentityKey(identities[i]) < scopeIdentityKey(identities[j])
+	})
+	return identities
+}
+
+func scopeIdentityKey(identity ScopeIdentity) string {
+	serviceID := ""
+	if identity.ServiceID != nil {
+		serviceID = string(*identity.ServiceID)
+	}
+	return strings.Join([]string{
+		string(identity.WorktreeID), string(identity.ProfileID), string(identity.GenerationID), serviceID,
+	}, "\x00")
+}
+
+func cloneIdentifier(value *model.Identifier) *model.Identifier {
+	if value == nil {
+		return nil
+	}
+	copy := *value
+	return &copy
+}
+
+func potentialImplicitSerializationNameChange(node Node) bool {
+	if node.Ref.Kind != RefSymbol || node.Kind != "field" || node.Name == "" {
+		return false
+	}
+	first, _ := utf8.DecodeRuneInString(node.Name)
+	if !unicode.IsUpper(first) {
+		return false
+	}
+	for _, source := range node.SourceRefs {
+		if strings.HasSuffix(source.Path, ".go") {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizedNodeKind(kind string) string {
+	if oneOf(kind, "file", "package", "function", "method", "type", "interface", "field",
+		"variable", "parameter", "receiver", "result", "constant", "closure", "external",
+		"interface_method", "type_parameter", "anchor", "module", "entity") {
+		return kind
+	}
+	return "other"
 }
 
 func markLimit(result *Result, code, reason string) {
