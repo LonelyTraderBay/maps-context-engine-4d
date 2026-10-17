@@ -68,6 +68,13 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/catalog": true,
 			modulePath + "/internal/model":   true,
 		},
+		"internal/app/validate": {
+			modulePath + "/internal/inventory": true,
+			modulePath + "/internal/model":     true,
+			modulePath + "/internal/policy":    true,
+			modulePath + "/internal/runtime":   true,
+			modulePath + "/internal/snapshot":  true,
+		},
 		"internal/ports": {modulePath + "/internal/model": true},
 		"contracts":      {modulePath + "/internal/model": true},
 		"tests/contract": {
@@ -81,6 +88,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/runtime/config":   true,
 			modulePath + "/internal/app/config":       true,
 			modulePath + "/internal/app/registration": true,
+			modulePath + "/internal/app/validate":     true,
 		},
 	}
 	graph := make(map[string][]string)
