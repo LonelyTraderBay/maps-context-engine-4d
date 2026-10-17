@@ -154,12 +154,27 @@ func AnalyzeLoadedPackages(inputs []LoadedPackageInput, run *LoadRun) (Analysis,
 		packagesFacts[index] = facts
 	}
 	sort.Slice(packagesFacts, func(i, j int) bool { return packagesFacts[i].Key < packagesFacts[j].Key })
+	inputsByPackageKey := make(map[model.Hash]PackageInput, len(bases))
+	for index, facts := range bases {
+		if _, duplicate := inputsByPackageKey[facts.Key]; duplicate {
+			return Analysis{}, fmt.Errorf("%w: loaded packages have a duplicate package identity", ErrLoadRunMismatch)
+		}
+		inputsByPackageKey[facts.Key] = inputs[index].Input
+	}
+	if err := appendTestReferences(packagesFacts, inputsByPackageKey); err != nil {
+		return Analysis{}, err
+	}
 	occurrences := declarationOccurrences(packagesFacts)
 	relationOccurrences, err := aggregateRelationOccurrences(packagesFacts)
 	if err != nil {
 		return Analysis{}, err
 	}
-	return Analysis{Packages: packagesFacts, Occurrences: occurrences, RelationOccurrences: relationOccurrences}, nil
+	loadDiagnostics := append([]LoadDiagnostic(nil), run.Diagnostics...)
+	return Analysis{
+		Packages: packagesFacts, Occurrences: occurrences, RelationOccurrences: relationOccurrences,
+		Coverage:        coverageForAnalysis(packagesFacts, relationOccurrences, run.Status, loadDiagnostics),
+		LoadDiagnostics: loadDiagnostics,
+	}, nil
 }
 
 func analyzeLoadedPackage(input PackageInput, run *LoadRun, pkg *packages.Package, base *PackageFacts,

@@ -160,6 +160,9 @@ func ClosureCall() { func() {}() }
 	if err != nil {
 		t.Fatalf("aggregate root and imported package relations: %v", err)
 	}
+	if aggregate.Coverage.Status != CoverageSupportedScopeComplete || len(aggregate.LoadDiagnostics) != 0 {
+		t.Fatalf("complete typed load did not retain scoped coverage status: status=%s diagnostics=%+v gaps=%+v", aggregate.Coverage.Status, aggregate.LoadDiagnostics, aggregate.Coverage.Gaps)
+	}
 	dependencyFacts := packageFactsByPath(t, aggregate.Packages, dependencyInput.ImportPath)
 	dependencyReadID := model.Hash("")
 	for _, declaration := range dependencyFacts.Declarations {
@@ -465,13 +468,21 @@ func TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing(t 
 		if pkg.Types != nil || pkg.TypesInfo != nil {
 			t.Fatal("incomplete offline package leaked semantic types")
 		}
-		facts, err := AnalyzeLoadedPackage(PackageInput{
+		input := PackageInput{
 			GenerationID: testGeneration, ProfileID: run.ProfileID, ImportPath: "example.test/offline",
 			ModuleKey: "example.test/offline", Variant: VariantProduction, MaxFileBytes: DefaultMaxFileBytes,
 			Files: []CapturedFile{{Path: "main.go", Source: source}},
-		}, run, pkg)
-		if err != nil || facts.TypedStatus != TypedPartial || facts.SyntaxStatus != SyntaxComplete || len(facts.Declarations) == 0 {
-			t.Fatalf("offline typed failure did not preserve syntax facts: status=%s syntax=%s declarations=%d err=%v", facts.TypedStatus, facts.SyntaxStatus, len(facts.Declarations), err)
+		}
+		analysis, err := AnalyzeLoadedPackages([]LoadedPackageInput{{Input: input, Package: pkg}}, run)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if analysis.Coverage.Status != CoveragePartial || len(analysis.LoadDiagnostics) != len(run.Diagnostics) {
+			t.Fatalf("offline partial coverage or loader diagnostics were lost: coverage=%s diagnostics=%+v", analysis.Coverage.Status, analysis.LoadDiagnostics)
+		}
+		facts := analysis.Packages[0]
+		if facts.TypedStatus != TypedPartial || facts.SyntaxStatus != SyntaxComplete || len(facts.Declarations) == 0 {
+			t.Fatalf("offline typed failure did not preserve syntax facts: status=%s syntax=%s declarations=%d", facts.TypedStatus, facts.SyntaxStatus, len(facts.Declarations))
 		}
 	}
 }

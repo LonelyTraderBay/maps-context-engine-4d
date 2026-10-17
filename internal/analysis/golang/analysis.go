@@ -149,6 +149,8 @@ type Analysis struct {
 	Packages            []PackageFacts
 	Occurrences         []DeclarationOccurrence
 	RelationOccurrences []RelationOccurrence
+	Coverage            AnalysisCoverage
+	LoadDiagnostics     []LoadDiagnostic
 }
 
 // RelationOccurrence is the source-level projection used for counts across Go
@@ -221,8 +223,15 @@ func AnalyzePackages(inputs []PackageInput) (Analysis, error) {
 		packages = append(packages, facts)
 	}
 	sort.Slice(packages, func(i, j int) bool { return packages[i].Key < packages[j].Key })
-
-	return Analysis{Packages: packages, Occurrences: declarationOccurrences(packages)}, nil
+	relationOccurrences, err := aggregateRelationOccurrences(packages)
+	if err != nil {
+		return Analysis{}, err
+	}
+	return Analysis{
+		Packages: packages, Occurrences: declarationOccurrences(packages),
+		RelationOccurrences: relationOccurrences,
+		Coverage:            coverageForAnalysis(packages, relationOccurrences, "", nil),
+	}, nil
 }
 
 func declarationOccurrences(packages []PackageFacts) []DeclarationOccurrence {
