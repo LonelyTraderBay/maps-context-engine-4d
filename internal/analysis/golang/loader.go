@@ -82,13 +82,15 @@ type LoadRequest struct {
 // Packages are valid only for this run; callers must normalize identities
 // before joining facts across another LoadRun.
 type LoadRun struct {
-	ID               model.UUID
-	ProfileID        model.Hash
-	DependencyDigest model.Hash
-	Status           LoadStatus
-	Diagnostics      []LoadDiagnostic
-	packages         []*packages.Package
-	typesRegistry    map[*types.Package]struct{}
+	ID                   model.UUID
+	ProfileID            model.Hash
+	DependencyDigest     model.Hash
+	Status               LoadStatus
+	Diagnostics          []LoadDiagnostic
+	packages             []*packages.Package
+	typesRegistry        map[*types.Package]struct{}
+	capturedPathByFile   map[string]string
+	capturedSourceHashes map[string]model.Hash
 }
 
 func (run *LoadRun) Packages() []*packages.Package {
@@ -111,7 +113,12 @@ func LoadTrustedPackages(ctx context.Context, request LoadRequest) (*LoadRun, er
 	if err != nil {
 		return nil, fmt.Errorf("create Go load run identity: %w", err)
 	}
-	run := &LoadRun{ID: runID, ProfileID: profileID, Status: LoadPartial, typesRegistry: make(map[*types.Package]struct{})}
+	run := &LoadRun{
+		ID: runID, ProfileID: profileID, Status: LoadPartial,
+		typesRegistry:        make(map[*types.Package]struct{}),
+		capturedPathByFile:   make(map[string]string, len(request.CapturedFiles)),
+		capturedSourceHashes: make(map[string]model.Hash, len(request.CapturedFiles)),
+	}
 	if ctx == nil {
 		return nil, fmt.Errorf("%w: context is required", ErrInvalidLoadRequest)
 	}
@@ -199,6 +206,8 @@ func LoadTrustedPackages(ctx context.Context, request LoadRequest) (*LoadRun, er
 		}
 		overlay[canonical] = append([]byte(nil), source...)
 		captured[canonical] = source
+		run.capturedPathByFile[loadPathKey(canonical)] = relative
+		run.capturedSourceHashes[relative] = model.SHA256(source)
 	}
 	goEnv := environmentList(goEnvironment(request.Profile, cacheRoot))
 	buildFlags := []string{}

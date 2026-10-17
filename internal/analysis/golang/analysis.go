@@ -74,6 +74,10 @@ type PackageFacts struct {
 	Scopes       []Scope
 	Declarations []Declaration
 	Imports      []ImportFact
+	TypedStatus  TypedStatus
+	Defs         []DefFact
+	Uses         []UseFact
+	Selections   []SelectionFact
 	Diagnostics  []Diagnostic
 }
 
@@ -325,6 +329,10 @@ func analyzeOne(input PackageInput) (PackageFacts, error) {
 		Scopes:       make([]Scope, 0),
 		Declarations: make([]Declaration, 0),
 		Imports:      make([]ImportFact, 0),
+		TypedStatus:  TypedNotRequested,
+		Defs:         make([]DefFact, 0),
+		Uses:         make([]UseFact, 0),
+		Selections:   make([]SelectionFact, 0),
 		Diagnostics:  make([]Diagnostic, 0),
 	}
 	packageOccurrence, err := model.HashValue("go-scope-occurrence-v1", map[string]any{
@@ -751,7 +759,27 @@ func (visitor *fileVisitor) addReceiverParameters(fields *ast.FieldList, scope *
 		for _, name := range field.Names {
 			visitor.addDeclaration(name, field, scope, "receiver", false)
 		}
+		visitor.addReceiverTypeParameters(field.Type, scope)
 		visitor.walkTypeExpr(field.Type, scope)
+	}
+}
+
+func (visitor *fileVisitor) addReceiverTypeParameters(expression ast.Expr, scope *Scope) {
+	switch node := expression.(type) {
+	case *ast.StarExpr:
+		visitor.addReceiverTypeParameters(node.X, scope)
+	case *ast.ParenExpr:
+		visitor.addReceiverTypeParameters(node.X, scope)
+	case *ast.IndexExpr:
+		if name, ok := node.Index.(*ast.Ident); ok {
+			visitor.addDeclaration(name, name, scope, "type_parameter", false)
+		}
+	case *ast.IndexListExpr:
+		for _, index := range node.Indices {
+			if name, ok := index.(*ast.Ident); ok {
+				visitor.addDeclaration(name, name, scope, "type_parameter", false)
+			}
+		}
 	}
 }
 

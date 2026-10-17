@@ -9,6 +9,7 @@ import (
 	"os"
 	osexec "os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -32,18 +33,41 @@ func TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile(t *testing.T) {
 		t.Fatal(err)
 	}
 	goMod := []byte("module example.test/captured\n\ngo 1.27.0\n")
-	capturedSource := []byte("package captured\nfunc Add(left, right int) int { return left + right }\n")
+	capturedSource := []byte(`package captured
+import "example.test/captured/dep"
+type Inner struct { Value int }
+func (i *Inner) Read() int { return i.Value }
+type Box[T any] struct { *Inner; Value T }
+func (b *Box[T]) Use(item T) (result T) {
+	shadow := item
+	{
+		shadow := item
+		_ = shadow
+	}
+	_ = b.Inner.Value
+	_ = b.Read()
+	result = shadow
+	return
+}
+func Add(left, right int) int { return left + right }
+func External(record dep.Record) int { _ = record.Value; return record.Read() }
+`)
 	diskSource := []byte("package captured\nfunc Add(left, right int) int { panic(\"disk source must not win\") }\n")
-	for relative, data := range map[string][]byte{"go.mod": goMod, "main.go": diskSource} {
+	diskDependency := []byte("package dep\ntype Record struct { Value int }\nfunc (Record) Read() int { panic(\"disk dependency must not win\") }\n")
+	if err := os.Mkdir(filepath.Join(root, "dep"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	for relative, data := range map[string][]byte{"go.mod": goMod, "main.go": diskSource, "dep/record.go": diskDependency} {
 		if err := os.WriteFile(filepath.Join(root, relative), data, 0o600); err != nil {
 			t.Fatal(err)
 		}
 	}
+	capturedDependency := []byte("package dep\ntype Record struct { Value int }\nfunc (Record) Read() int { return 7 }\n")
 	goHash := sha256File(t, goBinary)
 	request := LoadRequest{
 		SnapshotRoot: root, ModuleRoot: ".", Patterns: []string{"."},
-		CapturedFiles: map[string][]byte{"go.mod": goMod, "main.go": capturedSource},
-		CaptureHashes: map[string]model.Hash{"go.mod": hashBytes(goMod), "main.go": hashBytes(capturedSource)},
+		CapturedFiles: map[string][]byte{"go.mod": goMod, "main.go": capturedSource, "dep/record.go": capturedDependency},
+		CaptureHashes: map[string]model.Hash{"go.mod": hashBytes(goMod), "main.go": hashBytes(capturedSource), "dep/record.go": hashBytes(capturedDependency)},
 		Profile: LoadProfile{
 			GOOS: runtime.GOOS, GOARCH: runtime.GOARCH, ModuleRoots: []string{"."},
 			ToolchainDigest: hashBytes([]byte("pinned-go-toolchain")), ProviderDigest: hashBytes([]byte("pinned-go-packages")),
@@ -77,8 +101,120 @@ func TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile(t *testing.T) {
 	if hasCall(pkg.Syntax[0], "panic") {
 		t.Fatal("loader parsed on-disk bytes instead of the captured overlay")
 	}
-	if len(run.typesRegistry) != 1 {
-		t.Fatalf("one load run should own exactly one type registry entry, got %d", len(run.typesRegistry))
+	input := PackageInput{
+		GenerationID: testGeneration, ProfileID: run.ProfileID, ImportPath: "example.test/captured",
+		ModuleKey: "example.test/captured", Variant: VariantProduction, MaxFileBytes: DefaultMaxFileBytes,
+		Files: []CapturedFile{{Path: "main.go", Source: capturedSource}},
+	}
+	facts, err := AnalyzeLoadedPackage(input, run, pkg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if facts.TypedStatus != TypedComplete || len(facts.Defs) == 0 || len(facts.Uses) == 0 || len(facts.Selections) < 3 {
+		t.Fatalf("typed definitions, uses, and selections are incomplete: status=%s defs=%d uses=%d selections=%d diagnostics=%+v", facts.TypedStatus, len(facts.Defs), len(facts.Uses), len(facts.Selections), facts.Diagnostics)
+	}
+	shadowDeclarations := declarationsNamed(facts, "shadow", "short_var_candidate")
+	if len(shadowDeclarations) != 2 {
+		t.Fatalf("syntax identity lost one shadowed local: %+v", shadowDeclarations)
+	}
+	shadowIDs := map[model.Hash]struct{}{shadowDeclarations[0].SymbolID: {}, shadowDeclarations[1].SymbolID: {}}
+	shadowUses := 0
+	usedShadowIDs := make(map[model.Hash]struct{}, len(shadowIDs))
+	for _, use := range facts.Uses {
+		if use.Name == "shadow" {
+			shadowUses++
+			if _, ok := shadowIDs[use.SymbolID]; !ok {
+				t.Fatalf("shadow use points to a different object identity: %+v", use)
+			}
+			usedShadowIDs[use.SymbolID] = struct{}{}
+		}
+	}
+	if shadowUses != 2 || len(usedShadowIDs) != 2 {
+		t.Fatalf("shadowed locals should retain one use per binding, uses=%d identities=%v", shadowUses, usedShadowIDs)
+	}
+	if len(shadowIDs) != 2 {
+		t.Fatalf("both shadow identities should retain uses: %+v", shadowIDs)
+	}
+	declarationIDs := make(map[string]map[model.Hash]struct{})
+	for _, declaration := range facts.Declarations {
+		if declarationIDs[declaration.Name] == nil {
+			declarationIDs[declaration.Name] = make(map[model.Hash]struct{})
+		}
+		declarationIDs[declaration.Name][declaration.SymbolID] = struct{}{}
+	}
+	allLocalIDs := make(map[model.Hash]struct{})
+	for _, ids := range declarationIDs {
+		for id := range ids {
+			allLocalIDs[id] = struct{}{}
+		}
+	}
+	for _, use := range facts.Uses {
+		if _, local := allLocalIDs[use.SymbolID]; local {
+			expected := declarationIDs[use.Name]
+			if _, ok := expected[use.SymbolID]; !ok {
+				t.Fatalf("local use %q does not point to its declaration identity: %+v", use.Name, use)
+			}
+		}
+	}
+	localValueSelections, externalValueSelections := 0, 0
+	for _, name := range []string{"Inner", "Value", "Read"} {
+		found := false
+		for _, selection := range facts.Selections {
+			if selection.Name == name {
+				found = true
+				if selection.Kind == "" || selection.SymbolID == "" {
+					t.Fatalf("selection lost its kind or stable object identity: %+v", selection)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("missing typed selection for %q", name)
+		}
+	}
+	for _, fact := range facts.Defs {
+		if err := fact.Range.ValidateAgainst(capturedSource); err != nil {
+			t.Fatalf("invalid Def range: %+v: %v", fact, err)
+		}
+	}
+	for _, fact := range facts.Uses {
+		if err := fact.Range.ValidateAgainst(capturedSource); err != nil {
+			t.Fatalf("invalid Use range: %+v: %v", fact, err)
+		}
+	}
+	for _, fact := range facts.Selections {
+		if err := fact.Range.ValidateAgainst(capturedSource); err != nil {
+			t.Fatalf("invalid Selection range: %+v: %v", fact, err)
+		}
+		if fact.Name == "Value" {
+			if _, local := declarationIDs[fact.Name][fact.SymbolID]; local {
+				localValueSelections++
+			} else {
+				externalValueSelections++
+			}
+		}
+	}
+	if len(declarationIDs["Value"]) != 2 || localValueSelections == 0 || externalValueSelections == 0 {
+		t.Fatalf("local and imported fields with the same spelling lost distinct identities: local=%d external=%d declarations=%v", localValueSelections, externalValueSelections, declarationIDs["Value"])
+	}
+	repeated, err := AnalyzeLoadedPackage(input, run, pkg)
+	if err != nil || !reflect.DeepEqual(facts, repeated) {
+		t.Fatalf("typed facts are not deterministic: err=%v", err)
+	}
+	mismatchedInput := input
+	mismatchedInput.Files = []CapturedFile{{Path: "main.go", Source: []byte(strings.Replace(string(capturedSource), "Box[T any]", "Box[U any]", 1))}}
+	if _, err := AnalyzeLoadedPackage(mismatchedInput, run, pkg); !errors.Is(err, ErrCapturedSource) {
+		t.Fatalf("type facts accepted bytes outside the captured load: %v", err)
+	}
+	mismatchedProfile := input
+	mismatchedProfile.ProfileID = testProfile
+	if mismatchedProfile.ProfileID == run.ProfileID {
+		t.Fatal("fixture profile unexpectedly equals the loader profile")
+	}
+	if _, err := AnalyzeLoadedPackage(mismatchedProfile, run, pkg); !errors.Is(err, ErrLoadRunMismatch) {
+		t.Fatalf("type facts accepted a different captured profile: %v", err)
+	}
+	if len(run.typesRegistry) < 2 {
+		t.Fatalf("one load run should own root and imported type packages, got %d", len(run.typesRegistry))
 	}
 	secondRun, err := LoadTrustedPackages(ctx, request)
 	if err != nil {
@@ -89,6 +225,9 @@ func TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile(t *testing.T) {
 	}
 	if secondRun.Packages()[0].Types == pkg.Types {
 		t.Fatal("go/types package object was reused across independent loads")
+	}
+	if _, err := AnalyzeLoadedPackage(input, secondRun, pkg); !errors.Is(err, ErrLoadRunMismatch) {
+		t.Fatalf("cross-LoadRun package was accepted: %v", err)
 	}
 	changedProfile := request.Profile
 	if changedProfile.GOOS == "windows" {
@@ -156,6 +295,14 @@ func TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing(t 
 	for _, pkg := range run.Packages() {
 		if pkg.Types != nil || pkg.TypesInfo != nil {
 			t.Fatal("incomplete offline package leaked semantic types")
+		}
+		facts, err := AnalyzeLoadedPackage(PackageInput{
+			GenerationID: testGeneration, ProfileID: run.ProfileID, ImportPath: "example.test/offline",
+			ModuleKey: "example.test/offline", Variant: VariantProduction, MaxFileBytes: DefaultMaxFileBytes,
+			Files: []CapturedFile{{Path: "main.go", Source: source}},
+		}, run, pkg)
+		if err != nil || facts.TypedStatus != TypedPartial || facts.SyntaxStatus != SyntaxComplete || len(facts.Declarations) == 0 {
+			t.Fatalf("offline typed failure did not preserve syntax facts: status=%s syntax=%s declarations=%d err=%v", facts.TypedStatus, facts.SyntaxStatus, len(facts.Declarations), err)
 		}
 	}
 }
