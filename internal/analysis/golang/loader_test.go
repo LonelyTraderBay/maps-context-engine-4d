@@ -226,6 +226,10 @@ func External(record dep.Record) int { _ = record.Value; return record.Read() }
 	if secondRun.Packages()[0].Types == pkg.Types {
 		t.Fatal("go/types package object was reused across independent loads")
 	}
+	independentFacts, err := AnalyzeLoadedPackage(input, secondRun, secondRun.Packages()[0])
+	if err != nil || !reflect.DeepEqual(facts, independentFacts) {
+		t.Fatalf("identical captured input produced different typed facts across LoadRuns: err=%v", err)
+	}
 	if _, err := AnalyzeLoadedPackage(input, secondRun, pkg); !errors.Is(err, ErrLoadRunMismatch) {
 		t.Fatalf("cross-LoadRun package was accepted: %v", err)
 	}
