@@ -70,6 +70,11 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/catalog": true,
 			modulePath + "/internal/model":   true,
 		},
+		"internal/app/response": {
+			modulePath + "/contracts":            true,
+			modulePath + "/internal/contextpack": true,
+			modulePath + "/internal/model":       true,
+		},
 		"internal/app/validate": {
 			modulePath + "/internal/inventory": true,
 			modulePath + "/internal/model":     true,
