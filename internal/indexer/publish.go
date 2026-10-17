@@ -88,16 +88,11 @@ func Publish(
 }
 
 func failGeneration(ctx context.Context, store PublicationStore, key sqlite.GenerationKey, cause error) error {
-	if ctx.Err() != nil {
-		// A canceled context cannot safely start a cleanup write. T009 owns
-		// bounded recovery of this still-BUILDING candidate; active stays intact.
-		return cause
-	}
 	state := sqlite.GenerationFailed
-	if errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) {
+	if ctx.Err() != nil || errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) {
 		state = sqlite.GenerationCancelled
 	}
-	if err := store.AbortGeneration(ctx, key, state); err != nil {
+	if err := cancelFailedGeneration(ctx, store, key, state); err != nil {
 		return errors.Join(cause, fmt.Errorf("record failed generation state: %w", err))
 	}
 	return cause

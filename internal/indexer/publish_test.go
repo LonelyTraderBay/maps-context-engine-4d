@@ -44,6 +44,99 @@ func TestPublishFailureMarksOnlyCandidateFailed(t *testing.T) {
 	}
 }
 
+func TestPublishCancellationMarksCandidateCancelledAndPreservesActive(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	store := &fakePublicationStore{activeID: "previous-generation"}
+	stager := &fakeGenerationStager{events: &store.events, cancel: cancel, stageErr: context.Canceled}
+	_, err := Publish(ctx, store, stager, testSpec(), sqlite.GenerationReady)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("Publish error=%v; want context cancellation", err)
+	}
+	if store.state != sqlite.GenerationCancelled || store.activeID != "previous-generation" {
+		t.Fatalf("candidate state=%s active=%s; want CANCELLED and unchanged previous generation", store.state, store.activeID)
+	}
+	if !reflect.DeepEqual(store.events, []string{"lease:start", "create", "stage", "abort:CANCELLED", "lease:end"}) {
+		t.Fatalf("events=%v; want bounded cancellation cleanup while writer lease is held", store.events)
+	}
+}
+
+func TestRecoverInterruptedFailsOnlyAbandonedBuildingCandidateUnderWriterLease(t *testing.T) {
+	spec := testSpec()
+	store := &fakePublicationStore{state: sqlite.GenerationBuilding, activeID: "previous-generation", spec: spec}
+	result, err := RecoverInterrupted(context.Background(), store, spec.Key)
+	if err != nil {
+		t.Fatalf("RecoverInterrupted: %v", err)
+	}
+	if !result.Recovered || result.Active || result.Generation.State != sqlite.GenerationFailed {
+		t.Fatalf("recovery result=%+v; want failed inactive candidate", result)
+	}
+	if store.activeID != "previous-generation" {
+		t.Fatalf("active generation=%s; recovery must preserve the last published generation", store.activeID)
+	}
+	if !reflect.DeepEqual(store.events, []string{"lease:start", "resolve", "abort:FAILED", "resolve", "lease:end"}) {
+		t.Fatalf("events=%v; recovery must resolve and verify under the writer lease", store.events)
+	}
+}
+
+func TestRecoverInterruptedPublishedGenerationIsIdempotent(t *testing.T) {
+	spec := testSpec()
+	store := &fakePublicationStore{state: sqlite.GenerationReady, activeID: string(spec.Key.GenerationID), spec: spec}
+	result, err := RecoverInterrupted(context.Background(), store, spec.Key)
+	if err != nil {
+		t.Fatalf("RecoverInterrupted published generation: %v", err)
+	}
+	if result.Recovered || !result.Active || result.Generation.State != sqlite.GenerationReady {
+		t.Fatalf("recovery result=%+v; published generation must be observed without mutation", result)
+	}
+	if !reflect.DeepEqual(store.events, []string{"lease:start", "resolve", "lease:end"}) {
+		t.Fatalf("events=%v; published recovery must only resolve the receipt", store.events)
+	}
+}
+
+func TestRecoverInterruptedFailedGenerationIsIdempotent(t *testing.T) {
+	spec := testSpec()
+	store := &fakePublicationStore{state: sqlite.GenerationFailed, activeID: "previous-generation", spec: spec}
+	result, err := RecoverInterrupted(context.Background(), store, spec.Key)
+	if err != nil {
+		t.Fatalf("RecoverInterrupted failed generation: %v", err)
+	}
+	if result.Recovered || result.Active || result.Generation.State != sqlite.GenerationFailed {
+		t.Fatalf("recovery result=%+v; failed generation must be observed without mutation", result)
+	}
+	if !reflect.DeepEqual(store.events, []string{"lease:start", "resolve", "lease:end"}) {
+		t.Fatalf("events=%v; terminal recovery must only resolve the receipt", store.events)
+	}
+}
+
+func TestRecoverInterruptedRejectsBuildingGenerationReferencedByActivePointer(t *testing.T) {
+	spec := testSpec()
+	store := &fakePublicationStore{state: sqlite.GenerationBuilding, activeID: string(spec.Key.GenerationID), spec: spec}
+	_, err := RecoverInterrupted(context.Background(), store, spec.Key)
+	if !errors.Is(err, ErrGenerationRecoveryActive) {
+		t.Fatalf("RecoverInterrupted error=%v; want active-pointer rejection", err)
+	}
+	if store.state != sqlite.GenerationBuilding || store.publishCalls != 0 {
+		t.Fatalf("candidate state=%s publish_calls=%d; invalid active BUILDING state must remain untouched", store.state, store.publishCalls)
+	}
+	if !reflect.DeepEqual(store.events, []string{"lease:start", "resolve", "lease:end"}) {
+		t.Fatalf("events=%v; active-pointer violation must not be aborted", store.events)
+	}
+}
+
+func TestRecoverInterruptedWriteFailureLeavesCandidateAndActiveUntouched(t *testing.T) {
+	spec := testSpec()
+	wantErr := errors.New("disk full")
+	store := &fakePublicationStore{state: sqlite.GenerationBuilding, activeID: "previous-generation", spec: spec, abortErr: wantErr}
+	_, err := RecoverInterrupted(context.Background(), store, spec.Key)
+	if !errors.Is(err, wantErr) {
+		t.Fatalf("RecoverInterrupted error=%v; want disk-full error", err)
+	}
+	if store.state != sqlite.GenerationBuilding || store.activeID != "previous-generation" {
+		t.Fatalf("candidate state=%s active=%s; failed recovery must preserve BUILDING metadata and previous publication", store.state, store.activeID)
+	}
+}
+
 func TestPublishValidationFailurePreservesPreviouslyPublishedGeneration(t *testing.T) {
 	store := &fakePublicationStore{activeID: "old-generation"}
 	stager := &fakeGenerationStager{events: &store.events, verifyErr: errors.New("manifest revalidation failed")}
@@ -111,6 +204,7 @@ type fakePublicationStore struct {
 	activeID     string
 	publishCalls int
 	spec         sqlite.GenerationSpec
+	abortErr     error
 }
 
 func (store *fakePublicationStore) WithGenerationWriter(ctx context.Context, operation func(context.Context) error) error {
@@ -137,8 +231,14 @@ func (store *fakePublicationStore) PublishGeneration(_ context.Context, request 
 	return sqlite.PublishResult{Generation: recordFor(request.Spec, request.State), Activated: true}, nil
 }
 
-func (store *fakePublicationStore) AbortGeneration(_ context.Context, _ sqlite.GenerationKey, state sqlite.GenerationState) error {
+func (store *fakePublicationStore) AbortGeneration(ctx context.Context, _ sqlite.GenerationKey, state sqlite.GenerationState) error {
 	store.events = append(store.events, "abort:"+string(state))
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if store.abortErr != nil {
+		return store.abortErr
+	}
 	store.state = state
 	return nil
 }
@@ -153,11 +253,15 @@ type fakeGenerationStager struct {
 	stageErr   error
 	verifyErr  error
 	stageCalls int
+	cancel     context.CancelFunc
 }
 
 func (stager *fakeGenerationStager) Stage(context.Context, sqlite.GenerationRecord) error {
 	*stager.events = append(*stager.events, "stage")
 	stager.stageCalls++
+	if stager.cancel != nil {
+		stager.cancel()
+	}
 	return stager.stageErr
 }
 
