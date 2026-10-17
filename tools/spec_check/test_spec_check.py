@@ -1853,12 +1853,13 @@ class ArchivePublicationTests(unittest.TestCase):
         raw = dict(raw)
         raw["authority/task-start.txt"] = "Ủy quyền fixture cho task T003.".encode("utf-8")
         raw["history/invalidation-note.md"] = "Bằng chứng invalidation UTF-8 được giữ nguyên.\n"
+        raw["history/invalidation-fixture.log"] = "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n"
         index = {
             "format_version": 1,
             "objects": {ref: entry["kind"] for ref, entry in sorted(typed.items())},
             "raw_members": sorted(
                 ref for ref, value in raw.items()
-                if isinstance(value, dict) or (ref.endswith(".md") and isinstance(value, str))
+                if isinstance(value, dict) or (Path(ref).suffix in {".md", ".txt", ".log"} and isinstance(value, str))
             ),
         }
         paths = {item["path"] for item in archive["files"]}
@@ -1917,6 +1918,11 @@ class ArchivePublicationTests(unittest.TestCase):
             index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
             self.assertIn("history/invalidation-note.md", index["raw_members"])
             self.assertEqual((final / "history/invalidation-note.md").read_bytes(), expected)
+            self.assertIn("history/invalidation-fixture.log", index["raw_members"])
+            self.assertEqual(
+                (final / "history/invalidation-fixture.log").read_bytes(),
+                "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n".encode("utf-8"),
+            )
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
 
     def test_member_read_supports_deep_windows_paths(self) -> None:
