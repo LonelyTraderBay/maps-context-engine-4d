@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -9,10 +10,47 @@ import (
 	"strings"
 	"testing"
 
-	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	"golang.org/x/tools/go/packages"
 )
+
+func TestRelationFactBindsCapturedCallsiteAndRejectsInvalidEdges(t *testing.T) {
+	source := []byte("func Run() { target() }\n")
+	start := strings.Index(string(source), "target()")
+	site := model.ByteRange{StartByte: int64(start), EndByte: int64(start + len("target()"))}
+	firstTarget := model.SHA256([]byte("first-target"))
+	input := RelationInput{
+		SourceSymbolID: model.SHA256([]byte("caller")), TargetSymbolID: &firstTarget,
+		Kind: RelationCallsDirect, EvidenceKind: EvidenceTypeResolved,
+		SitePath: "pkg/run.go", Range: site, Reason: "statically resolved call",
+	}
+	first, err := NewRelationFact(input, source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	repeated, err := NewRelationFact(input, source)
+	if err != nil || first.RelationID != repeated.RelationID {
+		t.Fatalf("relation ID is not deterministic: first=%s repeated=%s err=%v", first.RelationID, repeated.RelationID, err)
+	}
+	if err := first.Validate(source); err != nil {
+		t.Fatalf("created relation does not validate: %v", err)
+	}
+	secondTarget := model.SHA256([]byte("second-target"))
+	input.TargetSymbolID = &secondTarget
+	second, err := NewRelationFact(input, source)
+	if err != nil || first.RelationID == second.RelationID {
+		t.Fatalf("parallel targets collapsed at one callsite: first=%s second=%s err=%v", first.RelationID, second.RelationID, err)
+	}
+	label := "callback"
+	input.TargetSymbolID = &firstTarget
+	input.Kind, input.EvidenceKind, input.UnresolvedLabel = RelationUnresolvedCall, EvidenceUnresolved, &label
+	if _, err := NewRelationFact(input, source); !errors.Is(err, ErrInvalidRelation) {
+		t.Fatalf("unresolved relation accepted a concrete target: %v", err)
+	}
+	if _, err := NewRelationFact(input, []byte("short")); !errors.Is(err, ErrInvalidRelation) {
+		t.Fatalf("relation accepted a site outside captured source: %v", err)
+	}
+}
 
 func TestReflectInvocationKeepsStaticMethodAndDynamicBoundary(t *testing.T) {
 	fset := token.NewFileSet()
@@ -64,18 +102,18 @@ func TestReflectInvocationKeepsStaticMethodAndDynamicBoundary(t *testing.T) {
 	if len(facts.Relations) != 2 {
 		t.Fatalf("reflection invocation should retain its static method and unresolved target boundary, got %+v", facts.Relations)
 	}
-	kinds := map[indexerfacts.RelationKind]int{}
+	kinds := map[RelationKind]int{}
 	for _, relation := range facts.Relations {
 		if err := relation.Validate(source); err != nil {
 			t.Fatalf("reflection relation lost captured source binding: %+v: %v", relation, err)
 		}
 		kinds[relation.Kind]++
-		if relation.Kind == indexerfacts.RelationUnresolvedCall &&
+		if relation.Kind == RelationUnresolvedCall &&
 			(relation.TargetSymbolID != nil || relation.UnresolvedLabel == nil || *relation.UnresolvedLabel != "reflect.Value.Call") {
 			t.Fatalf("reflection boundary was represented as a concrete target: %+v", relation)
 		}
 	}
-	if kinds[indexerfacts.RelationCallsDirect] != 1 || kinds[indexerfacts.RelationUnresolvedCall] != 1 {
+	if kinds[RelationCallsDirect] != 1 || kinds[RelationUnresolvedCall] != 1 {
 		t.Fatalf("unexpected reflection relation kinds: %v", kinds)
 	}
 }
@@ -92,9 +130,9 @@ func TestAggregateRelationOccurrencesDeduplicatesPackageVariants(t *testing.T) {
 		key := model.SHA256([]byte("package-" + string(variant)))
 		caller := model.SHA256([]byte("caller-" + string(variant)))
 		target := model.SHA256([]byte("target-" + string(variant)))
-		relation, err := indexerfacts.NewRelationFact(indexerfacts.RelationInput{
-			SourceSymbolID: caller, TargetSymbolID: &target, Kind: indexerfacts.RelationCallsDirect,
-			EvidenceKind: indexerfacts.EvidenceTypeResolved, SitePath: "main.go", Range: site,
+		relation, err := NewRelationFact(RelationInput{
+			SourceSymbolID: caller, TargetSymbolID: &target, Kind: RelationCallsDirect,
+			EvidenceKind: EvidenceTypeResolved, SitePath: "main.go", Range: site,
 			Reason: "statically resolved call",
 		}, source)
 		if err != nil {
@@ -108,7 +146,7 @@ func TestAggregateRelationOccurrencesDeduplicatesPackageVariants(t *testing.T) {
 				{SymbolID: caller, OccurrenceID: callerOccurrence},
 				{SymbolID: target, OccurrenceID: targetOccurrence},
 			},
-			Relations: []indexerfacts.RelationFact{relation},
+			Relations: []RelationFact{relation},
 		})
 	}
 	occurrences, err := aggregateRelationOccurrences(packages)

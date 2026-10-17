@@ -14,7 +14,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 )
 
@@ -79,7 +78,7 @@ type PackageFacts struct {
 	Defs         []DefFact
 	Uses         []UseFact
 	Selections   []SelectionFact
-	Relations    []indexerfacts.RelationFact
+	Relations    []RelationFact
 	Diagnostics  []Diagnostic
 }
 
@@ -159,8 +158,8 @@ type RelationOccurrence struct {
 	SourceOccurrenceID model.Hash
 	TargetOccurrenceID *model.Hash
 	TargetSymbolID     *model.Hash
-	Kind               indexerfacts.RelationKind
-	EvidenceKind       indexerfacts.EvidenceKind
+	Kind               RelationKind
+	EvidenceKind       EvidenceKind
 	SitePath           string
 	Range              model.ByteRange
 	Reason             string
@@ -356,7 +355,7 @@ func analyzeOne(input PackageInput) (PackageFacts, error) {
 		Defs:         make([]DefFact, 0),
 		Uses:         make([]UseFact, 0),
 		Selections:   make([]SelectionFact, 0),
-		Relations:    make([]indexerfacts.RelationFact, 0),
+		Relations:    make([]RelationFact, 0),
 		Diagnostics:  make([]Diagnostic, 0),
 	}
 	packageOccurrence, err := model.HashValue("go-scope-occurrence-v1", map[string]any{

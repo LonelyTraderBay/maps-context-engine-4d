@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -8,10 +9,204 @@ import (
 	"sort"
 	"unicode/utf8"
 
-	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	"golang.org/x/tools/go/packages"
 )
+
+var ErrInvalidRelation = errors.New("invalid relation fact")
+
+type RelationKind string
+
+const (
+	RelationContains       RelationKind = "CONTAINS"
+	RelationImports        RelationKind = "IMPORTS"
+	RelationRefersTo       RelationKind = "REFERS_TO"
+	RelationReads          RelationKind = "READS"
+	RelationWrites         RelationKind = "WRITES"
+	RelationCallsDirect    RelationKind = "CALLS_DIRECT"
+	RelationCallsInterface RelationKind = "CALLS_INTERFACE"
+	RelationMayDispatchTo  RelationKind = "MAY_DISPATCH_TO"
+	RelationUnresolvedRef  RelationKind = "UNRESOLVED_REF"
+	RelationUnresolvedCall RelationKind = "UNRESOLVED_CALL"
+	RelationTestRef        RelationKind = "TEST_REF"
+	RelationDocLink        RelationKind = "DOC_LINK"
+)
+
+type EvidenceKind string
+
+const (
+	EvidenceSyntaxExact  EvidenceKind = "syntax_exact"
+	EvidenceTypeResolved EvidenceKind = "type_resolved"
+	EvidenceTypePossible EvidenceKind = "type_possible"
+	EvidenceExplicitDoc  EvidenceKind = "explicit_document"
+	EvidenceTextMatch    EvidenceKind = "text_match"
+	EvidenceUnresolved   EvidenceKind = "unresolved"
+)
+
+// RelationFact mirrors the closed S43 relation payload and keeps callsite
+// identity bound to the analyzer's captured Go source.
+type RelationFact struct {
+	RelationID      model.Hash      `json:"relation_id"`
+	SourceSymbolID  model.Hash      `json:"source_symbol_id"`
+	TargetSymbolID  *model.Hash     `json:"target_symbol_id"`
+	Kind            RelationKind    `json:"kind"`
+	EvidenceKind    EvidenceKind    `json:"evidence_kind"`
+	SitePath        string          `json:"site_path"`
+	Range           model.ByteRange `json:"range"`
+	Reason          string          `json:"reason"`
+	UnresolvedLabel *string         `json:"unresolved_label"`
+}
+
+type RelationInput struct {
+	SourceSymbolID  model.Hash
+	TargetSymbolID  *model.Hash
+	Kind            RelationKind
+	EvidenceKind    EvidenceKind
+	SitePath        string
+	Range           model.ByteRange
+	Reason          string
+	UnresolvedLabel *string
+}
+
+func NewRelationFact(input RelationInput, source []byte) (RelationFact, error) {
+	relation := RelationFact{
+		SourceSymbolID: input.SourceSymbolID, TargetSymbolID: cloneRelationHash(input.TargetSymbolID),
+		Kind: input.Kind, EvidenceKind: input.EvidenceKind, SitePath: input.SitePath,
+		Range: input.Range, Reason: input.Reason, UnresolvedLabel: cloneRelationString(input.UnresolvedLabel),
+	}
+	if err := relation.validateFields(source); err != nil {
+		return RelationFact{}, err
+	}
+	id, err := relationID(relation)
+	if err != nil {
+		return RelationFact{}, err
+	}
+	relation.RelationID = id
+	return relation, nil
+}
+
+func (relation RelationFact) Validate(source []byte) error {
+	if err := relation.validateFields(source); err != nil {
+		return err
+	}
+	expected, err := relationID(relation)
+	if err != nil {
+		return err
+	}
+	if relation.RelationID != expected {
+		return fmt.Errorf("%w: relation ID does not match its fields", ErrInvalidRelation)
+	}
+	return nil
+}
+
+func (relation RelationFact) validateFields(source []byte) error {
+	if _, err := model.ParseHash(string(relation.SourceSymbolID)); err != nil {
+		return fmt.Errorf("%w: invalid source symbol ID", ErrInvalidRelation)
+	}
+	if relation.TargetSymbolID != nil {
+		if _, err := model.ParseHash(string(*relation.TargetSymbolID)); err != nil {
+			return fmt.Errorf("%w: invalid target symbol ID", ErrInvalidRelation)
+		}
+	}
+	if err := model.ValidateRelativePath(relation.SitePath); err != nil {
+		return fmt.Errorf("%w: invalid site path", ErrInvalidRelation)
+	}
+	if err := relation.Range.ValidateAgainst(source); err != nil {
+		return fmt.Errorf("%w: invalid source range: %v", ErrInvalidRelation, err)
+	}
+	if !validRelationKind(relation.Kind) || !validEvidenceKind(relation.EvidenceKind) {
+		return fmt.Errorf("%w: unknown relation or evidence kind", ErrInvalidRelation)
+	}
+	if !utf8.ValidString(relation.Reason) || utf8.RuneCountInString(relation.Reason) > 1024 {
+		return fmt.Errorf("%w: reason must be valid UTF-8 and at most 1024 characters", ErrInvalidRelation)
+	}
+	if relation.UnresolvedLabel != nil && (!utf8.ValidString(*relation.UnresolvedLabel) ||
+		utf8.RuneCountInString(*relation.UnresolvedLabel) < 1 || utf8.RuneCountInString(*relation.UnresolvedLabel) > 512) {
+		return fmt.Errorf("%w: unresolved label must be valid UTF-8 and 1 to 512 characters", ErrInvalidRelation)
+	}
+	switch relation.Kind {
+	case RelationUnresolvedRef, RelationUnresolvedCall:
+		if relation.TargetSymbolID != nil || relation.EvidenceKind != EvidenceUnresolved ||
+			relation.UnresolvedLabel == nil || relation.Reason == "" {
+			return fmt.Errorf("%w: unresolved relation requires null target, reason, label, and unresolved evidence", ErrInvalidRelation)
+		}
+	case RelationCallsDirect:
+		if relation.TargetSymbolID == nil || (relation.EvidenceKind != EvidenceTypeResolved && relation.EvidenceKind != EvidenceSyntaxExact) {
+			return fmt.Errorf("%w: direct call requires a target and resolved or exact evidence", ErrInvalidRelation)
+		}
+	case RelationCallsInterface:
+		if relation.TargetSymbolID == nil || relation.EvidenceKind != EvidenceTypeResolved {
+			return fmt.Errorf("%w: interface call requires a type-resolved target", ErrInvalidRelation)
+		}
+	case RelationMayDispatchTo:
+		if relation.TargetSymbolID == nil || relation.EvidenceKind != EvidenceTypePossible {
+			return fmt.Errorf("%w: candidate dispatch requires a type-possible target", ErrInvalidRelation)
+		}
+	}
+	return nil
+}
+
+func relationID(relation RelationFact) (model.Hash, error) {
+	return model.HashValue("relation-fact-v1", map[string]any{
+		"source_symbol_id": relation.SourceSymbolID,
+		"target_symbol_id": relationOptionalHash(relation.TargetSymbolID),
+		"kind":             string(relation.Kind), "evidence_kind": string(relation.EvidenceKind),
+		"site_path": relation.SitePath, "start_byte": relation.Range.StartByte,
+		"end_byte": relation.Range.EndByte, "reason": relation.Reason,
+		"unresolved_label": relationOptionalString(relation.UnresolvedLabel),
+	})
+}
+
+func validRelationKind(value RelationKind) bool {
+	switch value {
+	case RelationContains, RelationImports, RelationRefersTo, RelationReads, RelationWrites,
+		RelationCallsDirect, RelationCallsInterface, RelationMayDispatchTo,
+		RelationUnresolvedRef, RelationUnresolvedCall, RelationTestRef, RelationDocLink:
+		return true
+	default:
+		return false
+	}
+}
+
+func validEvidenceKind(value EvidenceKind) bool {
+	switch value {
+	case EvidenceSyntaxExact, EvidenceTypeResolved, EvidenceTypePossible,
+		EvidenceExplicitDoc, EvidenceTextMatch, EvidenceUnresolved:
+		return true
+	default:
+		return false
+	}
+}
+
+func cloneRelationHash(value *model.Hash) *model.Hash {
+	if value == nil {
+		return nil
+	}
+	copy := *value
+	return &copy
+}
+
+func cloneRelationString(value *string) *string {
+	if value == nil {
+		return nil
+	}
+	copy := *value
+	return &copy
+}
+
+func relationOptionalHash(value *model.Hash) any {
+	if value == nil {
+		return nil
+	}
+	return *value
+}
+
+func relationOptionalString(value *string) any {
+	if value == nil {
+		return nil
+	}
+	return *value
+}
 
 type objectIDResolver func(types.Object, *types.Selection) (model.Hash, error)
 
@@ -145,9 +340,9 @@ func appendCallRelations(pkg *packages.Package, facts *PackageFacts,
 		if !found {
 			return fmt.Errorf("%w: direct function literal has no closure symbol", ErrInvalidInput)
 		}
-		return appendRelation(facts, indexerfacts.RelationInput{
+		return appendRelation(facts, RelationInput{
 			SourceSymbolID: caller, TargetSymbolID: &target,
-			Kind: indexerfacts.RelationCallsDirect, EvidenceKind: indexerfacts.EvidenceSyntaxExact,
+			Kind: RelationCallsDirect, EvidenceKind: EvidenceSyntaxExact,
 			SitePath: path, Range: site, Reason: "callsite names this function literal directly",
 		}, source.Source)
 	}
@@ -162,9 +357,9 @@ func appendCallRelations(pkg *packages.Package, facts *PackageFacts,
 	function, static := object.(*types.Func)
 	if !static {
 		label := boundedCallLabel(call.Fun)
-		return appendRelation(facts, indexerfacts.RelationInput{
-			SourceSymbolID: caller, Kind: indexerfacts.RelationUnresolvedCall,
-			EvidenceKind: indexerfacts.EvidenceUnresolved, SitePath: path, Range: site,
+		return appendRelation(facts, RelationInput{
+			SourceSymbolID: caller, Kind: RelationUnresolvedCall,
+			EvidenceKind: EvidenceUnresolved, SitePath: path, Range: site,
 			Reason:          "go/types did not prove a static callable target; runtime target remains unknown",
 			UnresolvedLabel: &label,
 		}, source.Source)
@@ -174,15 +369,15 @@ func appendCallRelations(pkg *packages.Package, facts *PackageFacts,
 		return fmt.Errorf("resolve Go call target %q: %w", function.Name(), err)
 	}
 	interfaceType := interfaceCallType(selection, function)
-	kind := indexerfacts.RelationCallsDirect
+	kind := RelationCallsDirect
 	reason := "go/types resolved a static function or method target"
 	if interfaceType != nil {
-		kind = indexerfacts.RelationCallsInterface
+		kind = RelationCallsInterface
 		reason = "go/types resolved the interface method; concrete runtime dispatch is not known"
 	}
-	if err := appendRelation(facts, indexerfacts.RelationInput{
+	if err := appendRelation(facts, RelationInput{
 		SourceSymbolID: caller, TargetSymbolID: &target, Kind: kind,
-		EvidenceKind: indexerfacts.EvidenceTypeResolved, SitePath: path,
+		EvidenceKind: EvidenceTypeResolved, SitePath: path,
 		Range: site, Reason: reason,
 	}, source.Source); err != nil {
 		return err
@@ -195,9 +390,9 @@ func appendCallRelations(pkg *packages.Package, facts *PackageFacts,
 	}
 	if isReflectInvocation(function) {
 		label := "reflect.Value." + function.Name()
-		return appendRelation(facts, indexerfacts.RelationInput{
-			SourceSymbolID: caller, Kind: indexerfacts.RelationUnresolvedCall,
-			EvidenceKind: indexerfacts.EvidenceUnresolved, SitePath: path, Range: site,
+		return appendRelation(facts, RelationInput{
+			SourceSymbolID: caller, Kind: RelationUnresolvedCall,
+			EvidenceKind: EvidenceUnresolved, SitePath: path, Range: site,
 			Reason:          "reflection invokes a function value whose concrete runtime target is not statically known",
 			UnresolvedLabel: &label,
 		}, source.Source)
@@ -255,9 +450,9 @@ func appendDispatchCandidates(facts *PackageFacts, objectID objectIDResolver, ca
 					continue
 				}
 				seen[target] = struct{}{}
-				if err := appendRelation(facts, indexerfacts.RelationInput{
+				if err := appendRelation(facts, RelationInput{
 					SourceSymbolID: caller, TargetSymbolID: &target,
-					Kind: indexerfacts.RelationMayDispatchTo, EvidenceKind: indexerfacts.EvidenceTypePossible,
+					Kind: RelationMayDispatchTo, EvidenceKind: EvidenceTypePossible,
 					SitePath: path, Range: site,
 					Reason: "candidate type implements the interface; runtime dispatch was not observed",
 				}, source); err != nil {
@@ -269,8 +464,8 @@ func appendDispatchCandidates(facts *PackageFacts, objectID objectIDResolver, ca
 	return nil
 }
 
-func appendRelation(facts *PackageFacts, input indexerfacts.RelationInput, source []byte) error {
-	relation, err := indexerfacts.NewRelationFact(input, source)
+func appendRelation(facts *PackageFacts, input RelationInput, source []byte) error {
+	relation, err := NewRelationFact(input, source)
 	if err != nil {
 		return fmt.Errorf("create Go relation fact: %w", err)
 	}
@@ -387,7 +582,7 @@ func isReflectInvocation(function *types.Func) bool {
 	return function.Name() == "Call" || function.Name() == "CallSlice"
 }
 
-func sortRelationFacts(relations []indexerfacts.RelationFact) {
+func sortRelationFacts(relations []RelationFact) {
 	sort.Slice(relations, func(i, j int) bool {
 		left, right := relations[i], relations[j]
 		if left.SitePath != right.SitePath {

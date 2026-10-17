@@ -16,7 +16,6 @@ import (
 	"testing"
 	"time"
 
-	indexerfacts "github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer/facts"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 )
 
@@ -132,13 +131,13 @@ func ClosureCall() { func() {}() }
 			t.Fatalf("Go relation does not bind its captured source: %+v: %v", relation, err)
 		}
 	}
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationCallsInterface, 1)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationMayDispatchTo, 2)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", indexerfacts.RelationCallsDirect, 0)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", indexerfacts.RelationCallsInterface, 1)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", indexerfacts.RelationMayDispatchTo, 2)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "callback()", indexerfacts.RelationUnresolvedCall, 1)
-	assertRelationsAtCall(t, facts.Relations, capturedSource, "func() {}()", indexerfacts.RelationCallsDirect, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", RelationCallsInterface, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", RelationMayDispatchTo, 2)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Read()", RelationCallsDirect, 0)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", RelationCallsInterface, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "reader.Name()", RelationMayDispatchTo, 2)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "callback()", RelationUnresolvedCall, 1)
+	assertRelationsAtCall(t, facts.Relations, capturedSource, "func() {}()", RelationCallsDirect, 1)
 	closureCount := 0
 	for _, declaration := range facts.Declarations {
 		if declaration.Kind == "closure" {
@@ -172,7 +171,7 @@ func ClosureCall() { func() {}() }
 		t.Fatal("captured dependency Read method has no local syntax symbol")
 	}
 	rootFacts := packageFactsByPath(t, aggregate.Packages, input.ImportPath)
-	crossPackageCall := relationAtCall(rootFacts.Relations, capturedSource, "record.Read()", indexerfacts.RelationCallsDirect)
+	crossPackageCall := relationAtCall(rootFacts.Relations, capturedSource, "record.Read()", RelationCallsDirect)
 	if crossPackageCall == nil || crossPackageCall.TargetSymbolID == nil || *crossPackageCall.TargetSymbolID != dependencyReadID {
 		t.Fatal("aggregate analysis did not link the cross-package call to the dependency syntax symbol")
 	}
@@ -182,7 +181,7 @@ func ClosureCall() { func() {}() }
 			dependencyReadOccurrence = declaration.OccurrenceID
 		}
 	}
-	projectedCrossPackageCall := relationOccurrenceAtCall(aggregate.RelationOccurrences, capturedSource, "record.Read()", indexerfacts.RelationCallsDirect)
+	projectedCrossPackageCall := relationOccurrenceAtCall(aggregate.RelationOccurrences, capturedSource, "record.Read()", RelationCallsDirect)
 	if dependencyReadOccurrence == "" || projectedCrossPackageCall == nil || projectedCrossPackageCall.TargetOccurrenceID == nil ||
 		*projectedCrossPackageCall.TargetOccurrenceID != dependencyReadOccurrence {
 		t.Fatal("relation occurrence projection did not bind the imported method occurrence")
@@ -377,7 +376,7 @@ func ClosureCall() { func() {}() }
 	}
 }
 
-func assertRelationsAtCall(t *testing.T, relations []indexerfacts.RelationFact, source []byte, call string, kind indexerfacts.RelationKind, expected int) {
+func assertRelationsAtCall(t *testing.T, relations []RelationFact, source []byte, call string, kind RelationKind, expected int) {
 	t.Helper()
 	count := 0
 	for _, relation := range relations {
@@ -390,7 +389,7 @@ func assertRelationsAtCall(t *testing.T, relations []indexerfacts.RelationFact, 
 	}
 }
 
-func relationAtCall(relations []indexerfacts.RelationFact, source []byte, call string, kind indexerfacts.RelationKind) *indexerfacts.RelationFact {
+func relationAtCall(relations []RelationFact, source []byte, call string, kind RelationKind) *RelationFact {
 	for index := range relations {
 		relation := &relations[index]
 		if string(source[relation.Range.StartByte:relation.Range.EndByte]) == call && relation.Kind == kind {
@@ -411,7 +410,7 @@ func packageFactsByPath(t *testing.T, packages []PackageFacts, importPath string
 	return PackageFacts{}
 }
 
-func relationOccurrenceAtCall(relations []RelationOccurrence, source []byte, call string, kind indexerfacts.RelationKind) *RelationOccurrence {
+func relationOccurrenceAtCall(relations []RelationOccurrence, source []byte, call string, kind RelationKind) *RelationOccurrence {
 	for index := range relations {
 		relation := &relations[index]
 		if string(source[relation.Range.StartByte:relation.Range.EndByte]) == call && relation.Kind == kind {
