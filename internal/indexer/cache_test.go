@@ -13,6 +13,102 @@ import (
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot"
 )
 
+func TestSyntaxCacheKeyBindsPathBytesProviderAndConfiguration(t *testing.T) {
+	base := SyntaxCacheInput{
+		Path: "pkg/source.go", ContentDigest: testIndexHash("source"), Language: "go",
+		ProviderDigest: testIndexHash("provider"), CompilerConfigDigest: testIndexHash("config"),
+		InterpretationVersion: 1,
+	}
+	want, err := SyntaxCacheKey(base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mutations := []struct {
+		name  string
+		apply func(*SyntaxCacheInput)
+	}{
+		{name: "path", apply: func(value *SyntaxCacheInput) { value.Path = "other/source.go" }},
+		{name: "content", apply: func(value *SyntaxCacheInput) { value.ContentDigest = testIndexHash("source-v2") }},
+		{name: "language", apply: func(value *SyntaxCacheInput) { value.Language = "typescript" }},
+		{name: "provider", apply: func(value *SyntaxCacheInput) { value.ProviderDigest = testIndexHash("provider-v2") }},
+		{name: "compiler config", apply: func(value *SyntaxCacheInput) { value.CompilerConfigDigest = testIndexHash("config-v2") }},
+		{name: "interpretation", apply: func(value *SyntaxCacheInput) { value.InterpretationVersion++ }},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.name, func(t *testing.T) {
+			changed := base
+			mutation.apply(&changed)
+			got, err := SyntaxCacheKey(changed)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got == want {
+				t.Fatal("syntax-affecting input change reused a cache key")
+			}
+		})
+	}
+	base.Path = "../outside.go"
+	if _, err := SyntaxCacheKey(base); err == nil {
+		t.Fatal("syntax cache must reject paths outside the snapshot")
+	}
+}
+
+func TestSemanticCacheKeyBindsProfilePolicyDependenciesAndMembership(t *testing.T) {
+	base := SemanticCacheInput{
+		WorktreeID: "11111111-1111-4111-8111-111111111111", GenerationID: "22222222-2222-4222-8222-222222222222",
+		PartitionID: testIndexHash("partition"), InputDigest: testIndexHash("input"),
+		ProfileDigest: testIndexHash("profile"), PolicyDigest: testIndexHash("policy"),
+		ProviderDigest: testIndexHash("provider"), CompilerConfigDigest: testIndexHash("compiler"),
+		MembershipDigest:        testIndexHash("membership"),
+		DependencyExportDigests: []model.Hash{testIndexHash("dep-a"), testIndexHash("dep-b")},
+		InterpretationVersion:   1,
+	}
+	want, err := SemanticCacheKey(base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reordered := base
+	reordered.DependencyExportDigests = []model.Hash{base.DependencyExportDigests[1], base.DependencyExportDigests[0]}
+	if got, err := SemanticCacheKey(reordered); err != nil || got != want {
+		t.Fatalf("dependency order changed semantic key: got=%s want=%s err=%v", got, want, err)
+	}
+	mutations := []struct {
+		name  string
+		apply func(*SemanticCacheInput)
+	}{
+		{name: "worktree", apply: func(value *SemanticCacheInput) { value.WorktreeID = "33333333-3333-4333-8333-333333333333" }},
+		{name: "generation", apply: func(value *SemanticCacheInput) { value.GenerationID = "44444444-4444-4444-8444-444444444444" }},
+		{name: "partition", apply: func(value *SemanticCacheInput) { value.PartitionID = testIndexHash("partition-v2") }},
+		{name: "package input", apply: func(value *SemanticCacheInput) { value.InputDigest = testIndexHash("input-v2") }},
+		{name: "profile", apply: func(value *SemanticCacheInput) { value.ProfileDigest = testIndexHash("profile-v2") }},
+		{name: "policy", apply: func(value *SemanticCacheInput) { value.PolicyDigest = testIndexHash("policy-v2") }},
+		{name: "provider", apply: func(value *SemanticCacheInput) { value.ProviderDigest = testIndexHash("provider-v2") }},
+		{name: "compiler config", apply: func(value *SemanticCacheInput) { value.CompilerConfigDigest = testIndexHash("compiler-v2") }},
+		{name: "membership negative lookup", apply: func(value *SemanticCacheInput) { value.MembershipDigest = testIndexHash("membership-with-new-file") }},
+		{name: "dependency export", apply: func(value *SemanticCacheInput) { value.DependencyExportDigests[0] = testIndexHash("dep-a-v2") }},
+		{name: "interpretation", apply: func(value *SemanticCacheInput) { value.InterpretationVersion++ }},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.name, func(t *testing.T) {
+			changed := base
+			changed.DependencyExportDigests = append([]model.Hash(nil), base.DependencyExportDigests...)
+			mutation.apply(&changed)
+			got, err := SemanticCacheKey(changed)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got == want {
+				t.Fatal("semantic input change reused a cache key")
+			}
+		})
+	}
+	duplicate := base
+	duplicate.DependencyExportDigests = []model.Hash{base.DependencyExportDigests[0], base.DependencyExportDigests[0]}
+	if _, err := SemanticCacheKey(duplicate); err == nil {
+		t.Fatal("duplicate dependency fingerprint must be rejected")
+	}
+}
+
 func TestPlanIncrementalNoopAllowsOnlyExactCapturedContentReuse(t *testing.T) {
 	previous := testSnapshot(t, map[string][]byte{
 		"a.go": []byte("package cachetest\nfunc A() {}\n"),
