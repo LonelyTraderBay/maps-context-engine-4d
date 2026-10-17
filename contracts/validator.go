@@ -147,8 +147,9 @@ func (v *Validator) ValidateResponse(operation string, raw []byte) error {
 	return validateNestedSemantics(instance)
 }
 
-// ValidateCaptureManifest validates a bounded contract artifact. Large on-disk
-// manifests must use the streaming verifier owned by the storage pipeline.
+// ValidateCaptureManifest validates a bounded in-memory contract artifact.
+// Large on-disk artifacts use ValidateCanonicalCaptureManifestJSON1, which
+// checks raw canonical bytes through an admitted spool without loading arrays.
 func (v *Validator) ValidateCaptureManifest(raw []byte) (model.CaptureManifest, error) {
 	var manifest model.CaptureManifest
 	instance, err := DecodeJSON(raw)

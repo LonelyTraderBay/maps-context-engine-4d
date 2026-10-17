@@ -34,67 +34,11 @@ func WriteCaptureManifestJSON1(dst io.Writer, manifest CaptureManifest) error {
 	sort.Slice(dependencies, func(i, j int) bool {
 		return bytes.Compare([]byte(dependencies[i]), []byte(dependencies[j])) < 0
 	})
-
-	if err := writeCanonicalBytes(dst, []byte("{\"dependency_input_digests\":")); err != nil {
-		return err
-	}
-	if err := writeJSON1Array(dst, len(dependencies), func(index int) error {
-		return writeJSON1Value(dst, dependencies[index])
-	}); err != nil {
-		return err
-	}
-	if err := writeCanonicalBytes(dst, []byte(",\"files\":")); err != nil {
-		return err
-	}
-	if err := writeJSON1Array(dst, len(files), func(index int) error {
-		file := files[index]
-		value := map[string]any{
-			"path":         file.Path,
-			"status":       file.Status,
-			"content_hash": optionalHash(file.ContentHash),
-			"byte_length":  optionalInt(file.ByteLength),
-			"reason_code":  optionalIdentifier(file.ReasonCode),
-		}
-		return writeJSON1Value(dst, value)
-	}); err != nil {
-		return err
-	}
-	for _, field := range []struct {
-		name  string
-		value any
-	}{
-		{name: "policy_digest", value: manifest.PolicyDigest},
-		{name: "profile_id", value: manifest.ProfileID},
-		{name: "provider_digest", value: manifest.ProviderDigest},
-		{name: "schema_version", value: manifest.SchemaVersion},
-		{name: "snapshot_digest", value: manifest.SnapshotDigest},
-		{name: "worktree_id", value: manifest.WorktreeID},
-	} {
-		if err := writeCanonicalBytes(dst, []byte(",\""+field.name+"\":")); err != nil {
-			return err
-		}
-		if err := writeJSON1Value(dst, field.value); err != nil {
-			return err
-		}
-	}
-	return writeCanonicalBytes(dst, []byte("}"))
-}
-
-func writeJSON1Array(dst io.Writer, length int, writeItem func(int) error) error {
-	if err := writeCanonicalBytes(dst, []byte("[")); err != nil {
-		return err
-	}
-	for index := 0; index < length; index++ {
-		if index > 0 {
-			if err := writeCanonicalBytes(dst, []byte(",")); err != nil {
-				return err
-			}
-		}
-		if err := writeItem(index); err != nil {
-			return err
-		}
-	}
-	return writeCanonicalBytes(dst, []byte("]"))
+	stream := CaptureManifestSliceSources(manifest)
+	stream.Files = &sliceManifestFiles{values: files}
+	stream.Dependencies = &sliceManifestHashes{values: dependencies}
+	_, err := WriteCaptureManifestJSON1Stream(dst, stream)
+	return err
 }
 
 func writeJSON1Value(dst io.Writer, value any) error {

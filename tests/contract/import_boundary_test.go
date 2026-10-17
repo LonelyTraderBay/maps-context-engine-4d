@@ -20,9 +20,12 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join(filepath.Dir(sourceFile), "..", ".."))
 	allowed := map[string]map[string]bool{
-		"internal/model":           {},
-		"internal/analysis/golang": {modulePath + "/internal/model": true},
-		"internal/search":          {modulePath + "/internal/model": true},
+		"internal/model": {},
+		"internal/analysis/golang": {
+			modulePath + "/internal/model":        true,
+			modulePath + "/internal/runtime/exec": true,
+		},
+		"internal/search": {modulePath + "/internal/model": true},
 		"internal/catalog": {
 			modulePath + "/internal/model":  true,
 			modulePath + "/internal/policy": true,
@@ -37,6 +40,8 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/contracts":      true,
 			modulePath + "/internal/model": true,
 		},
+		// The controlled tool runner is a leaf package with no project imports.
+		"internal/runtime/exec": {},
 		"internal/runtime": {
 			modulePath + "/internal/paths":  true,
 			modulePath + "/internal/policy": true,

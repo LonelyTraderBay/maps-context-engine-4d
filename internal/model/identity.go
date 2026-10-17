@@ -259,50 +259,15 @@ func (manifest CaptureManifest) Validate() error {
 	if manifest.SchemaVersion != 1 {
 		return fmt.Errorf("%w: unsupported capture manifest schema version", ErrInvalidValue)
 	}
-	if manifest.Files == nil || manifest.DependencyInputDigests == nil || len(manifest.Files) > 1_000_000 || len(manifest.DependencyInputDigests) > 1_000_000 {
+	if manifest.Files == nil || manifest.DependencyInputDigests == nil || int64(len(manifest.Files)) > maxCaptureManifestEntries || int64(len(manifest.DependencyInputDigests)) > maxCaptureManifestEntries {
 		return fmt.Errorf("%w: capture manifest arrays are required and capped at 1000000", ErrInvalidValue)
 	}
-	if _, err := ParseUUID(string(manifest.WorktreeID)); err != nil {
+	stream := CaptureManifestSliceSources(manifest)
+	if err := validateManifestStreamHeader(stream); err != nil {
 		return err
 	}
-	for _, value := range []Hash{manifest.ProfileID, manifest.PolicyDigest, manifest.ProviderDigest, manifest.SnapshotDigest} {
-		if _, err := ParseHash(string(value)); err != nil {
-			return err
-		}
-	}
-	seen := make(map[string]struct{}, len(manifest.Files))
-	for _, file := range manifest.Files {
-		if err := ValidateRelativePath(file.Path); err != nil {
-			return err
-		}
-		if !oneOf(file.Status, "captured", "metadata_only", "excluded", "missing", "read_error") {
-			return fmt.Errorf("%w: unknown capture-manifest file status", ErrInvalidValue)
-		}
-		if _, exists := seen[file.Path]; exists {
-			return fmt.Errorf("%w: duplicate capture-manifest path", ErrInvalidValue)
-		}
-		seen[file.Path] = struct{}{}
-		if file.ContentHash != nil {
-			if _, err := ParseHash(string(*file.ContentHash)); err != nil {
-				return err
-			}
-		}
-		if file.ByteLength != nil && (*file.ByteLength < 0 || *file.ByteLength > MaxSafeInteger) {
-			return fmt.Errorf("%w: capture-manifest byte length outside safe range", ErrInvalidValue)
-		}
-		if file.ReasonCode != nil && !validIdentifier(*file.ReasonCode) {
-			return fmt.Errorf("%w: invalid capture-manifest reason code", ErrInvalidValue)
-		}
-		if file.Status == "captured" {
-			if file.ContentHash == nil || file.ByteLength == nil {
-				return fmt.Errorf("%w: captured file needs hash and safe byte length", ErrInvalidValue)
-			}
-		}
-	}
-	for _, digest := range manifest.DependencyInputDigests {
-		if _, err := ParseHash(string(digest)); err != nil {
-			return err
-		}
+	if _, err := ParseHash(string(manifest.SnapshotDigest)); err != nil {
+		return err
 	}
 	computed, err := manifest.ComputeSnapshotDigest()
 	if err != nil {
@@ -317,31 +282,12 @@ func (manifest CaptureManifest) Validate() error {
 func (manifest CaptureManifest) ComputeSnapshotDigest() (Hash, error) {
 	files := append([]ManifestFile(nil), manifest.Files...)
 	sort.Slice(files, func(i, j int) bool { return compareString(files[i].Path, files[j].Path) < 0 })
-	fileValues := make([]any, 0, len(files))
-	for _, file := range files {
-		fileValues = append(fileValues, map[string]any{
-			"path":         file.Path,
-			"status":       file.Status,
-			"content_hash": optionalHash(file.ContentHash),
-			"byte_length":  optionalInt(file.ByteLength),
-			"reason_code":  optionalIdentifier(file.ReasonCode),
-		})
-	}
 	dependencies := append([]Hash(nil), manifest.DependencyInputDigests...)
 	sort.Slice(dependencies, func(i, j int) bool { return compareString(string(dependencies[i]), string(dependencies[j])) < 0 })
-	dependencyValues := make([]any, 0, len(dependencies))
-	for _, digest := range dependencies {
-		dependencyValues = append(dependencyValues, digest)
-	}
-	return HashValue("capture-v1", map[string]any{
-		"schema_version":           manifest.SchemaVersion,
-		"worktree_id":              manifest.WorktreeID,
-		"profile_id":               manifest.ProfileID,
-		"policy_digest":            manifest.PolicyDigest,
-		"provider_digest":          manifest.ProviderDigest,
-		"files":                    fileValues,
-		"dependency_input_digests": dependencyValues,
-	})
+	stream := CaptureManifestSliceSources(manifest)
+	stream.Files = &sliceManifestFiles{values: files}
+	stream.Dependencies = &sliceManifestHashes{values: dependencies}
+	return ComputeCaptureManifestSnapshotDigest(stream)
 }
 
 func optionalIdentifier(value *Identifier) any {
