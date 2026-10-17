@@ -1271,7 +1271,7 @@ Cột Cases là truy vết tới oracle nghiệm thu, không có nghĩa một ta
 | T017 | G2 | T007,T012,T013 | Exact/prefix symbol lookup + bounded FTS5 text search, index plans. | R019 | C002,C042,C045 | DONE | Codex | E159,E160,E161,E162,E163,E164,E165,E166,E167,E168,E169,E170;task_revision=2;delivery=2a260f60-3af1-4ad7-a34a-08a723adaf11;base=56d7a45eb4c83ef24dd03009fd5cd69ff1b3f0d1;plan=b065a80d059d980cdc63ed482410f874b52be3a6812fa5754b2fac30bfdf4455;priority=P1;task_mode=implement;phase=closed;candidate_local=PASS(11/11);local=PASS(11/11);closing_local=PASS(11/11);payload_sha=3429d00523103ac41aba1be1de59ebfbab529c25;payload_CI=PASS(run:38984780970,4/4);closing_sha=189b4546df6b858b58c08691fd3bbd291629616e;closing_parent_sha=3429d00523103ac41aba1be1de59ebfbab529c25;closing_CI=PASS(run:38985345471,4/4);archive=PASS(manifest:7a9649dddf3e4f93ac82b274ecdedf663ba83e2c7d304dcf849be47bed6ae680,seal:8bd182a03b6a3809f0e9eb8368f6e673ee2eb83e3c9589cf3b340e3d31849859,readback:PASS);live=PASS(bd923372-b6af-40d3-9146-aaf10e8d5099);static_verdict=UNKNOWN;candidate=DONE;effective=DONE |
 | T018 | G2 | T008,T012,T015 | Dirty/add/delete/rename/config changes; manifest diff/invalidation. | R006,R020 | C013,C014,C015,C016,C017 | TODO | UNASSIGNED | NONE |
 | T019 | G2 | T018,T016 | Strict full-workspace freshness + source preconditions; unknown/failure explicit. | R006,R017,R097 | C013,C015,C023,C122 | TODO | UNASSIGNED | NONE |
-| T020 | G2 | T002,T005,T012 | Offline trusted package loader/profile, controlled env/tool paths; partial fallback. Streaming manifest normalization/hash/count/bytes trên owned spool, no whole-manifest RAM load. Streaming MCE-MANIFEST-JSON1, key-order/escape equivalents same raw bytes; corrupt/noncanonical fail closed. | R014,R032,R099,R121,R127 | C009,C012,C046,C047,C129,C132,C174,C175,C176,C186,C187 | IN_PROGRESS | Codex | E176;task_revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;supersedes=d9878eec-7b43-4b55-93d6-9730f1febb4a;base=189b4546df6b858b58c08691fd3bbd291629616e;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;priority=P0;task_mode=implement;phase=candidate-verified;local=PASS(11/11);payload=NOT_RUN
+| T020 | G2 | T002,T005,T012 | Offline trusted package loader/profile, controlled env/tool paths; partial fallback. Streaming manifest normalization/hash/count/bytes trên owned spool, no whole-manifest RAM load. Streaming MCE-MANIFEST-JSON1, key-order/escape equivalents same raw bytes; corrupt/noncanonical fail closed. | R014,R032,R099,R121,R127 | C009,C012,C046,C047,C129,C132,C174,C175,C176,C186,C187 | VERIFY | Codex | E177;task_revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;supersedes=d9878eec-7b43-4b55-93d6-9730f1febb4a;base=189b4546df6b858b58c08691fd3bbd291629616e;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;priority=P0;task_mode=implement;phase=payload-receipt;local=PASS(11/11);payload_sha=PENDING;payload_CI=PENDING;closing_sha=PENDING;closing_CI=PENDING;archive/live=PENDING
 | T021 | G2 | T018,T020,T019 | No-op/content reuse; full semantic fallback; selective only sau differential tests. | R020,R021 | C017,C018 | TODO | UNASSIGNED | NONE |
 | T022 | G3 | T017,T019,T016 | Context pack target/source/ref/boundary selection deterministic. | R022 | C002,C006,C029 | TODO | UNASSIGNED | NONE |
 | T023 | G3 | T022 | Task slices + trusted rules/constraints + validation-plan data; no invented contracts. | R022,R033 | C025,C026,C033,C045 | TODO | UNASSIGNED | NONE |
@@ -1647,6 +1647,7 @@ Evidence IDs E001,E002,... monotonic unique, cấp khi code thật có run/artif
 | E174 | T020 | revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;phase=candidate-checks;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;candidate=PASS(11/11);summary_sha256=5dec9ee76d222b082a75b8768fc0ee44197966068ac3d9b775804d7f443bc50c | Windows 11 Pro x64; Python 3.12.10; Go 1.27.2 windows/amd64; Git 2.45.1 | Chạy lại đủ frozen 11 local checks sau khi sửa allowlist import-boundary và lỗi đóng spool; giữ các attempt fail/correction trước đó trong cùng revision history. | PASS — bootstrap/fixtures, frozen plan, SPEC/fixtures, delivery-policy/checkpoint fixtures, gofmt, go test ./..., go vet ./... và go build ./... đạt 11/11 trên candidate revision 2. Payload commit/push và exact-SHA CI chưa chạy. | artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-03/summary.json sha256:5dec9ee76d222b082a75b8768fc0ee44197966068ac3d9b775804d7f443bc50c; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-01/summary.json sha256:4e589832996a1230eb3e3be164e2e17853fa812679b0d8829fc7c5d5875594bc; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-02/summary.json sha256:c334144fefb4c20e639dc5e0e45a807f67e8a56e68853e7556ed9782287582cc | 2026-10-17T00:46:24.836090Z |
 | E175 | T020 | revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;phase=candidate-checks;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;candidate=PASS(11/11);summary_sha256=f8d475b63eae1948890d89ad8ddd9cba37a429a4b71c3b3cbf26fd879e0c04e6 | Windows 11 Pro x64; Python 3.12.10; Go 1.27.2 windows/amd64; Git 2.45.1 | Chạy lại frozen suite trên snapshot đã đồng bộ S22/latest evidence; xác nhận đủ 11 local checks trước payload commit. | PASS — plan/workflow, SPEC/fixtures, delivery-policy/checkpoint fixtures, gofmt, go test ./..., go vet ./... và go build ./... đạt 11/11; payload chưa commit/push nên exact-SHA CI còn NOT_RUN. | artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-04/summary.json sha256:f8d475b63eae1948890d89ad8ddd9cba37a429a4b71c3b3cbf26fd879e0c04e6; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-03/summary.json sha256:5dec9ee76d222b082a75b8768fc0ee44197966068ac3d9b775804d7f443bc50c | 2026-10-17T00:50:38.800246Z |
 | E176 | T020 | revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;phase=candidate-checks;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;candidate=PASS(11/11);summary_sha256=91dbe8047e5093edbece9b111b003a8cb1bbe7d8202331d13c38009cdbe52313 | Windows 11 Pro x64; Python 3.12.10; Go 1.27.2 windows/amd64; Git 2.45.1 | Chạy frozen suite sau khi giới hạn canonical spool writer theo MaxBytes và thêm fixture chứng minh đầu ra sau normalize không vượt cap. | PASS — 11/11 checks, gồm go test ./..., go vet ./... và go build ./...; các lần fail được giữ trong history. Payload commit/push và exact-SHA CI chưa chạy. | artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-05/summary.json sha256:91dbe8047e5093edbece9b111b003a8cb1bbe7d8202331d13c38009cdbe52313; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-r2-04/summary.json sha256:f8d475b63eae1948890d89ad8ddd9cba37a429a4b71c3b3cbf26fd879e0c04e6 | 2026-10-17T00:53:12.997154Z |
+| E177 | T020 | revision=2;delivery=ac851fd9-a4d2-4e51-8edd-4d8da831726a;phase=payload-pass;payload=3f8487b1c51bb4783b159fa1c7fc1529879b862c;parent=8388979362e5e96312d24c76324d4aeb43816bbc;run=38990508932;CI=PASS(4/4);collection=f7eb35d3-b6b4-433e-82a5-65c434aa6592;plan=333dd256488df42e34d9e7a864f6cac39da376eab0eac527f01d8b968de78e09;local=PASS(11/11);candidate_P6=PASS(11/11) | Windows 11 Pro x64; GitHub Actions Ubuntu/Windows; App 15368; repository ID 1421031011 | Giữ lịch sử exact-SHA P1–P4, đối chiếu run payload P5 trên đúng SHA/remote main, xác nhận output-limit và Windows canonical-path corrections; ghi receipt trước khi T020 chuyển sang VERIFY. | PASS — run 38990508932 event push, bốn required contexts bootstrap/spec-contract trên Ubuntu/Windows đều success; frozen local checks P5 và candidate payload P6 đều đạt 11/11. P1–P4 failure được giữ trong lịch sử; closing C, archive readback và live verification chưa chạy. | artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/ci/failed-attempts-P1-P4.json sha256:feaa4eab06dcd4c32b556ebf8b722b5bf0dd2f99273851e29d568a67aa420f9d; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/archive-view/ci/payload-P5/collection.json sha256:cbadc0c40d2de68d9f1c690fd16088bfe70d5f293f5d8566a906f415ea812b42; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/archive-view/ci/payload-P5/payload-observation.archive.json sha256:5abef82b497b36680c245f2952cf3b8ff1a919f6669c07d0ff2db8ee0c1e4991; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/operations/payload-P5/push-operation.json sha256:ce49159f7abe8fadc6046570bd640720ba88a90197227823a56fda2083073619; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-p5-03/summary.json sha256:8cc6ea3094f9edb951b52c559454eea746a02d8f06420f35a297d494c841383e; artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/candidate-checks-payload-P6-01/summary.json sha256:1a934843a03cf9b1c243519eb4ca17a8c4b548948b21311103cb6e5fa8d303b2 | 2026-10-17T01:34:28.844Z |
 Format result: PASS, FAIL, NOT_RUN. NOT_RUN phải có lý do trong record. Hash tree dùng khi chưa commit; không bịa commit SHA. Absolute local paths chỉ trong private evidence khi cần, không publish; log sanitized. File artifact không tồn tại thì không tạo pointer giả. DONE task MUST trỏ >=1 evidence record PASS bao phủ test scope; gate reviewer kiểm tra không chỉ string “PASS”.
 
 ### Metadata áp dụng cho task/lệnh — không thêm tracker
@@ -5150,7 +5151,7 @@ Discrepancy register (điền khi có bằng chứng về docs/source/policy/env
 ```yaml
 resume:
   spec_version: 1.6.13
-  implementation_revision: "3429d00523103ac41aba1be1de59ebfbab529c25"
+  implementation_revision: "3f8487b1c51bb4783b159fa1c7fc1529879b862c"
   release_label: NOT_BUILT
   gate: G2
   design_seal: PASS
@@ -5174,29 +5175,29 @@ resume:
   git_delivery:
     repository_status: REMOTE_CONFIGURED_PUBLIC_AUTHENTICATED_BRANCH_UNPROTECTED_ACTIONS_ENABLED
     local_branch: main
-    local_head_sha: "56d7a45eb4c83ef24dd03009fd5cd69ff1b3f0d1"
+    local_head_sha: "3f8487b1c51bb4783b159fa1c7fc1529879b862c"
     author_identity_status: CONFIGURED
     approved_remote: origin
     approved_branch: main
-    last_verified_payload_sha: "3429d00523103ac41aba1be1de59ebfbab529c25"
-    closing_commit_ref: "189b4546df6b858b58c08691fd3bbd291629616e"
+    last_verified_payload_sha: "3f8487b1c51bb4783b159fa1c7fc1529879b862c"
+    closing_commit_ref: null
     pending_delivery_id: "ac851fd9-a4d2-4e51-8edd-4d8da831726a"
     active_delivery_id: "ac851fd9-a4d2-4e51-8edd-4d8da831726a"
     task_revision: 2
     planned_archive_path: "artifacts/git-delivery/ac851fd9-a4d2-4e51-8edd-4d8da831726a"
-    closing_parent_sha: null
+    closing_parent_sha: "3f8487b1c51bb4783b159fa1c7fc1529879b862c"
     durable_archive_ref: "artifacts/git-delivery/2a260f60-3af1-4ad7-a34a-08a723adaf11"
-    observed_remote_sha: "189b4546df6b858b58c08691fd3bbd291629616e"
+    observed_remote_sha: "3f8487b1c51bb4783b159fa1c7fc1529879b862c"
     expected_check_plan_ref: "artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/check-plan.json"
-    last_ci_result: "T017 closing SHA 189b4546df6b858b58c08691fd3bbd291629616e: exact Actions run 38985345471 PASS 4/4; frozen candidate closing checks 11/11 PASS; archive cold-readback PASS; live verification bd923372-b6af-40d3-9146-aaf10e8d5099 PASS with static_verdict UNKNOWN. T020 revision 2 local candidate checks PASS 11/11 on candidate-r2-05; payload commit and CI are NOT_RUN."
+    last_ci_result: "T017 closing SHA 189b4546df6b858b58c08691fd3bbd291629616e: exact Actions run 38985345471 PASS 4/4; frozen candidate closing checks 11/11 PASS; archive cold-readback PASS; live verification bd923372-b6af-40d3-9146-aaf10e8d5099 PASS with static_verdict UNKNOWN. T020 revision 2 payload P5 3f8487b1c51bb4783b159fa1c7fc1529879b862c exact Actions run 38990508932 PASS 4/4 and frozen local checks PASS 11/11; closing CI, archive readback, and fresh live verification remain pending."
     previous_closed_task_live_ref: "artifacts/git-live/2a260f60-3af1-4ad7-a34a-08a723adaf11/bd923372-b6af-40d3-9146-aaf10e8d5099/live-verification.json"
     last_live_verification_ref: "artifacts/git-live/2a260f60-3af1-4ad7-a34a-08a723adaf11/bd923372-b6af-40d3-9146-aaf10e8d5099/live-verification.json"
     last_live_verification_id: "bd923372-b6af-40d3-9146-aaf10e8d5099"
     previous_revision_ci_collection_ref: "artifacts/git-delivery/2a260f60-3af1-4ad7-a34a-08a723adaf11/archive-view/ci/payload-P5/collection.json"
-    last_ci_collection_ref: "artifacts/git-delivery/2a260f60-3af1-4ad7-a34a-08a723adaf11/archive-view/ci/closing-C2/collector-summary.json"
+    last_ci_collection_ref: "artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/archive-view/ci/payload-P5/collection.json"
     pending_delivery_task: T020
     source_gap_review_ref: null
-    last_delivery_evidence_ref: "artifacts/git-live/2a260f60-3af1-4ad7-a34a-08a723adaf11/bd923372-b6af-40d3-9146-aaf10e8d5099/live-verification.json"
+    last_delivery_evidence_ref: "artifacts/git-delivery/.staging-ac851fd9-a4d2-4e51-8edd-4d8da831726a/archive-view/ci/payload-P5/payload-observation.archive.json"
   auto_advance_tasks: true
   auto_close_internal_gates: true
   intermediate_user_approval: false
@@ -5234,8 +5235,8 @@ resume:
   blocking_user_decision: null
   discovery_gaps: [K001, K002, K003, K004, K007, K008, K009, K010, K011, K014, K015]
   known_limits: [K005, K006, K012]
-  last_evidence_id: E176
-  last_checked_at_utc: 2026-10-17T00:53:12.997154Z
+  last_evidence_id: E177
+  last_checked_at_utc: 2026-10-17T01:34:28.844Z
 ```
 
 MUST cập nhật resume chỉ sau khi tracker/evidence nhất quán; current command ref/digest/lifecycle/retry lấy từ secured actual context CHECKPOINT-CURRENT-01, không từ checkpoint cache; current attempt selector/revision và execution_checkpoint theo GIT-DATA-04, planned path khác actual archive pointer; là summary derived, không nguồn thay thế task rows. Coding assignment108 và ủy quyền còn hiệu lực xuyên task/compaction/phiên tiếp tục đến completion hoặc user stop/revoke; kiểm hiện trạng mà không yêu cầu cấp lại cùng quyền. Không lưu chain-of-thought vào tài liệu. Chỉ lưu quyết định, bằng chứng, lỗi tái hiện được và hành động tiếp theo.
