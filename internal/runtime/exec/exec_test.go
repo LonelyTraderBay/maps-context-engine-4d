@@ -15,12 +15,12 @@ func TestRunUsesExplicitEnvironmentAndBoundsOutput(t *testing.T) {
 	}
 	dir := t.TempDir()
 	tool := filepath.Join(dir, "tool")
-	if err := os.WriteFile(tool, []byte("#!/bin/sh\nprintf '%s' \"$1\"\nprintf '%s' \"$LEAK\" >&2\n"), 0o700); err != nil {
+	if err := os.WriteFile(tool, []byte("#!/bin/sh\nprintf '%s' \"$PATH\"\nprintf '%s' \"$LEAK\" >&2\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	result, err := Run(context.Background(), Spec{
 		Path: tool, Dir: dir,
-		Env:            map[string]string{"PATH": "/usr/bin:/bin", "TMPDIR": dir},
+		Env:            map[string]string{"PATH": "", "TMPDIR": dir},
 		MaxStdoutBytes: 16, MaxStderrBytes: 16,
 	})
 	if err != nil {
@@ -29,7 +29,7 @@ func TestRunUsesExplicitEnvironmentAndBoundsOutput(t *testing.T) {
 	if string(result.Stdout) != "" || string(result.Stderr) != "" {
 		t.Fatalf("runner inherited an undeclared variable: stdout=%q stderr=%q", result.Stdout, result.Stderr)
 	}
-	_, err = Run(context.Background(), Spec{Path: tool, Args: []string{"0123456789"}, Dir: dir, Env: map[string]string{"PATH": "/usr/bin:/bin"}, MaxStdoutBytes: 4, MaxStderrBytes: 4})
+	_, err = Run(context.Background(), Spec{Path: tool, Dir: dir, Env: map[string]string{"PATH": "0123456789"}, MaxStdoutBytes: 4, MaxStderrBytes: 4})
 	if !errors.Is(err, ErrOutputLimit) {
 		t.Fatalf("oversized output error = %v, want ErrOutputLimit", err)
 	}

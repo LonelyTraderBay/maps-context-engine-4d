@@ -455,7 +455,7 @@ func verifyGoExecutable(ctx context.Context, profile LoadProfile) error {
 }
 
 func preflightCapturedModuleClosure(ctx context.Context, request LoadRequest, moduleRoot string) (bool, string, error) {
-	root, err := filepath.Abs(request.SnapshotRoot)
+	root, err := canonicalDirectoryPath(request.SnapshotRoot)
 	if err != nil {
 		return false, "snapshot root không hợp lệ", err
 	}
