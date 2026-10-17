@@ -425,12 +425,17 @@ def _change_allowed_s19(old: list[str], new: list[str], task_id: str) -> list[st
         errors.append("S19 closing cần local PASS hoặc PASS(N/N)")
     if not set(before_evidence).issubset(after_evidence):
         errors.append("S19 closing không được xóa metadata evidence đã giữ")
-    if set(after_evidence) - set(before_evidence) != {"candidate"}:
-        errors.append("S19 closing chỉ được thêm field candidate")
+    expected_new_fields = set() if "candidate" in before_evidence else {"candidate"}
+    if set(after_evidence) - set(before_evidence) != expected_new_fields:
+        errors.append("S19 closing chỉ được thêm candidate khi payload chưa có field đó")
     for key, value in before_evidence.items():
         if key in {"payload_sha", "payload_CI"}:
             if value != "PENDING" and after_evidence.get(key) != value:
                 errors.append(f"S19 closing không được thay evidence đã quan sát: {key}")
+        elif key == "candidate":
+            closing_value = after_evidence.get(key)
+            if not (value == closing_value or (value == "VERIFY" and closing_value == "DONE")):
+                errors.append("S19 closing chỉ cho phép candidate VERIFY → DONE")
         elif after_evidence.get(key) != value:
             errors.append(f"S19 closing làm đổi evidence đã freeze: {key}")
     if not isinstance(after_evidence.get("payload_sha"), str) or GIT_SHA.fullmatch(after_evidence["payload_sha"]) is None:

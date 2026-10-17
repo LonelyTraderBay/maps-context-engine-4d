@@ -247,6 +247,21 @@ class ClosingDiffTests(unittest.TestCase):
         payload, closing = self._payload_and_closing()
         self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
 
+    def test_candidate_verify_to_done_transition_passes(self) -> None:
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", _delivery_evidence() + ";candidate=VERIFY")
+        closing_evidence = _delivery_evidence(PAYLOAD_SHA, closing=True)
+        closing = _with_task_row(payload, "DONE", closing_evidence)
+        closing = _append_evidence(closing)
+        self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
+
+    def test_candidate_verify_cannot_transition_to_another_value(self) -> None:
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", _delivery_evidence() + ";candidate=VERIFY")
+        closing_evidence = _delivery_evidence(PAYLOAD_SHA, closing=True).replace("candidate=DONE", "candidate=SKIPPED")
+        closing = _with_task_row(payload, "DONE", closing_evidence)
+        closing = _append_evidence(closing)
+        errors = classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0")
+        self.assertTrue(any("VERIFY → DONE" in error for error in errors))
+
     def test_candidate_closing_accepts_semicolon_separated_evidence_ids(self) -> None:
         evidence = (
             f"E053;E054;E055;E056;task_revision={CURRENT_S19['task_revision']};delivery={DELIVERY_ID};"
