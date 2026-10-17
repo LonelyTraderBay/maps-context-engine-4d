@@ -21,6 +21,9 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	root := filepath.Clean(filepath.Join(filepath.Dir(sourceFile), "..", ".."))
 	allowed := map[string]map[string]bool{
 		"internal/model": {},
+		"internal/indexer": {
+			modulePath + "/internal/store/sqlite": true,
+		},
 		"internal/analysis/golang": {
 			modulePath + "/internal/model":        true,
 			modulePath + "/internal/runtime/exec": true,

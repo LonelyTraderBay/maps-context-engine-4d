@@ -34,8 +34,14 @@ type writeRow struct {
 // pool, admits the bounded peak before touching SQLite, and applies a
 // context-aware wait bounded by the effective SQLite busy timeout.
 func (store *Store) withWriteTx(ctx context.Context, peakGrowthBytes int64, write func(*writeTx) error) (retErr error) {
-	if store == nil || store.writer == nil || store.ownership == nil || ctx == nil || write == nil || store.busyTimeoutMS < 1 || peakGrowthBytes < 1 || peakGrowthBytes > model.MaxSafeInteger {
+	if !validWriteRequest(store, ctx, peakGrowthBytes, write) {
 		return fmt.Errorf("invalid SQLite write transaction request: %w", ErrInvalidIndex)
+	}
+	if token, ok := ctx.Value(generationWriteContextKey{}).(*generationWriteToken); ok && token.store == store {
+		if done, active := token.enter(); active {
+			defer done()
+			return store.withWriteTxUnderLease(ctx, peakGrowthBytes, write)
+		}
 	}
 	store.writeGate.RLock()
 	defer store.writeGate.RUnlock()
@@ -51,6 +57,23 @@ func (store *Store) withWriteTx(ctx context.Context, peakGrowthBytes int64, writ
 			retErr = errors.Join(retErr, fmt.Errorf("release worktree writer lease: %w", err))
 		}
 	}()
+	return store.withWriteTxUnderLease(ctx, peakGrowthBytes, write)
+}
+
+func validWriteRequest(store *Store, ctx context.Context, peakGrowthBytes int64, write func(*writeTx) error) bool {
+	return store != nil && store.writer != nil && store.ownership != nil && ctx != nil && write != nil &&
+		store.busyTimeoutMS >= 1 && peakGrowthBytes >= 1 && peakGrowthBytes <= model.MaxSafeInteger
+}
+
+// withWriteTxUnderLease starts a bounded SQLite transaction while the caller
+// already owns the worktree OS writer lease and Store write gate.
+func (store *Store) withWriteTxUnderLease(ctx context.Context, peakGrowthBytes int64, write func(*writeTx) error) (retErr error) {
+	if !validWriteRequest(store, ctx, peakGrowthBytes, write) {
+		return fmt.Errorf("invalid leased SQLite write transaction request: %w", ErrInvalidIndex)
+	}
+	if store.closed {
+		return fmt.Errorf("SQLite store is closed: %w", ErrInvalidIndex)
+	}
 	reservation, err := store.ownership.admitIndexGrowth(ctx, peakGrowthBytes)
 	if err != nil {
 		return fmt.Errorf("admit SQLite write growth: %w", err)
