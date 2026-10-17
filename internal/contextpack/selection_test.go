@@ -213,6 +213,42 @@ func TestCyclesAndTraversalLimitsRemainExplicit(t *testing.T) {
 	}
 }
 
+func TestExactRelationLimitDoesNotReportTruncation(t *testing.T) {
+	scope, identity := testScope(t)
+	a := testNode(identity, "a", "A", "pkg.A", "", "", 0, 0)
+	b := testNode(identity, "b", "B", "pkg.B", "", "", 0, 0)
+	c := testNode(identity, "c", "C", "pkg.C", "", "", 0, 0)
+	graph := Graph{
+		Nodes: []Node{a, b, c},
+		Relations: []Relation{
+			testRelation("a-b", a.Ref, &b.Ref, "CALLS_DIRECT", "type_resolved", "exact_in_supported_scope"),
+			testRelation("b-c", b.Ref, &c.Ref, "CALLS_DIRECT", "type_resolved", "exact_in_supported_scope"),
+		},
+		Complete: true,
+	}
+	request := testRequest(Selector{Kind: SelectorRef, Ref: refPointer(a.Ref)}, TaskExplore)
+	request.Limits.MaxRelations = 2
+
+	result, err := Build(context.Background(), Input{Scope: scope, Graph: graph, Request: request})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.EnumerationComplete || result.ContinuationRequired || result.RequiredPending == nil || *result.RequiredPending != 0 ||
+		countNodeItems(result.Items) != 3 || hasGap(result.Gaps, "traversal_relation_limit") ||
+		hasBoundary(result.Boundaries, "traversal_relation_limit") || hasItemKind(result.Items, "boundary") {
+		t.Fatalf("exact relation cap incorrectly reported truncation: %#v", result)
+	}
+	relationItems := 0
+	for _, item := range result.Items {
+		if item.RelationID != nil {
+			relationItems++
+		}
+	}
+	if relationItems != 2 {
+		t.Fatalf("expected both relations at the exact cap, got %d in %#v", relationItems, result.Items)
+	}
+}
+
 func TestDepthAndProviderGapsDoNotClaimCompleteness(t *testing.T) {
 	scope, identity := testScope(t)
 	a := testNode(identity, "a", "A", "pkg.A", "", "", 0, 0)
