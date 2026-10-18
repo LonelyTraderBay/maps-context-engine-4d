@@ -135,6 +135,28 @@ func TestHardCapsAndCrossFieldLimitsRejectBeforeUse(t *testing.T) {
 	}
 }
 
+func TestValidateEffectiveRequiresActiveResourceLimits(t *testing.T) {
+	base := DefaultRuntimeConfig()
+	base.Core.MaxParseWorkers = 1
+	testCases := []struct {
+		name   string
+		change func(*RuntimeConfig)
+	}{
+		{name: "storage reserve", change: func(config *RuntimeConfig) { config.Core.VolumeReserveBytes = 0 }},
+		{name: "RSS budget", change: func(config *RuntimeConfig) { config.Core.ProcessTreeRSSBudgetBytes = 0 }},
+		{name: "monitor interval", change: func(config *RuntimeConfig) { config.Core.ResourceMonitorIntervalMS = 0 }},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			candidate := base
+			testCase.change(&candidate)
+			if err := candidate.ValidateEffective(); !errors.Is(err, ErrInvalidConfig) {
+				t.Fatalf("resource limit error = %v, want ErrInvalidConfig", err)
+			}
+		})
+	}
+}
+
 func TestStrictSourceRejectsDuplicateAndMalformedInput(t *testing.T) {
 	pipeline := testPipeline(t)
 	for _, raw := range []string{

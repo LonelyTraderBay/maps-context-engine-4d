@@ -120,6 +120,9 @@ func (config RuntimeConfig) ValidateEffective() error {
 	if core.VolumeWarningBytes < core.VolumeReserveBytes {
 		return fmt.Errorf("%w: volume warning threshold must be at least its reserve", ErrInvalidConfig)
 	}
+	if core.VolumeReserveBytes < 1 || core.ProcessTreeRSSBudgetBytes < 1 || core.ResourceMonitorIntervalMS < 1 {
+		return fmt.Errorf("%w: storage reserve and process-tree resource limits must be positive", ErrInvalidConfig)
+	}
 	if config.Explorer.GraphDefaultNodes > config.Explorer.GraphHardNodes || config.Explorer.GraphDefaultEdges > config.Explorer.GraphHardEdges {
 		return fmt.Errorf("%w: graph defaults exceed hard limits", ErrInvalidConfig)
 	}
