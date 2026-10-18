@@ -37,6 +37,62 @@ func TestValidateRequiresTwoStableContentPasses(t *testing.T) {
 	}
 }
 
+func TestValidateRetriesMembershipChangeThenReportsStale(t *testing.T) {
+	manifest, vector, oldHash := appValidationFixture(t)
+	newHash := model.SHA256([]byte("package demo\n// added\n"))
+	before := fakeInventory("membership-before", "main.go")
+	after := fakeInventory("membership-after", "main.go", "new.go")
+	workspace := &fakeWorkspace{
+		inventories: []inventory.Snapshot{before, after, after, after, after, after},
+		hashes: map[string][]model.Hash{
+			"main.go": {oldHash, oldHash, oldHash, oldHash},
+			"new.go":  {newHash, newHash, newHash},
+		},
+	}
+	service := newFakeService(t, workspace, fakeScopeReaderFor(manifest, vector, vector, vector, vector))
+	result, err := service.Validate(context.Background(), appValidationRequest(manifest, vector))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Freshness.Status != snapshot.FreshnessChanged || !result.MembershipChanged || result.EditPreconditionValid ||
+		len(result.ChangedPaths) != 1 || result.ChangedPaths[0] != "new.go" {
+		t.Fatalf("membership added during inventory traversal was rebased to current: %+v", result)
+	}
+	if workspace.scans != 6 || workspace.hashCalls != 7 {
+		t.Fatalf("membership retry was not bounded and complete: scans=%d hash_calls=%d", workspace.scans, workspace.hashCalls)
+	}
+}
+
+func TestValidateReturnsUnknownWhenMembershipKeepsChanging(t *testing.T) {
+	manifest, vector, oldHash := appValidationFixture(t)
+	newHash := model.SHA256([]byte("package demo\n// added\n"))
+	first := fakeInventory("membership-a", "main.go")
+	second := fakeInventory("membership-b", "main.go", "new.go")
+	workspace := &fakeWorkspace{
+		inventories: []inventory.Snapshot{
+			first, second, second,
+			second, first, first,
+			first, second, second,
+		},
+		hashes: map[string][]model.Hash{
+			"main.go": {oldHash, oldHash, oldHash, oldHash, oldHash, oldHash},
+			"new.go":  {newHash, newHash, newHash},
+		},
+	}
+	service := newFakeService(t, workspace, fakeScopeReaderFor(manifest, vector, vector, vector, vector, vector, vector))
+	result, err := service.Validate(context.Background(), appValidationRequest(manifest, vector))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Freshness.Status != snapshot.FreshnessUnknown || result.EditPreconditionValid ||
+		result.ReasonCode != "WORKSPACE_CHANGED_DURING_VALIDATION" || result.Freshness.ChangedCount != nil {
+		t.Fatalf("continued membership churn was presented as validated: %+v", result)
+	}
+	if workspace.scans != 9 || workspace.hashCalls != 9 {
+		t.Fatalf("membership retries exceeded or skipped the bounded observations: scans=%d hash_calls=%d", workspace.scans, workspace.hashCalls)
+	}
+}
+
 func TestValidateStopsAsUnknownAfterBoundedWorkspaceInstability(t *testing.T) {
 	manifest, vector, _ := appValidationFixture(t)
 	first := model.SHA256([]byte("package demo\n// old\n"))
