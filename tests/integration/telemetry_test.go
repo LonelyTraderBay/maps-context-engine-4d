@@ -79,6 +79,106 @@ func TestTelemetrySanitizesFixedSchemaAndMetricAllowlist(t *testing.T) {
 	}
 }
 
+func TestTelemetryAllowsEveryS16Metric(t *testing.T) {
+	numericMetrics := []telemetry.Metric{
+		telemetry.MetricInventoryFiles,
+		telemetry.MetricFilesExcludedByReason,
+		telemetry.MetricBytesHashed,
+		telemetry.MetricCacheHit,
+		telemetry.MetricNoop,
+		telemetry.MetricFilesReparsed,
+		telemetry.MetricNodes,
+		telemetry.MetricEdges,
+		telemetry.MetricUnresolved,
+		telemetry.MetricFreshnessDuration,
+		telemetry.MetricQueryLatency,
+		telemetry.MetricOutputBytes,
+		telemetry.MetricRequiredPending,
+		telemetry.MetricCursorErrors,
+		telemetry.MetricLockWaitMS,
+		telemetry.MetricBusyCount,
+		telemetry.MetricIndexDuration,
+		telemetry.MetricCancellationLatency,
+		telemetry.MetricChildProcessCount,
+		telemetry.MetricDiskBytes,
+		telemetry.MetricRecoveryCount,
+		telemetry.MetricPartitionCacheHit,
+		telemetry.MetricInvalidationClosureSize,
+		telemetry.MetricSnapshotAnalysisCount,
+		telemetry.MetricLiveValidationCount,
+	}
+	categoricalMetrics := []struct {
+		name     telemetry.Metric
+		category string
+	}{
+		{telemetry.MetricSemanticRebuildMode, "full"},
+		{telemetry.MetricFreshnessResult, "fresh"},
+		{telemetry.MetricHierarchyQueryScope, "project"},
+		{telemetry.MetricSelfIndexAnalyzerRevision, "v1"},
+	}
+
+	metrics := make([]telemetry.MetricSample, 0, len(numericMetrics)+len(categoricalMetrics)+5)
+	expectedNumeric := make(map[telemetry.Metric]int64, len(numericMetrics))
+	for index, name := range numericMetrics {
+		value := int64(index)
+		expectedNumeric[name] = value
+		metrics = append(metrics, telemetry.NumericMetric(name, value))
+	}
+	expectedCategorical := make(map[telemetry.Metric]string, len(categoricalMetrics))
+	for _, sample := range categoricalMetrics {
+		expectedCategorical[sample.name] = sample.category
+		metrics = append(metrics, telemetry.CategoricalMetric(sample.name, sample.category))
+	}
+
+	negative := int64(-1)
+	wrongType := int64(1)
+	metrics = append(metrics,
+		telemetry.MetricSample{Name: telemetry.MetricInventoryFiles, Value: &negative},
+		telemetry.MetricSample{Name: telemetry.MetricFilesExcludedByReason, Category: "reason"},
+		telemetry.MetricSample{Name: telemetry.MetricFreshnessResult, Value: &wrongType},
+		telemetry.CategoricalMetric(telemetry.MetricHierarchyQueryScope, ""),
+		telemetry.NumericMetric(telemetry.Metric("unknown_metric"), 1),
+	)
+
+	var sink bytes.Buffer
+	writer, err := telemetry.NewWriter(&sink, 16<<10, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writer.Record(telemetry.Event{Level: telemetry.LevelInfo, Metrics: metrics})
+
+	var record struct {
+		Metrics []telemetry.MetricSample `json:"metrics"`
+	}
+	if err := json.Unmarshal(bytes.TrimSpace(sink.Bytes()), &record); err != nil {
+		t.Fatalf("record is not JSON: %v", err)
+	}
+	wantCount := len(expectedNumeric) + len(expectedCategorical)
+	if len(record.Metrics) != wantCount {
+		t.Fatalf("got %d valid metrics, want all %d S16 metrics: %#v", len(record.Metrics), wantCount, record.Metrics)
+	}
+	seen := make(map[telemetry.Metric]bool, wantCount)
+	for _, sample := range record.Metrics {
+		if seen[sample.Name] {
+			t.Errorf("metric %q was emitted more than once", sample.Name)
+		}
+		seen[sample.Name] = true
+		if want, ok := expectedNumeric[sample.Name]; ok {
+			if sample.Value == nil || *sample.Value != want || sample.Category != "" {
+				t.Errorf("numeric metric %q = %#v, want value %d only", sample.Name, sample, want)
+			}
+			continue
+		}
+		if want, ok := expectedCategorical[sample.Name]; ok {
+			if sample.Value != nil || sample.Category != want {
+				t.Errorf("categorical metric %q = %#v, want category %q only", sample.Name, sample, want)
+			}
+			continue
+		}
+		t.Errorf("unapproved metric %q was emitted", sample.Name)
+	}
+}
+
 func TestTelemetryDebugIsOptInAndStillSanitized(t *testing.T) {
 	var sink bytes.Buffer
 	writer, err := telemetry.NewWriter(&sink, 4096, nil)
