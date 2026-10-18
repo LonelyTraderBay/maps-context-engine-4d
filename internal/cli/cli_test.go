@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
+	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
 	runtimeconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config"
 )
 
@@ -225,10 +227,214 @@ func TestHelpCommandsArePresentInCLIReference(t *testing.T) {
 		"mce4d config show [--json] [--alternate-json <file>] [--override <key=value>...]",
 		"mce4d config validate --input-json <file-or-dash>",
 		"mce4d config set --input-json <file-or-dash> --expected-digest <sha256-or-absent>",
+		"mce4d store backup --target worktree --worktree-id <uuid> --output <owned-backup-dir> --json",
+		"mce4d store gc --target worktree --worktree-id <uuid> --keep-per-profile <count> --json [--apply]",
+		"mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json",
+		"mce4d store recover --target worktree --worktree-id <uuid> --report-only --json",
+		"mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json",
 	} {
 		if !strings.Contains(Help(), command) || !strings.Contains(string(docs), command) {
 			t.Errorf("help and docs must both include %q", command)
 		}
+	}
+}
+
+func TestStoreBackupCLIRequiresAndWritesOwnedOutput(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("MCE4D_HOME", home)
+	worktreeID := "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+	incarnation := "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+	indexDirectory := filepath.Join(home, "worktrees", worktreeID)
+	if err := os.MkdirAll(indexDirectory, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	indexPath := filepath.Join(indexDirectory, "index.sqlite")
+	indexDB, err := sql.Open("sqlite", indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range []string{"001.sql", "002.sql"} {
+		ddl, err := os.ReadFile(filepath.Join("..", "store", "sqlite", "migrations", "index", migration))
+		if err != nil {
+			_ = indexDB.Close()
+			t.Fatal(err)
+		}
+		if _, err := indexDB.ExecContext(context.Background(), string(ddl)); err != nil {
+			_ = indexDB.Close()
+			t.Fatalf("apply index fixture migration %s: %v", migration, err)
+		}
+	}
+	if _, err := indexDB.ExecContext(context.Background(), `INSERT INTO store_identity(singleton,worktree_id,incarnation) VALUES(1,?,?)`, worktreeID, incarnation); err != nil {
+		_ = indexDB.Close()
+		t.Fatalf("bind index fixture identity: %v", err)
+	}
+	if err := indexDB.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	operationID := "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
+	output := filepath.Join(indexDirectory, "backups", operationID)
+	code, stdout, stderr := invoke([]string{
+		"store", "backup", "--target", "worktree", "--worktree-id", worktreeID,
+		"--output", output, "--json",
+	}, "")
+	if code != 0 || stderr != "" {
+		t.Fatalf("store backup: code=%d stderr=%q", code, stderr)
+	}
+	var result worktreeBackupCLIResult
+	if err := json.Unmarshal([]byte(stdout), &result); err != nil {
+		t.Fatalf("decode worktree backup result %q: %v", stdout, err)
+	}
+	if result.Operation != "store_backup" || result.Output != output || result.Manifest.OperationID != model.UUID(operationID) ||
+		result.Manifest.Consistency != "single_store" || len(result.Manifest.Stores) != 1 {
+		t.Fatalf("worktree backup CLI result=%+v", result)
+	}
+	manifestPath := filepath.Join(output, "manifest.json")
+	restoreArgs := []string{"store", "restore", "--manifest", manifestPath, "--wait-ms", "5000", "--json"}
+	if code, _, stderr := invoke(restoreArgs, ""); code == 0 || stderr == "" {
+		t.Fatalf("store restore without confirmation: code=%d stderr=%q", code, stderr)
+	}
+	code, stdout, stderr = invoke(append(restoreArgs, "--confirm"), "")
+	if code != 0 || stderr != "" {
+		t.Fatalf("store restore: code=%d stderr=%q", code, stderr)
+	}
+	var restored worktreeRestoreCLIResult
+	if err := json.Unmarshal([]byte(stdout), &restored); err != nil {
+		t.Fatalf("decode store restore result %q: %v", stdout, err)
+	}
+	if restored.Operation != "store_restore" || restored.Result.Phase != "VERIFIED" || restored.Result.Outcome != "restored" ||
+		restored.Result.WorktreeID != model.UUID(worktreeID) || restored.Result.OperationID == "" {
+		t.Fatalf("store restore result=%+v", restored)
+	}
+	indexDB, err = sql.Open("sqlite", indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var restoredIncarnation string
+	if err := indexDB.QueryRowContext(context.Background(), `SELECT incarnation FROM store_identity WHERE singleton=1`).Scan(&restoredIncarnation); err != nil {
+		_ = indexDB.Close()
+		t.Fatal(err)
+	}
+	if err := indexDB.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if restoredIncarnation == string(result.Manifest.Stores[0].Incarnation) {
+		t.Fatalf("store restore reused backup incarnation %s", restoredIncarnation)
+	}
+	code, stdout, stderr = invoke([]string{
+		"store", "recover", "--target", "worktree", "--worktree-id", worktreeID, "--report-only", "--json",
+	}, "")
+	if code != 0 || stderr != "" {
+		t.Fatalf("store recover report-only: code=%d stderr=%q", code, stderr)
+	}
+	var recovery worktreeRecoveryCLIResult
+	if err := json.Unmarshal([]byte(stdout), &recovery); err != nil {
+		t.Fatalf("decode store recover result %q: %v", stdout, err)
+	}
+	if recovery.Operation != "store_recover" || recovery.Report.Pending {
+		t.Fatalf("store recover result=%+v", recovery)
+	}
+}
+
+func TestStoreGCDryRunIsReadOnlyAndApplyIsExplicit(t *testing.T) {
+	home := t.TempDir()
+	worktreeID := "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee"
+	t.Setenv("MCE4D_HOME", home)
+	indexDirectory := filepath.Join(home, "worktrees", worktreeID)
+	if err := os.MkdirAll(indexDirectory, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	indexPath := filepath.Join(indexDirectory, "index.sqlite")
+	indexDB, err := sql.Open("sqlite", indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range []string{"001.sql", "002.sql"} {
+		ddl, err := os.ReadFile(filepath.Join("..", "store", "sqlite", "migrations", "index", migration))
+		if err != nil {
+			_ = indexDB.Close()
+			t.Fatal(err)
+		}
+		if _, err := indexDB.ExecContext(context.Background(), string(ddl)); err != nil {
+			_ = indexDB.Close()
+			t.Fatalf("apply index fixture migration %s: %v", migration, err)
+		}
+	}
+	if _, err := indexDB.ExecContext(context.Background(), `INSERT INTO store_identity(singleton,worktree_id,incarnation) VALUES(1,?,?)`,
+		worktreeID, "ffffffff-ffff-4fff-8fff-ffffffffffff"); err != nil {
+		_ = indexDB.Close()
+		t.Fatalf("bind index fixture identity: %v", err)
+	}
+	if err := indexDB.Close(); err != nil {
+		t.Fatal(err)
+	}
+	root, err := mceruntime.OpenRoot(home)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := mceruntime.EnsureWorktreeLockLayout(root, worktreeID); err != nil {
+		_ = root.Close()
+		t.Fatal(err)
+	}
+	for _, acquire := range []func() (*mceruntime.Lease, error){
+		func() (*mceruntime.Lease, error) {
+			return mceruntime.AcquireHomeLifecycle(context.Background(), root, mceruntime.LockShared, 0)
+		},
+		func() (*mceruntime.Lease, error) {
+			return mceruntime.AcquireWorktreeLifecycle(context.Background(), root, worktreeID, mceruntime.LockShared, 0)
+		},
+		func() (*mceruntime.Lease, error) {
+			return mceruntime.AcquireHomeConfig(context.Background(), root, mceruntime.LockShared, 0)
+		},
+	} {
+		lease, err := acquire()
+		if err != nil {
+			_ = root.Close()
+			t.Fatal(err)
+		}
+		if err := lease.Close(); err != nil {
+			_ = root.Close()
+			t.Fatal(err)
+		}
+	}
+	if err := root.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	before, err := os.ReadFile(indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	baseArgs := []string{"store", "gc", "--target", "worktree", "--worktree-id", worktreeID, "--keep-per-profile", "2", "--json"}
+	code, stdout, stderr := invoke(baseArgs, "")
+	if code != 0 || stderr != "" {
+		t.Fatalf("store gc dry-run: code=%d stderr=%q", code, stderr)
+	}
+	var dryRun worktreeGCCLIResult
+	if err := json.Unmarshal([]byte(stdout), &dryRun); err != nil {
+		t.Fatalf("decode store gc dry-run result %q: %v", stdout, err)
+	}
+	if dryRun.Operation != "store_gc" || dryRun.Applied || dryRun.Result != nil || dryRun.Plan.KeepPerProfile != 2 {
+		t.Fatalf("store gc dry-run result=%+v", dryRun)
+	}
+	after, err := os.ReadFile(indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatal("store gc dry-run changed index bytes")
+	}
+
+	code, stdout, stderr = invoke(append(baseArgs, "--apply"), "")
+	if code != 0 || stderr != "" {
+		t.Fatalf("store gc apply: code=%d stderr=%q", code, stderr)
+	}
+	var applied worktreeGCCLIResult
+	if err := json.Unmarshal([]byte(stdout), &applied); err != nil {
+		t.Fatalf("decode store gc apply result %q: %v", stdout, err)
+	}
+	if applied.Operation != "store_gc" || !applied.Applied || applied.Result == nil {
+		t.Fatalf("store gc apply result=%+v", applied)
 	}
 }
 

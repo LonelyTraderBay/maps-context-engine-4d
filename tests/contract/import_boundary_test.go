@@ -65,6 +65,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/contracts":      true,
 			modulePath + "/internal/model": true,
 		},
+		"internal/runtime/maintenance": {modulePath + "/internal/runtime": true},
 		// The controlled tool runner is a leaf package with no project imports.
 		"internal/runtime/exec": {},
 		"internal/runtime": {
@@ -72,14 +73,19 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/policy": true,
 		},
 		"internal/store/sqlite": {
-			modulePath + "/contracts":      true,
-			modulePath + "/internal/model": true,
+			modulePath + "/contracts":                    true,
+			modulePath + "/internal/model":               true,
+			modulePath + "/internal/runtime":             true,
+			modulePath + "/internal/runtime/maintenance": true,
 			// SQLite is the runtime lock consumer; the resulting graph remains acyclic.
-			modulePath + "/internal/runtime": true,
 		},
 		"internal/app/config": {
 			modulePath + "/internal/model":          true,
 			modulePath + "/internal/runtime/config": true,
+		},
+		"internal/app/store": {
+			modulePath + "/internal/model":        true,
+			modulePath + "/internal/store/sqlite": true,
 		},
 		"internal/app/registration": {
 			modulePath + "/contracts":        true,
@@ -109,6 +115,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/cli": {
 			modulePath + "/internal/app/config":     true,
+			modulePath + "/internal/app/store":      true,
 			modulePath + "/internal/model":          true,
 			modulePath + "/internal/runtime":        true,
 			modulePath + "/internal/runtime/config": true,
@@ -130,6 +137,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/runtime/config":   true,
 			modulePath + "/internal/app/config":       true,
 			modulePath + "/internal/app/registration": true,
+			modulePath + "/internal/app/store":        true,
 			modulePath + "/internal/app/validate":     true,
 		},
 	}

@@ -40,6 +40,11 @@ Commands:
   mce4d config show [--json] [--alternate-json <file>] [--override <key=value>...]
   mce4d config validate --input-json <file-or-dash>
   mce4d config set --input-json <file-or-dash> --expected-digest <sha256-or-absent>
+  mce4d store backup --target worktree --worktree-id <uuid> --output <owned-backup-dir> --json
+  mce4d store gc --target worktree --worktree-id <uuid> --keep-per-profile <count> --json [--apply]
+  mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json
+  mce4d store recover --target worktree --worktree-id <uuid> --report-only --json
+  mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
 
 Config show layers the canonical home config, an explicit alternate preview,
 and process overrides in that order. Validate and set use the complete candidate
@@ -78,6 +83,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runDoctor(ctx, args[1:], stdout, stderr)
 	case "config":
 		return runConfig(ctx, args[1:], stdin, stdout, stderr)
+	case "store":
+		return runStore(ctx, args[1:], stdout, stderr)
 	default:
 		return writeFailure(stderr, fmt.Errorf("%w: %q", errUsage, args[0]))
 	}

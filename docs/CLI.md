@@ -8,6 +8,11 @@ mce4d doctor --json
 mce4d config show [--json] [--alternate-json <file>] [--override <key=value>...]
 mce4d config validate --input-json <file-or-dash>
 mce4d config set --input-json <file-or-dash> --expected-digest <sha256-or-absent>
+mce4d store backup --target worktree --worktree-id <uuid> --output <owned-backup-dir> --json
+mce4d store gc --target worktree --worktree-id <uuid> --keep-per-profile <count> --json [--apply]
+mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json
+mce4d store recover --target worktree --worktree-id <uuid> --report-only --json
+mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
 ```
 
 Successful commands emit one JSON result on stdout. Diagnostics go to stderr. Use
@@ -26,6 +31,30 @@ canonical source digest from `config show`, or `absent` when no home source
 exists. It takes the short home config lock and atomically replaces the source
 only if the digest still matches. A stale digest exits with code 3 and leaves
 the file unchanged.
+
+`store backup` requires an existing worktree index. Its output directory must
+be an immediate child of that worktree's `backups` directory and use a new UUID
+as its name. The command takes an exclusive maintenance lease, reserves durable
+volume growth, and writes a canonical manifest with database and referenced
+capture-artifact hashes. If a records database exists, the manifest records a
+quiesced index-and-records set; an index-only backup is labeled `single_store`.
+
+`store gc` reports generations outside the requested retention and terminal
+failed or cancelled generations. It opens the index read-only and performs no
+SQLite or filesystem writes by default. Add `--apply` to collect the listed
+generations; collection rechecks the plan under the worktree writer lease.
+
+`store restore` requires an absolute local `manifest.json` path, explicit
+`--confirm`, and bounded `--wait-ms`. The manifest selects its worktree, while
+staging, rollback copies, journal, and replacement files stay under that
+worktree's owned `maintenance` directory. Restored SQLite stores receive new
+incarnations; restore blocks store opens until verification completes.
+
+`store recover` defaults to a read-only report; `--report-only` makes that mode
+explicit. `--apply --confirm` resumes or rolls back a pending restore only after
+validating its preserved journal and evidence. A terminal verified journal
+remains safe if the operating system reports that marker-directory flushing is
+unsupported after removing the recovery marker.
 
 The canonical home path follows the SPEC: `MCE4D_HOME` when explicitly set;
 otherwise `%LOCALAPPDATA%\mce4d` on Windows, `$XDG_STATE_HOME/mce4d` on Linux

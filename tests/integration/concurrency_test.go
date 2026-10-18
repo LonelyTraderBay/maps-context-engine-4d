@@ -254,6 +254,40 @@ func TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses(t *test
 
 func prepareIndexFixture(t *testing.T, home, worktreeID string, seedOtherProfile bool) indexFixture {
 	t.Helper()
+	if err := os.MkdirAll(home, 0o700); err != nil {
+		t.Fatalf("create fixture home: %v", err)
+	}
+	root, err := mceruntime.OpenRoot(home)
+	if err != nil {
+		t.Fatalf("open fixture home root: %v", err)
+	}
+	if err := mceruntime.EnsureWorktreeLockLayout(root, worktreeID); err != nil {
+		_ = root.Close()
+		t.Fatalf("prepare fixture lock layout: %v", err)
+	}
+	homeLease, err := mceruntime.AcquireHomeLifecycle(context.Background(), root, mceruntime.LockShared, time.Second)
+	if err != nil {
+		_ = root.Close()
+		t.Fatalf("initialize fixture home lifecycle lock: %v", err)
+	}
+	worktreeLease, err := mceruntime.AcquireWorktreeLifecycle(context.Background(), root, worktreeID, mceruntime.LockShared, time.Second)
+	if err != nil {
+		_ = homeLease.Close()
+		_ = root.Close()
+		t.Fatalf("initialize fixture worktree lifecycle lock: %v", err)
+	}
+	if err := worktreeLease.Close(); err != nil {
+		_ = homeLease.Close()
+		_ = root.Close()
+		t.Fatalf("close fixture worktree lifecycle lock: %v", err)
+	}
+	if err := homeLease.Close(); err != nil {
+		_ = root.Close()
+		t.Fatalf("close fixture home lifecycle lock: %v", err)
+	}
+	if err := root.Close(); err != nil {
+		t.Fatalf("close fixture root: %v", err)
+	}
 	databasePath := filepath.Join(home, "worktrees", worktreeID, "index.sqlite")
 	if err := os.MkdirAll(filepath.Dir(databasePath), 0o700); err != nil {
 		t.Fatalf("create private index directory: %v", err)
