@@ -98,6 +98,12 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/runtime":   true,
 			modulePath + "/internal/snapshot":  true,
 		},
+		"internal/cli": {
+			modulePath + "/internal/app/config":     true,
+			modulePath + "/internal/model":          true,
+			modulePath + "/internal/runtime":        true,
+			modulePath + "/internal/runtime/config": true,
+		},
 		"internal/mcp": {
 			modulePath + "/contracts":             true,
 			modulePath + "/internal/app/response": true,

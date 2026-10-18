@@ -33,7 +33,10 @@ func OpenRoot(path string) (*Root, error) {
 	handle, err := windows.CreateFile(
 		name,
 		windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
-		windows.FILE_SHARE_READ,
+		// Root-level atomic files need directory updates while the verified
+		// handle remains open. Keep delete sharing disabled so the root cannot
+		// be renamed or removed until Close.
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE,
 		nil,
 		windows.OPEN_EXISTING,
 		windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT,
