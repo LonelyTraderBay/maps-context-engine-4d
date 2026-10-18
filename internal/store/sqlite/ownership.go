@@ -231,13 +231,13 @@ func (owner *storeOwnership) admitIndexGrowth(ctx context.Context, peakBytes int
 		if len(journal.Entries) != 0 {
 			return nil, ErrAdmissionConfigConflict
 		}
-		if _, err := owner.indexFileBytes(); err != nil {
+		if _, err := owner.worktreeCacheBytesForJournal(owner.worktreeID, journal); err != nil {
 			return nil, fmt.Errorf("recheck owned store sizes after config drift: %w", err)
 		}
 		journal.AdmissionConfigDigest = configDigest
 	}
 	owner.config, owner.configDigest = config, configDigest
-	currentCacheBytes, err := owner.indexFileBytes()
+	currentCacheBytes, err := owner.worktreeCacheBytesForJournal(owner.worktreeID, journal)
 	if err != nil {
 		return nil, fmt.Errorf("measure owned SQLite files before write: %w", err)
 	}
@@ -324,7 +324,7 @@ func (reservation *admissionReservation) Close() error {
 			reservation.closeErr = readErr
 			return
 		}
-		actualBytes, measureErr := owner.indexFileBytes()
+		actualBytes, measureErr := owner.worktreeCacheBytesForJournal(owner.worktreeID, journal)
 		if measureErr != nil {
 			reservation.closeErr = measureErr
 			return
@@ -455,7 +455,7 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 		if err != nil {
 			return model.VolumeAdmissionJournal{}, err
 		}
-		if _, err := owner.indexFileBytesFor(worktreeID); err != nil {
+		if _, err := owner.worktreeCacheBytesForJournal(worktreeID, journal); err != nil {
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("verify reserved owner paths before recovery: %w", err)
 		}
 		lease, err := mceruntime.AcquireOperationLease(ctx, owner.root, string(entry.OperationID), 0)
@@ -466,7 +466,7 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 		if err != nil {
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("inspect operation OS lease: %w", err)
 		}
-		if _, err := owner.indexFileBytesFor(worktreeID); err != nil {
+		if _, err := owner.worktreeCacheBytesForJournal(worktreeID, journal); err != nil {
 			_ = lease.Close()
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("measure paths before reclaiming dead reservation: %w", err)
 		}
@@ -485,7 +485,8 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 }
 
 func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionEntry) (model.UUID, error) {
-	if entry.ScopeKind != "worktree" || entry.WorktreeID == nil || entry.OperationKind != indexAdmissionOperation {
+	if entry.ScopeKind != "worktree" || entry.WorktreeID == nil ||
+		(entry.OperationKind != indexAdmissionOperation && entry.OperationKind != "rename_result") {
 		return "", fmt.Errorf("stale entry is outside the verified SQLite owner: %w", ErrAdmissionOwnership)
 	}
 	if entry.OwnerIdentity != model.Identifier("lease-"+string(entry.OperationID)) {
@@ -497,6 +498,26 @@ func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionE
 	}
 	indexRelative := "worktrees/" + string(worktreeID) + "/index.sqlite"
 	want := []string{indexRelative, indexRelative + "-wal", indexRelative + "-shm", indexRelative + "-journal"}
+	if entry.OperationKind == "rename_result" {
+		if len(entry.AllowedPaths) != 1 {
+			return "", fmt.Errorf("rename reservation has an invalid owned-path count: %w", ErrAdmissionOwnership)
+		}
+		prefix := "worktrees/" + string(worktreeID) + "/scratch/rename/"
+		path := string(entry.AllowedPaths[0])
+		base := strings.TrimPrefix(path, prefix)
+		if !strings.HasPrefix(path, prefix) || !strings.HasSuffix(base, ".json") {
+			return "", fmt.Errorf("rename reservation escaped its result spool root: %w", ErrAdmissionOwnership)
+		}
+		idText := strings.TrimSuffix(base, ".json")
+		resultID, err := model.ParseUUID(idText)
+		if err != nil || string(resultID) != idText {
+			return "", fmt.Errorf("rename reservation result identity is invalid: %w", ErrAdmissionOwnership)
+		}
+		if err := entry.AllowedPaths[0].Validate(); err != nil {
+			return "", fmt.Errorf("invalid rename spool locator: %w", ErrAdmissionOwnership)
+		}
+		return worktreeID, nil
+	}
 	if len(entry.AllowedPaths) != len(want) {
 		return "", fmt.Errorf("stale entry is outside the verified SQLite owner: %w", ErrAdmissionOwnership)
 	}
@@ -509,47 +530,6 @@ func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionE
 		}
 	}
 	return worktreeID, nil
-}
-
-func (owner *storeOwnership) indexFileBytes() (int64, error) {
-	return owner.indexFileBytesFor(owner.worktreeID)
-}
-
-func (owner *storeOwnership) indexFileBytesFor(worktreeID model.UUID) (int64, error) {
-	rootPath, err := owner.root.FinalPath()
-	if err != nil {
-		return 0, err
-	}
-	indexRelative := "worktrees/" + string(worktreeID) + "/index.sqlite"
-	var total int64
-	for _, relative := range []string{indexRelative, indexRelative + "-wal", indexRelative + "-shm", indexRelative + "-journal"} {
-		path := filepath.Join(rootPath, filepath.FromSlash(relative))
-		info, err := os.Lstat(path)
-		if errors.Is(err, os.ErrNotExist) {
-			continue
-		}
-		if err != nil {
-			return 0, err
-		}
-		if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 || info.Size() < 0 {
-			return 0, ErrInvalidStorePath
-		}
-		file, err := owner.root.OpenRegularFile(relative)
-		if err != nil {
-			return 0, fmt.Errorf("securely open owned SQLite file %s: %w", relative, err)
-		}
-		opened, statErr := file.Stat()
-		closeErr := file.Close()
-		if statErr != nil || closeErr != nil || !os.SameFile(info, opened) {
-			return 0, errors.Join(statErr, closeErr, ErrInvalidStorePath)
-		}
-		var ok bool
-		total, ok = addNonnegative(total, opened.Size())
-		if !ok || total > model.MaxSafeInteger {
-			return 0, ErrAdmissionReservationOverflow
-		}
-	}
-	return total, nil
 }
 
 func newOperationUUID() (model.UUID, error) {

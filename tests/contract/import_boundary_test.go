@@ -32,9 +32,23 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/model":        true,
 			modulePath + "/internal/runtime/exec": true,
 		},
-		"internal/search":      {modulePath + "/internal/model": true},
+		"internal/search": {
+			modulePath + "/internal/cursor": true,
+			modulePath + "/internal/model":  true,
+		},
 		"internal/overview":    {modulePath + "/internal/model": true},
 		"internal/contextpack": {modulePath + "/internal/model": true},
+		"internal/cursor": {
+			modulePath + "/contracts":        true,
+			modulePath + "/internal/model":   true,
+			modulePath + "/internal/runtime": true,
+		},
+		"internal/lsp": {
+			modulePath + "/contracts":             true,
+			modulePath + "/internal/cursor":       true,
+			modulePath + "/internal/model":        true,
+			modulePath + "/internal/store/sqlite": true,
+		},
 		"internal/catalog": {
 			modulePath + "/internal/model":  true,
 			modulePath + "/internal/policy": true,

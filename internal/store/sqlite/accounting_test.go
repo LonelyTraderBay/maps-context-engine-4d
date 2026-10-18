@@ -54,6 +54,49 @@ func TestMeasureIndexCacheReportsLogicalFilesAndPageAccounting(t *testing.T) {
 	}
 }
 
+func TestOwnedCacheAccountingIncludesRenameAndOtherScratchFiles(t *testing.T) {
+	store := openTestIndex(t, 1234)
+	owner := store.ownership
+	worktreeID := store.WorktreeID()
+	before, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := owner.root.EnsurePrivateDirs("worktrees/" + string(worktreeID) + "/scratch/rename"); err != nil {
+		t.Fatal(err)
+	}
+	rootPath, err := owner.root.FinalPath()
+	if err != nil {
+		t.Fatal(err)
+	}
+	scratch := filepath.Join(rootPath, "worktrees", string(worktreeID), "scratch", "inventory.cache")
+	if err := os.WriteFile(scratch, []byte("cache-accounting"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	after, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if after-before != int64(len("cache-accounting")) {
+		t.Fatalf("worktree cache did not include scratch growth: before=%d after=%d", before, after)
+	}
+
+	spoolDirectory := filepath.Join(rootPath, "worktrees", string(worktreeID), "scratch", "rename")
+	for name, body := range map[string]string{"result.json": "rename-result", ".atomic-write.tmp": "interrupted-temp"} {
+		if err := os.WriteFile(filepath.Join(spoolDirectory, name), []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	renameBytes, err := owner.renameResultBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := int64(len("rename-result") + len("interrupted-temp"))
+	if renameBytes != want {
+		t.Fatalf("rename aggregate measured %d bytes; want result and interrupted temp total %d", renameBytes, want)
+	}
+}
+
 func TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback(t *testing.T) {
 	journal, binding := validAdmissionJournal(t)
 	raw, err := encodeAdmissionJournal(journal)

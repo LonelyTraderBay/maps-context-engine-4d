@@ -2,12 +2,20 @@ package sqlite
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io/fs"
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
+	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
 )
+
+const maxOwnedCacheFiles = 1_000_000
 
 // indexCacheMeasurement describes the private SQLite portion of ACC-01 cache
 // accounting. Allocated bytes are deliberately absent: they require a verified
@@ -120,6 +128,149 @@ func multiplyNonnegative(left, right int64) (int64, bool) {
 		return 0, false
 	}
 	return left * right, true
+}
+
+// worktreeCacheBytesFor measures every regular file below the verified
+// worktree-owned cache root. It rejects reparse/symlink/mount escapes and
+// relies on Root.OpenRegularFile to reject hard-linked aliases.
+func (owner *storeOwnership) worktreeCacheBytesFor(worktreeID model.UUID) (int64, error) {
+	return owner.worktreeCacheBytesForJournal(worktreeID, model.VolumeAdmissionJournal{})
+}
+
+func (owner *storeOwnership) worktreeCacheBytesForJournal(worktreeID model.UUID, journal model.VolumeAdmissionJournal) (int64, error) {
+	return owner.measureOwnedTree("worktrees/"+string(worktreeID), worktreeID, journal)
+}
+
+// renameResultBytesFor measures actual result spools and interrupted atomic
+// write temporaries. Live atomic temporaries remain covered by their reservation.
+func (owner *storeOwnership) renameResultBytesFor(worktreeID model.UUID) (int64, error) {
+	return owner.renameResultBytesForJournal(worktreeID, model.VolumeAdmissionJournal{})
+}
+
+func (owner *storeOwnership) renameResultBytesForJournal(worktreeID model.UUID, journal model.VolumeAdmissionJournal) (int64, error) {
+	return owner.measureOwnedTree("worktrees/"+string(worktreeID)+"/scratch/rename", worktreeID, journal)
+}
+
+func (owner *storeOwnership) measureOwnedTree(relativeRoot string, worktreeID model.UUID, journal model.VolumeAdmissionJournal) (int64, error) {
+	if owner == nil || owner.root == nil || owner.volumeID == "" {
+		return 0, fmt.Errorf("verified cache owner is required: %w", ErrAdmissionOwnership)
+	}
+	if err := (model.AdmissionOwnedPath(relativeRoot)).Validate(); err != nil {
+		return 0, fmt.Errorf("invalid cache measurement root: %w", err)
+	}
+	if err := owner.root.EnsurePrivateDirs(relativeRoot); err != nil {
+		return 0, fmt.Errorf("prepare verified cache measurement root: %w", err)
+	}
+	rootPath, err := owner.root.FinalPath()
+	if err != nil {
+		return 0, err
+	}
+	worktreePath := filepath.Join(rootPath, filepath.FromSlash(relativeRoot))
+	base, err := mceruntime.OpenRoot(worktreePath)
+	if err != nil {
+		return 0, fmt.Errorf("open owned cache root without following links: %w", ErrInvalidStorePath)
+	}
+	baseVolume, _, identityErr := base.Identity()
+	basePath, pathErr := base.FinalPath()
+	baseCloseErr := base.Close()
+	if identityErr != nil || pathErr != nil || baseCloseErr != nil || model.Identifier(baseVolume) != owner.volumeID || !pathWithin(rootPath, basePath) {
+		return 0, errors.Join(identityErr, pathErr, baseCloseErr, ErrInvalidStorePath)
+	}
+	var total int64
+	var fileCount int
+	err = filepath.WalkDir(basePath, func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if path == basePath {
+			return nil
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if info.Mode()&os.ModeSymlink != 0 || info.Mode()&os.ModeIrregular != 0 {
+			return fmt.Errorf("cache contains a link, reparse point, or special file: %w", ErrInvalidStorePath)
+		}
+		relative, err := filepath.Rel(rootPath, path)
+		if err != nil || relative == "." || filepath.IsAbs(relative) || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+			return fmt.Errorf("cache entry escaped verified home: %w", ErrInvalidStorePath)
+		}
+		relative = filepath.ToSlash(relative)
+		if err := (model.AdmissionOwnedPath(relative)).Validate(); err != nil {
+			return fmt.Errorf("cache entry has an invalid home-relative locator: %w", ErrInvalidStorePath)
+		}
+		if entry.IsDir() {
+			if err := owner.root.EnsurePrivateDirs(relative); err != nil {
+				return fmt.Errorf("cache directory is not contained beneath home: %w", ErrInvalidStorePath)
+			}
+			return nil
+		}
+		if !info.Mode().IsRegular() || info.Size() < 0 {
+			return fmt.Errorf("cache entry is not a regular file: %w", ErrInvalidStorePath)
+		}
+		if isLiveRenameAtomicTemp(relative, worktreeID, journal) {
+			return nil // The full peak is already charged to ACC-01's live reservation.
+		}
+		file, err := owner.root.OpenRegularFile(relative)
+		if err != nil {
+			return fmt.Errorf("securely open owned cache file %s: %w", relative, err)
+		}
+		opened, statErr := file.Stat()
+		closeErr := file.Close()
+		if statErr != nil || closeErr != nil || !os.SameFile(info, opened) || opened.Size() != info.Size() {
+			return errors.Join(statErr, closeErr, ErrInvalidStorePath)
+		}
+		fileCount++
+		if fileCount > maxOwnedCacheFiles {
+			return fmt.Errorf("owned cache exceeds bounded file traversal: %w", ErrAdmissionResourceLimit)
+		}
+		var ok bool
+		total, ok = addNonnegative(total, opened.Size())
+		if !ok || total > model.MaxSafeInteger {
+			return ErrAdmissionReservationOverflow
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, fmt.Errorf("measure verified owned cache files: %w", err)
+	}
+	return total, nil
+}
+
+func isLiveRenameAtomicTemp(relative string, worktreeID model.UUID, journal model.VolumeAdmissionJournal) bool {
+	prefix := "worktrees/" + string(worktreeID) + "/scratch/rename/.mce4d-atomic-"
+	if !strings.HasPrefix(relative, prefix) || !strings.HasSuffix(relative, ".tmp") {
+		return false
+	}
+	token := strings.TrimSuffix(strings.TrimPrefix(relative, prefix), ".tmp")
+	if len(token) != 24 {
+		return false
+	}
+	for _, digit := range token {
+		if !((digit >= '0' && digit <= '9') || (digit >= 'a' && digit <= 'f')) {
+			return false
+		}
+	}
+	resultPrefix := "worktrees/" + string(worktreeID) + "/scratch/rename/"
+	for _, entry := range journal.Entries {
+		if entry.OperationKind != "rename_result" || entry.WorktreeID == nil || *entry.WorktreeID != worktreeID || len(entry.AllowedPaths) != 1 {
+			continue
+		}
+		path := string(entry.AllowedPaths[0])
+		if strings.HasPrefix(path, resultPrefix) && strings.HasSuffix(path, ".json") {
+			return true
+		}
+	}
+	return false
+}
+
+func pathWithin(root, candidate string) bool {
+	relative, err := filepath.Rel(root, candidate)
+	if err != nil || filepath.IsAbs(relative) || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return false
+	}
+	return true
 }
 
 // admissionJournalPath is intentionally only a lexical check here. T010 owns

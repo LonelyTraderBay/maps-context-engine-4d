@@ -65,10 +65,14 @@ func encodeAdmissionJournal(journal model.VolumeAdmissionJournal) ([]byte, error
 type journalReservationTotals struct {
 	VolumeRemainingBytes int64
 	CacheByWorktree      map[model.UUID]int64
+	RenameByWorktree     map[model.UUID]int64
 }
 
 func sumAdmissionReservations(journal model.VolumeAdmissionJournal) (journalReservationTotals, error) {
-	totals := journalReservationTotals{CacheByWorktree: make(map[model.UUID]int64)}
+	totals := journalReservationTotals{
+		CacheByWorktree:  make(map[model.UUID]int64),
+		RenameByWorktree: make(map[model.UUID]int64),
+	}
 	if _, err := encodeAdmissionJournal(journal); err != nil {
 		return journalReservationTotals{}, err
 	}
@@ -87,6 +91,13 @@ func sumAdmissionReservations(journal model.VolumeAdmissionJournal) (journalRese
 			return journalReservationTotals{}, ErrAdmissionReservationOverflow
 		}
 		totals.CacheByWorktree[worktreeID] = cache
+		if entry.OperationKind == "rename_result" {
+			renameBytes, ok := addNonnegative(totals.RenameByWorktree[worktreeID], entry.CacheReservedRemainingBytes)
+			if !ok || renameBytes > model.MaxSafeInteger {
+				return journalReservationTotals{}, ErrAdmissionReservationOverflow
+			}
+			totals.RenameByWorktree[worktreeID] = renameBytes
+		}
 	}
 	return totals, nil
 }
