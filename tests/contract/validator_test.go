@@ -78,6 +78,59 @@ func TestResponseDataMustMatchRegisteredOperation(t *testing.T) {
 	}
 }
 
+func TestResponseFailureEnvelopeSemantics(t *testing.T) {
+	validator, err := contracts.NewValidator()
+	if err != nil {
+		t.Fatal(err)
+	}
+	errorValue := map[string]any{
+		"code": "ACCESS_DENIED", "message": "denied", "retryable": false,
+		"suggested_action": "none", "details": []any{},
+	}
+	cases := []struct {
+		name    string
+		fields  map[string]any
+		wantErr bool
+	}{
+		{
+			name:   "typed blocked envelope",
+			fields: map[string]any{"status": "blocked", "readiness": "blocked", "data": nil, "error": errorValue},
+		},
+		{
+			name:    "error without typed error",
+			fields:  map[string]any{"status": "error", "readiness": "blocked", "data": nil, "error": nil},
+			wantErr: true,
+		},
+		{
+			name:    "blocked without blocked readiness",
+			fields:  map[string]any{"status": "blocked", "readiness": "needs_context", "data": nil, "error": errorValue},
+			wantErr: true,
+		},
+		{
+			name:    "blocked with data",
+			fields:  map[string]any{"status": "blocked", "readiness": "blocked", "data": statusData(), "error": errorValue},
+			wantErr: true,
+		},
+		{
+			name:    "success with error",
+			fields:  map[string]any{"status": "ok", "readiness": "needs_context", "data": statusData(), "error": errorValue},
+			wantErr: true,
+		},
+	}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			raw := responseWithFields(t, test.fields)
+			err := validator.ValidateResponse("mce4d_workspace_status", raw)
+			if test.wantErr && !errors.Is(err, contracts.ErrContractViolation) {
+				t.Fatalf("expected semantic contract violation, got %v", err)
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("valid typed failure envelope rejected: %v", err)
+			}
+		})
+	}
+}
+
 func TestStrictJSONRejectsLossyInputs(t *testing.T) {
 	for name, raw := range map[string][]byte{
 		"duplicate":         []byte(`{"verify":"none","verify":"workspace"}`),
@@ -186,6 +239,22 @@ func statusResponse(data any) []byte {
 	raw, err := json.Marshal(value)
 	if err != nil {
 		panic(err)
+	}
+	return raw
+}
+
+func responseWithFields(t *testing.T, fields map[string]any) []byte {
+	t.Helper()
+	var value map[string]any
+	if err := json.Unmarshal(statusResponse(statusData()), &value); err != nil {
+		t.Fatal(err)
+	}
+	for key, field := range fields {
+		value[key] = field
+	}
+	raw, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
 	}
 	return raw
 }

@@ -158,7 +158,7 @@ func TestValidateReturnsUnknownWhenInventoryIsPartial(t *testing.T) {
 	}
 }
 
-func TestValidateDeadlineReturnsUnknownWithoutStartingWorkspaceReads(t *testing.T) {
+func TestValidateCanceledContextReturnsUnknownWithoutStartingWorkspaceReads(t *testing.T) {
 	manifest, vector, _ := appValidationFixture(t)
 	workspace := &fakeWorkspace{inventories: []inventory.Snapshot{fakeInventory("one", "main.go")}, hashes: map[string][]model.Hash{}}
 	scope := fakeScopeReaderFor(manifest, vector)
@@ -174,6 +174,26 @@ func TestValidateDeadlineReturnsUnknownWithoutStartingWorkspaceReads(t *testing.
 	}
 	if workspace.scans != 0 || scope.reads != 0 {
 		t.Fatalf("canceled request started I/O: scans=%d scope_reads=%d", workspace.scans, scope.reads)
+	}
+}
+
+func TestValidateExpiredDeadlineReturnsUnknownWithoutStartingWorkspaceReads(t *testing.T) {
+	manifest, vector, _ := appValidationFixture(t)
+	workspace := &fakeWorkspace{inventories: []inventory.Snapshot{fakeInventory("one", "main.go")}, hashes: map[string][]model.Hash{}}
+	scope := fakeScopeReaderFor(manifest, vector)
+	service := newFakeService(t, workspace, scope)
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(-time.Second))
+	defer cancel()
+
+	result, err := service.Validate(ctx, appValidationRequest(manifest, vector))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Freshness.Status != snapshot.FreshnessUnknown || result.ReasonCode != "FRESHNESS_DEADLINE" || result.EditPreconditionValid {
+		t.Fatalf("expired deadline must be explicit and fail closed: %+v", result)
+	}
+	if workspace.scans != 0 || scope.reads != 0 {
+		t.Fatalf("expired request started I/O: scans=%d scope_reads=%d", workspace.scans, scope.reads)
 	}
 }
 

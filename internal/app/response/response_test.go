@@ -37,7 +37,7 @@ func TestBuildPackReportsRequiredEvidenceWhenWholeItemExceedsBudget(t *testing.T
 	builder := testBuilder(t)
 	input := testPackInput()
 	input.Items = []ItemCandidate{{
-		Item: testEvidenceItem("large-required", true, strings.Repeat("x", 2500)), Category: contextpack.SliceSource,
+		Item: testEvidenceItem("large-required", true, strings.Repeat("x", 131072)), Category: contextpack.SliceSource,
 	}}
 
 	built, err := builder.BuildPack(context.Background(), input)
@@ -49,8 +49,29 @@ func TestBuildPackReportsRequiredEvidenceWhenWholeItemExceedsBudget(t *testing.T
 		!built.Response.Pagination.Truncated {
 		t.Fatalf("required evidence omission was hidden: %#v", built.Response)
 	}
-	if int64(len(built.JSON))*2 > input.MaxOutputBytes || built.Response.Budget.SerializedBytes != int64(len(built.JSON))*2 {
+	if !json.Valid(built.JSON) || int64(len(built.JSON))*2 > input.MaxOutputBytes || built.Response.Budget.SerializedBytes != int64(len(built.JSON))*2 {
 		t.Fatalf("partial response exceeded cap or misreported delivered bytes: %d %#v", len(built.JSON), built.Response.Budget)
+	}
+	if strings.Contains(string(built.JSON), strings.Repeat("x", 128)) {
+		t.Fatal("oversized required evidence was truncated into a misleading partial item")
+	}
+}
+
+func TestBuildPackDoesNotReturnSuccessAfterCancellationDuringFinalValidation(t *testing.T) {
+	inner := testValidator(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	validator := &cancelOnFinalValidation{ResponseValidator: inner, cancel: cancel}
+	builder, err := NewBuilder(validator)
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := testPackInput()
+	input.Items = []ItemCandidate{{Item: testEvidenceItem("target", true, "complete target evidence"), Category: contextpack.SliceTarget}}
+
+	_, err = builder.BuildPack(ctx, input)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("final cancellation must not return a successful response: %v", err)
 	}
 }
 
@@ -116,15 +137,38 @@ func TestBuildPackBoundsGroupedGapMetadata(t *testing.T) {
 
 func testBuilder(t *testing.T) *Builder {
 	t.Helper()
-	validator, err := contracts.NewValidator()
-	if err != nil {
-		t.Fatal(err)
-	}
+	validator := testValidator(t)
 	builder, err := NewBuilder(validator)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return builder
+}
+
+func testValidator(t *testing.T) *contracts.Validator {
+	t.Helper()
+	validator, err := contracts.NewValidator()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return validator
+}
+
+type cancelOnFinalValidation struct {
+	ResponseValidator
+	cancel context.CancelFunc
+	calls  int
+}
+
+func (validator *cancelOnFinalValidation) ValidateResponse(operation string, raw []byte) error {
+	if err := validator.ResponseValidator.ValidateResponse(operation, raw); err != nil {
+		return err
+	}
+	validator.calls++
+	if validator.calls == 2 {
+		validator.cancel()
+	}
+	return nil
 }
 
 func testPackInput() PackInput {

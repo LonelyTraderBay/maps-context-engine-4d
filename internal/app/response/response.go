@@ -294,6 +294,9 @@ func (builder *Builder) BuildPack(ctx context.Context, input PackInput) (Built, 
 	if err := builder.validator.ValidateResponse("mce4d_context_pack", serialized); err != nil {
 		return Built{}, fmt.Errorf("%w: schema validation: %v", ErrSerialization, err)
 	}
+	if err := ctx.Err(); err != nil {
+		return Built{}, err
+	}
 	return Built{Response: response, JSON: serialized}, nil
 }
 
