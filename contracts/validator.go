@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -95,6 +96,121 @@ func (v *Validator) Operations() map[string]Operation {
 		copyOf[name] = operation
 	}
 	return copyOf
+}
+
+// RequestSchema returns a standalone JSON Schema for an operation request.
+// Referenced definitions are copied into $defs so protocol adapters can publish
+// the same frozen contract without maintaining a second schema.
+func (v *Validator) RequestSchema(operation string) (json.RawMessage, error) {
+	registered, ok := v.operations[operation]
+	if !ok {
+		return nil, fmt.Errorf("%w: %q", ErrUnknownOperation, operation)
+	}
+	definitions, ok := v.schemaRoot["$defs"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: schema definitions are unavailable", ErrContractViolation)
+	}
+
+	if _, ok := definitions[registered.RequestType].(map[string]any); !ok {
+		return nil, fmt.Errorf("%w: request definition %q is unavailable", ErrUnknownDefinition, registered.RequestType)
+	}
+	requestSchema := map[string]any{
+		"$schema": v.schemaRoot["$schema"],
+		"type":    "object",
+		"$defs":   make(map[string]any),
+		"allOf": []any{map[string]any{
+			"$ref": "#/$defs/" + strings.ReplaceAll(strings.ReplaceAll(registered.RequestType, "~", "~0"), "/", "~1"),
+		}},
+	}
+
+	resolved := requestSchema["$defs"].(map[string]any)
+	visiting := make(map[string]bool)
+	var includeDefinition func(string) error
+	includeDefinition = func(name string) error {
+		if _, included := resolved[name]; included {
+			return nil
+		}
+		if visiting[name] {
+			return nil
+		}
+		definition, exists := definitions[name].(map[string]any)
+		if !exists {
+			return fmt.Errorf("%w: schema reference %q is unavailable", ErrUnknownDefinition, name)
+		}
+		visiting[name] = true
+		resolved[name] = cloneSchemaMap(definition)
+		refs, err := schemaDefinitionRefs(definition)
+		if err != nil {
+			return err
+		}
+		for _, ref := range refs {
+			if err := includeDefinition(ref); err != nil {
+				return err
+			}
+		}
+		delete(visiting, name)
+		return nil
+	}
+
+	if err := includeDefinition(registered.RequestType); err != nil {
+		return nil, err
+	}
+	raw, err := json.Marshal(requestSchema)
+	if err != nil {
+		return nil, fmt.Errorf("%w: encode request schema: %v", ErrContractViolation, err)
+	}
+	return raw, nil
+}
+
+func cloneSchemaMap(value map[string]any) map[string]any {
+	copyOf := make(map[string]any, len(value))
+	for key, item := range value {
+		copyOf[key] = item
+	}
+	return copyOf
+}
+
+func schemaDefinitionRefs(value any) ([]string, error) {
+	seen := make(map[string]struct{})
+	var walk func(any) error
+	walk = func(value any) error {
+		switch typed := value.(type) {
+		case map[string]any:
+			if rawRef, exists := typed["$ref"]; exists {
+				ref, ok := rawRef.(string)
+				if !ok || !strings.HasPrefix(ref, "#/$defs/") {
+					return fmt.Errorf("%w: unsupported schema reference %v", ErrContractViolation, rawRef)
+				}
+				name := strings.TrimPrefix(ref, "#/$defs/")
+				name = strings.ReplaceAll(strings.ReplaceAll(name, "~1", "/"), "~0", "~")
+				if name == "" || strings.Contains(name, "/") {
+					return fmt.Errorf("%w: unsupported schema reference %q", ErrContractViolation, ref)
+				}
+				seen[name] = struct{}{}
+			}
+			for _, child := range typed {
+				if err := walk(child); err != nil {
+					return err
+				}
+			}
+		case []any:
+			for _, child := range typed {
+				if err := walk(child); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	if err := walk(value); err != nil {
+		return nil, err
+	}
+	refs := make([]string, 0, len(seen))
+	for name := range seen {
+		refs = append(refs, name)
+	}
+	sort.Strings(refs)
+	return refs, nil
 }
 
 func (v *Validator) ValidateRequest(operation string, raw []byte) error {
