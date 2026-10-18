@@ -571,6 +571,17 @@ def _validate_reason_member(
     return errors
 
 
+def _payload_observation_parent(base_sha: Any, ordered_commits: Any, payload_mode: Any) -> Any:
+    """Return the direct parent of the payload SHA represented by an observation."""
+    if payload_mode == "verified_noop":
+        return base_sha
+    if isinstance(ordered_commits, list) and len(ordered_commits) > 1:
+        previous_commit = ordered_commits[-2]
+        if isinstance(previous_commit, dict):
+            return previous_commit.get("sha")
+    return base_sha
+
+
 def _observation_link_errors(
     owner: str,
     observation: dict[str, Any],
@@ -1656,7 +1667,10 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
                     errors.extend(_observation_link_errors(
                         ref + ".payload", payload, plan, records, raw_members,
                         raw_member_bytes=raw_member_bytes,
-                        expected_phase="payload", expected_parent=attempt.get("base_sha"),
+                        expected_phase="payload",
+                        expected_parent=_payload_observation_parent(
+                            attempt.get("base_sha"), commits, attempt.get("payload_mode"),
+                        ),
                         expected_identity=attempt,
                     ))
             if not isinstance(attempt.get("closing_marker"), str) or not attempt["closing_marker"].strip():

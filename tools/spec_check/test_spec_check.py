@@ -31,7 +31,12 @@ from tools.spec_check.contract_artifacts import (
 from tools.spec_check.c14n import CanonicalValueError, canonical_json1, capture_manifest_json1, capture_snapshot_digest, encode_value, hash_json, hash_value
 from tools.spec_check.manifest import ManifestError, execute_verified_entrypoint, verify_manifest
 from tools.spec_check.ci_order import OrderingError, parse_instant, select_latest_actions_attempts, select_latest_actions_generation, select_latest_native_records
-from tools.spec_check.semantics import _canonical, validate_delivery_links, validate_semantics
+from tools.spec_check.semantics import (
+    _canonical,
+    _payload_observation_parent,
+    validate_delivery_links,
+    validate_semantics,
+)
 from tools.spec_check.spec import _effective_status, validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
@@ -1717,6 +1722,25 @@ class DeliveryLinkTests(unittest.TestCase):
         result = self._validate(bundle)
         self.assertEqual("REJECT", result["verdict"])
         self.assertTrue(any("check_plan_sha256 không khớp plan" in error for error in result["errors"]))
+
+    def test_payload_observation_parent_tracks_last_commit_parent(self) -> None:
+        base_sha = "0" * 40
+        first_payload_sha = "1" * 40
+        second_payload_sha = "2" * 40
+        commits = [{"sha": first_payload_sha}, {"sha": second_payload_sha}]
+
+        self.assertEqual(
+            first_payload_sha,
+            _payload_observation_parent(base_sha, commits, "changes"),
+        )
+        self.assertEqual(
+            base_sha,
+            _payload_observation_parent(base_sha, commits[:1], "changes"),
+        )
+        self.assertEqual(
+            second_payload_sha,
+            _payload_observation_parent(second_payload_sha, commits, "verified_noop"),
+        )
 
     def test_non_object_bundle_rejects_without_exception(self) -> None:
         result = validate_delivery_links([])
