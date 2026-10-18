@@ -111,6 +111,51 @@ func TestValidateWorkspaceEditRejectsDuplicateJSONMembers(t *testing.T) {
 	}
 }
 
+func TestValidateWorkspaceEditRejectsLiteralAndTagEdits(t *testing.T) {
+	source := []byte("package p\ntype Record struct { Exported string `json:\"Exported\"` }\nvar label = \"Exported\"\n")
+	workspace, _ := testValidatedWorkspace(t, map[string][]byte{"record.go": source})
+	uri, _ := pathToFileURI(filepath.Join(workspace.rootPath, "record.go"))
+	for _, test := range []struct {
+		name  string
+		start int64
+	}{
+		{name: "struct tag", start: int64(strings.Index(string(source), "`json:\"") + len("`json:\""))},
+		{name: "string literal", start: int64(strings.LastIndex(string(source), "Exported"))},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			start, err := ByteOffsetToPosition(source, test.start, PositionUTF16)
+			if err != nil {
+				t.Fatal(err)
+			}
+			end, err := ByteOffsetToPosition(source, test.start+int64(len("Exported")), PositionUTF16)
+			if err != nil {
+				t.Fatal(err)
+			}
+			raw, err := json.Marshal(map[string]any{"changes": map[string]any{
+				uri: []any{map[string]any{"range": Range{Start: start, End: end}, "newText": "Renamed"}},
+			}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := validateWorkspaceEdit(context.Background(), raw, workspace, PositionUTF16, "Exported", "Renamed"); !errors.Is(err, ErrRenameUnsupported) {
+				t.Fatalf("non-identifier edit error=%v, want unsupported", err)
+			}
+		})
+	}
+}
+
+func TestIdentifierRangeAtRequiresAnExactUTF8Boundary(t *testing.T) {
+	source := []byte("package p\nvar café = 1\n")
+	start := int64(strings.Index(string(source), "café"))
+	byteRange, name, err := IdentifierRangeAt(source, "unicode.go", start+3)
+	if err != nil || name != "café" || byteRange != (model.ByteRange{StartByte: start, EndByte: start + int64(len("café"))}) {
+		t.Fatalf("valid identifier offset resolved to range=%+v name=%q err=%v", byteRange, name, err)
+	}
+	if _, _, err := IdentifierRangeAt(source, "unicode.go", start+4); !errors.Is(err, ErrInvalidPosition) {
+		t.Fatalf("offset inside a UTF-8 code point error=%v, want invalid position", err)
+	}
+}
+
 func TestSnapshotVerificationRejectsManifestChangeAndMutation(t *testing.T) {
 	files := map[string][]byte{"a.go": []byte("package p\n")}
 	workspace, snapshot := testValidatedWorkspace(t, files)

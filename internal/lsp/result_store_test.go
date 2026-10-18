@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -94,6 +95,63 @@ func TestImmutableRenameResultPagesDoNotRerunAndBindFullIdentity(t *testing.T) {
 	clock = time.Unix(ref.Expires, 0).UTC()
 	if _, err := store.Page(ctx, identity, ref, codec, "", 2); !errors.Is(err, ErrResultExpired) {
 		t.Fatalf("expired result was served: %v", err)
+	}
+}
+
+func TestImmutableRenameResultCanReducePageSizeWithoutLosingCursorBinding(t *testing.T) {
+	ctx := context.Background()
+	spool := &memorySpool{}
+	store, err := NewResultStore(spool)
+	if err != nil {
+		t.Fatal(err)
+	}
+	clock := time.Unix(1_800_000_000, 0).UTC()
+	store.now = func() time.Time { return clock }
+	identity := resultTestIdentity(t)
+	edits := make([]json.RawMessage, 5)
+	for index := range edits {
+		edits[index] = json.RawMessage(`{"index":` + strconv.Itoa(index) + `}`)
+	}
+	ref, err := store.Publish(ctx, identity, edits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	codec, err := cursor.NewCursorCodec([]byte(strings.Repeat("s", 32)), cursor.DefaultCursorTTL, func() time.Time { return clock })
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err := store.Page(ctx, identity, ref, codec, "", 3)
+	if err != nil || first.Position != 3 || len(first.Edits) != 3 || first.NextCursor == "" {
+		t.Fatalf("initial page=%+v err=%v", first, err)
+	}
+	if _, err := store.Page(ctx, identity, ref, codec, first.NextCursor, 1); !errors.Is(err, cursor.ErrCursorScopeMismatch) {
+		t.Fatalf("cursor accepted a changed page limit without a signed transition: %v", err)
+	}
+	second, err := store.PageWithPageSizeTransition(ctx, identity, ref, codec, first.NextCursor, 3, 1)
+	if err != nil || second.Position != 4 || len(second.Edits) != 1 || !second.HasMore || second.NextCursor == "" {
+		t.Fatalf("reduced page=%+v err=%v", second, err)
+	}
+	third, err := store.Page(ctx, identity, ref, codec, second.NextCursor, 1)
+	if err != nil || third.Position != 5 || len(third.Edits) != 1 || third.HasMore {
+		t.Fatalf("page after signed transition=%+v err=%v", third, err)
+	}
+	other := identity
+	other.PrincipalID = "principal:other"
+	if _, err := store.PageWithPageSizeTransition(ctx, other, ref, codec, first.NextCursor, 3, 1); !errors.Is(err, cursor.ErrCursorScopeMismatch) {
+		t.Fatalf("cross-principal page-size transition was accepted: %v", err)
+	}
+}
+
+func TestRenameResultPageSizeTransitionRejectsMissingCodec(t *testing.T) {
+	ctx := context.Background()
+	store, err := NewResultStore(&memorySpool{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity := resultTestIdentity(t)
+	ref := ResultRef{ResultID: "11111111-1111-4111-8111-111111111111", Digest: model.SHA256([]byte("result")), EditCount: 1, Expires: time.Now().Add(time.Minute).Unix()}
+	if _, err := store.PageWithPageSizeTransition(ctx, identity, ref, nil, "cursor", 2, 1); !errors.Is(err, ErrResultInvalid) {
+		t.Fatalf("missing cursor codec error=%v, want invalid result", err)
 	}
 }
 

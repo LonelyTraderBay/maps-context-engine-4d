@@ -140,16 +140,9 @@ func (resultStore *ResultStore) Page(ctx context.Context, identity ResultIdentit
 	if _, err := model.ParseHash(string(ref.Digest)); err != nil {
 		return EditPage{}, ErrResultInvalid
 	}
-	requestHash, err := model.HashValue("rename-result-page-v1", map[string]any{
-		"result_id": string(ref.ResultID), "result_digest": string(ref.Digest), "limit": limit,
-	})
+	cursorIdentity, err := resultPageCursorIdentity(identity, ref, limit)
 	if err != nil {
 		return EditPage{}, err
-	}
-	cursorIdentity := signedcursor.CursorIdentity{
-		Purpose: "rename-page", Scope: identity.Scope, PrincipalID: identity.PrincipalID,
-		AllowedBindingID: identity.AllowedBindingID, RequestHash: requestHash,
-		OrderVersion: "rename-edit-index-v1",
 	}
 	progress := signedcursor.CursorProgress{}
 	if cursor != "" {
@@ -201,6 +194,62 @@ func (resultStore *ResultStore) Page(ctx context.Context, identity ResultIdentit
 		}
 	}
 	return page, nil
+}
+
+// PageWithPageSizeTransition verifies an existing cursor against its original
+// page limit, then signs the same position for a smaller next page. This lets
+// a consumer reduce a page to fit its byte budget without weakening cursor
+// scope, result, digest, or page-limit binding.
+func (resultStore *ResultStore) PageWithPageSizeTransition(ctx context.Context, identity ResultIdentity, ref ResultRef, codec *signedcursor.CursorCodec, cursor string, previousLimit, nextLimit int) (EditPage, error) {
+	if resultStore == nil || resultStore.store == nil || ctx == nil || codec == nil || validateResultIdentity(identity) != nil ||
+		nextLimit < 1 || nextLimit > previousLimit || previousLimit > MaxRenameEditPage ||
+		ref.EditCount < 0 || ref.EditCount > MaxRenameResultEdits || ref.Expires < 1 {
+		return EditPage{}, ErrResultInvalid
+	}
+	if _, err := model.ParseUUID(string(ref.ResultID)); err != nil {
+		return EditPage{}, ErrResultInvalid
+	}
+	if _, err := model.ParseHash(string(ref.Digest)); err != nil {
+		return EditPage{}, ErrResultInvalid
+	}
+	if cursor == "" || nextLimit == previousLimit {
+		return resultStore.Page(ctx, identity, ref, codec, cursor, nextLimit)
+	}
+	previousIdentity, err := resultPageCursorIdentity(identity, ref, previousLimit)
+	if err != nil {
+		return EditPage{}, err
+	}
+	progress, err := codec.Verify(cursor, previousIdentity)
+	if err != nil {
+		return EditPage{}, err
+	}
+	if progress.ResultID == nil || progress.ResultDigest == nil || *progress.ResultID != ref.ResultID ||
+		*progress.ResultDigest != ref.Digest || progress.LastKey != strconv.FormatInt(progress.Position, 10) {
+		return EditPage{}, signedcursor.ErrCursorScopeMismatch
+	}
+	nextIdentity, err := resultPageCursorIdentity(identity, ref, nextLimit)
+	if err != nil {
+		return EditPage{}, err
+	}
+	rebound, err := codec.Issue(nextIdentity, progress)
+	if err != nil {
+		return EditPage{}, err
+	}
+	return resultStore.Page(ctx, identity, ref, codec, rebound, nextLimit)
+}
+
+func resultPageCursorIdentity(identity ResultIdentity, ref ResultRef, limit int) (signedcursor.CursorIdentity, error) {
+	requestHash, err := model.HashValue("rename-result-page-v1", map[string]any{
+		"result_id": string(ref.ResultID), "result_digest": string(ref.Digest), "limit": limit,
+	})
+	if err != nil {
+		return signedcursor.CursorIdentity{}, err
+	}
+	return signedcursor.CursorIdentity{
+		Purpose: "rename-page", Scope: identity.Scope, PrincipalID: identity.PrincipalID,
+		AllowedBindingID: identity.AllowedBindingID, RequestHash: requestHash,
+		OrderVersion: "rename-edit-index-v1",
+	}, nil
 }
 
 func (resultStore *ResultStore) Remove(ctx context.Context, ref ResultRef) error {

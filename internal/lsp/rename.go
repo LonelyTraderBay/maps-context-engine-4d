@@ -97,6 +97,7 @@ type validatedRenameEdit struct {
 
 type renameCandidate struct {
 	uri  string
+	path string
 	text lspTextEdit
 }
 
@@ -221,6 +222,33 @@ func (provider *RenameProvider) Continue(ctx context.Context, identity ResultIde
 	}, nil
 }
 
+// ContinueResized continues the same immutable result at a smaller page size.
+// The prior cursor is authenticated with its original page limit before it is
+// rebound to the reduced limit; the LSP provider is never invoked again.
+func (provider *RenameProvider) ContinueResized(ctx context.Context, identity ResultIdentity, ref ResultRef, cursor string, previousPageSize, nextPageSize int) (RenamePreview, error) {
+	if provider == nil || provider.results == nil || provider.cursors == nil || ctx == nil ||
+		nextPageSize < 1 || nextPageSize > previousPageSize || nextPageSize > maxRenamePageSize {
+		return RenamePreview{}, ErrInvalidRenameRequest
+	}
+	page, err := provider.results.PageWithPageSizeTransition(ctx, identity, ref, provider.cursors, cursor, previousPageSize, nextPageSize)
+	if err != nil {
+		return RenamePreview{}, err
+	}
+	return RenamePreview{
+		ResultRef: ref, Edits: page.Edits, NextCursor: page.NextCursor, Position: page.Position,
+		HasMore: page.HasMore, ValidationRequired: true, Applied: false, SourceMutationCount: 0,
+	}, nil
+}
+
+// Release removes only the immutable spool created for this result reference.
+// It is used when the application cannot safely return the prepared preview.
+func (provider *RenameProvider) Release(ctx context.Context, ref ResultRef) error {
+	if provider == nil || provider.results == nil || ctx == nil {
+		return ErrInvalidRenameRequest
+	}
+	return provider.results.Remove(ctx, ref)
+}
+
 func validateWorkspaceEdit(ctx context.Context, raw json.RawMessage, workspace *validatedWorkspace, encoding PositionEncoding, oldName, newName string) ([]validatedRenameEdit, error) {
 	if ctx == nil || workspace == nil || len(raw) == 0 || len(raw) > maxLSPMessageBytes || !json.Valid(raw) {
 		return nil, ErrLSPProtocol
@@ -276,18 +304,11 @@ func validateWorkspaceEdit(ctx context.Context, raw json.RawMessage, workspace *
 	if len(collected) > MaxRenameResultEdits {
 		return nil, sqlite.ErrAdmissionResourceLimit
 	}
-	contents := make(map[string][]byte)
-	defer func() {
-		for _, content := range contents {
-			clear(content)
-		}
-	}()
-	validated := make([]validatedRenameEdit, 0, len(collected))
-	for _, item := range collected {
+	for index := range collected {
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
-		path, err := fileURIToRelative(workspace.rootPath, item.uri, workspace.files)
+		path, err := fileURIToRelative(workspace.rootPath, collected[index].uri, workspace.files)
 		if err != nil {
 			return nil, err
 		}
@@ -297,39 +318,24 @@ func validateWorkspaceEdit(ctx context.Context, raw json.RawMessage, workspace *
 		if !strings.EqualFold(filepath.Ext(path), ".go") {
 			return nil, ErrRenameUnsupported
 		}
-		content := contents[path]
-		if content == nil {
-			captured := workspace.files[path]
-			content, err = workspace.readSource(ctx, path, captured.ContentHash, 2*1024*1024)
-			if err != nil {
-				return nil, err
-			}
-			contents[path] = content
+		collected[index].path = path
+	}
+	sort.SliceStable(collected, func(i, j int) bool { return collected[i].path < collected[j].path })
+	validated := make([]validatedRenameEdit, 0, len(collected))
+	for groupStart := 0; groupStart < len(collected); {
+		if err := ctx.Err(); err != nil {
+			return nil, err
 		}
-		if !utf8.ValidString(item.text.NewText) || item.text.AnnotationID != "" || item.text.NewText != newName || newName == "" || oldName == "" {
-			return nil, ErrRenameUnsupported
+		groupEnd := groupStart + 1
+		for groupEnd < len(collected) && collected[groupEnd].path == collected[groupStart].path {
+			groupEnd++
 		}
-		start, err := PositionToByteOffset(content, item.text.Range.Start, encoding)
+		group, err := validateRenameFileGroup(ctx, workspace, encoding, oldName, newName, collected[groupStart:groupEnd])
 		if err != nil {
 			return nil, err
 		}
-		end, err := PositionToByteOffset(content, item.text.Range.End, encoding)
-		if err != nil || end <= start {
-			return nil, ErrInvalidPosition
-		}
-		byteRange := model.ByteRange{StartByte: start, EndByte: end}
-		if byteRange.ValidateAgainst(content) != nil {
-			return nil, ErrInvalidPosition
-		}
-		if string(content[start:end]) != oldName {
-			return nil, ErrRenameConflict
-		}
-		validatedEdit := RenameEdit{Path: path, ContentHash: workspace.files[path].ContentHash, Version: 1, Range: byteRange, NewText: item.text.NewText}
-		wire, marshalErr := json.Marshal(validatedEdit)
-		if marshalErr != nil {
-			return nil, ErrLSPProtocol
-		}
-		validated = append(validated, validatedRenameEdit{edit: validatedEdit, wire: wire})
+		validated = append(validated, group...)
+		groupStart = groupEnd
 	}
 	sort.Slice(validated, func(i, j int) bool {
 		left, right := validated[i].edit, validated[j].edit
@@ -363,6 +369,61 @@ func validateWorkspaceEdit(ctx context.Context, raw json.RawMessage, workspace *
 	return validated, nil
 }
 
+func validateRenameFileGroup(ctx context.Context, workspace *validatedWorkspace, encoding PositionEncoding, oldName, newName string, candidates []renameCandidate) ([]validatedRenameEdit, error) {
+	if len(candidates) == 0 {
+		return nil, ErrRenameUnsupported
+	}
+	path := candidates[0].path
+	captured, exists := workspace.files[path]
+	if !exists {
+		return nil, ErrCapturedWorkspace
+	}
+	content, err := workspace.readSource(ctx, path, captured.ContentHash, 2*1024*1024)
+	if err != nil {
+		return nil, err
+	}
+	defer clear(content)
+	identifiers, err := goIdentifierRanges(content, path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { clear(identifiers) }()
+	validated := make([]validatedRenameEdit, 0, len(candidates))
+	for _, item := range candidates {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		if item.path != path || !utf8.ValidString(item.text.NewText) || item.text.AnnotationID != "" || item.text.NewText != newName || newName == "" || oldName == "" {
+			return nil, ErrRenameUnsupported
+		}
+		start, err := PositionToByteOffset(content, item.text.Range.Start, encoding)
+		if err != nil {
+			return nil, err
+		}
+		end, err := PositionToByteOffset(content, item.text.Range.End, encoding)
+		if err != nil || end <= start {
+			return nil, ErrInvalidPosition
+		}
+		byteRange := model.ByteRange{StartByte: start, EndByte: end}
+		if byteRange.ValidateAgainst(content) != nil {
+			return nil, ErrInvalidPosition
+		}
+		if identifiers[byteRange] != oldName {
+			return nil, ErrRenameUnsupported
+		}
+		if string(content[start:end]) != oldName {
+			return nil, ErrRenameConflict
+		}
+		edit := RenameEdit{Path: path, ContentHash: captured.ContentHash, Version: 1, Range: byteRange, NewText: item.text.NewText}
+		wire, err := json.Marshal(edit)
+		if err != nil {
+			return nil, ErrLSPProtocol
+		}
+		validated = append(validated, validatedRenameEdit{edit: edit, wire: wire})
+	}
+	return validated, nil
+}
+
 func tokenIsIdentifier(value string) bool {
 	return value != "_" && utf8.ValidString(value) && token.IsIdentifier(value) && !token.Lookup(value).IsKeyword()
 }
@@ -377,6 +438,56 @@ func sourcePathInModuleRoots(path string, roots []string) bool {
 		}
 	}
 	return false
+}
+
+// goIdentifierRanges accepts only AST identifiers. This keeps a provider edit
+// from changing a same-spelled string literal, comment, or struct tag.
+func goIdentifierRanges(source []byte, path string) (map[model.ByteRange]string, error) {
+	if !utf8.Valid(source) {
+		return nil, ErrRenameUnsupported
+	}
+	fileSet := token.NewFileSet()
+	parsed, err := parser.ParseFile(fileSet, path, source, parser.AllErrors)
+	if err != nil || parsed == nil {
+		return nil, ErrRenameUnsupported
+	}
+	ranges := make(map[model.ByteRange]string)
+	ast.Inspect(parsed, func(node ast.Node) bool {
+		identifier, ok := node.(*ast.Ident)
+		if !ok {
+			return true
+		}
+		file := fileSet.File(identifier.Pos())
+		if file == nil {
+			return true
+		}
+		byteRange := model.ByteRange{
+			StartByte: int64(file.Offset(identifier.Pos())),
+			EndByte:   int64(file.Offset(identifier.End())),
+		}
+		ranges[byteRange] = identifier.Name
+		return true
+	})
+	return ranges, nil
+}
+
+// IdentifierRangeAt resolves a byte offset to the exact Go identifier token
+// that contains it. Callers must still bind the returned range to the source
+// hash and captured workspace before requesting a rename.
+func IdentifierRangeAt(source []byte, path string, offset int64) (model.ByteRange, string, error) {
+	if !utf8.Valid(source) || offset < 0 || offset >= int64(len(source)) || source[offset]&0xc0 == 0x80 {
+		return model.ByteRange{}, "", ErrInvalidPosition
+	}
+	ranges, err := goIdentifierRanges(source, path)
+	if err != nil {
+		return model.ByteRange{}, "", err
+	}
+	for byteRange, name := range ranges {
+		if offset >= byteRange.StartByte && offset < byteRange.EndByte {
+			return byteRange, name, nil
+		}
+	}
+	return model.ByteRange{}, "", ErrNotRenameable
 }
 
 func assessRenameSite(source []byte, path string, offset int64) ([]string, bool) {
