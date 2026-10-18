@@ -1,0 +1,3 @@
+package fixture
+
+const Synthetic = "MCE4D_FAKE_SECRET_0123456789ABCDEF0123456789ABCDEF"
