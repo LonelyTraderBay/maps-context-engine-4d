@@ -28,11 +28,12 @@ const (
 )
 
 var (
-	ErrSchemaTooNew        = errors.New("SQLite index schema is newer than this reader")
-	ErrInvalidIndex        = errors.New("SQLite file is not a supported index store")
-	ErrWorktreeMismatch    = errors.New("SQLite index belongs to a different worktree")
-	ErrInvalidStorePath    = errors.New("SQLite index path is not a regular owned file")
-	ErrManifestUnavailable = errors.New("SQLite generation has no capture manifest reference")
+	ErrSchemaTooNew          = errors.New("SQLite index schema is newer than this reader")
+	ErrInvalidIndex          = errors.New("SQLite file is not a supported index store")
+	ErrWorktreeMismatch      = errors.New("SQLite index belongs to a different worktree")
+	ErrInvalidStorePath      = errors.New("SQLite index path is not a regular owned file")
+	ErrManifestUnavailable   = errors.New("SQLite generation has no capture manifest reference")
+	ErrStoreRecoveryRequired = errors.New("worktree store recovery is required before opening SQLite")
 )
 
 //go:embed migrations/index/*.sql

@@ -141,6 +141,32 @@ func (owner *storeOwnership) worktreeCacheBytesForJournal(worktreeID model.UUID,
 	return owner.measureOwnedTree("worktrees/"+string(worktreeID), worktreeID, journal)
 }
 
+func (owner *storeOwnership) measureOwnedPathBytes(relative model.AdmissionOwnedPath, journal model.VolumeAdmissionJournal) (int64, error) {
+	if owner == nil || owner.root == nil || relative.Validate() != nil {
+		return 0, fmt.Errorf("invalid owned path measurement: %w", ErrAdmissionOwnership)
+	}
+	rootPath, err := owner.root.FinalPath()
+	if err != nil {
+		return 0, err
+	}
+	absolute := filepath.Join(rootPath, filepath.FromSlash(string(relative)))
+	info, err := os.Lstat(absolute)
+	if errors.Is(err, os.ErrNotExist) {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, fmt.Errorf("inspect owned durable path: %w", err)
+	}
+	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+		return 0, fmt.Errorf("durable output path is not a private directory: %w", ErrInvalidStorePath)
+	}
+	parts := strings.Split(string(relative), "/")
+	if len(parts) < 4 || parts[0] != "worktrees" || parts[1] != string(owner.worktreeID) {
+		return 0, fmt.Errorf("durable path is not scoped to the worktree: %w", ErrAdmissionOwnership)
+	}
+	return owner.measureOwnedTree(string(relative), owner.worktreeID, journal)
+}
+
 // renameResultBytesFor measures actual result spools and interrupted atomic
 // write temporaries. Live atomic temporaries remain covered by their reservation.
 func (owner *storeOwnership) renameResultBytesFor(worktreeID model.UUID) (int64, error) {
@@ -203,6 +229,9 @@ func (owner *storeOwnership) measureOwnedTree(relativeRoot string, worktreeID mo
 		if entry.IsDir() {
 			if err := owner.root.EnsurePrivateDirs(relative); err != nil {
 				return fmt.Errorf("cache directory is not contained beneath home: %w", ErrInvalidStorePath)
+			}
+			if relativeRoot == "worktrees/"+string(worktreeID) && (relative == "worktrees/"+string(worktreeID)+"/backups" || relative == "worktrees/"+string(worktreeID)+"/maintenance") {
+				return filepath.SkipDir
 			}
 			return nil
 		}

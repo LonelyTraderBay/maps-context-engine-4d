@@ -29,6 +29,7 @@ var (
 	ErrGenerationUnavailable     = errors.New("no published SQLite generation is available")
 	ErrPublicationOutcomeUnknown = errors.New("SQLite publish outcome could not be resolved")
 	ErrGenerationLeaseActive     = errors.New("SQLite generation writer lease is already active")
+	ErrGenerationCycle           = errors.New("SQLite generation module graph contains a cycle")
 )
 
 // GenerationKey is the compare-and-swap identity for one build. The owner job
@@ -318,69 +319,75 @@ func (store *Store) PublishGeneration(ctx context.Context, request PublishReques
 	if request.State != GenerationReady && request.State != GenerationReadyPartial {
 		return result, fmt.Errorf("publish target must be READY or READY_PARTIAL: %w", ErrInvalidIndex)
 	}
-	err = store.withWriteTx(ctx, manifestWriteOverhead, func(tx *writeTx) error {
-		current, err := readGeneration(ctx, tx.QueryRowContext(ctx, `SELECT
+	publish := func(writerCtx context.Context) error {
+		if err := store.validateGenerationForPublish(writerCtx, request.Spec.Key.GenerationID); err != nil {
+			return err
+		}
+		return store.withWriteTx(writerCtx, manifestWriteOverhead, func(tx *writeTx) error {
+			current, err := readGeneration(ctx, tx.QueryRowContext(ctx, `SELECT
 			generation_id,profile_id,snapshot_digest,state,owner_job_id,policy_digest,policy_epoch,
 			provider_fingerprint,manifest_json,created_at,completed_at
 			FROM generations WHERE generation_id=?`, string(request.Spec.Key.GenerationID)))
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("publish generation: %w", ErrGenerationNotFound)
-		}
-		if err != nil {
-			return fmt.Errorf("read generation before publish: %w", err)
-		}
-		if !sameGenerationSpec(current, request.Spec) {
-			return ErrGenerationConflict
-		}
-		if current.State == request.State {
-			result.Generation = current
-			result.AlreadyPublished = true
-			active, err := activeGenerationMatchesWrite(ctx, tx, request.Spec.Key.ProfileID, request.Spec.Key.GenerationID)
-			if err != nil {
-				return err
+			if errors.Is(err, sql.ErrNoRows) {
+				return fmt.Errorf("publish generation: %w", ErrGenerationNotFound)
 			}
-			result.Activated = active
-			return nil
-		}
-		if current.State != GenerationBuilding {
-			return fmt.Errorf("generation cannot transition from %s to %s: %w", current.State, request.State, ErrGenerationState)
-		}
-		if current.ManifestRef == nil || current.ManifestRef.SnapshotDigest != request.Spec.SnapshotDigest {
-			return fmt.Errorf("generation has no matching capture manifest: %w", ErrInvalidIndex)
-		}
+			if err != nil {
+				return fmt.Errorf("read generation before publish: %w", err)
+			}
+			if !sameGenerationSpec(current, request.Spec) {
+				return ErrGenerationConflict
+			}
+			if current.State == request.State {
+				result.Generation = current
+				result.AlreadyPublished = true
+				active, err := activeGenerationMatchesWrite(ctx, tx, request.Spec.Key.ProfileID, request.Spec.Key.GenerationID)
+				if err != nil {
+					return err
+				}
+				result.Activated = active
+				return nil
+			}
+			if current.State != GenerationBuilding {
+				return fmt.Errorf("generation cannot transition from %s to %s: %w", current.State, request.State, ErrGenerationState)
+			}
+			if current.ManifestRef == nil || current.ManifestRef.SnapshotDigest != request.Spec.SnapshotDigest {
+				return fmt.Errorf("generation has no matching capture manifest: %w", ErrInvalidIndex)
+			}
 
-		completedAt := time.Now().UTC().Format(time.RFC3339Nano)
-		updated, err := tx.ExecContext(ctx, `UPDATE generations SET state=?,completed_at=?
+			completedAt := time.Now().UTC().Format(time.RFC3339Nano)
+			updated, err := tx.ExecContext(ctx, `UPDATE generations SET state=?,completed_at=?
 			WHERE generation_id=? AND profile_id=? AND owner_job_id=? AND snapshot_digest=?
 			  AND state='BUILDING' AND manifest_json=?`,
-			string(request.State), completedAt, string(request.Spec.Key.GenerationID),
-			string(request.Spec.Key.ProfileID), string(request.Spec.Key.OwnerJobID),
-			string(request.Spec.SnapshotDigest), string(rawManifest))
-		if err != nil {
-			return fmt.Errorf("mark SQLite generation published: %w", err)
-		}
-		rows, err := updated.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("read generation publish update count: %w", err)
-		}
-		if rows != 1 {
-			return ErrGenerationConflict
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO active_generations(profile_id,generation_id)
+				string(request.State), completedAt, string(request.Spec.Key.GenerationID),
+				string(request.Spec.Key.ProfileID), string(request.Spec.Key.OwnerJobID),
+				string(request.Spec.SnapshotDigest), string(rawManifest))
+			if err != nil {
+				return fmt.Errorf("mark SQLite generation published: %w", err)
+			}
+			rows, err := updated.RowsAffected()
+			if err != nil {
+				return fmt.Errorf("read generation publish update count: %w", err)
+			}
+			if rows != 1 {
+				return ErrGenerationConflict
+			}
+			if _, err := tx.ExecContext(ctx, `INSERT INTO active_generations(profile_id,generation_id)
 			VALUES(?,?) ON CONFLICT(profile_id) DO UPDATE SET generation_id=excluded.generation_id`,
-			string(request.Spec.Key.ProfileID), string(request.Spec.Key.GenerationID)); err != nil {
-			return fmt.Errorf("switch active SQLite generation: %w", err)
-		}
-		current.State = request.State
-		parsedCompletedAt, err := time.Parse(time.RFC3339Nano, completedAt)
-		if err != nil {
-			return fmt.Errorf("parse generated completion time: %w", err)
-		}
-		current.CompletedAt = &parsedCompletedAt
-		result.Generation = current
-		result.Activated = true
-		return nil
-	})
+				string(request.Spec.Key.ProfileID), string(request.Spec.Key.GenerationID)); err != nil {
+				return fmt.Errorf("switch active SQLite generation: %w", err)
+			}
+			current.State = request.State
+			parsedCompletedAt, err := time.Parse(time.RFC3339Nano, completedAt)
+			if err != nil {
+				return fmt.Errorf("parse generated completion time: %w", err)
+			}
+			current.CompletedAt = &parsedCompletedAt
+			result.Generation = current
+			result.Activated = true
+			return nil
+		})
+	}
+	err = store.withGenerationWriter(ctx, publish)
 	if err == nil {
 		return result, nil
 	}
@@ -398,6 +405,45 @@ func (store *Store) PublishGeneration(ctx context.Context, request PublishReques
 		return result, errors.Join(fmt.Errorf("%w: original publish error: %v", ErrPublicationOutcomeUnknown, err), resolveErr)
 	}
 	return result, err
+}
+
+func (store *Store) withGenerationWriter(ctx context.Context, operation func(context.Context) error) error {
+	if token, ok := ctx.Value(generationWriteContextKey{}).(*generationWriteToken); ok && token.store == store && token.isActive() {
+		return operation(ctx)
+	}
+	return store.WithGenerationWriter(ctx, operation)
+}
+
+// validateGenerationForPublish performs whole-store FK and module-graph checks
+// while the worktree writer lease is held, before the short publish transaction.
+func (store *Store) validateGenerationForPublish(ctx context.Context, generationID model.UUID) error {
+	if store == nil || store.readers == nil || ctx == nil {
+		return fmt.Errorf("invalid generation publication validation: %w", ErrInvalidIndex)
+	}
+	var hasCycle int
+	if err := store.readers.QueryRowContext(ctx, `WITH RECURSIVE module_ancestry(origin_id,node_id) AS (
+		SELECT module_id,parent_module_id FROM modules WHERE generation_id=? AND parent_module_id IS NOT NULL
+		UNION
+		SELECT ancestry.origin_id,module.parent_module_id
+		FROM module_ancestry ancestry JOIN modules module
+		  ON module.generation_id=? AND module.module_id=ancestry.node_id
+		WHERE module.parent_module_id IS NOT NULL
+	)
+	SELECT EXISTS(SELECT 1 FROM module_ancestry WHERE origin_id=node_id)`,
+		string(generationID), string(generationID)).Scan(&hasCycle); err != nil {
+		return fmt.Errorf("validate SQLite module graph before publish: %w", err)
+	}
+	if hasCycle != 0 {
+		return ErrGenerationCycle
+	}
+	var violations int
+	if err := store.readers.QueryRowContext(ctx, `SELECT count(*) FROM pragma_foreign_key_check`).Scan(&violations); err != nil {
+		return fmt.Errorf("validate SQLite foreign keys before publish: %w", err)
+	}
+	if violations != 0 {
+		return fmt.Errorf("index has %d foreign-key violations before publish: %w", violations, ErrInvalidIndex)
+	}
+	return nil
 }
 
 // AbortGeneration moves only the exact BUILDING owner to FAILED or CANCELLED.

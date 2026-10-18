@@ -174,6 +174,71 @@ func TestOpenIndexMigratesV1AndPreservesIdentity(t *testing.T) {
 	}
 }
 
+func TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails(t *testing.T) {
+	ctx := context.Background()
+	options := testStoreOptions(t, testUUID(t, "33333333-3333-4333-8333-333333333333"))
+	legacy, err := sql.Open("sqlite", options.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ddl, err := indexMigrations.ReadFile("migrations/index/001.sql")
+	if err != nil {
+		_ = legacy.Close()
+		t.Fatal(err)
+	}
+	if _, err := legacy.ExecContext(ctx, string(ddl)); err != nil {
+		_ = legacy.Close()
+		t.Fatalf("create legacy v1 fixture: %v", err)
+	}
+	wrongOwner := testUUID(t, "44444444-4444-4444-8444-444444444444")
+	incarnation := testUUID(t, "55555555-5555-4555-8555-555555555555")
+	if _, err := legacy.ExecContext(ctx, `INSERT INTO store_identity(singleton,worktree_id,incarnation) VALUES(1,?,?)`, wrongOwner, incarnation); err != nil {
+		_ = legacy.Close()
+		t.Fatalf("bind legacy fixture identity: %v", err)
+	}
+	if err := legacy.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	db, err := sql.Open("sqlite", options.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, migrationErr := migrateAndReadIdentity(ctx, conn, false, options.WorktreeID)
+	if closeErr := conn.Close(); closeErr != nil {
+		t.Fatal(closeErr)
+	}
+	if !errors.Is(migrationErr, ErrWorktreeMismatch) {
+		t.Fatalf("migration guard error=%v; want ErrWorktreeMismatch after migration", migrationErr)
+	}
+	var version int64
+	if err := db.QueryRowContext(ctx, `SELECT schema_version FROM schema_meta WHERE singleton=1`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	if version != 1 {
+		t.Fatalf("schema version after rejected migration=%d; want v1", version)
+	}
+	var modules int
+	if err := db.QueryRowContext(ctx, `SELECT count(*) FROM sqlite_schema WHERE type='table' AND name='modules'`).Scan(&modules); err != nil {
+		t.Fatal(err)
+	}
+	if modules != 0 {
+		t.Fatal("failed v1-to-v2 migration left the modules table behind")
+	}
+	var owner model.UUID
+	if err := db.QueryRowContext(ctx, `SELECT worktree_id FROM store_identity WHERE singleton=1`).Scan(&owner); err != nil {
+		t.Fatal(err)
+	}
+	if owner != wrongOwner {
+		t.Fatalf("failed migration changed legacy owner to %s; want %s", owner, wrongOwner)
+	}
+}
+
 func TestOpenIndexRejectsFutureSchemaWithoutChangingFile(t *testing.T) {
 	ctx := context.Background()
 	options := testStoreOptions(t, testUUID(t, "44444444-4444-4444-8444-444444444444"))

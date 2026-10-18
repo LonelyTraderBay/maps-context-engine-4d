@@ -50,13 +50,16 @@ type storeOwnership struct {
 }
 
 type admissionReservation struct {
-	owner       *storeOwnership
-	operationID model.UUID
-	lease       *mceruntime.Lease
-	initialSize int64
-	peakBytes   int64
-	closeOnce   sync.Once
-	closeErr    error
+	owner              *storeOwnership
+	operationID        model.UUID
+	lease              *mceruntime.Lease
+	initialSize        int64
+	initialDurableSize int64
+	peakBytes          int64
+	cachePeakBytes     int64
+	durablePath        model.AdmissionOwnedPath
+	closeOnce          sync.Once
+	closeErr           error
 }
 
 func newStoreOwnership(ctx context.Context, options Options, readOnly bool) (*storeOwnership, error) {
@@ -97,16 +100,27 @@ func newStoreOwnership(ctx context.Context, options Options, readOnly bool) (*st
 	}
 	owned.volumeID = model.Identifier(volumeID)
 	owned.homeIdentity = model.Identifier(homeIdentity)
-	owned.homeLifecycle, err = mceruntime.AcquireHomeLifecycle(ctx, root, mceruntime.LockShared, owned.lockWait)
+	if readOnly {
+		owned.homeLifecycle, err = root.AcquireExistingLock(ctx, "lifecycle.lock", mceruntime.LockShared, owned.lockWait)
+	} else {
+		owned.homeLifecycle, err = mceruntime.AcquireHomeLifecycle(ctx, root, mceruntime.LockShared, owned.lockWait)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("acquire shared home lifecycle lease: %w", err)
 	}
-	if err := mceruntime.EnsureWorktreeLockLayout(root, string(worktreeID)); err != nil {
-		return nil, fmt.Errorf("prepare verified store lock layout: %w", err)
+	if !readOnly {
+		if err := mceruntime.EnsureWorktreeLockLayout(root, string(worktreeID)); err != nil {
+			return nil, fmt.Errorf("prepare verified store lock layout: %w", err)
+		}
+		owned.lifecycle, err = mceruntime.AcquireWorktreeLifecycle(ctx, root, string(worktreeID), mceruntime.LockShared, owned.lockWait)
+	} else {
+		owned.lifecycle, err = root.AcquireExistingLock(ctx, "worktrees/"+string(worktreeID)+"/lifecycle.lock", mceruntime.LockShared, owned.lockWait)
 	}
-	owned.lifecycle, err = mceruntime.AcquireWorktreeLifecycle(ctx, root, string(worktreeID), mceruntime.LockShared, owned.lockWait)
 	if err != nil {
 		return nil, fmt.Errorf("acquire shared worktree lifecycle lease: %w", err)
+	}
+	if err := ensureNoActiveWorktreeRestore(root, worktreeID); err != nil {
+		return nil, err
 	}
 	if !readOnly {
 		configLease, lockErr := mceruntime.AcquireHomeConfig(ctx, root, mceruntime.LockShared, owned.lockWait)
@@ -125,6 +139,97 @@ func newStoreOwnership(ctx context.Context, options Options, readOnly bool) (*st
 	}
 	closeOnError = false
 	return owned, nil
+}
+
+func ensureNoActiveWorktreeRestore(root *mceruntime.Root, worktreeID model.UUID) error {
+	marker := "worktrees/" + string(worktreeID) + "/maintenance/restore-active.json"
+	raw, err := readOwnedFileBounded(root, marker, 4<<10)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("cannot verify worktree restore state: %w: %v", ErrStoreRecoveryRequired, err)
+	}
+	active, err := decodeRestoreActiveMarker(raw, worktreeID)
+	if err != nil {
+		return fmt.Errorf("cannot verify worktree restore marker: %w", errors.Join(ErrStoreRecoveryRequired, err))
+	}
+	journal, err := readWorktreeRestoreJournal(root, active.JournalPath, active.OperationID, worktreeID)
+	if err != nil {
+		return fmt.Errorf("cannot verify worktree restore journal: %w", errors.Join(ErrStoreRecoveryRequired, err))
+	}
+	if journal.Phase == "VERIFIED" && (journal.Outcome == "restored" || journal.Outcome == "rolled_back") {
+		return nil
+	}
+	return fmt.Errorf("worktree %s has an incomplete maintenance operation: %w", worktreeID, ErrStoreRecoveryRequired)
+}
+
+// newMaintenanceOwnership opens the verified home and shared configuration
+// authority without taking a worktree SHARED lifecycle lease. The caller must
+// acquire the worktree EXCLUSIVE maintenance lease before opening any store.
+func newMaintenanceOwnership(ctx context.Context, options Options) (*storeOwnership, error) {
+	if ctx == nil || strings.TrimSpace(options.HomePath) == "" {
+		return nil, fmt.Errorf("verified MCE4D home and context are required: %w", ErrInvalidIndex)
+	}
+	path, _, err := normalizeOptions(&options)
+	if err != nil {
+		return nil, err
+	}
+	worktreeID, err := model.ParseUUID(string(options.WorktreeID))
+	if err != nil || worktreeID != options.WorktreeID {
+		return nil, fmt.Errorf("valid worktree UUID is required for maintenance ownership: %w", ErrInvalidIndex)
+	}
+	waitMS := options.LockWaitMS
+	if waitMS == 0 {
+		waitMS = defaultLockWaitMS
+	}
+	if waitMS < 1 || waitMS > math.MaxInt32 {
+		return nil, fmt.Errorf("lock wait must be within 1..%d ms: %w", int64(math.MaxInt32), ErrInvalidIndex)
+	}
+	indexRelative := "worktrees/" + string(worktreeID) + "/index.sqlite"
+	if !matchesOwnedIndexPath(options.HomePath, path, indexRelative) {
+		return nil, fmt.Errorf("maintenance index path must be the exact worktree-owned path: %w", ErrInvalidStorePath)
+	}
+	root, err := mceruntime.OpenRoot(options.HomePath)
+	if err != nil {
+		return nil, fmt.Errorf("open verified MCE4D home for maintenance: %w", err)
+	}
+	owner := &storeOwnership{
+		root: root, worktreeID: worktreeID, indexRelative: indexRelative,
+		config: options.AdmissionConfig, configProvider: options.AdmissionConfigProvider,
+		lockWait: time.Duration(waitMS) * time.Millisecond,
+	}
+	closeOnError := true
+	defer func() {
+		if closeOnError {
+			_ = owner.Close()
+		}
+	}()
+	volumeID, homeIdentity, err := root.Identity()
+	if err != nil {
+		return nil, fmt.Errorf("read verified volume/home identity: %w", err)
+	}
+	owner.volumeID = model.Identifier(volumeID)
+	owner.homeIdentity = model.Identifier(homeIdentity)
+	owner.homeLifecycle, err = mceruntime.AcquireHomeLifecycle(ctx, root, mceruntime.LockShared, owner.lockWait)
+	if err != nil {
+		return nil, fmt.Errorf("acquire shared home lifecycle lease for maintenance: %w", err)
+	}
+	if err := mceruntime.EnsureWorktreeLockLayout(root, string(worktreeID)); err != nil {
+		return nil, fmt.Errorf("prepare verified maintenance lock layout: %w", err)
+	}
+	configLease, err := mceruntime.AcquireHomeConfig(ctx, root, mceruntime.LockShared, owner.lockWait)
+	if err != nil {
+		return nil, fmt.Errorf("acquire shared home config lease for maintenance: %w", err)
+	}
+	config, digest, configErr := owner.readAdmissionConfig(ctx)
+	closeErr := configLease.Close()
+	if configErr != nil || closeErr != nil {
+		return nil, errors.Join(configErr, closeErr)
+	}
+	owner.config, owner.configDigest = config, digest
+	closeOnError = false
+	return owner, nil
 }
 
 // SQLite receives the caller's path spelling, so bind it to the same HomePath
@@ -295,7 +400,126 @@ func (owner *storeOwnership) admitIndexGrowth(ctx context.Context, peakBytes int
 		_ = operationLease.Close()
 		return nil, fmt.Errorf("persist index growth reservation: %w", err)
 	}
-	return &admissionReservation{owner: owner, operationID: operationID, lease: operationLease, initialSize: currentCacheBytes, peakBytes: peakBytes}, nil
+	return &admissionReservation{owner: owner, operationID: operationID, lease: operationLease,
+		initialSize: currentCacheBytes, peakBytes: peakBytes, cachePeakBytes: peakBytes}, nil
+}
+
+func durableOperationID(worktreeID model.UUID, operationKind string, ownedPath model.AdmissionOwnedPath) (model.UUID, error) {
+	area := "backups"
+	if operationKind == "maintenance" {
+		area = "maintenance"
+	}
+	parts := strings.Split(string(ownedPath), "/")
+	if len(parts) != 4 || parts[0] != "worktrees" || parts[1] != string(worktreeID) || parts[2] != area {
+		return "", fmt.Errorf("durable output must be scoped to one worktree operation: %w", ErrAdmissionOwnership)
+	}
+	operationID, err := model.ParseUUID(parts[3])
+	if err != nil || string(operationID) != parts[3] {
+		return "", fmt.Errorf("durable output directory must use a canonical operation UUID: %w", ErrAdmissionOwnership)
+	}
+	return operationID, nil
+}
+
+func (owner *storeOwnership) admitDurableGrowth(ctx context.Context, operationKind string, ownedPath model.AdmissionOwnedPath, peakBytes int64) (*admissionReservation, error) {
+	if owner == nil || owner.root == nil || owner.homeLifecycle == nil || ctx == nil || peakBytes < 1 || peakBytes > model.MaxSafeInteger ||
+		(operationKind != "backup" && operationKind != "maintenance") {
+		return nil, fmt.Errorf("invalid durable admission request: %w", ErrInvalidIndex)
+	}
+	if err := ownedPath.Validate(); err != nil || !strings.HasPrefix(string(ownedPath), "worktrees/"+string(owner.worktreeID)+"/") {
+		return nil, fmt.Errorf("durable output is outside the owned worktree: %w", ErrAdmissionOwnership)
+	}
+	configLease, err := mceruntime.AcquireHomeConfig(ctx, owner.root, mceruntime.LockShared, owner.lockWait)
+	if err != nil {
+		return nil, fmt.Errorf("acquire shared home config lease: %w", err)
+	}
+	defer configLease.Close()
+	config, configDigest, err := owner.readAdmissionConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	volumeLease, err := mceruntime.AcquireVolumeAdmission(ctx, owner.root, string(owner.volumeID), owner.lockWait)
+	if err != nil {
+		return nil, fmt.Errorf("acquire short volume admission lease: %w", err)
+	}
+	defer volumeLease.Close()
+
+	journal, err := owner.readJournalAnyConfig()
+	if err != nil {
+		return nil, err
+	}
+	journal, err = owner.recoverDeadOwners(ctx, journal)
+	if err != nil {
+		return nil, err
+	}
+	if journal.AdmissionConfigDigest != configDigest {
+		if len(journal.Entries) != 0 {
+			return nil, ErrAdmissionConfigConflict
+		}
+		if _, err := owner.worktreeCacheBytesForJournal(owner.worktreeID, journal); err != nil {
+			return nil, fmt.Errorf("recheck owned store sizes after config drift: %w", err)
+		}
+		journal.AdmissionConfigDigest = configDigest
+	}
+	owner.config, owner.configDigest = config, configDigest
+	currentCacheBytes, err := owner.worktreeCacheBytesForJournal(owner.worktreeID, journal)
+	if err != nil {
+		return nil, fmt.Errorf("measure owned worktree cache before durable write: %w", err)
+	}
+	totals, err := sumAdmissionReservations(journal)
+	if err != nil {
+		return nil, err
+	}
+	cacheUse, ok := addNonnegative(currentCacheBytes, totals.CacheByWorktree[owner.worktreeID])
+	if !ok || cacheUse > config.MaxWorktreeCacheBytes {
+		return nil, fmt.Errorf("existing worktree cache cap is exceeded: %w", ErrAdmissionResourceLimit)
+	}
+	available, err := owner.root.AvailableBytes()
+	if err != nil {
+		return nil, fmt.Errorf("measure verified volume headroom: %w", err)
+	}
+	volumeNeeded, ok := addNonnegative(totals.VolumeRemainingBytes, peakBytes)
+	if !ok {
+		return nil, ErrAdmissionReservationOverflow
+	}
+	volumeNeeded, ok = addNonnegative(volumeNeeded, admissionMetadataPeak)
+	if !ok {
+		return nil, ErrAdmissionReservationOverflow
+	}
+	volumeNeeded, ok = addNonnegative(volumeNeeded, config.VolumeReserveBytes)
+	if !ok || available < volumeNeeded {
+		return nil, fmt.Errorf("verified volume reserve would be breached: %w", ErrAdmissionResourceLimit)
+	}
+	if len(journal.Entries) >= 256 {
+		return nil, fmt.Errorf("volume admission entry cap reached: %w", ErrAdmissionResourceLimit)
+	}
+	initialDurableSize, err := owner.measureOwnedPathBytes(ownedPath, journal)
+	if err != nil {
+		return nil, fmt.Errorf("measure durable output before write: %w", err)
+	}
+	operationID, err := durableOperationID(owner.worktreeID, operationKind, ownedPath)
+	if err != nil {
+		return nil, err
+	}
+	operationLease, err := mceruntime.AcquireOperationLease(ctx, owner.root, string(operationID), 0)
+	if err != nil {
+		return nil, fmt.Errorf("acquire operation owner lease: %w", err)
+	}
+	entry := model.VolumeAdmissionEntry{
+		OperationID: operationID, ScopeKind: "worktree", WorktreeID: &owner.worktreeID,
+		OwnerIdentity: model.Identifier("lease-" + string(operationID)),
+		OwnershipRef:  model.AdmissionOwnedPath("operation-leases/" + string(operationID) + ".lock"),
+		OperationKind: operationKind, AllowedPaths: []model.AdmissionOwnedPath{ownedPath},
+		VolumeReservedRemainingBytes: peakBytes, CacheReservedRemainingBytes: 0,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+	}
+	journal.Entries = append(journal.Entries, entry)
+	if err := owner.writeJournal(journal); err != nil {
+		_ = operationLease.Close()
+		return nil, fmt.Errorf("persist durable growth reservation: %w", err)
+	}
+	return &admissionReservation{owner: owner, operationID: operationID, lease: operationLease,
+		initialSize: currentCacheBytes, initialDurableSize: initialDurableSize, peakBytes: peakBytes,
+		durablePath: ownedPath}, nil
 }
 
 func (reservation *admissionReservation) Close() error {
@@ -329,8 +553,16 @@ func (reservation *admissionReservation) Close() error {
 			reservation.closeErr = measureErr
 			return
 		}
-		if actualBytes > reservation.initialSize && actualBytes-reservation.initialSize > reservation.peakBytes {
+		if actualBytes > reservation.initialSize && actualBytes-reservation.initialSize > reservation.cachePeakBytes {
 			reservation.closeErr = fmt.Errorf("observed index growth exceeded admitted peak %d bytes: %w", reservation.peakBytes, ErrAdmissionResourceLimit)
+		}
+		if reservation.durablePath != "" {
+			actualDurableBytes, durableErr := owner.measureOwnedPathBytes(reservation.durablePath, journal)
+			if durableErr != nil {
+				reservation.closeErr = errors.Join(reservation.closeErr, fmt.Errorf("measure durable output after write: %w", durableErr))
+			} else if actualDurableBytes > reservation.initialDurableSize && actualDurableBytes-reservation.initialDurableSize > reservation.peakBytes {
+				reservation.closeErr = errors.Join(reservation.closeErr, fmt.Errorf("observed durable growth exceeded admitted peak %d bytes: %w", reservation.peakBytes, ErrAdmissionResourceLimit))
+			}
 		}
 		filtered := journal.Entries[:0]
 		found := false
@@ -455,7 +687,7 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 		if err != nil {
 			return model.VolumeAdmissionJournal{}, err
 		}
-		if _, err := owner.worktreeCacheBytesForJournal(worktreeID, journal); err != nil {
+		if err := owner.measureRecoverableEntry(worktreeID, entry, journal); err != nil {
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("verify reserved owner paths before recovery: %w", err)
 		}
 		lease, err := mceruntime.AcquireOperationLease(ctx, owner.root, string(entry.OperationID), 0)
@@ -466,7 +698,7 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 		if err != nil {
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("inspect operation OS lease: %w", err)
 		}
-		if _, err := owner.worktreeCacheBytesForJournal(worktreeID, journal); err != nil {
+		if err := owner.measureRecoverableEntry(worktreeID, entry, journal); err != nil {
 			_ = lease.Close()
 			return model.VolumeAdmissionJournal{}, fmt.Errorf("measure paths before reclaiming dead reservation: %w", err)
 		}
@@ -486,7 +718,7 @@ func (owner *storeOwnership) recoverDeadOwners(ctx context.Context, journal mode
 
 func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionEntry) (model.UUID, error) {
 	if entry.ScopeKind != "worktree" || entry.WorktreeID == nil ||
-		(entry.OperationKind != indexAdmissionOperation && entry.OperationKind != "rename_result") {
+		(entry.OperationKind != indexAdmissionOperation && entry.OperationKind != "rename_result" && entry.OperationKind != "backup" && entry.OperationKind != "maintenance") {
 		return "", fmt.Errorf("stale entry is outside the verified SQLite owner: %w", ErrAdmissionOwnership)
 	}
 	if entry.OwnerIdentity != model.Identifier("lease-"+string(entry.OperationID)) {
@@ -518,6 +750,30 @@ func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionE
 		}
 		return worktreeID, nil
 	}
+	if entry.OperationKind == "backup" || entry.OperationKind == "maintenance" {
+		if len(entry.AllowedPaths) != 1 {
+			return "", fmt.Errorf("durable reservation has an invalid owned-path count: %w", ErrAdmissionOwnership)
+		}
+		path := string(entry.AllowedPaths[0])
+		base := "worktrees/" + string(worktreeID) + "/"
+		area := "backups/"
+		if entry.OperationKind == "maintenance" {
+			area = "maintenance/"
+		}
+		prefix := base + area
+		operationPath := strings.TrimPrefix(path, prefix)
+		operationID, parseErr := model.ParseUUID(operationPath)
+		if !strings.HasPrefix(path, prefix) || parseErr != nil || operationID != entry.OperationID || string(operationID) != operationPath {
+			return "", fmt.Errorf("durable reservation path does not match its operation identity: %w", ErrAdmissionOwnership)
+		}
+		if err := entry.AllowedPaths[0].Validate(); err != nil {
+			return "", fmt.Errorf("invalid durable output locator: %w", ErrAdmissionOwnership)
+		}
+		if entry.CacheReservedRemainingBytes != 0 {
+			return "", fmt.Errorf("durable reservation must not charge cache quota: %w", ErrAdmissionOwnership)
+		}
+		return worktreeID, nil
+	}
 	if len(entry.AllowedPaths) != len(want) {
 		return "", fmt.Errorf("stale entry is outside the verified SQLite owner: %w", ErrAdmissionOwnership)
 	}
@@ -530,6 +786,18 @@ func (owner *storeOwnership) verifyRecoverableEntry(entry model.VolumeAdmissionE
 		}
 	}
 	return worktreeID, nil
+}
+
+func (owner *storeOwnership) measureRecoverableEntry(worktreeID model.UUID, entry model.VolumeAdmissionEntry, journal model.VolumeAdmissionJournal) error {
+	if entry.OperationKind == "backup" || entry.OperationKind == "maintenance" {
+		if len(entry.AllowedPaths) != 1 {
+			return ErrAdmissionOwnership
+		}
+		_, err := owner.measureOwnedPathBytes(entry.AllowedPaths[0], journal)
+		return err
+	}
+	_, err := owner.worktreeCacheBytesForJournal(worktreeID, journal)
+	return err
 }
 
 func newOperationUUID() (model.UUID, error) {

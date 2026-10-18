@@ -97,6 +97,114 @@ func TestOwnedCacheAccountingIncludesRenameAndOtherScratchFiles(t *testing.T) {
 	}
 }
 
+func TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput(t *testing.T) {
+	store := openTestIndex(t, 1234)
+	owner := store.ownership
+	ctx := context.Background()
+	worktreeID := store.WorktreeID()
+	backupID := testUUID(t, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+	backupPath := model.AdmissionOwnedPath("worktrees/" + string(worktreeID) + "/backups/" + string(backupID))
+	cacheBefore, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reservation, err := owner.admitDurableGrowth(ctx, "backup", backupPath, 4096)
+	if err != nil {
+		t.Fatalf("admit durable backup growth: %v", err)
+	}
+	journal, err := owner.readJournalAnyConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(journal.Entries) != 1 || journal.Entries[0].OperationKind != "backup" ||
+		journal.Entries[0].VolumeReservedRemainingBytes != 4096 || journal.Entries[0].CacheReservedRemainingBytes != 0 {
+		t.Fatalf("durable reservation has incorrect cache/volume classification: %+v", journal.Entries)
+	}
+	if err := owner.root.EnsurePrivateDirs(string(backupPath)); err != nil {
+		t.Fatal(err)
+	}
+	backupFile := string(backupPath) + "/snapshot.sqlite"
+	if err := owner.root.WriteAtomicFile(backupFile, []byte("durable snapshot"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cacheAfter, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cacheAfter != cacheBefore {
+		t.Fatalf("backup growth changed cache accounting: before=%d after=%d", cacheBefore, cacheAfter)
+	}
+	if got, err := owner.measureOwnedPathBytes(backupPath, journal); err != nil || got != int64(len("durable snapshot")) {
+		t.Fatalf("durable backup measurement=%d, err=%v", got, err)
+	}
+	if err := reservation.Close(); err != nil {
+		t.Fatalf("settle durable backup reservation: %v", err)
+	}
+
+	interruptedID := testUUID(t, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbc")
+	interruptedPath := model.AdmissionOwnedPath("worktrees/" + string(worktreeID) + "/backups/" + string(interruptedID))
+	interrupted, err := owner.admitDurableGrowth(ctx, "backup", interruptedPath, 4096)
+	if err != nil {
+		t.Fatalf("admit interrupted backup: %v", err)
+	}
+	if err := owner.root.EnsurePrivateDirs(string(interruptedPath)); err != nil {
+		t.Fatal(err)
+	}
+	if err := owner.root.WriteAtomicFile(string(interruptedPath)+"/manifest.json", []byte("preserve interrupted backup"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := interrupted.lease.Close(); err != nil {
+		t.Fatalf("simulate backup process exit: %v", err)
+	}
+	resumed, err := owner.admitDurableGrowth(ctx, "backup", interruptedPath, 4096)
+	if err != nil {
+		t.Fatalf("recover interrupted reservation using output operation identity: %v", err)
+	}
+	if err := resumed.Close(); err != nil {
+		t.Fatalf("settle resumed backup reservation: %v", err)
+	}
+
+	crashID := testUUID(t, "cccccccc-cccc-4ccc-8ccc-cccccccccccc")
+	crashPath := model.AdmissionOwnedPath("worktrees/" + string(worktreeID) + "/backups/" + string(crashID))
+	if err := owner.root.EnsurePrivateDirs(string(crashPath)); err != nil {
+		t.Fatal(err)
+	}
+	retainedFile := string(crashPath) + "/manifest.json"
+	if err := owner.root.WriteAtomicFile(retainedFile, []byte("preserve after interrupted backup"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	journal, err = owner.readJournalAnyConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	journal.Entries = append(journal.Entries, model.VolumeAdmissionEntry{
+		OperationID: crashID, ScopeKind: "worktree", WorktreeID: &worktreeID,
+		OwnerIdentity: model.Identifier("lease-" + string(crashID)),
+		OwnershipRef:  model.AdmissionOwnedPath("operation-leases/" + string(crashID) + ".lock"),
+		OperationKind: "backup", AllowedPaths: []model.AdmissionOwnedPath{crashPath},
+		VolumeReservedRemainingBytes: 128, CacheReservedRemainingBytes: 0,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+	})
+	if err := owner.writeJournal(journal); err != nil {
+		t.Fatal(err)
+	}
+	recovered, err := owner.recoverDeadOwners(ctx, journal)
+	if err != nil {
+		t.Fatalf("recover interrupted durable reservation: %v", err)
+	}
+	if len(recovered.Entries) != 0 {
+		t.Fatalf("dead durable operation lease remains reserved: %+v", recovered.Entries)
+	}
+	retained, err := owner.root.OpenRegularFile(retainedFile)
+	if err != nil {
+		t.Fatalf("recovery removed or obscured crash evidence: %v", err)
+	}
+	if err := retained.Close(); err != nil {
+		t.Fatalf("close preserved crash evidence: %v", err)
+	}
+}
+
 func TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback(t *testing.T) {
 	journal, binding := validAdmissionJournal(t)
 	raw, err := encodeAdmissionJournal(journal)
