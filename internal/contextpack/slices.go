@@ -2,6 +2,10 @@ package contextpack
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -14,7 +18,10 @@ const (
 	maxTaskConstraints  = 16
 	maxTrustedRulePaths = 128
 	maxTaskSliceItems   = 500001 // One node per selected node plus relation and boundary items.
+	maxPlanningPageSize = 1000
 )
+
+var ErrPlanningCursorMismatch = errors.New("planning cursor does not match the pinned selection")
 
 type SliceCategory string
 
@@ -83,20 +90,83 @@ type ValidationPlan struct {
 	Steps  []ValidationStep
 }
 
+// TaskObligationGroup keeps the exact selected evidence IDs for one task-aware
+// category/plane group. The corresponding TaskSliceItem values retain anchors.
+type TaskObligationGroup struct {
+	ID                 string
+	Category           SliceCategory
+	Plane              string
+	EvidenceCount      int
+	TotalEvidenceCount *int
+	EvidenceIDs        []model.Hash
+}
+
+// PlanningPlaneSummary never treats intended evidence as observed code or
+// runtime behavior. not_seen is emitted only for a complete selection.
+type PlanningPlaneSummary struct {
+	Plane              string
+	Status             string
+	EvidenceCount      int
+	TotalEvidenceCount *int
+}
+
 // TaskSlice contains evidence descriptors only. It never carries source bytes,
 // executes repository text, or treats repository content as trusted policy.
 type TaskSlice struct {
-	TaskKind             TaskKind
-	Intent               string
-	Focus                []string
-	Items                []TaskSliceItem
-	TrustedRules         []TrustedRuleAnchor
-	Constraints          []ConstraintDisposition
-	Validation           ValidationPlan
-	Gaps                 []Gap
-	EnumerationComplete  bool
-	ContinuationRequired bool
-	RequiredPending      *int
+	TaskKind                  TaskKind
+	Selector                  Selector
+	ScopeVectorDigest         model.Hash
+	ScopeIdentities           []ScopeIdentity
+	Target                    *Ref
+	Intent                    string
+	Focus                     []string
+	Items                     []TaskSliceItem
+	ObligationGroups          []TaskObligationGroup
+	PlaneSummaries            []PlanningPlaneSummary
+	MatchedTopicAliases       []TopicAlias
+	TrustedRules              []TrustedRuleAnchor
+	Constraints               []ConstraintDisposition
+	Validation                ValidationPlan
+	Gaps                      []Gap
+	EnumerationComplete       bool
+	ContinuationRequired      bool
+	RequiredPending           *int
+	FreshnessStatus           string
+	Readiness                 string
+	EditPreconditionValidated bool
+}
+
+// PlanningCursor is an in-process continuation bound to one immutable
+// planning session. It is deliberately not a wire token or a live validator.
+type PlanningCursor struct {
+	scopeVectorDigest model.Hash
+	selectionDigest   model.Hash
+	afterIndex        int
+	afterItemKey      string
+}
+
+type PlanningSession struct {
+	scopeVectorDigest             model.Hash
+	selectionDigest               model.Hash
+	items                         []TaskSliceItem
+	obligationGroups              []TaskObligationGroup
+	planeSummaries                []PlanningPlaneSummary
+	selectionComplete             bool
+	selectionContinuationRequired bool
+}
+
+type PlanningPage struct {
+	Items                         []TaskSliceItem
+	ObligationGroups              []TaskObligationGroup
+	PlaneSummaries                []PlanningPlaneSummary
+	StartIndex                    int
+	SelectedItemCount             int
+	RemainingSelected             int
+	SelectionComplete             bool
+	SelectionContinuationRequired bool
+	PageComplete                  bool
+	EnumerationComplete           bool
+	NextCursor                    *PlanningCursor
 }
 
 // BuildTaskSlice groups one resolved selection into deterministic task-aware
@@ -132,13 +202,21 @@ func BuildTaskSlice(ctx context.Context, input TaskSliceInput) (TaskSlice, error
 	}
 
 	slice := TaskSlice{
-		TaskKind: input.TaskKind, Intent: input.Intent, Focus: taskFocus(input.TaskKind),
-		Items:        make([]TaskSliceItem, 0, len(input.Selection.Items)),
-		TrustedRules: make([]TrustedRuleAnchor, 0), Constraints: constraints,
-		Gaps:                 cloneGaps(input.Selection.Gaps),
-		EnumerationComplete:  input.Selection.EnumerationComplete,
-		ContinuationRequired: input.Selection.ContinuationRequired,
-		RequiredPending:      cloneInt(input.Selection.RequiredPending),
+		TaskKind: input.TaskKind, Selector: cloneSelector(input.Selection.Selector),
+		ScopeVectorDigest: input.Selection.ScopeVectorDigest,
+		ScopeIdentities:   cloneScopeIdentities(input.Selection.ScopeIdentities),
+		Target:            cloneRefPointer(input.Selection.Target),
+		Intent:            input.Intent, Focus: taskFocus(input.TaskKind),
+		Items:               make([]TaskSliceItem, 0, len(input.Selection.Items)),
+		MatchedTopicAliases: cloneTopicAliases(input.Selection.MatchedTopicAliases),
+		TrustedRules:        make([]TrustedRuleAnchor, 0), Constraints: constraints,
+		Gaps:                      cloneGaps(input.Selection.Gaps),
+		EnumerationComplete:       input.Selection.EnumerationComplete,
+		ContinuationRequired:      input.Selection.ContinuationRequired,
+		RequiredPending:           cloneInt(input.Selection.RequiredPending),
+		FreshnessStatus:           "not_checked",
+		Readiness:                 "needs_context",
+		EditPreconditionValidated: false,
 	}
 	targetKey := refKey(*input.Selection.Target)
 	for _, item := range input.Selection.Items {
@@ -155,6 +233,8 @@ func BuildTaskSlice(ctx context.Context, input TaskSliceInput) (TaskSlice, error
 	sort.Slice(slice.Items, func(i, j int) bool {
 		return taskSliceItemLess(slice.Items[i], slice.Items[j])
 	})
+	slice.ObligationGroups = buildObligationGroups(slice.Items, slice.EnumerationComplete)
+	slice.PlaneSummaries = buildPlaneSummaries(slice.Items, slice.EnumerationComplete)
 
 	taskSpecificGap := false
 	if input.TaskKind == TaskDebug && input.Intent == "" {
@@ -216,6 +296,9 @@ func BuildTaskSlice(ctx context.Context, input TaskSliceInput) (TaskSlice, error
 }
 
 func validateSelectionForSlice(ctx context.Context, selection Result) error {
+	if _, err := model.ParseHash(string(selection.ScopeVectorDigest)); err != nil {
+		return fmt.Errorf("%w: pinned scope vector digest is invalid", ErrInvalidRequest)
+	}
 	if err := validateRef(*selection.Target); err != nil {
 		return fmt.Errorf("%w: selected target is invalid", ErrInvalidRequest)
 	}
@@ -262,6 +345,265 @@ func validateSelectionForSlice(ctx context.Context, selection Result) error {
 		}
 	}
 	return nil
+}
+
+func buildObligationGroups(items []TaskSliceItem, complete bool) []TaskObligationGroup {
+	groupsByID := make(map[string]*TaskObligationGroup)
+	for _, item := range items {
+		plane := item.Evidence.Plane
+		id := "evidence:" + string(item.Category) + ":" + plane
+		group := groupsByID[id]
+		if group == nil {
+			group = &TaskObligationGroup{ID: id, Category: item.Category, Plane: plane, EvidenceIDs: make([]model.Hash, 0)}
+			groupsByID[id] = group
+		}
+		group.EvidenceCount++
+		group.EvidenceIDs = append(group.EvidenceIDs, item.Evidence.ID)
+	}
+	ids := make([]string, 0, len(groupsByID))
+	for id := range groupsByID {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	groups := make([]TaskObligationGroup, 0, len(ids))
+	for _, id := range ids {
+		group := *groupsByID[id]
+		if complete {
+			group.TotalEvidenceCount = intPointer(group.EvidenceCount)
+		}
+		groups = append(groups, group)
+	}
+	return groups
+}
+
+func buildPlaneSummaries(items []TaskSliceItem, complete bool) []PlanningPlaneSummary {
+	planes := []string{"intended", "annotation", "observed_static", "observed_runtime"}
+	counts := make(map[string]int, len(planes))
+	for _, plane := range planes {
+		counts[plane] = 0
+	}
+	for _, item := range items {
+		if _, known := counts[item.Evidence.Plane]; known {
+			counts[item.Evidence.Plane]++
+		}
+	}
+	summaries := make([]PlanningPlaneSummary, 0, len(planes))
+	for _, plane := range planes {
+		count := counts[plane]
+		status := "present"
+		if count == 0 {
+			status = "unknown"
+			if complete {
+				status = "not_seen"
+			}
+		}
+		summary := PlanningPlaneSummary{Plane: plane, Status: status, EvidenceCount: count}
+		if complete {
+			summary.TotalEvidenceCount = intPointer(count)
+		}
+		summaries = append(summaries, summary)
+	}
+	return summaries
+}
+
+// NewPlanningSession snapshots a bounded task slice once so pages can advance
+// by stable item position without repeating graph traversal or rebasing scope.
+func NewPlanningSession(ctx context.Context, slice TaskSlice) (*PlanningSession, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("%w: nil context", ErrInvalidRequest)
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if _, err := model.ParseHash(string(slice.ScopeVectorDigest)); err != nil {
+		return nil, fmt.Errorf("%w: pinned scope vector digest is invalid", ErrInvalidRequest)
+	}
+	if len(slice.Items) > maxTaskSliceItems {
+		return nil, fmt.Errorf("%w: planning page source exceeds the bounded slice limit", ErrInvalidRequest)
+	}
+	items := make([]TaskSliceItem, len(slice.Items))
+	for index, item := range slice.Items {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		items[index] = TaskSliceItem{Evidence: cloneItem(item.Evidence), Category: item.Category, EvidenceClass: item.EvidenceClass}
+	}
+	sort.Slice(items, func(i, j int) bool { return taskSliceItemLess(items[i], items[j]) })
+	keys := make(map[string]struct{}, len(items))
+	for _, item := range items {
+		key := planningItemKey(item)
+		if _, exists := keys[key]; exists {
+			return nil, fmt.Errorf("%w: planning slice contains duplicate evidence keys", ErrInvalidRequest)
+		}
+		keys[key] = struct{}{}
+	}
+	normalized := slice
+	normalized.Items = items
+	selectionDigest, err := planningSliceDigest(ctx, normalized)
+	if err != nil {
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
+		return nil, fmt.Errorf("%w: planning slice cannot be fingerprinted: %v", ErrInvalidRequest, err)
+	}
+	return &PlanningSession{
+		scopeVectorDigest: slice.ScopeVectorDigest, selectionDigest: selectionDigest,
+		items: items, obligationGroups: cloneObligationGroups(slice.ObligationGroups),
+		planeSummaries:                clonePlaneSummaries(slice.PlaneSummaries),
+		selectionComplete:             slice.EnumerationComplete,
+		selectionContinuationRequired: slice.ContinuationRequired,
+	}, nil
+}
+
+// Page returns the next bounded page. A cursor is accepted only by the exact
+// session and only when its last evidence key matches the recorded position.
+func (session *PlanningSession) Page(ctx context.Context, cursor *PlanningCursor, limit int) (PlanningPage, error) {
+	if ctx == nil {
+		return PlanningPage{}, fmt.Errorf("%w: nil context", ErrInvalidRequest)
+	}
+	if err := ctx.Err(); err != nil {
+		return PlanningPage{}, err
+	}
+	if session == nil || limit < 1 || limit > maxPlanningPageSize {
+		return PlanningPage{}, fmt.Errorf("%w: invalid planning session or page limit", ErrInvalidRequest)
+	}
+	start := 0
+	if cursor != nil {
+		if cursor.scopeVectorDigest != session.scopeVectorDigest || cursor.selectionDigest != session.selectionDigest ||
+			cursor.afterIndex < 0 || cursor.afterIndex >= len(session.items)-1 ||
+			planningItemKey(session.items[cursor.afterIndex]) != cursor.afterItemKey {
+			return PlanningPage{}, ErrPlanningCursorMismatch
+		}
+		start = cursor.afterIndex + 1
+	}
+	end := min(start+limit, len(session.items))
+	items := make([]TaskSliceItem, 0, end-start)
+	for index := start; index < end; index++ {
+		if err := ctx.Err(); err != nil {
+			return PlanningPage{}, err
+		}
+		item := session.items[index]
+		items = append(items, TaskSliceItem{Evidence: cloneItem(item.Evidence), Category: item.Category, EvidenceClass: item.EvidenceClass})
+	}
+	pageComplete := end == len(session.items)
+	page := PlanningPage{
+		Items: items, ObligationGroups: cloneObligationGroups(session.obligationGroups),
+		PlaneSummaries: clonePlaneSummaries(session.planeSummaries),
+		StartIndex:     start, SelectedItemCount: len(session.items), RemainingSelected: len(session.items) - end,
+		SelectionComplete:             session.selectionComplete,
+		SelectionContinuationRequired: session.selectionContinuationRequired,
+		PageComplete:                  pageComplete,
+		EnumerationComplete:           pageComplete && session.selectionComplete,
+	}
+	if end < len(session.items) && end > start {
+		page.NextCursor = &PlanningCursor{
+			scopeVectorDigest: session.scopeVectorDigest, selectionDigest: session.selectionDigest,
+			afterIndex: end - 1, afterItemKey: planningItemKey(session.items[end-1]),
+		}
+	}
+	return page, nil
+}
+
+func planningSliceDigest(ctx context.Context, slice TaskSlice) (model.Hash, error) {
+	hasher := sha256.New()
+	encoder := json.NewEncoder(hasher)
+	write := func(value any) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		return encoder.Encode(value)
+	}
+	metadata := slice
+	metadata.Items = nil
+	metadata.ObligationGroups = nil
+	metadata.PlaneSummaries = nil
+	metadata.MatchedTopicAliases = nil
+	metadata.TrustedRules = nil
+	metadata.Gaps = nil
+	metadata.Validation = ValidationPlan{}
+	if err := write(metadata); err != nil {
+		return "", err
+	}
+	for _, item := range slice.Items {
+		if err := write(item); err != nil {
+			return "", err
+		}
+	}
+	for _, group := range slice.ObligationGroups {
+		ids := group.EvidenceIDs
+		group.EvidenceIDs = nil
+		if err := write(group); err != nil {
+			return "", err
+		}
+		for _, id := range ids {
+			if err := write(id); err != nil {
+				return "", err
+			}
+		}
+	}
+	for _, plane := range slice.PlaneSummaries {
+		if err := write(plane); err != nil {
+			return "", err
+		}
+	}
+	for _, alias := range slice.MatchedTopicAliases {
+		if err := write(alias); err != nil {
+			return "", err
+		}
+	}
+	for _, trusted := range slice.TrustedRules {
+		if err := write(trusted); err != nil {
+			return "", err
+		}
+	}
+	for _, gap := range slice.Gaps {
+		if err := write(gap); err != nil {
+			return "", err
+		}
+	}
+	if err := write(slice.Validation.Status); err != nil {
+		return "", err
+	}
+	for _, step := range slice.Validation.Steps {
+		ids := step.EvidenceIDs
+		step.EvidenceIDs = nil
+		if err := write(step); err != nil {
+			return "", err
+		}
+		for _, id := range ids {
+			if err := write(id); err != nil {
+				return "", err
+			}
+		}
+	}
+	return model.Hash(hex.EncodeToString(hasher.Sum(nil))), nil
+}
+
+func planningItemKey(item TaskSliceItem) string {
+	return string(item.Category) + "\x00" + item.Evidence.Plane + "\x00" + string(item.Evidence.ID) + "\x00" + itemSortKey(item.Evidence)
+}
+
+func cloneObligationGroups(groups []TaskObligationGroup) []TaskObligationGroup {
+	cloned := make([]TaskObligationGroup, len(groups))
+	for index, group := range groups {
+		cloned[index] = TaskObligationGroup{
+			ID: group.ID, Category: group.Category, Plane: group.Plane,
+			EvidenceCount: group.EvidenceCount, TotalEvidenceCount: cloneInt(group.TotalEvidenceCount),
+			EvidenceIDs: append([]model.Hash(nil), group.EvidenceIDs...),
+		}
+	}
+	return cloned
+}
+
+func clonePlaneSummaries(summaries []PlanningPlaneSummary) []PlanningPlaneSummary {
+	cloned := make([]PlanningPlaneSummary, len(summaries))
+	for index, summary := range summaries {
+		cloned[index] = PlanningPlaneSummary{
+			Plane: summary.Plane, Status: summary.Status, EvidenceCount: summary.EvidenceCount,
+			TotalEvidenceCount: cloneInt(summary.TotalEvidenceCount),
+		}
+	}
+	return cloned
 }
 
 func validateChangeConstraints(values []string) ([]ConstraintDisposition, error) {

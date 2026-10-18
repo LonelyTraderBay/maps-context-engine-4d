@@ -193,6 +193,173 @@ func TestTaskSliceOrderingIgnoresInputPermutation(t *testing.T) {
 	}
 }
 
+func TestSpecOnlyPlanningKeepsIntendedSeparateFromUnavailableObservedPlanes(t *testing.T) {
+	scope, identity := testScope(t)
+	requirement := Node{
+		Ref: Ref{Kind: RefAnchor, Scope: identity, ID: "planned-component"}, Kind: "component",
+		Name: "Payments", Label: "Payments", QualifiedName: "payments", Plane: "intended",
+		SourceRefs: []model.SourceRef{testSource(identity, "docs/architecture.md", 0, 8)},
+	}
+	selection, err := Build(context.Background(), Input{
+		Scope: scope, Graph: Graph{Nodes: []Node{requirement}, Complete: true},
+		Request: testRequest(Selector{Kind: SelectorRef, Ref: refPointer(requirement.Ref)}, TaskPlan),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	slice, err := BuildTaskSlice(context.Background(), TaskSliceInput{TaskKind: TaskPlan, Selection: selection})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if slice.ScopeVectorDigest != scope.VectorDigest || slice.FreshnessStatus != "not_checked" ||
+		slice.Readiness != "needs_context" || slice.EditPreconditionValidated {
+		t.Fatalf("planning snapshot was marked fresh or edit-ready: %#v", slice)
+	}
+	if planeSummary(slice.PlaneSummaries, "intended").Status != "present" ||
+		planeSummary(slice.PlaneSummaries, "observed_static").Status != "not_seen" ||
+		planeSummary(slice.PlaneSummaries, "observed_runtime").Status != "not_seen" {
+		t.Fatalf("spec-only facts were conflated with observed implementation/runtime: %#v", slice.PlaneSummaries)
+	}
+	group := obligationGroup(slice.ObligationGroups, SliceTarget, "intended")
+	if group == nil || group.EvidenceCount != 1 || group.TotalEvidenceCount == nil || *group.TotalEvidenceCount != 1 ||
+		len(group.EvidenceIDs) != 1 || group.EvidenceIDs[0] != slice.Items[0].Evidence.ID {
+		t.Fatalf("complete task evidence group lost its exact reference/count: %#v", slice.ObligationGroups)
+	}
+}
+
+func TestIncompletePlanningCountsStayUnknownAndCursorPagesAdvancePinnedEvidence(t *testing.T) {
+	scope, identity := testScope(t)
+	target := testNode(identity, "target", "Plan", "pkg.Plan", "pkg/plan.go", model.SHA256([]byte("plan")), 0, 4)
+	a := testNode(identity, "a", "A", "pkg.A", "pkg/a.go", model.SHA256([]byte("a")), 0, 1)
+	b := testNode(identity, "b", "B", "pkg.B", "pkg/b.go", model.SHA256([]byte("b")), 0, 1)
+	c := testNode(identity, "c", "C", "pkg.C", "pkg/c.go", model.SHA256([]byte("c")), 0, 1)
+	graph := Graph{
+		Nodes: []Node{c, target, a, b},
+		Relations: []Relation{
+			testRelation("target-a", target.Ref, refPointer(a.Ref), "REFERS_TO", "type_resolved", "exact_in_supported_scope"),
+			testRelation("target-b", target.Ref, refPointer(b.Ref), "REFERS_TO", "type_resolved", "exact_in_supported_scope"),
+			testRelation("target-c", target.Ref, refPointer(c.Ref), "REFERS_TO", "type_resolved", "exact_in_supported_scope"),
+		},
+		Complete: false,
+	}
+	selection, err := Build(context.Background(), Input{
+		Scope: scope, Graph: graph,
+		Request: testRequest(Selector{Kind: SelectorRef, Ref: refPointer(target.Ref)}, TaskExplore),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	slice, err := BuildTaskSlice(context.Background(), TaskSliceInput{TaskKind: TaskExplore, Selection: selection})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if slice.EnumerationComplete || !slice.ContinuationRequired ||
+		planeSummary(slice.PlaneSummaries, "observed_runtime").Status != "unknown" ||
+		planeSummary(slice.PlaneSummaries, "observed_runtime").TotalEvidenceCount != nil {
+		t.Fatalf("incomplete graph produced a false zero or complete count: %#v", slice)
+	}
+	for _, group := range slice.ObligationGroups {
+		if group.TotalEvidenceCount != nil {
+			t.Fatalf("incomplete evidence group published an exact whole-graph total: %#v", group)
+		}
+	}
+
+	session, err := NewPlanningSession(context.Background(), slice)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cursor *PlanningCursor
+	seen := make([]model.Hash, 0, len(slice.Items))
+	var last PlanningPage
+	for pageNumber := 0; pageNumber < 10; pageNumber++ {
+		page, pageErr := session.Page(context.Background(), cursor, 2)
+		if pageErr != nil {
+			t.Fatal(pageErr)
+		}
+		if page.StartIndex != len(seen) || page.SelectedItemCount != len(slice.Items) ||
+			page.RemainingSelected != len(slice.Items)-len(seen)-len(page.Items) ||
+			page.SelectionComplete || !page.SelectionContinuationRequired {
+			t.Fatalf("page count/progress did not preserve the incomplete pinned selection: %#v", page)
+		}
+		for _, item := range page.Items {
+			seen = append(seen, item.Evidence.ID)
+		}
+		last = page
+		if page.NextCursor == nil {
+			break
+		}
+		cursor = page.NextCursor
+	}
+	want := make([]model.Hash, len(slice.Items))
+	for index, item := range slice.Items {
+		want[index] = item.Evidence.ID
+	}
+	if !reflect.DeepEqual(seen, want) || !last.PageComplete || last.EnumerationComplete || last.RemainingSelected != 0 {
+		t.Fatalf("page continuation skipped/repeated evidence or overstated completion: got=%v want=%v last=%#v", seen, want, last)
+	}
+	if cursor == nil {
+		t.Fatal("multi-page selection did not produce a continuation cursor")
+	}
+
+	otherScope := scope
+	otherScope.Members = append([]model.ScopeMember(nil), scope.Members...)
+	otherScope.Members[0].SnapshotDigest = model.SHA256([]byte("new immutable snapshot"))
+	otherScope.VectorDigest, err = otherScope.ComputeDigest()
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherSelection, err := Build(context.Background(), Input{
+		Scope: otherScope, Graph: graph,
+		Request: testRequest(Selector{Kind: SelectorRef, Ref: refPointer(target.Ref)}, TaskExplore),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherSlice, err := BuildTaskSlice(context.Background(), TaskSliceInput{TaskKind: TaskExplore, Selection: otherSelection})
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherSession, err := NewPlanningSession(context.Background(), otherSlice)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := otherSession.Page(context.Background(), cursor, 2); !errors.Is(err, ErrPlanningCursorMismatch) {
+		t.Fatalf("cursor was accepted for another pinned scope: %v", err)
+	}
+	otherIntent := slice
+	otherIntent.Intent = "a different planning request"
+	otherIntentSession, err := NewPlanningSession(context.Background(), otherIntent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := otherIntentSession.Page(context.Background(), cursor, 2); !errors.Is(err, ErrPlanningCursorMismatch) {
+		t.Fatalf("cursor was accepted for a different selection request: %v", err)
+	}
+	amendedCursor := *cursor
+	amendedCursor.afterItemKey = "tampered"
+	if _, err := session.Page(context.Background(), &amendedCursor, 2); !errors.Is(err, ErrPlanningCursorMismatch) {
+		t.Fatalf("tampered cursor was accepted: %v", err)
+	}
+}
+
+func planeSummary(summaries []PlanningPlaneSummary, plane string) PlanningPlaneSummary {
+	for _, summary := range summaries {
+		if summary.Plane == plane {
+			return summary
+		}
+	}
+	return PlanningPlaneSummary{}
+}
+
+func obligationGroup(groups []TaskObligationGroup, category SliceCategory, plane string) *TaskObligationGroup {
+	for index := range groups {
+		if groups[index].Category == category && groups[index].Plane == plane {
+			return &groups[index]
+		}
+	}
+	return nil
+}
+
 func TestTaskSliceRejectsMismatchedTrustAndDuplicateConstraints(t *testing.T) {
 	scope, identity := testScope(t)
 	node := testNode(identity, "target", "Run", "pkg.Run", "pkg/run.go", model.SHA256([]byte("run")), 0, 3)

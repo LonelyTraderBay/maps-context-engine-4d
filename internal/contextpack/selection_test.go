@@ -3,6 +3,7 @@ package contextpack
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -65,6 +66,84 @@ func TestEqualPositionRangesStayAmbiguous(t *testing.T) {
 	}
 	if result.Status != StatusAmbiguous || result.Target != nil || len(result.Candidates) != 2 {
 		t.Fatalf("equal source ranges must remain ambiguous: %#v", result)
+	}
+}
+
+func TestTopicAliasesResolveDeterministicallyWithoutAddingGraphFacts(t *testing.T) {
+	scope, identity := testScope(t)
+	a := testNode(identity, "symbol-a", "Checkout", "pkg/a.Checkout", "pkg/a.go", model.SHA256([]byte("a")), 0, 1)
+	b := testNode(identity, "symbol-b", "Checkout", "pkg/b.Checkout", "pkg/b.go", model.SHA256([]byte("b")), 0, 1)
+	aliases := []TopicAlias{
+		{TopicID: "checkout", Alias: "checkout flow", Target: b.Ref, SourceRefs: []model.SourceRef{testSource(identity, "docs/b.md", 0, 4)}},
+		{TopicID: "checkout", Alias: "checkout flow", Target: a.Ref, SourceRefs: []model.SourceRef{testSource(identity, "docs/a.md", 0, 4)}},
+	}
+	request := testRequest(Selector{Kind: SelectorTopic, Query: "checkout", Match: MatchPrefix}, TaskPlan)
+	request.TopicAliases = aliases
+	first, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{a, b}, Complete: true}, Request: request})
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.TopicAliases = []TopicAlias{aliases[1], aliases[0]}
+	second, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{b, a}, Complete: true}, Request: request})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.Status != StatusAmbiguous || first.Target != nil || len(first.Candidates) != 2 ||
+		len(first.MatchedTopicAliases) != 2 || len(first.Items) != 0 {
+		t.Fatalf("topic aliases must remain search-only and expose ambiguity: %#v", first)
+	}
+	if !reflect.DeepEqual(first.Candidates, second.Candidates) || !reflect.DeepEqual(first.MatchedTopicAliases, second.MatchedTopicAliases) {
+		t.Fatalf("topic selection changed with graph or alias input order:\nfirst=%#v\nsecond=%#v", first, second)
+	}
+}
+
+func TestTopicAliasMissingTargetStaysUnknownWithItsAnchor(t *testing.T) {
+	scope, identity := testScope(t)
+	node := testNode(identity, "present", "Checkout", "pkg.Checkout", "pkg/checkout.go", model.SHA256([]byte("x")), 0, 1)
+	missing := node.Ref
+	missing.ID = "not-enumerated"
+	request := testRequest(Selector{Kind: SelectorTopic, Query: "checkout", Match: MatchExact}, TaskPlan)
+	request.TopicAliases = []TopicAlias{{
+		TopicID: "checkout", Alias: "checkout", Target: missing,
+		SourceRefs: []model.SourceRef{testSource(identity, "docs/checkout.md", 0, 4)},
+	}}
+	result, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{node}, Complete: true}, Request: request})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != StatusUnknown || result.Target != nil || len(result.Candidates) != 0 ||
+		result.RequiredPending != nil || !hasGap(result.Gaps, "topic_alias_target_unresolved") {
+		t.Fatalf("missing alias target was inferred or reported as complete: %#v", result)
+	}
+	for _, gap := range result.Gaps {
+		if gap.Code == "topic_alias_target_unresolved" &&
+			(gap.Count == nil || *gap.Count != 1 || len(gap.SourceRefs) != 1 || gap.SourceRefs[0].Path != "docs/checkout.md") {
+			t.Fatalf("unresolved alias gap lost its exact count or source anchor: %#v", gap)
+		}
+	}
+}
+
+func TestTopicAliasesRequirePlanningSelectorAndPinnedAnchors(t *testing.T) {
+	scope, identity := testScope(t)
+	node := testNode(identity, "target", "Checkout", "pkg.Checkout", "pkg/checkout.go", model.SHA256([]byte("x")), 0, 1)
+	alias := TopicAlias{TopicID: "checkout", Alias: "checkout", Target: node.Ref, SourceRefs: []model.SourceRef{testSource(identity, "docs/checkout.md", 0, 4)}}
+	request := testRequest(Selector{Kind: SelectorTopic, Query: "checkout", Match: MatchExact}, TaskRename)
+	request.TopicAliases = []TopicAlias{alias}
+	if _, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{node}, Complete: true}, Request: request}); !errors.Is(err, ErrInvalidRequest) {
+		t.Fatalf("topic selector was accepted for a non-planning task: %v", err)
+	}
+	request.TaskKind = TaskPlan
+	request.TopicAliases[0].SourceRefs = nil
+	if _, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{node}, Complete: true}, Request: request}); !errors.Is(err, ErrInvalidRequest) {
+		t.Fatalf("topic alias without an anchor was accepted: %v", err)
+	}
+	request.TopicAliases = make([]TopicAlias, maxTopicAliases+1)
+	for index := range request.TopicAliases {
+		request.TopicAliases[index] = alias
+		request.TopicAliases[index].TopicID = fmt.Sprintf("checkout-%d", index)
+	}
+	if _, err := Build(context.Background(), Input{Scope: scope, Graph: Graph{Nodes: []Node{node}, Complete: true}, Request: request}); !errors.Is(err, ErrInvalidRequest) {
+		t.Fatalf("oversized topic alias set was accepted: %v", err)
 	}
 }
 

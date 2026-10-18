@@ -56,7 +56,10 @@ const (
 	SelectorRef      SelectorKind = "ref"
 	SelectorPosition SelectorKind = "source_position"
 	SelectorQuery    SelectorKind = "query"
+	SelectorTopic    SelectorKind = "topic"
 )
+
+const maxTopicAliases = 1024
 
 type MatchMode string
 
@@ -74,6 +77,16 @@ type Selector struct {
 	ByteOffset  int64
 	Query       string
 	Match       MatchMode
+}
+
+// TopicAlias is supplied by the host from its explicitly approved alias
+// configuration. It only points a search term at an existing pinned ref; it
+// never creates a graph relation or implementation fact.
+type TopicAlias struct {
+	TopicID    string
+	Alias      string
+	Target     Ref
+	SourceRefs []model.SourceRef
 }
 
 type TaskKind string
@@ -135,9 +148,10 @@ type Limits struct {
 }
 
 type Request struct {
-	Selector Selector
-	TaskKind TaskKind
-	Limits   Limits
+	Selector     Selector
+	TaskKind     TaskKind
+	Limits       Limits
+	TopicAliases []TopicAlias
 }
 
 type Input struct {
@@ -187,9 +201,12 @@ type Boundary struct {
 type Result struct {
 	Status               SelectionStatus
 	TaskKind             TaskKind
+	Selector             Selector
+	ScopeVectorDigest    model.Hash
 	ScopeIdentities      []ScopeIdentity
 	Target               *Ref
 	Candidates           []Ref
+	MatchedTopicAliases  []TopicAlias
 	Items                []Item
 	Boundaries           []Boundary
 	Gaps                 []Gap
@@ -226,15 +243,19 @@ func Build(ctx context.Context, input Input) (Result, error) {
 	if err := validateRequest(input.Request); err != nil {
 		return Result{}, err
 	}
+	if err := validateTopicAliases(input.Scope, input.Request); err != nil {
+		return Result{}, err
+	}
 	graph, err := indexGraph(ctx, input.Scope, input.Graph, input.Request.Limits)
 	if err != nil {
 		return Result{}, err
 	}
 
 	result := Result{
-		Status: StatusNotFound, TaskKind: input.Request.TaskKind,
-		ScopeIdentities: scopeIdentities(input.Scope),
-		Candidates:      make([]Ref, 0), Items: make([]Item, 0),
+		Status: StatusNotFound, TaskKind: input.Request.TaskKind, Selector: cloneSelector(input.Request.Selector),
+		ScopeVectorDigest: input.Scope.VectorDigest,
+		ScopeIdentities:   scopeIdentities(input.Scope),
+		Candidates:        make([]Ref, 0), Items: make([]Item, 0),
 		Boundaries: make([]Boundary, 0), Gaps: cloneGaps(input.Graph.Gaps),
 		EnumerationComplete: input.Graph.Complete && len(input.Scope.UnavailableMembers) == 0 && len(input.Graph.Gaps) == 0,
 	}
@@ -250,16 +271,33 @@ func Build(ctx context.Context, input Input) (Result, error) {
 			Code: "graph_enumeration_incomplete", Reason: "the supplied graph view is not fully enumerated",
 		})
 		result.EnumerationComplete = false
+		result.ContinuationRequired = true
+		result.RequiredPending = nil
 	}
 	if result.EnumerationComplete {
 		result.RequiredPending = intPointer(0)
 	}
 
-	candidates, truncated, err := resolveSelector(ctx, graph, input.Request.Selector, input.Request.Limits.MaxCandidates)
+	candidates, matchedAliases, unresolvedAliasTargetCount, unresolvedAliasSources, truncated, err := resolveSelector(
+		ctx, graph, input.Request.Selector, input.Request.TopicAliases, input.Request.Limits.MaxCandidates,
+	)
 	if err != nil {
 		return Result{}, err
 	}
 	result.Candidates = refsFromNodes(candidates)
+	result.MatchedTopicAliases = cloneTopicAliases(matchedAliases)
+	if unresolvedAliasTargetCount > 0 {
+		refs := cloneSourceRefs(unresolvedAliasSources)
+		if len(refs) > maxEvidenceRefs {
+			refs = refs[:maxEvidenceRefs]
+		}
+		result.Gaps = append(result.Gaps, Gap{
+			Code:   "topic_alias_target_unresolved",
+			Reason: "a matched topic alias points to a ref absent from the supplied pinned graph; no target is inferred",
+			Count:  intPointer(unresolvedAliasTargetCount), SourceRefs: refs,
+		})
+		result.RequiredPending = nil
+	}
 	if truncated {
 		result.ContinuationRequired = true
 		result.EnumerationComplete = false
@@ -269,9 +307,14 @@ func Build(ctx context.Context, input Input) (Result, error) {
 		})
 	}
 	if len(candidates) == 0 {
-		if !result.EnumerationComplete {
+		if unresolvedAliasTargetCount > 0 || !result.EnumerationComplete {
 			result.Status = StatusUnknown
 		}
+		result.Gaps = normalizeGaps(result.Gaps)
+		return result, nil
+	}
+	if unresolvedAliasTargetCount > 0 {
+		result.Status = StatusUnknown
 		result.Gaps = normalizeGaps(result.Gaps)
 		return result, nil
 	}
@@ -324,12 +367,45 @@ func Build(ctx context.Context, input Input) (Result, error) {
 	return result, nil
 }
 
+func validateTopicAliases(scope model.ScopeVector, request Request) error {
+	if request.Selector.Kind != SelectorTopic {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(request.TopicAliases))
+	for _, alias := range request.TopicAliases {
+		if !validID(alias.TopicID) || !validQuery(alias.Alias) || !validBoundedData(alias.Alias, 512) || validateRef(alias.Target) != nil ||
+			!scopeContains(scope, alias.Target.Scope) || len(alias.SourceRefs) == 0 || len(alias.SourceRefs) > maxEvidenceRefs {
+			return fmt.Errorf("%w: topic alias requires a valid topic, target, and bounded source anchors in scope", ErrInvalidRequest)
+		}
+		key := topicAliasSortKey(alias)
+		if _, exists := seen[key]; exists {
+			return fmt.Errorf("%w: duplicate topic alias record", ErrInvalidRequest)
+		}
+		seen[key] = struct{}{}
+		for _, source := range alias.SourceRefs {
+			if err := validateSourceRef(source); err != nil || !sameSourceScope(source, alias.Target.Scope) || source.Range.EndByte <= source.Range.StartByte {
+				return fmt.Errorf("%w: topic alias source anchor is invalid or outside its target scope", ErrInvalidRequest)
+			}
+		}
+	}
+	return nil
+}
+
 func validateRequest(request Request) error {
 	if !validTaskKind(request.TaskKind) {
 		return fmt.Errorf("%w: unsupported task kind %q", ErrInvalidRequest, request.TaskKind)
 	}
 	if err := validateSelector(request.Selector); err != nil {
 		return err
+	}
+	if request.Selector.Kind == SelectorTopic && request.TaskKind != TaskPlan {
+		return fmt.Errorf("%w: topic aliases are only available for planning", ErrInvalidRequest)
+	}
+	if request.Selector.Kind != SelectorTopic && len(request.TopicAliases) != 0 {
+		return fmt.Errorf("%w: topic aliases require a topic selector", ErrInvalidRequest)
+	}
+	if len(request.TopicAliases) > maxTopicAliases {
+		return fmt.Errorf("%w: topic alias set exceeds the bounded input limit", ErrInvalidRequest)
 	}
 	limits := request.Limits
 	if limits.MaxGraphNodes < 1 || limits.MaxGraphNodes > 100000 ||
@@ -370,6 +446,12 @@ func validateSelector(selector Selector) error {
 		if selector.Ref != nil || selector.SymbolID != "" || selector.Path != "" ||
 			!validQuery(selector.Query) || (selector.Match != MatchExact && selector.Match != MatchPrefix) {
 			return fmt.Errorf("%w: query selector requires a bounded exact or prefix query", ErrInvalidRequest)
+		}
+	case SelectorTopic:
+		if selector.Ref != nil || selector.SymbolID != "" || selector.Path != "" ||
+			!validQuery(selector.Query) || !validBoundedData(selector.Query, 512) ||
+			(selector.Match != MatchExact && selector.Match != MatchPrefix) {
+			return fmt.Errorf("%w: topic selector requires a bounded exact or prefix query", ErrInvalidRequest)
 		}
 	default:
 		return fmt.Errorf("%w: unsupported selector kind %q", ErrInvalidRequest, selector.Kind)
@@ -451,11 +533,56 @@ func indexGraph(ctx context.Context, scope model.ScopeVector, graph Graph, limit
 	return index, nil
 }
 
-func resolveSelector(ctx context.Context, graph indexedGraph, selector Selector, maxCandidates int) ([]Node, bool, error) {
+func resolveSelector(
+	ctx context.Context,
+	graph indexedGraph,
+	selector Selector,
+	aliases []TopicAlias,
+	maxCandidates int,
+) ([]Node, []TopicAlias, int, []model.SourceRef, bool, error) {
+	if selector.Kind == SelectorTopic {
+		ordered := cloneTopicAliases(aliases)
+		sort.Slice(ordered, func(i, j int) bool { return topicAliasSortKey(ordered[i]) < topicAliasSortKey(ordered[j]) })
+		matches := make(map[string]Node)
+		matchedAliases := make([]TopicAlias, 0)
+		missingTargets := make(map[string][]model.SourceRef)
+		for _, alias := range ordered {
+			if err := ctx.Err(); err != nil {
+				return nil, nil, 0, nil, false, err
+			}
+			if !topicAliasMatches(alias.Alias, selector.Query, selector.Match) {
+				continue
+			}
+			matchedAliases = append(matchedAliases, alias)
+			key := refKey(alias.Target)
+			node, exists := graph.nodes[key]
+			if !exists {
+				missingTargets[key] = append(missingTargets[key], alias.SourceRefs...)
+				continue
+			}
+			matches[key] = node
+		}
+		candidates := make([]Node, 0, min(len(matches), maxCandidates))
+		keys := make([]string, 0, len(matches))
+		for key := range matches {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		for _, key := range keys[:min(len(keys), maxCandidates)] {
+			candidates = append(candidates, cloneNode(matches[key]))
+		}
+		truncated := len(keys) > maxCandidates
+		missingRefs := make([]model.SourceRef, 0)
+		for _, sources := range missingTargets {
+			missingRefs = append(missingRefs, sources...)
+		}
+		missingRefs = uniqueSourceRefs(cloneSourceRefs(missingRefs))
+		return candidates, matchedAliases, len(missingTargets), missingRefs, truncated, nil
+	}
 	matches := make([]Node, 0)
 	for _, node := range graph.nodes {
 		if err := ctx.Err(); err != nil {
-			return nil, false, err
+			return nil, nil, 0, nil, false, err
 		}
 		match := false
 		switch selector.Kind {
@@ -497,9 +624,65 @@ func resolveSelector(ctx context.Context, graph indexedGraph, selector Selector,
 		}
 	}
 	if len(matches) > maxCandidates {
-		return matches[:maxCandidates], true, nil
+		return matches[:maxCandidates], nil, 0, nil, true, nil
 	}
-	return matches, false, nil
+	return matches, nil, 0, nil, false, nil
+}
+
+func topicAliasMatches(alias, query string, mode MatchMode) bool {
+	if mode == MatchExact {
+		return strings.EqualFold(alias, query)
+	}
+	aliasRunes, queryRunes := []rune(alias), []rune(query)
+	return len(aliasRunes) >= len(queryRunes) && strings.EqualFold(string(aliasRunes[:len(queryRunes)]), query)
+}
+
+func uniqueSourceRefs(values []model.SourceRef) []model.SourceRef {
+	if len(values) < 2 {
+		return values
+	}
+	seen := make(map[string]struct{}, len(values))
+	unique := values[:0]
+	for _, value := range values {
+		key := sourceRefKey(value)
+		if _, exists := seen[key]; exists {
+			continue
+		}
+		seen[key] = struct{}{}
+		unique = append(unique, value)
+	}
+	return unique
+}
+
+func topicAliasSortKey(alias TopicAlias) string {
+	parts := []string{alias.TopicID, alias.Alias, refKey(alias.Target)}
+	sources := cloneSourceRefs(alias.SourceRefs)
+	sort.Slice(sources, func(i, j int) bool { return sourceRefKey(sources[i]) < sourceRefKey(sources[j]) })
+	for _, source := range sources {
+		parts = append(parts, sourceRefKey(source))
+	}
+	return strings.Join(parts, "\x00")
+}
+
+func cloneTopicAliases(aliases []TopicAlias) []TopicAlias {
+	if aliases == nil {
+		return make([]TopicAlias, 0)
+	}
+	cloned := make([]TopicAlias, len(aliases))
+	for index, alias := range aliases {
+		sources := cloneSourceRefs(alias.SourceRefs)
+		sort.Slice(sources, func(i, j int) bool { return sourceRefKey(sources[i]) < sourceRefKey(sources[j]) })
+		cloned[index] = TopicAlias{
+			TopicID: alias.TopicID, Alias: alias.Alias,
+			Target: cloneRef(alias.Target), SourceRefs: sources,
+		}
+	}
+	return cloned
+}
+
+func cloneSelector(selector Selector) Selector {
+	selector.Ref = cloneRefPointer(selector.Ref)
+	return selector
 }
 
 func walkGraph(ctx context.Context, graph indexedGraph, request Request, target Node, result *Result) error {
@@ -929,6 +1112,17 @@ func scopeIdentities(scope model.ScopeVector) []ScopeIdentity {
 		return scopeIdentityKey(identities[i]) < scopeIdentityKey(identities[j])
 	})
 	return identities
+}
+
+func cloneScopeIdentities(identities []ScopeIdentity) []ScopeIdentity {
+	if identities == nil {
+		return make([]ScopeIdentity, 0)
+	}
+	cloned := make([]ScopeIdentity, len(identities))
+	for index, identity := range identities {
+		cloned[index] = cloneScopeIdentity(identity)
+	}
+	return cloned
 }
 
 func scopeIdentityKey(identity ScopeIdentity) string {
