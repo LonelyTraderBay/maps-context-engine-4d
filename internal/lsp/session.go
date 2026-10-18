@@ -357,13 +357,22 @@ func (session *Session) Rename(ctx context.Context, source model.SourceRef, newN
 	if err != nil {
 		return PreparedRename{}, nil, ErrCapturedWorkspace
 	}
-	if err := session.client.Notify(ctx, "textDocument/didOpen", map[string]any{
+	openCtx, cancelOpen := context.WithTimeout(ctx, session.readTimeout)
+	openErr := session.client.Notify(openCtx, "textDocument/didOpen", map[string]any{
 		"textDocument": map[string]any{"uri": uri, "languageId": "go", "version": int64(1), "text": string(sourceBytes)},
-	}); err != nil {
-		return PreparedRename{}, nil, err
+	})
+	openContextErr := openCtx.Err()
+	cancelOpen()
+	if openErr != nil {
+		if errors.Is(openContextErr, context.DeadlineExceeded) && ctx.Err() == nil {
+			return PreparedRename{}, nil, ErrLSPTimeout
+		}
+		return PreparedRename{}, nil, openErr
 	}
 	defer func() {
-		_ = session.client.Notify(context.Background(), "textDocument/didClose", map[string]any{"textDocument": lspTextDocumentIdentifier{URI: uri}})
+		closeCtx, cancelClose := context.WithTimeout(session.ctx, session.shutdownTimeout)
+		defer cancelClose()
+		_ = session.client.Notify(closeCtx, "textDocument/didClose", map[string]any{"textDocument": lspTextDocumentIdentifier{URI: uri}})
 	}()
 	position, err := ByteOffsetToPosition(sourceBytes, source.Range.StartByte, session.encoding)
 	if err != nil {

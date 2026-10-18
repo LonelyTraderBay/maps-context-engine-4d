@@ -58,7 +58,7 @@ type rpcClient struct {
 	cancel    context.CancelFunc
 	handler   serverRequestHandler
 
-	writeMu   sync.Mutex
+	writeGate chan struct{}
 	pendingMu sync.Mutex
 	pending   map[string]chan rpcMessage
 	nextID    atomic.Uint64
@@ -75,7 +75,7 @@ func newRPCClient(parent context.Context, transport rpcTransport, handler server
 	ctx, cancel := context.WithCancel(parent)
 	client := &rpcClient{
 		transport: transport, reader: bufio.NewReaderSize(transport, 32<<10), ctx: ctx, cancel: cancel,
-		handler: handler, pending: make(map[string]chan rpcMessage), done: make(chan struct{}),
+		handler: handler, writeGate: make(chan struct{}, 1), pending: make(map[string]chan rpcMessage), done: make(chan struct{}),
 	}
 	go client.readLoop()
 	go func() {
@@ -130,12 +130,18 @@ func (client *rpcClient) Call(ctx context.Context, method string, params any) (j
 		return append(json.RawMessage(nil), message.Result...), nil
 	case <-ctx.Done():
 		client.removePending(pendingKey)
-		_ = client.Notify(context.Background(), "$/cancelRequest", map[string]any{"id": json.Number(requestID)})
+		_ = client.notifyCancellation(requestID)
 		return nil, ctx.Err()
 	case <-client.done:
 		client.removePending(pendingKey)
 		return nil, client.closedError()
 	}
+}
+
+func (client *rpcClient) notifyCancellation(requestID string) error {
+	cancelCtx, cancel := context.WithTimeout(client.ctx, defaultLSPShutdownTimeout)
+	defer cancel()
+	return client.Notify(cancelCtx, "$/cancelRequest", map[string]any{"id": json.Number(requestID)})
 }
 
 func (client *rpcClient) Notify(ctx context.Context, method string, params any) error {
@@ -186,28 +192,46 @@ func (client *rpcClient) writeMessage(ctx context.Context, message rpcMessage) e
 	frame = strconv.AppendInt(frame, int64(len(encoded)), 10)
 	frame = append(frame, '\r', '\n', '\r', '\n')
 	frame = append(frame, encoded...)
-	client.writeMu.Lock()
-	defer client.writeMu.Unlock()
 	select {
+	case client.writeGate <- struct{}{}:
 	case <-client.done:
 		return client.closedError()
 	case <-ctx.Done():
 		return ctx.Err()
-	default:
 	}
-	for len(frame) > 0 {
-		written, writeErr := client.transport.Write(frame)
-		if writeErr != nil {
-			client.fail(writeErr)
-			return fmt.Errorf("write LSP frame: %w", ErrLSPProtocol)
+
+	writeDone := make(chan error, 1)
+	go func() {
+		defer func() { <-client.writeGate }()
+		for len(frame) > 0 {
+			written, writeErr := client.transport.Write(frame)
+			if writeErr != nil {
+				writeDone <- fmt.Errorf("write LSP frame: %w", ErrLSPProtocol)
+				return
+			}
+			if written <= 0 || written > len(frame) {
+				writeDone <- ErrLSPProtocol
+				return
+			}
+			frame = frame[written:]
 		}
-		if written <= 0 || written > len(frame) {
-			client.fail(io.ErrShortWrite)
-			return ErrLSPProtocol
+		writeDone <- nil
+	}()
+
+	select {
+	case err := <-writeDone:
+		if err != nil {
+			client.fail(err)
+			_ = client.transport.Close()
 		}
-		frame = frame[written:]
+		return err
+	case <-client.done:
+		return client.closedError()
+	case <-ctx.Done():
+		client.fail(ctx.Err())
+		_ = client.transport.Close()
+		return ctx.Err()
 	}
-	return nil
 }
 
 func (client *rpcClient) readLoop() {

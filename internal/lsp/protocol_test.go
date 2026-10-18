@@ -182,13 +182,111 @@ func TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods(t *testing.T) 
 	if callErr := <-callDone; !errors.Is(callErr, context.Canceled) {
 		t.Fatalf("cancelled call error=%v", callErr)
 	}
-	if message := <-serverMessages; message.Method != "$/cancelRequest" {
-		t.Fatalf("expected cancellation notification, got %q", message.Method)
+	cancellationDelivered := false
+	select {
+	case message := <-serverMessages:
+		if message.Method != "$/cancelRequest" {
+			t.Fatalf("expected cancellation notification, got %q", message.Method)
+		}
+		cancellationDelivered = true
+	case <-client.done:
+		if !errors.Is(client.closedError(), context.Canceled) {
+			t.Fatalf("client closed before cancellation notification: %v", client.closedError())
+		}
+	case <-time.After(defaultLSPShutdownTimeout + time.Second):
+		t.Fatal("cancellation notification neither arrived nor closed the client")
 	}
-	if err := <-serverDone; err != nil {
-		t.Fatal(err)
+	if cancellationDelivered {
+		if err := <-serverDone; err != nil {
+			t.Fatal(err)
+		}
 	}
 	_ = serverConn.Close()
+}
+
+func TestRPCClientNotifyHonorsDeadlineWhenTransportWriteBlocks(t *testing.T) {
+	clientConn, serverConn := net.Pipe()
+	transport := &observedWriteTransport{Conn: clientConn, writeStarted: make(chan struct{}, 1)}
+	client, err := newRPCClient(context.Background(), transport, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer serverConn.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	writeDone := make(chan error, 1)
+	go func() {
+		writeDone <- client.Notify(ctx, "textDocument/didClose", map[string]any{"textDocument": map[string]string{"uri": "file:///fixture.go"}})
+	}()
+	select {
+	case <-transport.writeStarted:
+	case <-time.After(time.Second):
+		t.Fatal("notification did not reach the blocked transport write")
+	}
+
+	select {
+	case err := <-writeDone:
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("blocked notification error=%v; want context deadline", err)
+		}
+	case <-time.After(2 * time.Second):
+		_ = serverConn.Close()
+		_ = client.Close()
+		select {
+		case <-writeDone:
+		case <-time.After(time.Second):
+		}
+		t.Fatal("notification write ignored its context deadline")
+	}
+}
+
+func TestRPCClientCancellationBoundsCancellationWrite(t *testing.T) {
+	clientConn, serverConn := net.Pipe()
+	transport := &observedWriteTransport{Conn: clientConn, writeStarted: make(chan struct{}, 2)}
+	client, err := newRPCClient(context.Background(), transport, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer serverConn.Close()
+
+	writeDone := make(chan error, 1)
+	go func() { writeDone <- client.notifyCancellation("1") }()
+	select {
+	case <-transport.writeStarted:
+	case <-time.After(time.Second):
+		t.Fatal("cancel notification did not reach the blocked transport write")
+	}
+
+	select {
+	case err := <-writeDone:
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("cancel notification error=%v; want its bounded deadline", err)
+		}
+	case <-time.After(defaultLSPShutdownTimeout + time.Second):
+		_ = serverConn.Close()
+		_ = client.Close()
+		select {
+		case <-writeDone:
+		case <-time.After(time.Second):
+		}
+		t.Fatal("cancel notification write exceeded its bounded deadline")
+	}
+}
+
+type observedWriteTransport struct {
+	net.Conn
+	writeStarted chan struct{}
+}
+
+func (transport *observedWriteTransport) Write(value []byte) (int, error) {
+	select {
+	case transport.writeStarted <- struct{}{}:
+	default:
+	}
+	return transport.Conn.Write(value)
 }
 
 func writeTestRPC(writer io.Writer, message rpcMessage) error {
