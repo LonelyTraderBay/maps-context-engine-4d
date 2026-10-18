@@ -220,7 +220,7 @@ func openRelativeLock(rootHandle uintptr, _ string, relative string) (*os.File, 
 	return file, nil
 }
 
-func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []byte, mode os.FileMode) (retErr error) {
+func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []byte, mode os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
 	segments := strings.Split(relative, "/")
 	parent := int(rootHandle)
 	ownedParent := -1
@@ -264,6 +264,9 @@ func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []
 	if handle, err := openRegularAt(parent, target, rootInfo.Dev); err == nil {
 		if closeErr := unix.Close(handle); closeErr != nil {
 			return closeErr
+		}
+		if !replace {
+			return ErrAlreadyPublished
 		}
 	} else if !errors.Is(err, unix.ENOENT) {
 		return err
@@ -309,15 +312,36 @@ func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []
 		_ = unix.Close(fd)
 		return err
 	}
+	if result != nil {
+		result.FileFlushed = true
+	}
 	if err := unix.Close(fd); err != nil {
 		return err
 	}
-	if err := unix.Renameat(parent, temporary, parent, target); err != nil {
-		return fmt.Errorf("atomically replace home-relative file: %w", err)
+	var renameErr error
+	if replace {
+		renameErr = unix.Renameat(parent, temporary, parent, target)
+	} else {
+		renameErr = unix.Renameat2(parent, temporary, parent, target, unix.RENAME_NOREPLACE)
+	}
+	if errors.Is(renameErr, unix.EEXIST) && !replace {
+		return ErrAlreadyPublished
+	}
+	if renameErr != nil {
+		return fmt.Errorf("atomically publish home-relative file: %w", renameErr)
 	}
 	renamed = true
+	if result != nil {
+		result.Published = true
+	}
 	if err := unix.Fsync(parent); err != nil {
+		if result != nil {
+			return fmt.Errorf("flush atomic file directory: %w", errors.Join(ErrDirectoryFlushUnsupported, err))
+		}
 		return fmt.Errorf("flush atomic file directory: %w", err)
+	}
+	if result != nil {
+		result.DirectoryFlushed = true
 	}
 	return nil
 }

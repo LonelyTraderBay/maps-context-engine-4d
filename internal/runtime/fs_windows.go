@@ -30,9 +30,10 @@ func OpenRoot(path string) (*Root, error) {
 	if err != nil {
 		return nil, ErrOpenFailed
 	}
+	access := uint32(windows.FILE_LIST_DIRECTORY | windows.FILE_TRAVERSE | windows.FILE_READ_ATTRIBUTES | windows.SYNCHRONIZE | windows.FILE_GENERIC_WRITE)
 	handle, err := windows.CreateFile(
 		name,
-		windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+		access,
 		// Root-level atomic files need directory updates while the verified
 		// handle remains open. Keep delete sharing disabled so the root cannot
 		// be renamed or removed until Close.
@@ -42,6 +43,17 @@ func OpenRoot(path string) (*Root, error) {
 		windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT,
 		0,
 	)
+	if errors.Is(err, windows.ERROR_ACCESS_DENIED) {
+		handle, err = windows.CreateFile(
+			name,
+			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE,
+			nil,
+			windows.OPEN_EXISTING,
+			windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT,
+			0,
+		)
+	}
 	if err != nil {
 		return nil, ErrOpenFailed
 	}
@@ -384,7 +396,7 @@ type atomicDispositionInformation struct {
 	DeleteFile uint8
 }
 
-func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []byte, _ os.FileMode) (retErr error) {
+func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []byte, _ os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
 	ownedDirectories := make([]windows.Handle, 0, len(segments)-1)
@@ -412,7 +424,7 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 		var opened windows.Handle
 		var status windows.IO_STATUS_BLOCK
 		err = windows.NtCreateFile(&opened,
-			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.FILE_GENERIC_WRITE|windows.SYNCHRONIZE,
 			object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
 			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, windows.FILE_OPEN,
 			windows.FILE_OPEN_REPARSE_POINT|windows.FILE_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
@@ -458,6 +470,9 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 			info.NumberOfLinks != 1 || pathErr != nil || !withinRoot(rootPath, actualPath) || closeErr != nil {
 			return ErrPathEscape
 		}
+		if !replace {
+			return ErrAlreadyPublished
+		}
 	} else if !errors.Is(err, windows.STATUS_OBJECT_NAME_NOT_FOUND) && !errors.Is(err, windows.STATUS_OBJECT_PATH_NOT_FOUND) {
 		return fmt.Errorf("inspect existing atomic file target: %w", err)
 	}
@@ -488,6 +503,7 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 		return ErrOpenFailed
 	}
 	renamed := false
+	fileClosed := false
 	defer func() {
 		if !renamed {
 			var disposition atomicDispositionInformation
@@ -495,8 +511,10 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 			var iosb windows.IO_STATUS_BLOCK
 			_ = windows.NtSetInformationFile(temporaryHandle, &iosb, (*byte)(unsafe.Pointer(&disposition)), uint32(unsafe.Sizeof(disposition)), windows.FileDispositionInformation)
 		}
-		if err := file.Close(); retErr == nil {
-			retErr = err
+		if !fileClosed {
+			if err := file.Close(); retErr == nil {
+				retErr = err
+			}
 		}
 	}()
 	info, err := fileInfo(temporaryHandle)
@@ -513,6 +531,9 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 	if err := file.Sync(); err != nil {
 		return err
 	}
+	if result != nil {
+		result.FileFlushed = true
+	}
 	targetUTF16, err := windows.UTF16FromString(target)
 	if err != nil {
 		return ErrPathDenied
@@ -521,14 +542,50 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 	var sample atomicRenameInformation
 	buffer := make([]byte, int(unsafe.Offsetof(sample.FileName))+fileNameBytes)
 	rename := (*atomicRenameInformation)(unsafe.Pointer(&buffer[0]))
-	rename.ReplaceIfExists = windows.FILE_RENAME_REPLACE_IF_EXISTS | windows.FILE_RENAME_POSIX_SEMANTICS
+	if replace {
+		rename.ReplaceIfExists = windows.FILE_RENAME_REPLACE_IF_EXISTS | windows.FILE_RENAME_POSIX_SEMANTICS
+	} else {
+		rename.ReplaceIfExists = 0
+	}
 	rename.RootDirectory = parent
 	rename.FileNameLength = uint32(fileNameBytes)
 	copy((*[windows.MAX_LONG_PATH]uint16)(unsafe.Pointer(&rename.FileName[0]))[:fileNameBytes/2:fileNameBytes/2], targetUTF16)
 	var iosb windows.IO_STATUS_BLOCK
 	if err := windows.NtSetInformationFile(temporaryHandle, &iosb, &buffer[0], uint32(len(buffer)), windows.FileRenameInformation); err != nil {
+		if !replace {
+			var appeared windows.Handle
+			var appearedStatus windows.IO_STATUS_BLOCK
+			inspectErr := windows.NtCreateFile(&appeared, windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+				targetObject, &appearedStatus, nil, windows.FILE_ATTRIBUTE_NORMAL,
+				windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, windows.FILE_OPEN,
+				windows.FILE_OPEN_REPARSE_POINT|windows.FILE_NON_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
+			if inspectErr == nil {
+				closeErr := windows.CloseHandle(appeared)
+				if closeErr != nil {
+					return errors.Join(ErrAlreadyPublished, closeErr)
+				}
+				return ErrAlreadyPublished
+			}
+			if !errors.Is(inspectErr, windows.STATUS_OBJECT_NAME_NOT_FOUND) && !errors.Is(inspectErr, windows.STATUS_OBJECT_PATH_NOT_FOUND) {
+				return errors.Join(fmt.Errorf("publish atomic file: %w", err), fmt.Errorf("inspect no-replace target: %w", inspectErr))
+			}
+		}
 		return fmt.Errorf("atomically replace home-relative file: %w", err)
 	}
 	renamed = true
+	if result != nil {
+		result.Published = true
+	}
+	if err := file.Close(); err != nil {
+		fileClosed = true
+		return fmt.Errorf("close published atomic file: %w", err)
+	}
+	fileClosed = true
+	if result != nil {
+		if err := windows.FlushFileBuffers(parent); err != nil {
+			return fmt.Errorf("flush published atomic file directory: %w: %v", ErrDirectoryFlushUnsupported, err)
+		}
+		result.DirectoryFlushed = true
+	}
 	return nil
 }

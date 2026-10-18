@@ -13,14 +13,16 @@ import (
 )
 
 var (
-	ErrRootClosed     = errors.New("verified root is closed")
-	ErrNotDirectory   = errors.New("root is not a directory")
-	ErrPathDenied     = errors.New("path denied by policy")
-	ErrOpenFailed     = errors.New("secure file open failed")
-	ErrReparsePoint   = errors.New("reparse point or symbolic link denied")
-	ErrNotRegularFile = errors.New("regular file required")
-	ErrPathEscape     = errors.New("opened file escaped verified root")
-	ErrUnsupportedOS  = errors.New("secure file open unsupported on this operating system")
+	ErrRootClosed                = errors.New("verified root is closed")
+	ErrNotDirectory              = errors.New("root is not a directory")
+	ErrPathDenied                = errors.New("path denied by policy")
+	ErrOpenFailed                = errors.New("secure file open failed")
+	ErrReparsePoint              = errors.New("reparse point or symbolic link denied")
+	ErrNotRegularFile            = errors.New("regular file required")
+	ErrPathEscape                = errors.New("opened file escaped verified root")
+	ErrUnsupportedOS             = errors.New("secure file open unsupported on this operating system")
+	ErrAlreadyPublished          = errors.New("atomic destination already exists")
+	ErrDirectoryFlushUnsupported = errors.New("atomic destination published but directory flush is unsupported or unconfirmed")
 )
 
 type Root struct {
@@ -44,6 +46,12 @@ type SecureFile = secureFile
 type CapturedFile struct {
 	Bytes  []byte
 	SHA256 [32]byte
+}
+
+type AtomicPublishResult struct {
+	Published        bool
+	FileFlushed      bool
+	DirectoryFlushed bool
 }
 
 func (root *Root) Close() error {
@@ -184,12 +192,38 @@ func (root *Root) WriteAtomicFile(relative string, value []byte, mode os.FileMod
 	if err != nil {
 		return ErrOpenFailed
 	}
-	writeErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm())
+	writeErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm(), true, nil)
 	closeErr := closeRootHandle(duplicate)
 	if writeErr != nil || closeErr != nil {
 		return errors.Join(writeErr, closeErr)
 	}
 	return nil
+}
+
+// PublishAtomicFile creates one new file beneath the verified root and refuses
+// to replace an existing destination. If the directory flush fails after the
+// rename, result.Published remains true; callers must read back the target
+// before retrying an operation whose outcome is otherwise unknown.
+func (root *Root) PublishAtomicFile(relative string, value []byte, mode os.FileMode) (AtomicPublishResult, error) {
+	if root == nil {
+		return AtomicPublishResult{}, ErrRootClosed
+	}
+	if err := paths.ValidateRelative(relative); err != nil || mode.Perm()&0o077 != 0 {
+		return AtomicPublishResult{}, fmt.Errorf("validate private atomic publication: %w", ErrPathDenied)
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return AtomicPublishResult{}, ErrRootClosed
+	}
+	duplicate, err := duplicateRootHandle(root.handle)
+	if err != nil {
+		return AtomicPublishResult{}, ErrOpenFailed
+	}
+	var result AtomicPublishResult
+	publishErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm(), false, &result)
+	closeErr := closeRootHandle(duplicate)
+	return result, errors.Join(publishErr, closeErr)
 }
 
 func (root *Root) openRegularFile(relative string) (*secureFile, error) {
