@@ -1,11 +1,15 @@
 package cursor
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -119,6 +123,40 @@ func TestCursorCodecRejectsTamperingExpiryRotationAndNoProgress(t *testing.T) {
 	}
 	if _, err := rotated.Verify(token, identity); !errors.Is(err, ErrCursorInvalid) {
 		t.Fatalf("rotated-key token error=%v", err)
+	}
+}
+
+func TestCursorCodecRejectsNonCanonicalSignedJSON(t *testing.T) {
+	key := []byte("0123456789abcdef0123456789abcdef")
+	now := time.Date(2026, 10, 18, 0, 0, 0, 0, time.UTC)
+	codec, err := NewCursorCodec(key, time.Minute, func() time.Time { return now })
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity := cursorTestIdentity(t)
+	token, err := codec.Issue(identity, CursorProgress{LastKey: "item-1", Position: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	payloadPart, _, ok := strings.Cut(token, ".")
+	if !ok {
+		t.Fatalf("issued cursor has invalid token shape: %q", token)
+	}
+	payload, err := base64.RawURLEncoding.DecodeString(payloadPart)
+	if err != nil {
+		t.Fatalf("decode issued cursor payload: %v", err)
+	}
+	var nonCanonical bytes.Buffer
+	if err := json.Indent(&nonCanonical, payload, "", "  "); err != nil {
+		t.Fatalf("indent issued cursor payload: %v", err)
+	}
+	if bytes.Equal(nonCanonical.Bytes(), payload) {
+		t.Fatal("test payload unexpectedly remained canonical")
+	}
+	forged := base64.RawURLEncoding.EncodeToString(nonCanonical.Bytes()) + "." +
+		base64.RawURLEncoding.EncodeToString(cursorMAC(key, identity.Purpose, nonCanonical.Bytes()))
+	if _, err := codec.Verify(forged, identity); !errors.Is(err, ErrCursorInvalid) {
+		t.Fatalf("validly signed non-canonical JSON was accepted: %v", err)
 	}
 }
 
