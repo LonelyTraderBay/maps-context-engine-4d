@@ -373,19 +373,52 @@ func canonicalDirectory(value string) (string, error) {
 	if !filepath.IsAbs(value) {
 		return "", ErrInvalidLSPProfile
 	}
-	info, err := os.Lstat(value)
-	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || isReparsePoint(value) {
-		return "", ErrInvalidLSPProfile
-	}
 	absolute, err := filepath.Abs(value)
 	if err != nil {
 		return "", err
 	}
-	resolved, err := filepath.EvalSymlinks(absolute)
-	if err != nil || !samePath(absolute, resolved) {
+	absolute = filepath.Clean(absolute)
+	if err := verifyDirectoryComponents(absolute); err != nil {
 		return "", ErrInvalidLSPProfile
 	}
-	return filepath.Clean(absolute), nil
+	resolved, err := filepath.EvalSymlinks(absolute)
+	if err != nil {
+		return "", ErrInvalidLSPProfile
+	}
+	return filepath.Clean(resolved), nil
+}
+
+func verifyDirectoryComponents(absolute string) error {
+	volume := filepath.VolumeName(absolute)
+	current := volume
+	remainder := strings.TrimPrefix(absolute, volume)
+	if filepath.IsAbs(absolute) && volume == "" {
+		current = string(os.PathSeparator)
+		remainder = strings.TrimLeft(remainder, string(os.PathSeparator))
+	} else if remainder != "" && (remainder[0] == os.PathSeparator || os.IsPathSeparator(remainder[0])) {
+		current += string(os.PathSeparator)
+		remainder = strings.TrimLeft(remainder, string(os.PathSeparator))
+	}
+	checkDirectory := func(path string) error {
+		info, err := os.Lstat(path)
+		if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || isReparsePoint(path) {
+			return ErrInvalidLSPProfile
+		}
+		return nil
+	}
+	if err := checkDirectory(current); err != nil {
+		return err
+	}
+	for _, segment := range strings.Split(remainder, string(os.PathSeparator)) {
+		if segment == "" {
+			continue
+		}
+		current = filepath.Join(current, segment)
+		if err := checkDirectory(current); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func pathWithin(root, candidate string) bool {
