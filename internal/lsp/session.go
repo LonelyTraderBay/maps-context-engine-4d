@@ -123,6 +123,13 @@ func StartSession(parent context.Context, config SessionConfig) (*Session, error
 	}()
 	readCtx, cancelRead := context.WithTimeout(parent, readTimeout)
 	workspace, err := validateWorkspaceSnapshot(readCtx, config.Snapshot, config.Profile)
+	if err == nil {
+		err = verifyLSPModuleClosure(readCtx, workspace, config.Profile)
+		if err != nil {
+			_ = workspace.close()
+			workspace = nil
+		}
+	}
 	cancelRead()
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) && parent.Err() == nil {

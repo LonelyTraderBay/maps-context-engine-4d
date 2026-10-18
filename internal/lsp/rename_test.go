@@ -127,6 +127,63 @@ func TestSnapshotVerificationRejectsManifestChangeAndMutation(t *testing.T) {
 	}
 }
 
+func TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		files map[string][]byte
+		want  error
+	}{
+		{
+			name: "valid captured module",
+			files: map[string][]byte{
+				"go.mod": []byte("module example.com/p\n\ngo 1.27.0\n"),
+				"a.go":   []byte("package p\n"),
+			},
+		},
+		{
+			name:  "missing go.mod",
+			files: map[string][]byte{"a.go": []byte("package p\n")},
+			want:  ErrInvalidLSPProfile,
+		},
+		{
+			name: "local replace",
+			files: map[string][]byte{
+				"go.mod": []byte("module example.com/p\n\ngo 1.27.0\n\nreplace example.com/dep => ../dep\n"),
+				"a.go":   []byte("package p\n"),
+			},
+			want: ErrInvalidLSPProfile,
+		},
+		{
+			name: "nested module outside effective roots",
+			files: map[string][]byte{
+				"go.mod":        []byte("module example.com/p\n\ngo 1.27.0\n"),
+				"nested/go.mod": []byte("module example.com/p/nested\n\ngo 1.27.0\n"),
+				"a.go":          []byte("package p\n"),
+			},
+			want: ErrInvalidLSPProfile,
+		},
+		{
+			name: "vendor metadata is outside module closure",
+			files: map[string][]byte{
+				"go.mod":                []byte("module example.com/p\n\ngo 1.27.0\n"),
+				"vendor/example/go.mod": []byte("module example.com/vendor\n\ngo 1.27.0\n"),
+				"a.go":                  []byte("package p\n"),
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			workspace, _ := testValidatedWorkspace(t, test.files)
+			err := verifyLSPModuleClosure(context.Background(), workspace, GoProfile{ModuleRoots: []string{"."}})
+			if test.want == nil && err != nil {
+				t.Fatalf("valid module closure error=%v", err)
+			}
+			if test.want != nil && !errors.Is(err, test.want) {
+				t.Fatalf("module closure error=%v, want %v", err, test.want)
+			}
+		})
+	}
+}
+
 func TestRenameSiteWarningsAndPackageRenameBoundary(t *testing.T) {
 	implicit := []byte("package p\ntype Record struct { Exported string }\n")
 	offset := int64(strings.Index(string(implicit), "Exported"))

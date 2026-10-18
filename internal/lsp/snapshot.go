@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 
+	"golang.org/x/mod/modfile"
+
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 )
 
@@ -145,6 +147,57 @@ func validateWorkspaceSnapshot(ctx context.Context, snapshot WorkspaceSnapshot, 
 		return nil, err
 	}
 	return workspace, nil
+}
+
+func verifyLSPModuleClosure(ctx context.Context, workspace *validatedWorkspace, profile GoProfile) error {
+	if ctx == nil || workspace == nil || workspace.root == nil || len(profile.ModuleRoots) == 0 {
+		return ErrInvalidLSPProfile
+	}
+	moduleFiles := make(map[string]struct{}, len(profile.ModuleRoots))
+	for _, moduleRoot := range profile.ModuleRoots {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		modulePath := "go.mod"
+		if moduleRoot != "." {
+			modulePath = filepath.ToSlash(filepath.Join(moduleRoot, "go.mod"))
+		}
+		captured, ok := workspace.files[modulePath]
+		if !ok {
+			return ErrInvalidLSPProfile
+		}
+		content, err := workspace.readSource(ctx, modulePath, captured.ContentHash, 2*1024*1024)
+		if err != nil {
+			return err
+		}
+		parsed, parseErr := modfile.Parse(filepath.Join(workspace.rootPath, filepath.FromSlash(modulePath)), content, nil)
+		clear(content)
+		if parseErr != nil || parsed.Module == nil || parsed.Module.Mod.Path == "" || len(parsed.Replace) != 0 {
+			return ErrInvalidLSPProfile
+		}
+		moduleFiles[modulePath] = struct{}{}
+	}
+	for path := range workspace.files {
+		if !strings.EqualFold(filepath.Base(filepath.FromSlash(path)), "go.mod") {
+			continue
+		}
+		if isGoModuleMetadataIgnoredPath(path) {
+			continue
+		}
+		if _, allowed := moduleFiles[path]; !allowed {
+			return ErrInvalidLSPProfile
+		}
+	}
+	return nil
+}
+
+func isGoModuleMetadataIgnoredPath(path string) bool {
+	for _, segment := range strings.Split(strings.ToLower(filepath.ToSlash(path)), "/") {
+		if segment == ".git" || segment == "vendor" {
+			return true
+		}
+	}
+	return false
 }
 
 func (workspace *validatedWorkspace) verify(ctx context.Context, declared []SnapshotFile, maxFileBytes, maxSourceBytes int64) error {
