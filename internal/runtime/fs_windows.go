@@ -160,6 +160,9 @@ func openRelative(rootHandle uintptr, rootPath, relative string) (*os.File, func
 		)
 		if err != nil {
 			_ = cleanup()
+			if errors.Is(err, windows.STATUS_OBJECT_NAME_NOT_FOUND) || errors.Is(err, windows.STATUS_OBJECT_PATH_NOT_FOUND) {
+				return nil, nil, errors.Join(ErrOpenFailed, os.ErrNotExist)
+			}
 			return nil, nil, ErrOpenFailed
 		}
 		info, err := fileInfo(opened)
@@ -306,7 +309,7 @@ func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
 	return nil
 }
 
-func openRelativeLock(rootHandle uintptr, rootPath, relative string) (*os.File, error) {
+func openRelativeLock(rootHandle uintptr, rootPath, relative string, create bool) (*os.File, error) {
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
 	ownedDirectories := make([]windows.Handle, 0, len(segments))
@@ -336,13 +339,15 @@ func openRelativeLock(rootHandle uintptr, rootPath, relative string) (*os.File, 
 		access := uint32(windows.FILE_READ_ATTRIBUTES | windows.SYNCHRONIZE)
 		options := uint32(windows.FILE_OPEN_REPARSE_POINT | windows.FILE_SYNCHRONOUS_IO_NONALERT)
 		createDisposition := uint32(windows.FILE_OPEN)
+		if create && index == len(segments)-1 {
+			createDisposition = windows.FILE_OPEN_IF
+		}
 		if index < len(segments)-1 {
 			access |= windows.FILE_LIST_DIRECTORY | windows.FILE_TRAVERSE
 			options |= windows.FILE_DIRECTORY_FILE
 		} else {
 			access |= windows.FILE_READ_DATA | windows.FILE_WRITE_DATA
 			options |= windows.FILE_NON_DIRECTORY_FILE
-			createDisposition = windows.FILE_OPEN_IF
 		}
 		err = windows.NtCreateFile(&opened, access, object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
 			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, createDisposition, options, 0, 0)
@@ -396,7 +401,7 @@ type atomicDispositionInformation struct {
 	DeleteFile uint8
 }
 
-func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []byte, _ os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
+func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, writeValue func(io.Writer) error, _ os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
 	ownedDirectories := make([]windows.Handle, 0, len(segments)-1)
@@ -521,11 +526,7 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 	if err != nil || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DEVICE) != 0 || info.NumberOfLinks != 1 {
 		return ErrPathEscape
 	}
-	written, err := file.Write(value)
-	if err == nil && written != len(value) {
-		err = io.ErrShortWrite
-	}
-	if err != nil {
+	if err := writeValue(file); err != nil {
 		return err
 	}
 	if err := file.Sync(); err != nil {
@@ -586,6 +587,96 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, value []
 			return fmt.Errorf("flush published atomic file directory: %w: %v", ErrDirectoryFlushUnsupported, err)
 		}
 		result.DirectoryFlushed = true
+	}
+	return nil
+}
+
+func removeRegularRelative(rootHandle uintptr, rootPath, relative string) (retErr error) {
+	segments := strings.Split(relative, "/")
+	parent := windows.Handle(rootHandle)
+	ownedDirectories := make([]windows.Handle, 0, len(segments)-1)
+	defer func() {
+		for index := len(ownedDirectories) - 1; index >= 0; index-- {
+			if err := windows.CloseHandle(ownedDirectories[index]); retErr == nil {
+				retErr = err
+			}
+		}
+	}()
+	for _, segment := range segments[:len(segments)-1] {
+		caseMode, err := caseModeForHandle(uintptr(parent))
+		if err != nil {
+			return ErrUnsupportedOS
+		}
+		attributes := uint32(0)
+		if caseMode == paths.CaseInsensitive {
+			attributes = windows.OBJ_CASE_INSENSITIVE
+		}
+		name, err := windows.NewNTUnicodeString(segment)
+		if err != nil {
+			return ErrPathDenied
+		}
+		object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name, Attributes: attributes}
+		var opened windows.Handle
+		var status windows.IO_STATUS_BLOCK
+		err = windows.NtCreateFile(&opened,
+			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+			object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
+			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, windows.FILE_OPEN,
+			windows.FILE_OPEN_REPARSE_POINT|windows.FILE_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
+		if err != nil {
+			return fmt.Errorf("open file removal parent: %w", ErrPathEscape)
+		}
+		info, infoErr := fileInfo(opened)
+		actualPath, pathErr := finalPathForHandle(opened)
+		if infoErr != nil || info.FileAttributes&windows.FILE_ATTRIBUTE_DIRECTORY == 0 ||
+			info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 || pathErr != nil || !withinRoot(rootPath, actualPath) {
+			_ = windows.CloseHandle(opened)
+			return ErrPathEscape
+		}
+		ownedDirectories = append(ownedDirectories, opened)
+		parent = opened
+	}
+	target := segments[len(segments)-1]
+	caseMode, err := caseModeForHandle(uintptr(parent))
+	if err != nil {
+		return ErrUnsupportedOS
+	}
+	attributes := uint32(0)
+	if caseMode == paths.CaseInsensitive {
+		attributes = windows.OBJ_CASE_INSENSITIVE
+	}
+	name, err := windows.NewNTUnicodeString(target)
+	if err != nil {
+		return ErrPathDenied
+	}
+	object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name, Attributes: attributes}
+	var opened windows.Handle
+	var status windows.IO_STATUS_BLOCK
+	err = windows.NtCreateFile(&opened, windows.DELETE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+		object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE,
+		windows.FILE_OPEN, windows.FILE_OPEN_REPARSE_POINT|windows.FILE_NON_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
+	if err != nil {
+		return fmt.Errorf("open file selected for removal: %w", ErrNotRegularFile)
+	}
+	defer func() {
+		if err := windows.CloseHandle(opened); retErr == nil {
+			retErr = err
+		}
+	}()
+	info, err := fileInfo(opened)
+	actualPath, pathErr := finalPathForHandle(opened)
+	if err != nil || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DEVICE) != 0 ||
+		info.NumberOfLinks != 1 || pathErr != nil || !withinRoot(rootPath, actualPath) {
+		return ErrPathEscape
+	}
+	var disposition atomicDispositionInformation
+	disposition.DeleteFile = 1
+	var iosb windows.IO_STATUS_BLOCK
+	if err := windows.NtSetInformationFile(opened, &iosb, (*byte)(unsafe.Pointer(&disposition)), uint32(unsafe.Sizeof(disposition)), windows.FileDispositionInformation); err != nil {
+		return fmt.Errorf("remove verified regular file: %w", err)
+	}
+	if err := windows.FlushFileBuffers(parent); err != nil {
+		return fmt.Errorf("flush file removal directory: %w", errors.Join(ErrDirectoryFlushUnsupported, err))
 	}
 	return nil
 }

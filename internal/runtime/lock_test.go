@@ -134,6 +134,21 @@ func TestWorktreeLockLayoutRejectsNoncanonicalIdentity(t *testing.T) {
 	}
 }
 
+func TestAcquireExistingLockDoesNotCreateLockfile(t *testing.T) {
+	rootPath := t.TempDir()
+	root, err := OpenRoot(rootPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer root.Close()
+	if _, err := root.AcquireExistingLock(context.Background(), "lifecycle.lock", LockShared, 0); err == nil {
+		t.Fatal("existing-only lock unexpectedly created and acquired a missing lockfile")
+	}
+	if _, err := os.Lstat(filepath.Join(rootPath, "lifecycle.lock")); !os.IsNotExist(err) {
+		t.Fatalf("existing-only lock changed the home directory: stat error=%v", err)
+	}
+}
+
 func TestLockContextCancellationReleasesAttemptHandle(t *testing.T) {
 	root, err := OpenRoot(t.TempDir())
 	if err != nil {

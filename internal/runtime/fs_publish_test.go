@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"os"
@@ -58,6 +59,41 @@ func TestPublishAtomicFileFlushesAndRefusesReplacement(t *testing.T) {
 	}
 }
 
+func TestCopyAtomicFileReplacesOnlyAfterVerifiedContainedStream(t *testing.T) {
+	home := t.TempDir()
+	root, err := OpenRoot(home)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer root.Close()
+	if err := root.EnsurePrivateDirs("worktrees/a/maintenance/op", "worktrees/a"); err != nil {
+		t.Fatal(err)
+	}
+	source := filepath.Join(home, "worktrees", "a", "maintenance", "op", "stage.sqlite")
+	destination := filepath.Join(home, "worktrees", "a", "index.sqlite")
+	payload := bytes.Repeat([]byte("sqlite-page-data"), 1<<16)
+	if err := os.WriteFile(source, payload, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(destination, []byte("previous database"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	result, err := root.CopyAtomicFile("worktrees/a/maintenance/op/stage.sqlite", "worktrees/a/index.sqlite", 0o600)
+	if !result.Published || !result.FileFlushed {
+		t.Fatalf("atomic copy did not publish and flush its file: result=%+v err=%v", result, err)
+	}
+	if err != nil && !errors.Is(err, ErrDirectoryFlushUnsupported) {
+		t.Fatalf("unexpected atomic copy error: result=%+v err=%v", result, err)
+	}
+	actual, err := os.ReadFile(destination)
+	if err != nil || !bytes.Equal(actual, payload) {
+		t.Fatalf("atomic replacement bytes=%d err=%v; want %d bytes", len(actual), err, len(payload))
+	}
+	if _, err := root.CopyAtomicFile("../outside.sqlite", "worktrees/a/index.sqlite", 0o600); !errors.Is(err, ErrPathDenied) {
+		t.Fatalf("atomic copy accepted a source outside its verified root: %v", err)
+	}
+}
+
 func TestPublishAtomicFileNoReplaceIsRaceSafe(t *testing.T) {
 	home := t.TempDir()
 	root, err := OpenRoot(home)
@@ -99,5 +135,59 @@ func TestPublishAtomicFileNoReplaceIsRaceSafe(t *testing.T) {
 	}
 	if info, err := os.Stat(filepath.Join(home, "archive", "race.bin")); err != nil || info.Size() != 1 {
 		t.Fatalf("racing publication left unexpected target: info=%v err=%v", info, err)
+	}
+}
+
+func TestRemoveRegularFileDeletesOnlyOneVerifiedContainedFile(t *testing.T) {
+	home := t.TempDir()
+	outside := t.TempDir()
+	root, err := OpenRoot(home)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer root.Close()
+	if err := root.EnsurePrivateDirs("worktrees/test/manifests"); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(home, "worktrees", "test", "manifests", "owned.json")
+	if err := os.WriteFile(target, []byte("owned"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	outsideFile := filepath.Join(outside, "protected.json")
+	if err := os.WriteFile(outsideFile, []byte("protected"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Link(target, filepath.Join(home, "worktrees", "test", "manifests", "alias.json")); err == nil {
+		if err := root.RemoveRegularFile("worktrees/test/manifests/owned.json"); !errors.Is(err, ErrNotRegularFile) && !errors.Is(err, ErrPathEscape) {
+			t.Fatalf("hard-linked file removal error=%v; want a contained-file refusal", err)
+		}
+		if _, err := os.Stat(target); err != nil {
+			t.Fatalf("hard-linked target was removed: %v", err)
+		}
+		if err := os.Remove(filepath.Join(home, "worktrees", "test", "manifests", "alias.json")); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	removeErr := root.RemoveRegularFile("worktrees/test/manifests/owned.json")
+	if removeErr != nil && !errors.Is(removeErr, ErrDirectoryFlushUnsupported) {
+		t.Fatalf("remove owned file: %v", removeErr)
+	}
+	if _, err := os.Lstat(target); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("owned file remains after removal: %v", err)
+	}
+	if err := root.RemoveRegularFile("../protected.json"); !errors.Is(err, ErrPathDenied) {
+		t.Fatalf("path traversal removal error=%v; want ErrPathDenied", err)
+	}
+	if err := os.Symlink(outsideFile, filepath.Join(home, "worktrees", "test", "manifests", "linked.json")); err == nil {
+		if err := root.RemoveRegularFile("worktrees/test/manifests/linked.json"); err == nil {
+			t.Fatal("symbolic link was accepted for removal")
+		}
+		if _, err := os.Stat(outsideFile); err != nil {
+			t.Fatalf("outside target changed after linked-path removal: %v", err)
+		}
+		if err := os.Remove(filepath.Join(home, "worktrees", "test", "manifests", "linked.json")); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

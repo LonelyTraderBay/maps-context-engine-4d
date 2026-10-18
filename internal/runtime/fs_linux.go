@@ -92,6 +92,9 @@ func openRelative(rootHandle uintptr, rootPath, relative string) (*os.File, func
 		if errors.Is(err, unix.ENOSYS) || errors.Is(err, unix.EINVAL) {
 			return nil, nil, ErrUnsupportedOS
 		}
+		if errors.Is(err, unix.ENOENT) {
+			return nil, nil, errors.Join(ErrOpenFailed, os.ErrNotExist)
+		}
 		return nil, nil, ErrOpenFailed
 	}
 	var info unix.Stat_t
@@ -189,14 +192,20 @@ func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
 	return nil
 }
 
-func openRelativeLock(rootHandle uintptr, _ string, relative string) (*os.File, error) {
+func openRelativeLock(rootHandle uintptr, _ string, relative string, create bool) (*os.File, error) {
 	var rootInfo unix.Stat_t
 	if err := unix.Fstat(int(rootHandle), &rootInfo); err != nil {
 		return nil, ErrOpenFailed
 	}
+	flags := uint64(unix.O_RDWR | unix.O_CLOEXEC | unix.O_NOFOLLOW | unix.O_NONBLOCK)
+	mode := uint64(0)
+	if create {
+		flags |= unix.O_CREAT
+		mode = 0o600
+	}
 	how := &unix.OpenHow{
-		Flags:   uint64(unix.O_RDWR | unix.O_CREAT | unix.O_CLOEXEC | unix.O_NOFOLLOW | unix.O_NONBLOCK),
-		Mode:    0o600,
+		Flags:   flags,
+		Mode:    mode,
 		Resolve: unix.RESOLVE_BENEATH | unix.RESOLVE_NO_SYMLINKS | unix.RESOLVE_NO_MAGICLINKS | unix.RESOLVE_NO_XDEV,
 	}
 	handle, err := unix.Openat2(int(rootHandle), relative, how)
@@ -220,7 +229,7 @@ func openRelativeLock(rootHandle uintptr, _ string, relative string) (*os.File, 
 	return file, nil
 }
 
-func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []byte, mode os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
+func writeAtomicRelative(rootHandle uintptr, _ string, relative string, writeValue func(io.Writer) error, mode os.FileMode, replace bool, result *AtomicPublishResult) (retErr error) {
 	segments := strings.Split(relative, "/")
 	parent := int(rootHandle)
 	ownedParent := -1
@@ -292,30 +301,27 @@ func writeAtomicRelative(rootHandle uintptr, _ string, relative string, value []
 		_ = unix.Close(fd)
 		return ErrPathEscape
 	}
-	for offset := 0; offset < len(value); {
-		written, err := unix.Write(fd, value[offset:])
-		if err != nil {
-			_ = unix.Close(fd)
-			return err
-		}
-		if written == 0 {
-			_ = unix.Close(fd)
-			return io.ErrShortWrite
-		}
-		offset += written
-	}
-	if err := unix.Fchmod(fd, uint32(mode.Perm())); err != nil {
+	file := os.NewFile(uintptr(fd), temporary)
+	if file == nil {
 		_ = unix.Close(fd)
+		return ErrOpenFailed
+	}
+	if err := writeValue(file); err != nil {
+		_ = file.Close()
 		return err
 	}
-	if err := unix.Fsync(fd); err != nil {
-		_ = unix.Close(fd)
+	if err := unix.Fchmod(fd, uint32(mode.Perm())); err != nil {
+		_ = file.Close()
+		return err
+	}
+	if err := file.Sync(); err != nil {
+		_ = file.Close()
 		return err
 	}
 	if result != nil {
 		result.FileFlushed = true
 	}
-	if err := unix.Close(fd); err != nil {
+	if err := file.Close(); err != nil {
 		return err
 	}
 	var renameErr error
@@ -361,4 +367,76 @@ func openRegularAt(parent int, name string, device uint64) (int, error) {
 		return -1, ErrPathEscape
 	}
 	return handle, nil
+}
+
+func removeRegularRelative(rootHandle uintptr, _ string, relative string) (retErr error) {
+	segments := strings.Split(relative, "/")
+	parent := int(rootHandle)
+	ownedParent := -1
+	var rootInfo unix.Stat_t
+	if err := unix.Fstat(parent, &rootInfo); err != nil || rootInfo.Mode&unix.S_IFMT != unix.S_IFDIR {
+		return ErrOpenFailed
+	}
+	for _, segment := range segments[:len(segments)-1] {
+		how := &unix.OpenHow{
+			Flags:   uint64(unix.O_RDONLY | unix.O_CLOEXEC | unix.O_DIRECTORY | unix.O_NOFOLLOW),
+			Resolve: unix.RESOLVE_BENEATH | unix.RESOLVE_NO_SYMLINKS | unix.RESOLVE_NO_MAGICLINKS | unix.RESOLVE_NO_XDEV,
+		}
+		next, err := unix.Openat2(parent, segment, how)
+		if err != nil {
+			if ownedParent >= 0 {
+				_ = unix.Close(ownedParent)
+			}
+			return fmt.Errorf("open file removal parent securely: %w", ErrPathEscape)
+		}
+		var info unix.Stat_t
+		if err := unix.Fstat(next, &info); err != nil || info.Mode&unix.S_IFMT != unix.S_IFDIR || info.Dev != rootInfo.Dev {
+			_ = unix.Close(next)
+			if ownedParent >= 0 {
+				_ = unix.Close(ownedParent)
+			}
+			return ErrPathEscape
+		}
+		if ownedParent >= 0 {
+			if err := unix.Close(ownedParent); err != nil {
+				_ = unix.Close(next)
+				return err
+			}
+		}
+		ownedParent, parent = next, next
+	}
+	if ownedParent >= 0 {
+		defer func() {
+			if err := unix.Close(ownedParent); retErr == nil {
+				retErr = err
+			}
+		}()
+	}
+	target := segments[len(segments)-1]
+	handle, err := openRegularAt(parent, target, uint64(rootInfo.Dev))
+	if err != nil {
+		return fmt.Errorf("open regular file selected for removal: %w", ErrNotRegularFile)
+	}
+	defer func() {
+		if err := unix.Close(handle); retErr == nil {
+			retErr = err
+		}
+	}()
+	var openedInfo, pathInfo unix.Stat_t
+	if err := unix.Fstat(handle, &openedInfo); err != nil {
+		return ErrOpenFailed
+	}
+	if err := unix.Fstatat(parent, target, &pathInfo, unix.AT_SYMLINK_NOFOLLOW); err != nil {
+		return fmt.Errorf("recheck file before removal: %w", ErrPathEscape)
+	}
+	if pathInfo.Mode&unix.S_IFMT != unix.S_IFREG || pathInfo.Dev != openedInfo.Dev || pathInfo.Ino != openedInfo.Ino || pathInfo.Nlink != 1 {
+		return ErrPathEscape
+	}
+	if err := unix.Unlinkat(parent, target, 0); err != nil {
+		return fmt.Errorf("remove verified regular file: %w", err)
+	}
+	if err := unix.Fsync(parent); err != nil {
+		return fmt.Errorf("flush file removal directory: %w", errors.Join(ErrDirectoryFlushUnsupported, err))
+	}
+	return nil
 }

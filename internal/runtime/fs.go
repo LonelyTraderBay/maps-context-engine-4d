@@ -146,6 +146,17 @@ func (root *Root) EnsurePrivateDirs(relatives ...string) error {
 // OpenLockFile securely creates or opens a permanent lockfile beneath root.
 // Callers must never unlink or replace the returned lockfile path.
 func (root *Root) OpenLockFile(relative string) (*os.File, error) {
+	return root.openLockFile(relative, true)
+}
+
+// OpenExistingLockFile securely opens a permanent lockfile without creating it.
+// Read-only maintenance planning uses this so acquiring coordination locks
+// cannot create directory entries as a side effect.
+func (root *Root) OpenExistingLockFile(relative string) (*os.File, error) {
+	return root.openLockFile(relative, false)
+}
+
+func (root *Root) openLockFile(relative string, create bool) (*os.File, error) {
 	if root == nil {
 		return nil, ErrRootClosed
 	}
@@ -161,7 +172,7 @@ func (root *Root) OpenLockFile(relative string) (*os.File, error) {
 	if err != nil {
 		return nil, ErrOpenFailed
 	}
-	file, err := openRelativeLock(duplicate, root.finalPath, relative)
+	file, err := openRelativeLock(duplicate, root.finalPath, relative, create)
 	rootCloseErr := closeRootHandle(duplicate)
 	if err != nil {
 		return nil, err
@@ -192,7 +203,19 @@ func (root *Root) WriteAtomicFile(relative string, value []byte, mode os.FileMod
 	if err != nil {
 		return ErrOpenFailed
 	}
-	writeErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm(), true, nil)
+	writeErr := writeAtomicRelative(duplicate, root.finalPath, relative, func(output io.Writer) error {
+		for offset := 0; offset < len(value); {
+			written, err := output.Write(value[offset:])
+			if err != nil {
+				return err
+			}
+			if written == 0 {
+				return io.ErrShortWrite
+			}
+			offset += written
+		}
+		return nil
+	}, mode.Perm(), true, nil)
 	closeErr := closeRootHandle(duplicate)
 	if writeErr != nil || closeErr != nil {
 		return errors.Join(writeErr, closeErr)
@@ -221,9 +244,61 @@ func (root *Root) PublishAtomicFile(relative string, value []byte, mode os.FileM
 		return AtomicPublishResult{}, ErrOpenFailed
 	}
 	var result AtomicPublishResult
-	publishErr := writeAtomicRelative(duplicate, root.finalPath, relative, value, mode.Perm(), false, &result)
+	publishErr := writeAtomicRelative(duplicate, root.finalPath, relative, func(output io.Writer) error {
+		for offset := 0; offset < len(value); {
+			written, err := output.Write(value[offset:])
+			if err != nil {
+				return err
+			}
+			if written == 0 {
+				return io.ErrShortWrite
+			}
+			offset += written
+		}
+		return nil
+	}, mode.Perm(), false, &result)
 	closeErr := closeRootHandle(duplicate)
 	return result, errors.Join(publishErr, closeErr)
+}
+
+// CopyAtomicFile copies one verified regular file to a same-directory temporary
+// and atomically replaces the destination beneath this root. The copy streams
+// through a bounded buffer and never follows a source or destination link.
+func (root *Root) CopyAtomicFile(sourceRelative, destinationRelative string, mode os.FileMode) (AtomicPublishResult, error) {
+	if root == nil {
+		return AtomicPublishResult{}, ErrRootClosed
+	}
+	if paths.ValidateRelative(sourceRelative) != nil || paths.ValidateRelative(destinationRelative) != nil || mode.Perm()&0o077 != 0 {
+		return AtomicPublishResult{}, fmt.Errorf("validate atomic file copy: %w", ErrPathDenied)
+	}
+	source, err := root.OpenRegularFile(sourceRelative)
+	if err != nil {
+		return AtomicPublishResult{}, fmt.Errorf("open atomic copy source: %w", err)
+	}
+	info, statErr := source.Stat()
+	if statErr != nil || info == nil || !info.Mode().IsRegular() || info.Size() < 1 {
+		return AtomicPublishResult{}, errors.Join(fmt.Errorf("atomic copy source is not a nonempty regular file: %w", ErrNotRegularFile), statErr, source.Close())
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return AtomicPublishResult{}, errors.Join(source.Close(), ErrRootClosed)
+	}
+	duplicate, err := duplicateRootHandle(root.handle)
+	if err != nil {
+		return AtomicPublishResult{}, errors.Join(source.Close(), ErrOpenFailed)
+	}
+	var result AtomicPublishResult
+	copyErr := writeAtomicRelative(duplicate, root.finalPath, destinationRelative, func(output io.Writer) error {
+		written, err := io.CopyN(output, source, info.Size())
+		if err != nil || written != info.Size() {
+			return errors.Join(io.ErrUnexpectedEOF, err)
+		}
+		return nil
+	}, mode.Perm(), true, &result)
+	rootCloseErr := closeRootHandle(duplicate)
+	sourceCloseErr := source.Close()
+	return result, errors.Join(copyErr, rootCloseErr, sourceCloseErr)
 }
 
 func (root *Root) openRegularFile(relative string) (*secureFile, error) {
@@ -261,6 +336,29 @@ func (root *Root) openRegularFile(relative string) (*secureFile, error) {
 
 func (root *Root) OpenRegularFile(relative string) (*SecureFile, error) {
 	return root.openRegularFile(relative)
+}
+
+// RemoveRegularFile removes one existing regular, single-link file beneath
+// the verified root. It never follows a link or removes a directory.
+func (root *Root) RemoveRegularFile(relative string) error {
+	if root == nil {
+		return ErrRootClosed
+	}
+	if err := paths.ValidateRelative(relative); err != nil {
+		return fmt.Errorf("validate file removal path: %w", ErrPathDenied)
+	}
+	root.mu.RLock()
+	defer root.mu.RUnlock()
+	if root.closed {
+		return ErrRootClosed
+	}
+	duplicate, err := duplicateRootHandle(root.handle)
+	if err != nil {
+		return ErrOpenFailed
+	}
+	removeErr := removeRegularRelative(duplicate, root.finalPath, relative)
+	closeErr := closeRootHandle(duplicate)
+	return errors.Join(removeErr, closeErr)
 }
 
 func (file *secureFile) Read(value []byte) (int, error) {

@@ -4,6 +4,7 @@ package runtime
 
 import (
 	"errors"
+	"io"
 	"os"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths"
@@ -16,10 +17,11 @@ func caseModeForHandle(uintptr) (paths.CaseMode, error) { return paths.CaseUnkno
 func openRelative(uintptr, string, string) (*os.File, func() error, error) {
 	return nil, nil, errors.New("secure file open unsupported on this operating system")
 }
-func identityForHandle(uintptr) (string, string, error)          { return "", "", ErrUnsupportedOS }
-func availableBytesForHandle(uintptr, string) (int64, error)     { return 0, ErrUnsupportedOS }
-func makeRelativeDirs(uintptr, string, string) error             { return ErrUnsupportedOS }
-func openRelativeLock(uintptr, string, string) (*os.File, error) { return nil, ErrUnsupportedOS }
-func writeAtomicRelative(uintptr, string, string, []byte, os.FileMode, bool, *AtomicPublishResult) error {
+func identityForHandle(uintptr) (string, string, error)                { return "", "", ErrUnsupportedOS }
+func availableBytesForHandle(uintptr, string) (int64, error)           { return 0, ErrUnsupportedOS }
+func makeRelativeDirs(uintptr, string, string) error                   { return ErrUnsupportedOS }
+func openRelativeLock(uintptr, string, string, bool) (*os.File, error) { return nil, ErrUnsupportedOS }
+func writeAtomicRelative(uintptr, string, string, func(io.Writer) error, os.FileMode, bool, *AtomicPublishResult) error {
 	return ErrUnsupportedOS
 }
+func removeRegularRelative(uintptr, string, string) error { return ErrUnsupportedOS }

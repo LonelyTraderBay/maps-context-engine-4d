@@ -34,13 +34,29 @@ type Lease struct {
 // AcquireLock takes a shared or exclusive kernel lock beneath a verified root.
 // Wait is bounded; zero performs one nonblocking attempt for recovery probes.
 func (root *Root) AcquireLock(ctx context.Context, relative string, mode LockMode, wait time.Duration) (*Lease, error) {
+	return root.acquireLock(ctx, relative, mode, wait, true)
+}
+
+// AcquireExistingLock acquires a kernel lock only when the permanent lockfile
+// already exists. It is for read-only operations that must not bootstrap state.
+func (root *Root) AcquireExistingLock(ctx context.Context, relative string, mode LockMode, wait time.Duration) (*Lease, error) {
+	return root.acquireLock(ctx, relative, mode, wait, false)
+}
+
+func (root *Root) acquireLock(ctx context.Context, relative string, mode LockMode, wait time.Duration, create bool) (*Lease, error) {
 	if root == nil || ctx == nil || wait < 0 || (mode != LockShared && mode != LockExclusive) {
 		return nil, fmt.Errorf("invalid OS lock request: %w", ErrInvalidLockMode)
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	file, err := root.OpenLockFile(relative)
+	var file *os.File
+	var err error
+	if create {
+		file, err = root.OpenLockFile(relative)
+	} else {
+		file, err = root.OpenExistingLockFile(relative)
+	}
 	if err != nil {
 		return nil, err
 	}
