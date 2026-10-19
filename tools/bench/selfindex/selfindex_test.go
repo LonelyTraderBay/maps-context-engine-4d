@@ -51,6 +51,12 @@ func benchmarkPinnedSnapshot(b *testing.B, sourceRoot string) (string, string) {
 	if output, err := clone.CombinedOutput(); err != nil {
 		b.Fatalf("clone benchmark target: %v: %s", err, strings.TrimSpace(string(output)))
 	}
+	if runtime.GOOS == "windows" {
+		configureLongPaths := osexec.Command(git, "-C", targetRoot, "config", "core.longpaths", "true")
+		if output, err := configureLongPaths.CombinedOutput(); err != nil {
+			b.Fatalf("configure benchmark target long paths: %v: %s", err, strings.TrimSpace(string(output)))
+		}
+	}
 	checkout := osexec.Command(git, "-C", targetRoot, "checkout", "--quiet", "--detach", revision)
 	if output, err := checkout.CombinedOutput(); err != nil {
 		b.Fatalf("checkout benchmark target: %v: %s", err, strings.TrimSpace(string(output)))
