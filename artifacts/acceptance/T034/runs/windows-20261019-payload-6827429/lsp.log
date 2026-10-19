@@ -1,0 +1,113 @@
+=== RUN   TestVerifyExecutableVersionRejectsWrongPinnedVersion
+--- PASS: TestVerifyExecutableVersionRejectsWrongPinnedVersion (0.03s)
+=== RUN   TestExecutionPolicyRejectsRuntimeExecutionAndDownloads
+--- PASS: TestExecutionPolicyRejectsRuntimeExecutionAndDownloads (0.02s)
+=== RUN   TestGoProfileIDBindsEffectiveFields
+--- PASS: TestGoProfileIDBindsEffectiveFields (0.00s)
+=== RUN   TestGoProfileRejectsAnalysisModesWithoutTypedRenameEvidence
+--- PASS: TestGoProfileRejectsAnalysisModesWithoutTypedRenameEvidence (0.00s)
+=== RUN   TestGoProfileRequiresExactGoplsVersion
+--- PASS: TestGoProfileRequiresExactGoplsVersion (0.00s)
+=== RUN   TestCanonicalDirectoryAcceptsShortNamePath
+--- PASS: TestCanonicalDirectoryAcceptsShortNamePath (0.00s)
+=== RUN   TestPositionEncodingRoundTripsUnicodeAndCRLF
+=== RUN   TestPositionEncodingRoundTripsUnicodeAndCRLF/utf16_emoji_end
+=== RUN   TestPositionEncodingRoundTripsUnicodeAndCRLF/utf8_emoji_end
+=== RUN   TestPositionEncodingRoundTripsUnicodeAndCRLF/utf32_emoji_end
+=== RUN   TestPositionEncodingRoundTripsUnicodeAndCRLF/next_line_after_CRLF
+--- PASS: TestPositionEncodingRoundTripsUnicodeAndCRLF (0.00s)
+    --- PASS: TestPositionEncodingRoundTripsUnicodeAndCRLF/utf16_emoji_end (0.00s)
+    --- PASS: TestPositionEncodingRoundTripsUnicodeAndCRLF/utf8_emoji_end (0.00s)
+    --- PASS: TestPositionEncodingRoundTripsUnicodeAndCRLF/utf32_emoji_end (0.00s)
+    --- PASS: TestPositionEncodingRoundTripsUnicodeAndCRLF/next_line_after_CRLF (0.00s)
+=== RUN   TestPositionRejectsInvalidUTF8AndUnrepresentableBoundaries
+--- PASS: TestPositionRejectsInvalidUTF8AndUnrepresentableBoundaries (0.00s)
+=== RUN   TestPositionRejectsUnknownEncoding
+--- PASS: TestPositionRejectsUnknownEncoding (0.00s)
+=== RUN   TestReadLSPFrameCountsUTF8BytesAndRejectsInvalidHeaders
+--- PASS: TestReadLSPFrameCountsUTF8BytesAndRejectsInvalidHeaders (0.00s)
+=== RUN   TestRPCClientCorrelatesConcurrentResponsesByRequestID
+--- PASS: TestRPCClientCorrelatesConcurrentResponsesByRequestID (0.00s)
+=== RUN   TestRPCClientRejectsServerEditAndCommandRequests
+=== RUN   TestRPCClientRejectsServerEditAndCommandRequests/workspace/applyEdit
+=== RUN   TestRPCClientRejectsServerEditAndCommandRequests/workspace/executeCommand
+--- PASS: TestRPCClientRejectsServerEditAndCommandRequests (0.00s)
+    --- PASS: TestRPCClientRejectsServerEditAndCommandRequests/workspace/applyEdit (0.00s)
+    --- PASS: TestRPCClientRejectsServerEditAndCommandRequests/workspace/executeCommand (0.00s)
+=== RUN   TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods
+--- PASS: TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods (0.00s)
+=== RUN   TestRPCClientNotifyHonorsDeadlineWhenTransportWriteBlocks
+--- PASS: TestRPCClientNotifyHonorsDeadlineWhenTransportWriteBlocks (1.00s)
+=== RUN   TestRPCClientCancellationBoundsCancellationWrite
+--- PASS: TestRPCClientCancellationBoundsCancellationWrite (3.00s)
+=== RUN   TestValidateWorkspaceEditMapsEveryFileToCapturedByteRanges
+--- PASS: TestValidateWorkspaceEditMapsEveryFileToCapturedByteRanges (0.01s)
+=== RUN   TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap
+=== RUN   TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/outside_file
+=== RUN   TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/overlap
+=== RUN   TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/resource_move
+=== RUN   TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/version_mismatch
+--- PASS: TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap (0.01s)
+    --- PASS: TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/outside_file (0.00s)
+    --- PASS: TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/overlap (0.00s)
+    --- PASS: TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/resource_move (0.00s)
+    --- PASS: TestValidateWorkspaceEditRejectsScopeVersionResourceAndOverlap/version_mismatch (0.00s)
+=== RUN   TestValidateWorkspaceEditRejectsFileOutsideEffectiveModuleRoots
+--- PASS: TestValidateWorkspaceEditRejectsFileOutsideEffectiveModuleRoots (0.01s)
+=== RUN   TestValidateWorkspaceEditRejectsDuplicateJSONMembers
+--- PASS: TestValidateWorkspaceEditRejectsDuplicateJSONMembers (0.01s)
+=== RUN   TestValidateWorkspaceEditRejectsLiteralAndTagEdits
+=== RUN   TestValidateWorkspaceEditRejectsLiteralAndTagEdits/struct_tag
+=== RUN   TestValidateWorkspaceEditRejectsLiteralAndTagEdits/string_literal
+--- PASS: TestValidateWorkspaceEditRejectsLiteralAndTagEdits (0.01s)
+    --- PASS: TestValidateWorkspaceEditRejectsLiteralAndTagEdits/struct_tag (0.00s)
+    --- PASS: TestValidateWorkspaceEditRejectsLiteralAndTagEdits/string_literal (0.00s)
+=== RUN   TestIdentifierRangeAtRequiresAnExactUTF8Boundary
+--- PASS: TestIdentifierRangeAtRequiresAnExactUTF8Boundary (0.00s)
+=== RUN   TestSnapshotVerificationRejectsManifestChangeAndMutation
+--- PASS: TestSnapshotVerificationRejectsManifestChangeAndMutation (0.01s)
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/valid_captured_module
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/missing_go.mod
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/local_replace
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/nested_module_outside_effective_roots
+=== RUN   TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/vendor_metadata_is_outside_module_closure
+--- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace (0.05s)
+    --- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/valid_captured_module (0.01s)
+    --- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/missing_go.mod (0.01s)
+    --- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/local_replace (0.01s)
+    --- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/nested_module_outside_effective_roots (0.01s)
+    --- PASS: TestVerifyLSPModuleClosureRequiresCapturedModulesWithoutReplace/vendor_metadata_is_outside_module_closure (0.01s)
+=== RUN   TestRenameSiteWarningsAndPackageRenameBoundary
+--- PASS: TestRenameSiteWarningsAndPackageRenameBoundary (0.00s)
+=== RUN   TestRenameIdentifierValidation
+--- PASS: TestRenameIdentifierValidation (0.00s)
+=== RUN   TestSourcePathMustBelongToEffectiveModuleRoot
+--- PASS: TestSourcePathMustBelongToEffectiveModuleRoot (0.00s)
+=== RUN   TestImmutableRenameResultPagesDoNotRerunAndBindFullIdentity
+--- PASS: TestImmutableRenameResultPagesDoNotRerunAndBindFullIdentity (0.00s)
+=== RUN   TestImmutableRenameResultCanReducePageSizeWithoutLosingCursorBinding
+--- PASS: TestImmutableRenameResultCanReducePageSizeWithoutLosingCursorBinding (0.00s)
+=== RUN   TestRenameResultPageSizeTransitionRejectsMissingCodec
+--- PASS: TestRenameResultPageSizeTransitionRejectsMissingCodec (0.00s)
+=== RUN   TestPinnedGoplsRenamePreviewAndImmutableContinuation
+    session_integration_test.go:24: set MCE4D_GO_BINARY, MCE4D_GOPLS_BINARY, and MCE4D_GOMODCACHE for the pinned gopls integration proof
+--- SKIP: TestPinnedGoplsRenamePreviewAndImmutableContinuation (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/lsp	4.777s
+=== RUN   TestHandleInitialReturnsReadOnlyPreviewAndContinuationReusesResult
+--- PASS: TestHandleInitialReturnsReadOnlyPreviewAndContinuationReusesResult (0.08s)
+=== RUN   TestHandleBlocksBeforeProviderWhenPreconditionsAreStale
+--- PASS: TestHandleBlocksBeforeProviderWhenPreconditionsAreStale (0.01s)
+=== RUN   TestHandleReleasesPreparedSpoolWhenPostValidationChanges
+--- PASS: TestHandleReleasesPreparedSpoolWhenPostValidationChanges (0.02s)
+=== RUN   TestHandleRejectsSelectorThatIsNotTheResolvedIdentifier
+--- PASS: TestHandleRejectsSelectorThatIsNotTheResolvedIdentifier (0.02s)
+=== RUN   TestHandleTamperedResultTokenCannotContinue
+--- PASS: TestHandleTamperedResultTokenCannotContinue (0.03s)
+=== RUN   TestHandleHonorsExplicitContractOptOutAndMinimumBudget
+--- PASS: TestHandleHonorsExplicitContractOptOutAndMinimumBudget (0.07s)
+=== RUN   TestContinuationKeepsOriginalCursorLimitAcrossRepeatedBudgetResizes
+--- PASS: TestContinuationKeepsOriginalCursorLimitAcrossRepeatedBudgetResizes (0.05s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/rename	0.888s

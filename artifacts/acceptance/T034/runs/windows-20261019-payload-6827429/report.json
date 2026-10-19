@@ -1,0 +1,2001 @@
+{
+  "format_version": 1,
+  "kind": "acceptance_matrix_run",
+  "task_id": "T034",
+  "spec_version": "1.6.13",
+  "subject_sha": "6827429e6360741ceb8a42db94a5b4b0778b4991",
+  "tracked_worktree_clean": true,
+  "environment": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "Python 3.12.10",
+    "go": "go version go1.27.2 windows/amd64",
+    "git": "git version 2.45.1.windows.1"
+  },
+  "matrix_sha256": "102ad7b48488929753f12220ce20b6afda55667ae00bcead8d4e37df7a599411",
+  "command_results": {
+    "analysis": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/analysis/golang",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:01.777022+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/analysis.log",
+      "log_bytes": 2748,
+      "log_sha256": "34728696556484b1493d4e12dd3ceeffe71478b1f0eca44094fca043ae3a8de6"
+    },
+    "indexer": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/indexer",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:03.655917+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/indexer.log",
+      "log_bytes": 9886,
+      "log_sha256": "172d8176f254e7297bd9f4e1c4680fb535b6aeaa39542950e69db6cf0e890adc"
+    },
+    "inventory_snapshot": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/inventory",
+        "./internal/snapshot",
+        "./internal/app/validate",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:05.476825+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/inventory_snapshot.log",
+      "log_bytes": 6043,
+      "log_sha256": "8d4622ac6d9e7a6f0192771fd3bac038cd73b7008ed305d345c6c18d83528127"
+    },
+    "integration": {
+      "argv": [
+        "go",
+        "test",
+        "./tests/integration",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:12.418726+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/integration.log",
+      "log_bytes": 3497,
+      "log_sha256": "d55bd366d83ddd376fc46b88052a32dc86e624100b1155deb6a100c5d7c4ab4c"
+    },
+    "contextpack": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/contextpack",
+        "./internal/app/response",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:14.312813+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/contextpack.log",
+      "log_bytes": 6395,
+      "log_sha256": "191e449fd85169bb75b40e0c3e3e036428ffd8c16be8d1d82a3b24fdfcb895f3"
+    },
+    "lsp": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/lsp",
+        "./internal/app/rename",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:15.385966+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/lsp.log",
+      "log_bytes": 8382,
+      "log_sha256": "3431406030f3a8770a5156ce06d79f4f8635bbf3173d379034fd83b57c4ec085"
+    },
+    "runtime": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/runtime/...",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:20.780344+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/runtime.log",
+      "log_bytes": 7446,
+      "log_sha256": "7c823b11b82f974bbbaa092aa328da73c4b3c972de5e30473e90efc3e018c8b6"
+    },
+    "runtime_exec": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/runtime/exec",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:22.031903+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/runtime_exec.log",
+      "log_bytes": 3443,
+      "log_sha256": "253c380ceebede31380f673ba125c087e2208aa6dd31e76eaaba45dbe59b1cab"
+    },
+    "sqlite": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/store/sqlite",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:23.320282+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/sqlite.log",
+      "log_bytes": 6845,
+      "log_sha256": "41c44e9ada60a0dc85d4630d7e62ad3f70e8f85559688d29997d81ccb704dc8b"
+    },
+    "contract": {
+      "argv": [
+        "go",
+        "test",
+        "./tests/contract",
+        "./internal/mcp",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:31.056022+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/contract.log",
+      "log_bytes": 14032,
+      "log_sha256": "1fa9119713d277b954e473b96f022b4cc7274754bb564e95fe2d50f4d190fb90"
+    },
+    "search_overview": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/search",
+        "./internal/overview",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:34.731456+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/search_overview.log",
+      "log_bytes": 4158,
+      "log_sha256": "eb13d3f0cfca54300bb751d69235208f1922eef71b8134acb80f7f7ecffea919"
+    },
+    "cursor": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/cursor",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:36.299267+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/cursor.log",
+      "log_bytes": 771,
+      "log_sha256": "e88a2663c18c6070161e5a7cfd22b8c4240648e1a624bff47a154dc0a37dd5dd"
+    },
+    "acceptance": {
+      "argv": [
+        "go",
+        "test",
+        "./tests/acceptance",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:37.284607+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/acceptance.log",
+      "log_bytes": 4622,
+      "log_sha256": "cc9e9032cb13e54fa7f7b5836abd43f47cefff21eb7cc1ca6e4621e7a4360293"
+    },
+    "acceptance_scale": {
+      "argv": [
+        "go",
+        "test",
+        "./tests/acceptance",
+        "./tools/bench/scale",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:16:53.106606+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/acceptance_scale.log",
+      "log_bytes": 6947,
+      "log_sha256": "82a24c4015b2d780060d3acc15a3d58837190cc01194e566abf48a0fbc19ca74"
+    },
+    "cli": {
+      "argv": [
+        "go",
+        "test",
+        "./internal/cli",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:17:12.487680+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/cli.log",
+      "log_bytes": 1920,
+      "log_sha256": "9e983acb0f8e0ba0d50944457f21820cf60696526692c20f575292cdc1156ea5"
+    },
+    "scale_benchmark": {
+      "argv": [
+        "go",
+        "test",
+        "./tools/bench/scale",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:17:16.096055+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/scale_benchmark.log",
+      "log_bytes": 2325,
+      "log_sha256": "268e41cd6177f7cd2cc4e418b9d498f38a8056c22c72d46eb0cac9d35b37bdac"
+    },
+    "selfindex_benchmark": {
+      "argv": [
+        "go",
+        "test",
+        "./tools/bench/selfindex",
+        "-run",
+        "^$",
+        "-bench",
+        "^BenchmarkAnalyzePinnedPackage$",
+        "-benchtime=1x",
+        "-count=1",
+        "-v"
+      ],
+      "started_at_utc": "2026-10-19T06:17:16.821101+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/selfindex_benchmark.log",
+      "log_bytes": 714,
+      "log_sha256": "d1a9891432219b878ff406361990cd9d8dfab6a94224673257605d674fc16641"
+    },
+    "bootstrap_fixtures": {
+      "argv": [
+        "python",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-19T06:17:20.677228+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/bootstrap_fixtures.log",
+      "log_bytes": 832,
+      "log_sha256": "8e118e53362b5dfc92e0c5dbd3d4531197912f0638d6f0fdde978822363eb3c0"
+    },
+    "delivery_policy_fixtures": {
+      "argv": [
+        "python",
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "started_at_utc": "2026-10-19T06:17:22.942936+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/delivery_policy_fixtures.log",
+      "log_bytes": 4282,
+      "log_sha256": "907ab192f2800f2ca0249e1d26d8edb1e386e05fb2c72052c2ac49696e105e69"
+    },
+    "spec_fixtures": {
+      "argv": [
+        "python",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "started_at_utc": "2026-10-19T06:17:25.024259+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/spec_fixtures.log",
+      "log_bytes": 20652,
+      "log_sha256": "fde142bbe07f46324eb90c91d6f23a3f3826de28bf109f616276e1793649f942"
+    },
+    "mutation_probe": {
+      "argv": [
+        "python",
+        "-B",
+        "tests/acceptance/mutation_probe.py"
+      ],
+      "started_at_utc": "2026-10-19T06:17:40.983181+00:00",
+      "exit_code": 0,
+      "log": "artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/mutation_probe.log",
+      "log_bytes": 608,
+      "log_sha256": "4fc8a0b93e3bc2b73ceb03c05d1753c78b236df6c1408d279f9fca1a3acb1eaf"
+    }
+  },
+  "case_results": [
+    {
+      "id": "C001",
+      "command_ids": [
+        "integration"
+      ],
+      "result": "PASS",
+      "fixture": "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses",
+      "evidence": [
+        "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture pins the literal worktree UUIDs, repository identity, HEAD and folder name, then compares stored generation, snapshot digest and scope digest directly.",
+      "limitation": ""
+    },
+    {
+      "id": "C002",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS",
+      "fixture": "internal/contextpack/selection_test.go#TestSameNameCandidatesRequirePositionOrReview",
+      "evidence": [
+        "internal/contextpack/selection_test.go#TestSameNameCandidatesRequirePositionOrReview",
+        "internal/analysis/golang/analysis_test.go#TestAnalyzeUsesPackageScopeAndSourceRangesForIdentity"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/contextpack/selection_test.go#TestSameNameCandidatesRequirePositionOrReview",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/analysis_test.go#TestAnalyzeUsesPackageScopeAndSourceRangesForIdentity",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The synthetic candidates have known package paths and byte ranges; expected ambiguity and selected identity are asserted from those literals.",
+      "limitation": ""
+    },
+    {
+      "id": "C003",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult",
+      "evidence": [
+        "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult",
+        "internal/lsp/rename_test.go#TestRenameSiteWarningsAndPackageRenameBoundary"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/lsp/rename_test.go#TestRenameSiteWarningsAndPackageRenameBoundary",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Expected declaration kinds, lexical scopes and distinct IDs are specified from the inline Go source and validated against byte slices.",
+      "limitation": ""
+    },
+    {
+      "id": "C004",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult",
+      "evidence": [
+        "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/analysis_test.go#TestAnalyzeSeparatesShadowedBindingsClosuresReceiverAndNamedResult",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The inline generic receiver and two closure parameters have fixed expected names, kinds, scopes and raw-source ranges.",
+      "limitation": ""
+    },
+    {
+      "id": "C005",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tests/acceptance/r1_relations_test.go#TestR1PointerAliasDoesNotInventDataFlowRelations",
+      "evidence": [
+        "tests/acceptance/r1_relations_test.go#TestR1PointerAliasDoesNotInventDataFlowRelations"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/r1_relations_test.go#TestR1PointerAliasDoesNotInventDataFlowRelations",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The captured fixture contains field reads, assignments and pointer writes; independently expected relation kinds require zero READS/WRITES until alias/data-flow proof exists.",
+      "limitation": "The negative alias oracle is tested; positive READS/WRITES relations for a proven alias are not implemented or claimed."
+    },
+    {
+      "id": "C006",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS",
+      "fixture": "internal/contextpack/selection_test.go#TestDirectCallsRemainDistinctFromFunctionValueReferences",
+      "evidence": [
+        "internal/contextpack/selection_test.go#TestDirectCallsRemainDistinctFromFunctionValueReferences",
+        "internal/analysis/golang/relations_test.go#TestRelationFactBindsCapturedCallsiteAndRejectsInvalidEdges"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/contextpack/selection_test.go#TestDirectCallsRemainDistinctFromFunctionValueReferences",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/relations_test.go#TestRelationFactBindsCapturedCallsiteAndRejectsInvalidEdges",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture constructs direct-call and function-value facts separately and compares their exact relation kinds and identities.",
+      "limitation": ""
+    },
+    {
+      "id": "C007",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile",
+      "evidence": [
+        "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Inline Reader interface and two concrete implementations define the independent expected result: one CALLS_INTERFACE, two MAY_DISPATCH_TO, and zero arbitrary direct targets at each callsite.",
+      "limitation": ""
+    },
+    {
+      "id": "C008",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/relations_test.go#TestReflectInvocationKeepsStaticMethodAndDynamicBoundary",
+      "evidence": [
+        "internal/analysis/golang/relations_test.go#TestReflectInvocationKeepsStaticMethodAndDynamicBoundary"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/relations_test.go#TestReflectInvocationKeepsStaticMethodAndDynamicBoundary",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Expected relation kinds and the unresolved label are declared in the test and compared to source-bound facts.",
+      "limitation": ""
+    },
+    {
+      "id": "C009",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/r1_relations_test.go#TestR1BuildProfilesSeparateOSArchitectureTagsAndCGO",
+      "evidence": [
+        "tests/acceptance/r1_relations_test.go#TestR1BuildProfilesSeparateOSArchitectureTagsAndCGO",
+        "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/r1_relations_test.go#TestR1BuildProfilesSeparateOSArchitectureTagsAndCGO",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Captured profile fixtures independently assert selected source files for Linux/amd64, Linux/arm64 and Windows/amd64, distinguish tagged from untagged builds, require distinct ProfileIDs for each changed GOOS/GOARCH/tag/CGO input, and require the explicit partial diagnostic while CGO is unsupported.",
+      "limitation": ""
+    },
+    {
+      "id": "C010",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/analysis_test.go#TestAnalyzeKeepsTestVariantProvenanceWithoutCountingSharedOccurrenceTwice",
+      "evidence": [
+        "internal/analysis/golang/coverage_test.go#TestTestReferencesLinkOnlyCapturedTestSourceToProductionOccurrences",
+        "internal/analysis/golang/coverage_test.go#TestAnalyzeLoadedPackagesEmitsTypedTestReferencesAcrossVariants"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/analysis_test.go#TestAnalyzeKeepsTestVariantProvenanceWithoutCountingSharedOccurrenceTwice",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/coverage_test.go#TestTestReferencesLinkOnlyCapturedTestSourceToProductionOccurrences",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/coverage_test.go#TestAnalyzeLoadedPackagesEmitsTypedTestReferencesAcrossVariants",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Production, internal-test and external-test source bytes are written inline; expected occurrence count, variants and symbol IDs are explicit constants.",
+      "limitation": ""
+    },
+    {
+      "id": "C011",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/inventory/inventory_test.go#TestScanStopsAtNestedRepositoriesAndSubmodules",
+      "evidence": [
+        "internal/inventory/inventory_test.go#TestScanStopsAtNestedRepositoriesAndSubmodules",
+        "internal/inventory/inventory_test.go#TestScanReportsSparseDirectoryWithoutWalkingIt",
+        "internal/inventory/inventory_test.go#TestScanHandlesUnbornBranchAndDetachedHead"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/inventory/inventory_test.go#TestScanStopsAtNestedRepositoriesAndSubmodules",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/inventory/inventory_test.go#TestScanReportsSparseDirectoryWithoutWalkingIt",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/inventory/inventory_test.go#TestScanHandlesUnbornBranchAndDetachedHead",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture paths and Git boundary metadata are created by the test; expected inventory entries and skipped boundaries are checked directly.",
+      "limitation": "Generated/vendor/sparse/submodule metadata is checked on synthetic Git fixtures; no third-party repository corpus is included."
+    },
+    {
+      "id": "C012",
+      "command_ids": [
+        "analysis"
+      ],
+      "result": "PASS",
+      "fixture": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing",
+      "evidence": [
+        "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing",
+        "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesKeepsSyntaxFallbackWhenOfflineDependencyIsMissing",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A temporary module missing one dependency must return syntax-only partial status and an explicit diagnostic without installing dependencies.",
+      "limitation": ""
+    },
+    {
+      "id": "C013",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS",
+      "fixture": "internal/snapshot/validation_test.go#TestCompareValidationDetectsAddedUntrackedMembership",
+      "evidence": [
+        "internal/snapshot/validation_test.go#TestCompareValidationDetectsAddedUntrackedMembership",
+        "internal/indexer/invalidation_test.go#TestBuildSnapshotFromInventoryCapturesUntrackedPathsAndRejectsMembershipDrift"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/snapshot/validation_test.go#TestCompareValidationDetectsAddedUntrackedMembership",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/invalidation_test.go#TestBuildSnapshotFromInventoryCapturesUntrackedPathsAndRejectsMembershipDrift",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture adds one known untracked path after capture; the expected membership digest and stale result are independently calculated.",
+      "limitation": ""
+    },
+    {
+      "id": "C014",
+      "command_ids": [
+        "indexer"
+      ],
+      "result": "PASS",
+      "fixture": "internal/indexer/cache_test.go#TestPlanIncrementalUsesFullFallbackAndNeverFuzzyMatchesRenames",
+      "evidence": [
+        "internal/indexer/cache_test.go#TestPlanIncrementalUsesFullFallbackAndNeverFuzzyMatchesRenames",
+        "internal/indexer/invalidation_test.go#TestCompareSnapshotsUsesFullContentAndDoesNotFuzzyReuseRenames"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/indexer/cache_test.go#TestPlanIncrementalUsesFullFallbackAndNeverFuzzyMatchesRenames",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/invalidation_test.go#TestCompareSnapshotsUsesFullContentAndDoesNotFuzzyReuseRenames",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Before and after path sets and hashes are literal fixture inputs; test requires full rebuild and forbids fuzzy identity reuse.",
+      "limitation": ""
+    },
+    {
+      "id": "C015",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS",
+      "fixture": "internal/indexer/invalidation_test.go#TestBuildSnapshotFromInventoryHashesAssumeUnchangedBytesWithSameMtime",
+      "evidence": [
+        "internal/indexer/invalidation_test.go#TestBuildSnapshotFromInventoryHashesAssumeUnchangedBytesWithSameMtime",
+        "internal/snapshot/validation_test.go#TestCompareValidationDetectsSameSizeSamePathByteChanges"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/indexer/invalidation_test.go#TestBuildSnapshotFromInventoryHashesAssumeUnchangedBytesWithSameMtime",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/snapshot/validation_test.go#TestCompareValidationDetectsSameSizeSamePathByteChanges",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The test changes bytes while preserving size and mtime; the expected SHA-256 is computed from fixture bytes with the standard library.",
+      "limitation": ""
+    },
+    {
+      "id": "C016",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS",
+      "fixture": "internal/inventory/inventory_test.go#TestScanHandlesUnbornBranchAndDetachedHead",
+      "evidence": [
+        "internal/inventory/inventory_test.go#TestScanHandlesUnbornBranchAndDetachedHead",
+        "internal/snapshot/snapshot_test.go#TestGitStateValidatesUnbornAndDetachedWithoutAssumingHEAD"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/inventory/inventory_test.go#TestScanHandlesUnbornBranchAndDetachedHead",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/snapshot/snapshot_test.go#TestGitStateValidatesUnbornAndDetachedWithoutAssumingHEAD",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Git refs and HEAD state are constructed in a temporary repository; expected unborn/detached states are constants, not inferred from the indexer.",
+      "limitation": ""
+    },
+    {
+      "id": "C017",
+      "command_ids": [
+        "indexer"
+      ],
+      "result": "PASS",
+      "fixture": "internal/indexer/cache_test.go#TestPlanIncrementalInvalidatesModuleAndDependencyChanges",
+      "evidence": [
+        "internal/indexer/cache_test.go#TestPlanIncrementalInvalidatesModuleAndDependencyChanges",
+        "internal/indexer/cache_test.go#TestSemanticCacheKeyBindsProfilePolicyDependenciesAndMembership"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/indexer/cache_test.go#TestPlanIncrementalInvalidatesModuleAndDependencyChanges",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/cache_test.go#TestSemanticCacheKeyBindsProfilePolicyDependenciesAndMembership",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The module/config/dependency vectors are explicit fixture inputs; expected consumer invalidation and rebuild mode are asserted from the changed inputs.",
+      "limitation": ""
+    },
+    {
+      "id": "C018",
+      "command_ids": [
+        "indexer"
+      ],
+      "result": "PASS",
+      "fixture": "internal/indexer/cache_test.go#TestPlanIncrementalMutationChainMatchesFullFactsAndReplaysDeterministically",
+      "evidence": [
+        "internal/indexer/cache_test.go#TestPlanIncrementalMutationChainMatchesFullFactsAndReplaysDeterministically"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/indexer/cache_test.go#TestPlanIncrementalMutationChainMatchesFullFactsAndReplaysDeterministically",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A fixed-seed mutation sequence is applied to source fixtures; normalized full and incremental fact sets are compared and repeated replay bytes must match.",
+      "limitation": ""
+    },
+    {
+      "id": "C019",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+      "evidence": [
+        "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+        "internal/store/sqlite/generation_test.go#TestGenerationBatchFailureRollsBackStagedFacts",
+        "tests/contract/storage_constraints_test.go#TestIndexPublicationGuardsForeignKeysAndFrozenFacts"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_test.go#TestGenerationBatchFailureRollsBackStagedFacts",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/contract/storage_constraints_test.go#TestIndexPublicationGuardsForeignKeysAndFrozenFacts",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Injected commit and batch failures are checked against direct SQL reads of state, active pointer and foreign-key integrity.",
+      "limitation": ""
+    },
+    {
+      "id": "C020",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_test.go#TestContinuousReadersStayGenerationConsistentAcrossRepeatedPublishes",
+      "evidence": [
+        "internal/store/sqlite/generation_test.go#TestContinuousReadersStayGenerationConsistentAcrossRepeatedPublishes",
+        "internal/store/sqlite/generation_test.go#TestPublishedSnapshotNeverExposesBuildingGeneration"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_test.go#TestContinuousReadersStayGenerationConsistentAcrossRepeatedPublishes",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_test.go#TestPublishedSnapshotNeverExposesBuildingGeneration",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Each reader compares literal generation markers and active pointer values within one SQLite read snapshot during repeated writes.",
+      "limitation": ""
+    },
+    {
+      "id": "C021",
+      "command_ids": [
+        "integration"
+      ],
+      "result": "PASS",
+      "fixture": "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses",
+      "evidence": [
+        "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/integration/concurrency_test.go#TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Independent OS processes coordinate by pipe markers; fixture A holds its writer while fixture B must publish and A's reader remains pinned.",
+      "limitation": ""
+    },
+    {
+      "id": "C022",
+      "command_ids": [
+        "runtime"
+      ],
+      "result": "PASS",
+      "fixture": "internal/runtime/lock_test.go#TestProcessExitReleasesKernelLock",
+      "evidence": [
+        "internal/runtime/lock_test.go#TestProcessExitReleasesKernelLock",
+        "internal/store/sqlite/ownership_test.go#TestAdmissionRecoveryReclaimsOnlyAnUnlockedVerifiedOwner"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/runtime/lock_test.go#TestProcessExitReleasesKernelLock",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/ownership_test.go#TestAdmissionRecoveryReclaimsOnlyAnUnlockedVerifiedOwner",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A child process owns the OS lock; parent observes contention before child exit and reacquisition after the kernel releases ownership.",
+      "limitation": ""
+    },
+    {
+      "id": "C023",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS",
+      "fixture": "internal/app/validate/service_test.go#TestValidateReturnsUnknownWhenMembershipKeepsChanging",
+      "evidence": [
+        "internal/app/validate/service_test.go#TestValidateReturnsUnknownWhenMembershipKeepsChanging",
+        "internal/app/validate/service_test.go#TestValidateRetriesMembershipChangeThenReportsStale"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/app/validate/service_test.go#TestValidateReturnsUnknownWhenMembershipKeepsChanging",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/app/validate/service_test.go#TestValidateRetriesMembershipChangeThenReportsStale",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A deterministic fake workspace changes membership on every read; expected bounded retry count and UNKNOWN outcome are fixed in the test.",
+      "limitation": ""
+    },
+    {
+      "id": "C024",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tests/acceptance/security_test.go#TestSymlinkSwapNeverReturnsBytesOutsideRegisteredRoot",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestSymlinkSwapNeverReturnsBytesOutsideRegisteredRoot",
+        "tests/acceptance/security_windows_test.go#TestDirectoryJunctionCannotExposeSourceOutsideRegisteredRoot",
+        "internal/inventory/inventory_test.go#TestScanDoesNotFollowSymlinkTargets"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestSymlinkSwapNeverReturnsBytesOutsideRegisteredRoot",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/acceptance/security_windows_test.go#TestDirectoryJunctionCannotExposeSourceOutsideRegisteredRoot",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/inventory/inventory_test.go#TestScanDoesNotFollowSymlinkTargets",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Outside-root sentinel bytes are fixed; every race result is checked against allowed-root content and explicit denial.",
+      "limitation": "UNC, ADS, invalid UTF-8 and other operating systems are not executed by the Windows and Ubuntu CI pair."
+    },
+    {
+      "id": "C025",
+      "command_ids": [
+        "contract"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot",
+        "tests/contract/security_policy_test.go#TestSecretScannerRulesAndBoundaries"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/contract/security_policy_test.go#TestSecretScannerRulesAndBoundaries",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Unique synthetic secret markers are searched directly in persisted bytes, FTS rows, logs and MCP payloads; expected zero matches are literal.",
+      "limitation": ""
+    },
+    {
+      "id": "C026",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The malicious repository text and fsmonitor command marker are synthetic constants; a marker file or child process is forbidden after capture.",
+      "limitation": ""
+    },
+    {
+      "id": "C027",
+      "command_ids": [
+        "lsp"
+      ],
+      "result": "PASS",
+      "fixture": "internal/lsp/position_test.go#TestPositionEncodingRoundTripsUnicodeAndCRLF",
+      "evidence": [
+        "internal/lsp/position_test.go#TestPositionEncodingRoundTripsUnicodeAndCRLF",
+        "internal/lsp/position_test.go#TestPositionRejectsInvalidUTF8AndUnrepresentableBoundaries",
+        "tests/contract/canonical_vectors_test.go#TestSharedUTF8SourceRangeAndRawDigestVectors"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/lsp/position_test.go#TestPositionEncodingRoundTripsUnicodeAndCRLF",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/lsp/position_test.go#TestPositionRejectsInvalidUTF8AndUnrepresentableBoundaries",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/contract/canonical_vectors_test.go#TestSharedUTF8SourceRangeAndRawDigestVectors",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Expected byte offsets are computed from the inline Vietnamese/Lao/emoji/CRLF bytes; roundtrip and invalid UTF-8 boundaries are asserted.",
+      "limitation": ""
+    },
+    {
+      "id": "C028",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS",
+      "fixture": "internal/app/response/response_test.go#TestBuildPackReturnsTypedBudgetTooSmallWhenSafetyEnvelopeCannotFit",
+      "evidence": [
+        "internal/app/response/response_test.go#TestBuildPackReturnsTypedBudgetTooSmallWhenSafetyEnvelopeCannotFit",
+        "internal/contextpack/budget_test.go#TestSelectBudgetCountsDualDeliveryBytes"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/app/response/response_test.go#TestBuildPackReturnsTypedBudgetTooSmallWhenSafetyEnvelopeCannotFit",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/contextpack/budget_test.go#TestSelectBudgetCountsDualDeliveryBytes",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture caps are literal byte counts; response JSON validity, required evidence, and both serialized delivery byte totals are independently checked.",
+      "limitation": ""
+    },
+    {
+      "id": "C029",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS",
+      "fixture": "internal/contextpack/selection_test.go#TestCyclesAndTraversalLimitsRemainExplicit",
+      "evidence": [
+        "internal/contextpack/selection_test.go#TestCyclesAndTraversalLimitsRemainExplicit",
+        "internal/contextpack/selection_test.go#TestCandidateCapRequiresContinuation",
+        "internal/contextpack/selection_test.go#TestDepthAndProviderGapsDoNotClaimCompleteness"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/contextpack/selection_test.go#TestCyclesAndTraversalLimitsRemainExplicit",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/contextpack/selection_test.go#TestCandidateCapRequiresContinuation",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/contextpack/selection_test.go#TestDepthAndProviderGapsDoNotClaimCompleteness",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Known graph adjacency and limit values are hand-authored; expected pending/unknown states and continuation cursor progress are checked exactly.",
+      "limitation": ""
+    },
+    {
+      "id": "C030",
+      "command_ids": [
+        "cursor"
+      ],
+      "result": "PASS",
+      "fixture": "internal/cursor/cursor_test.go#TestCursorCodecRejectsTamperingExpiryRotationAndNoProgress",
+      "evidence": [
+        "internal/cursor/cursor_test.go#TestCursorCodecRejectsTamperingExpiryRotationAndNoProgress",
+        "internal/lsp/result_store_test.go#TestImmutableRenameResultPagesDoNotRerunAndBindFullIdentity"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/cursor/cursor_test.go#TestCursorCodecRejectsTamperingExpiryRotationAndNoProgress",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/lsp/result_store_test.go#TestImmutableRenameResultPagesDoNotRerunAndBindFullIdentity",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The test starts with a known signer, scope, request and expiry; each tampered identity and expired token has a fixed expected error.",
+      "limitation": ""
+    },
+    {
+      "id": "C031",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/contextpack/slices_test.go#TestIncompletePlanningCountsStayUnknownAndCursorPagesAdvancePinnedEvidence",
+      "evidence": [
+        "internal/contextpack/slices_test.go#TestIncompletePlanningCountsStayUnknownAndCursorPagesAdvancePinnedEvidence"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/contextpack/slices_test.go#TestIncompletePlanningCountsStayUnknownAndCursorPagesAdvancePinnedEvidence",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture evidence IDs and page cursor are fixed; repeated page requests must advance over the same pinned set without skipping unrequested items.",
+      "limitation": "AI host session creation and real context compaction are outside this engine process and are not exercised here."
+    },
+    {
+      "id": "C032",
+      "command_ids": [
+        "lsp"
+      ],
+      "result": "PASS",
+      "fixture": "internal/lsp/rename_test.go#TestValidateWorkspaceEditMapsEveryFileToCapturedByteRanges",
+      "evidence": [
+        "internal/lsp/rename_test.go#TestValidateWorkspaceEditMapsEveryFileToCapturedByteRanges",
+        "internal/app/rename/service_test.go#TestHandleInitialReturnsReadOnlyPreviewAndContinuationReusesResult"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/lsp/rename_test.go#TestValidateWorkspaceEditMapsEveryFileToCapturedByteRanges",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/app/rename/service_test.go#TestHandleInitialReturnsReadOnlyPreviewAndContinuationReusesResult",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Every proposed edit is compared to captured bytes and exact before/after hashes; the preview must enumerate all expected paths and ranges.",
+      "limitation": ""
+    },
+    {
+      "id": "C033",
+      "command_ids": [
+        "lsp"
+      ],
+      "result": "PASS",
+      "fixture": "internal/lsp/rename_test.go#TestRenameSiteWarningsAndPackageRenameBoundary",
+      "evidence": [
+        "internal/lsp/rename_test.go#TestRenameSiteWarningsAndPackageRenameBoundary",
+        "internal/lsp/rename_test.go#TestValidateWorkspaceEditRejectsLiteralAndTagEdits"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/lsp/rename_test.go#TestRenameSiteWarningsAndPackageRenameBoundary",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/lsp/rename_test.go#TestValidateWorkspaceEditRejectsLiteralAndTagEdits",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Exported field and JSON tag source ranges are literal; warnings preserve serialization keys and forbidden string/tag edits are rejected.",
+      "limitation": ""
+    },
+    {
+      "id": "C034",
+      "command_ids": [
+        "lsp"
+      ],
+      "result": "PASS",
+      "fixture": "internal/lsp/protocol_test.go#TestRPCClientRejectsServerEditAndCommandRequests",
+      "evidence": [
+        "internal/lsp/protocol_test.go#TestRPCClientRejectsServerEditAndCommandRequests"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/lsp/protocol_test.go#TestRPCClientRejectsServerEditAndCommandRequests",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Synthetic server messages use fixed method names and payloads; outbound client edit/command events must remain absent and unsupported requests must be rejected.",
+      "limitation": ""
+    },
+    {
+      "id": "C035",
+      "command_ids": [
+        "lsp"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/lsp/protocol_test.go#TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods",
+      "evidence": [
+        "internal/lsp/protocol_test.go#TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods",
+        "internal/runtime/exec/exec_test.go#TestRunCancelsOwnedProcessTreeAndSettlesChild"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/lsp/protocol_test.go#TestRPCClientCancelsRequestAndRejectsUnlistedOutboundMethods",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/runtime/exec/exec_test.go#TestRunCancelsOwnedProcessTreeAndSettlesChild",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A controlled fake transport records request IDs, cancellation and closure; test asserts bounded completion after cancellation.",
+      "limitation": "The settling checks are bounded test fixtures; long-duration production LSP/MCP soak is not run."
+    },
+    {
+      "id": "C036",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+      "evidence": [
+        "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+        "internal/store/sqlite/store_test.go#TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails",
+        "internal/store/sqlite/store_test.go#TestSQLiteContextDeadlineInterruptsBusyWriter"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_test.go#TestGenerationCommitFailureRollsBackStateAndActivePointer",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/store_test.go#TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/store_test.go#TestSQLiteContextDeadlineInterruptsBusyWriter",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Faults are injected at staging and commit boundaries; direct SQLite queries require old active generation and intact source fixtures afterward.",
+      "limitation": "Disk-full and real permission-denied filesystem conditions are not induced on the host volume."
+    },
+    {
+      "id": "C037",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/store_test.go#TestOpenIndexRejectsFutureSchemaWithoutChangingFile",
+      "evidence": [
+        "internal/store/sqlite/store_test.go#TestOpenIndexRejectsFutureSchemaWithoutChangingFile",
+        "internal/store/sqlite/store_test.go#TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails",
+        "tests/contract/storage_migrations_test.go#TestCommittedStorageMigrationsMatchSpecDDL"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/store_test.go#TestOpenIndexRejectsFutureSchemaWithoutChangingFile",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/store_test.go#TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/contract/storage_migrations_test.go#TestCommittedStorageMigrationsMatchSpecDDL",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture database bytes are hashed before and after opening with a future schema version; migration failure preserves the original digest.",
+      "limitation": ""
+    },
+    {
+      "id": "C038",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent",
+      "evidence": [
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent",
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCUsesRequiredDomainDeleteOrder"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCUsesRequiredDomainDeleteOrder",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture foreign keys, active pointer and blob references are authored independently; direct SQL checks verify retained and deleted rows after GC.",
+      "limitation": ""
+    },
+    {
+      "id": "C039",
+      "command_ids": [
+        "contract"
+      ],
+      "result": "PASS",
+      "fixture": "tests/contract/validator_test.go#TestStrictJSONRejectsLossyInputs",
+      "evidence": [
+        "tests/contract/validator_test.go#TestStrictJSONRejectsLossyInputs",
+        "internal/mcp/server_test.go#TestMCPStdioUsesSDKFramingAndExposesOnlySixTools",
+        "internal/mcp/server_test.go#TestOperationHandlerValidatesStrictArgumentsAndCancellation"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/contract/validator_test.go#TestStrictJSONRejectsLossyInputs",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/mcp/server_test.go#TestMCPStdioUsesSDKFramingAndExposesOnlySixTools",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/mcp/server_test.go#TestOperationHandlerValidatesStrictArgumentsAndCancellation",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Raw malformed, duplicate-member and unknown-field JSON byte strings have explicit expected validator errors and response envelope shapes.",
+      "limitation": ""
+    },
+    {
+      "id": "C040",
+      "command_ids": [
+        "cli"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/cli/cli_test.go#TestHelpCommandsArePresentInCLIReference",
+      "evidence": [
+        "internal/cli/cli_test.go#TestHelpCommandsArePresentInCLIReference",
+        "internal/cli/cli_test.go#TestHelpVersionAndUnknownArguments"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/cli/cli_test.go#TestHelpCommandsArePresentInCLIReference",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/cli/cli_test.go#TestHelpVersionAndUnknownArguments",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The CLI test compares exact registered command help against the checked-in reference; it does not infer a host configuration from product output.",
+      "limitation": "A real Codex installation/version roundtrip and non-overwrite check require a supported host and are NOT_RUN."
+    },
+    {
+      "id": "C041",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/security_test.go#TestAllPublicMCPRoutesKeepTheSyntheticCanaryUnchanged",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestAllPublicMCPRoutesKeepTheSyntheticCanaryUnchanged"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestAllPublicMCPRoutesKeepTheSyntheticCanaryUnchanged",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The complete synthetic canary tree is independently hashed before and after every public route; bytes, paths and configuration must match.",
+      "limitation": ""
+    },
+    {
+      "id": "C042",
+      "command_ids": [
+        "search_overview"
+      ],
+      "result": "PASS",
+      "fixture": "internal/search/search_test.go#TestQueryPlansUseSymbolIndexesAndFTSIndexAtFixtureScale",
+      "evidence": [
+        "internal/search/search_test.go#TestQueryPlansUseSymbolIndexesAndFTSIndexAtFixtureScale"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/search/search_test.go#TestQueryPlansUseSymbolIndexesAndFTSIndexAtFixtureScale",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture database has known schema indexes; EXPLAIN QUERY PLAN rows are compared to expected named indexes and bounded fixture sizes.",
+      "limitation": ""
+    },
+    {
+      "id": "C043",
+      "command_ids": [
+        "spec_fixtures"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tools/spec_check/test_spec_check.py#test_duplicate_task_fails",
+      "evidence": [
+        "tools/spec_check/test_spec_check.py#test_duplicate_task_fails",
+        "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_duplicate_task_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The specification text is mutated in an isolated in-memory copy; expected duplicate, dependency and dangling-ID diagnostics are literal assertions.",
+      "limitation": "Static tracker validation is tested; simultaneous independent editor processes are not stress-tested by this case."
+    },
+    {
+      "id": "C044",
+      "command_ids": [
+        "selfindex_benchmark"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tools/bench/selfindex/selfindex_test.go#BenchmarkAnalyzePinnedPackage",
+      "evidence": [
+        "tools/bench/selfindex/selfindex_test.go#BenchmarkAnalyzePinnedPackage",
+        "tools/bench/scale/plan_test.go#TestCohortPlansHaveIndependentCountAndByteOracles"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/bench/selfindex/selfindex_test.go#BenchmarkAnalyzePinnedPackage",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/bench/scale/plan_test.go#TestCohortPlansHaveIndependentCountAndByteOracles",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The benchmark pins target and analyzer revisions through Git and reports measured source bytes, inventory files, symbols and allocations.",
+      "limitation": "This single-run local benchmark does not produce warm/cold cache or AI cached-token comparisons, and is not a performance baseline."
+    },
+    {
+      "id": "C045",
+      "command_ids": [
+        "contextpack"
+      ],
+      "result": "PASS",
+      "fixture": "internal/contextpack/slices_test.go#TestTaskSliceDoesNotPromoteTextMatchesOrUnknownBoundaries",
+      "evidence": [
+        "internal/contextpack/slices_test.go#TestTaskSliceDoesNotPromoteTextMatchesOrUnknownBoundaries",
+        "internal/search/search_test.go#TestTextSearchCoversNonGoDocumentsWithoutCreatingSemanticFacts"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/contextpack/slices_test.go#TestTaskSliceDoesNotPromoteTextMatchesOrUnknownBoundaries",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/search/search_test.go#TestTextSearchCoversNonGoDocumentsWithoutCreatingSemanticFacts",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture labels lexical and unknown evidence explicitly; expected relationship kinds and gaps are hand-authored and must not become semantic edges.",
+      "limitation": ""
+    },
+    {
+      "id": "C046",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+        "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesFallsBackForUnapprovedClosureAndToolDrift"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesFallsBackForUnapprovedClosureAndToolDrift",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The test injects a fake GOPROXY and GOSUMDB server with a request counter, poisoned GOFLAGS and GOPACKAGESDRIVER; zero proxy requests and source-hash rejection are expected.",
+      "limitation": ""
+    },
+    {
+      "id": "C047",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+      "evidence": [
+        "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+        "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/security_test.go#TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/analysis/golang/loader_test.go#TestLoadTrustedPackagesUsesCapturedSourceAndOfflineProfile",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A local HTTP proxy counter provides the independent network-attempt oracle; captured source hashes are independently computed from test fixture bytes.",
+      "limitation": "The fixture proves no request reached its local proxy under the poisoned environment; host-wide packet capture and unrelated external destinations are not measured."
+    },
+    {
+      "id": "C048",
+      "command_ids": [
+        "integration"
+      ],
+      "result": "PASS",
+      "fixture": "tests/integration/telemetry_test.go#TestTelemetrySanitizesFixedSchemaAndMetricAllowlist",
+      "evidence": [
+        "tests/integration/telemetry_test.go#TestTelemetrySanitizesFixedSchemaAndMetricAllowlist",
+        "tests/integration/telemetry_test.go#TestTelemetryPartialWriteDisablesSinkAndSanitizesFailure"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/integration/telemetry_test.go#TestTelemetrySanitizesFixedSchemaAndMetricAllowlist",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/integration/telemetry_test.go#TestTelemetryPartialWriteDisablesSinkAndSanitizesFailure",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Unique secret sentinels and oversized diagnostic values are supplied by the test; emitted JSONL bytes must match the closed allowlist and contain no sentinel.",
+      "limitation": ""
+    },
+    {
+      "id": "C049",
+      "command_ids": [
+        "search_overview"
+      ],
+      "result": "PASS",
+      "fixture": "internal/overview/overview_test.go#TestBuildGroupsReferencesWithExactExpansion",
+      "evidence": [
+        "internal/overview/overview_test.go#TestBuildGroupsReferencesWithExactExpansion",
+        "internal/overview/overview_test.go#TestSharedPackageMembershipRemainsExplicitAndUncollapsed"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/overview/overview_test.go#TestBuildGroupsReferencesWithExactExpansion",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/overview/overview_test.go#TestSharedPackageMembershipRemainsExplicitAndUncollapsed",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Hand-built module/package/reference graph has exact expected grouped counts, direction, evidence and expansion members.",
+      "limitation": ""
+    },
+    {
+      "id": "C050",
+      "command_ids": [
+        "indexer"
+      ],
+      "result": "PASS",
+      "fixture": "internal/indexer/partition_test.go#TestPlanPartitionInvalidationComputesDeterministicReverseClosure",
+      "evidence": [
+        "internal/indexer/partition_test.go#TestPlanPartitionInvalidationComputesDeterministicReverseClosure",
+        "internal/indexer/partition_test.go#TestPlanPartitionInvalidationFallsBackForIncompleteOrUnresolvedClosure",
+        "internal/indexer/cache_test.go#TestPlanIncrementalMutationChainMatchesFullFactsAndReplaysDeterministically"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/indexer/partition_test.go#TestPlanPartitionInvalidationComputesDeterministicReverseClosure",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/partition_test.go#TestPlanPartitionInvalidationFallsBackForIncompleteOrUnresolvedClosure",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/cache_test.go#TestPlanIncrementalMutationChainMatchesFullFactsAndReplaysDeterministically",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fixture partitions, edges, export digests and membership are literal; selective closure and full fallback are compared to hand-calculated expected sets.",
+      "limitation": ""
+    },
+    {
+      "id": "C051",
+      "command_ids": [
+        "inventory_snapshot"
+      ],
+      "result": "PASS",
+      "fixture": "internal/app/validate/service_test.go#TestValidateRechecksScopeVectorAndInvalidatesRecordEpoch",
+      "evidence": [
+        "internal/app/validate/service_test.go#TestValidateRechecksScopeVectorAndInvalidatesRecordEpoch",
+        "internal/snapshot/validation_test.go#TestCompareValidationKeepsIncompleteCoverageUnknown"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/app/validate/service_test.go#TestValidateRechecksScopeVectorAndInvalidatesRecordEpoch",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/snapshot/validation_test.go#TestCompareValidationKeepsIncompleteCoverageUnknown",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The stored scope vector and epoch are fixed fixture values; source and membership mutations must return stale/unknown before edit eligibility.",
+      "limitation": ""
+    },
+    {
+      "id": "C052",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/self_index_test.go#TestSelfIndexSpecOnlyKeepsIntendedPlaneSeparate",
+      "evidence": [
+        "tests/acceptance/self_index_test.go#TestSelfIndexSpecOnlyKeepsIntendedPlaneSeparate"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/self_index_test.go#TestSelfIndexSpecOnlyKeepsIntendedPlaneSeparate",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A spec-only checkout contains assigned but absent code; intended facts and observed files are independently declared, with no synthesized call edges.",
+      "limitation": ""
+    },
+    {
+      "id": "C053",
+      "command_ids": [
+        "acceptance_scale"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tests/acceptance/scale_test.go#TestScaleAcceptanceWorkload",
+      "evidence": [
+        "tests/acceptance/scale_test.go#TestScaleAcceptanceWorkload",
+        "tools/bench/scale/plan_test.go#TestCohortPlansHaveIndependentCountAndByteOracles",
+        "tools/bench/scale/plan_test.go#TestXLV1PlanCarriesSealedVerificationLimits"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/scale_test.go#TestScaleAcceptanceWorkload",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/bench/scale/plan_test.go#TestCohortPlansHaveIndependentCountAndByteOracles",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/bench/scale/plan_test.go#TestXLV1PlanCarriesSealedVerificationLimits",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The synthetic filesystem walker computes file count, source bytes and SHA-256 separately from inventory and manifest outputs; acceptance compares exact totals and bounded metrics.",
+      "limitation": "The runnable matrix defaults to controlled S/combined. It makes no M/L/XL or 1,000,000-file/32-GiB product-support claim; separate T053 measurements remain scoped to their recorded revision."
+    },
+    {
+      "id": "C054",
+      "command_ids": [
+        "acceptance"
+      ],
+      "result": "PASS",
+      "fixture": "tests/acceptance/self_index_test.go#TestSelfIndexPinnedBinaryAcceptance",
+      "evidence": [
+        "tests/acceptance/self_index_test.go#TestSelfIndexPinnedBinaryAcceptance",
+        "tools/bench/selfindex/selfindex_test.go#BenchmarkAnalyzePinnedPackage"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/self_index_test.go#TestSelfIndexPinnedBinaryAcceptance",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/bench/selfindex/selfindex_test.go#BenchmarkAnalyzePinnedPackage",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Target checkout and analyzer source revisions are resolved directly with Git; expected identity and source facts are checked independently of the binary's revision label.",
+      "limitation": ""
+    },
+    {
+      "id": "C137",
+      "command_ids": [
+        "bootstrap_fixtures"
+      ],
+      "result": "PASS",
+      "fixture": "tools/ci/test_bootstrap_check.py#test_missing_policy_source_fails",
+      "evidence": [
+        "tools/ci/test_bootstrap_check.py#test_current_sources_pass",
+        "tools/ci/test_bootstrap_check.py#test_missing_policy_source_fails",
+        "tools/ci/test_bootstrap_check.py#test_wrong_spec_version_fails",
+        "tools/ci/test_bootstrap_check.py#test_changed_policy_source_fails"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/ci/test_bootstrap_check.py#test_missing_policy_source_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_bootstrap_check.py#test_current_sources_pass",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_bootstrap_check.py#test_wrong_spec_version_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_bootstrap_check.py#test_changed_policy_source_fails",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Tests mutate isolated copies of the canonical spec/docs sources and require missing, duplicate/version-drift and line-ending/hash-only changes to fail without replacing source.",
+      "limitation": ""
+    },
+    {
+      "id": "C138",
+      "command_ids": [
+        "spec_fixtures",
+        "bootstrap_fixtures"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tools/spec_check/test_spec_check.py#test_s22_active_task_must_wait_for_effective_prerequisites",
+      "evidence": [
+        "tools/spec_check/test_spec_check.py#test_s22_active_task_must_wait_for_effective_prerequisites",
+        "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails",
+        "tools/ci/test_bootstrap_check.py#test_current_sources_pass"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_s22_active_task_must_wait_for_effective_prerequisites",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_bootstrap_check.py#test_current_sources_pass",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The validator receives an altered in-memory task assignment and a docs/source status mutation; exact status and dependency errors are asserted.",
+      "limitation": "The current implement assignment and prompt sources are validated; no separate docs-only task execution is launched."
+    },
+    {
+      "id": "C139",
+      "command_ids": [
+        "delivery_policy_fixtures"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tools/ci/test_delivery_policy.py#test_gate_scope_change_fails",
+      "evidence": [
+        "tools/ci/test_delivery_policy.py#test_gate_scope_change_fails",
+        "tools/ci/test_delivery_policy.py#test_design_section_change_fails",
+        "tools/spec_check/test_spec_check.py#test_card_case_drift_fails"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/ci/test_delivery_policy.py#test_gate_scope_change_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_delivery_policy.py#test_design_section_change_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_card_case_drift_fails",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "An isolated candidate commit/SPEC diff changes a protected gate or design contract; validator must reject the changed scope while ordinary local helpers remain allowed.",
+      "limitation": "The fixture enforces tracked task/contract boundaries; it does not implement an external dependency approval service."
+    },
+    {
+      "id": "C140",
+      "command_ids": [
+        "runtime_exec"
+      ],
+      "result": "PASS",
+      "fixture": "internal/runtime/exec/exec_test.go#TestRunRejectsUnknownEnvironmentAndShellWrapper",
+      "evidence": [
+        "internal/runtime/exec/exec_test.go#TestRunRejectsUnknownEnvironmentAndShellWrapper",
+        "internal/runtime/exec/exec_test.go#TestRunRejectsUnadmittedStorageBeforeStartingTool"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/runtime/exec/exec_test.go#TestRunRejectsUnknownEnvironmentAndShellWrapper",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/runtime/exec/exec_test.go#TestRunRejectsUnadmittedStorageBeforeStartingTool",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fake commands record argv and side effects; shell wrappers, unapproved environment and download-like commands must be rejected before child execution.",
+      "limitation": ""
+    },
+    {
+      "id": "C141",
+      "command_ids": [
+        "runtime_exec"
+      ],
+      "result": "PASS",
+      "fixture": "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs",
+      "evidence": [
+        "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fake volume observations and integer budgets include exact boundary, negative and overflow values; expected admit/block decisions are literal.",
+      "limitation": ""
+    },
+    {
+      "id": "C142",
+      "command_ids": [
+        "runtime_exec"
+      ],
+      "result": "PASS",
+      "fixture": "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionAggregatesSharedVolumeAndRemainingReservations",
+      "evidence": [
+        "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionAggregatesSharedVolumeAndRemainingReservations",
+        "internal/runtime/exec/resources_test.go#TestMeasureStorageDestinationsGroupsOpenedVolume"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/runtime/exec/resources_test.go#TestEvaluateResourceAdmissionAggregatesSharedVolumeAndRemainingReservations",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/runtime/exec/resources_test.go#TestMeasureStorageDestinationsGroupsOpenedVolume",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Multiple logical destinations share one synthetic volume and reservation ID; expected unique required bytes are calculated from fixture constants.",
+      "limitation": ""
+    },
+    {
+      "id": "C143",
+      "command_ids": [
+        "runtime_exec"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/runtime/exec/exec_test.go#TestRunRejectsUnadmittedStorageBeforeStartingTool",
+      "evidence": [
+        "internal/runtime/exec/exec_test.go#TestRunRejectsUnadmittedStorageBeforeStartingTool",
+        "internal/store/sqlite/result_spool_test.go#TestRenameResultSpoolAggregateQuotaSerializesIndependentOwners"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/runtime/exec/exec_test.go#TestRunRejectsUnadmittedStorageBeforeStartingTool",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/result_spool_test.go#TestRenameResultSpoolAggregateQuotaSerializesIndependentOwners",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Two independent synthetic destinations and writer markers are counted before launch; the denied command must leave its side-effect marker absent.",
+      "limitation": "The fixtures cover isolated admission and same-resource serialization; unknown external writers are represented as uncertainty, not observed host workloads."
+    },
+    {
+      "id": "C144",
+      "command_ids": [
+        "integration"
+      ],
+      "result": "PASS",
+      "fixture": "tests/integration/resources_test.go#TestFreshSyntheticGitAndSQLiteFixtureTeardownEligibility",
+      "evidence": [
+        "tests/integration/resources_test.go#TestFreshSyntheticGitAndSQLiteFixtureTeardownEligibility",
+        "tests/integration/resources_test.go#TestFixtureTeardownRefusesProtectedAndUnprovenCandidates"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/integration/resources_test.go#TestFreshSyntheticGitAndSQLiteFixtureTeardownEligibility",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/integration/resources_test.go#TestFixtureTeardownRefusesProtectedAndUnprovenCandidates",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Fresh run-owned synthetic Git/SQLite trees have explicit identity manifests; teardown is allowed only after writer settlement and retained evidence checks.",
+      "limitation": ""
+    },
+    {
+      "id": "C145",
+      "command_ids": [
+        "integration"
+      ],
+      "result": "PASS",
+      "fixture": "tests/integration/resources_test.go#TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement",
+      "evidence": [
+        "tests/integration/resources_test.go#TestFixtureTeardownRefusesProtectedAndUnprovenCandidates",
+        "tests/integration/resources_test.go#TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement",
+        "internal/runtime/fs_publish_test.go#TestRemoveRegularFileDeletesOnlyOneVerifiedContainedFile"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/integration/resources_test.go#TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement",
+          "result": "PASS"
+        },
+        {
+          "ref": "tests/integration/resources_test.go#TestFixtureTeardownRefusesProtectedAndUnprovenCandidates",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/runtime/fs_publish_test.go#TestRemoveRegularFileDeletesOnlyOneVerifiedContainedFile",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "The fixture replaces a registered child and creates linked/common Git paths; expected refusal is asserted from canonical identities and filesystem links.",
+      "limitation": ""
+    },
+    {
+      "id": "C146",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "internal/store/sqlite/accounting_test.go#TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput",
+      "evidence": [
+        "internal/store/sqlite/accounting_test.go#TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput",
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/accounting_test.go#TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "An exited-owner journal and synthetic leftover bytes are measured directly; dry-run output is checked against pre/post SQLite rows and source hashes.",
+      "limitation": "Fresh fixture teardown is exercised; an uncatchable host crash and legacy user leftovers are reported as protected and are not cleaned."
+    },
+    {
+      "id": "C147",
+      "command_ids": [
+        "mutation_probe",
+        "spec_fixtures"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tests/acceptance/mutation_probe.py#run_mutation_probe",
+      "evidence": [
+        "tests/acceptance/mutation_probe.py#run_mutation_probe",
+        "internal/indexer/cache_test.go#TestPlanIncrementalNeverNoopsOnIncompleteScope",
+        "tools/spec_check/test_spec_check.py#test_reused_evidence_requires_exact_subject_and_complete_fingerprints"
+      ],
+      "test_results": [
+        {
+          "ref": "tests/acceptance/mutation_probe.py#run_mutation_probe",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/indexer/cache_test.go#TestPlanIncrementalNeverNoopsOnIncompleteScope",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_reused_evidence_requires_exact_subject_and_complete_fingerprints",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Run an incomplete-scope test on an immutable Git archive, remove exactly the scope-completeness guard in the copy, and require baseline PASS plus mutant FAIL; no expected result is generated from engine output.",
+      "limitation": "The selected mutation targets one critical cache freshness invariant; this is not a repository-wide mutation score."
+    },
+    {
+      "id": "C148",
+      "command_ids": [
+        "delivery_policy_fixtures",
+        "spec_fixtures"
+      ],
+      "result": "PASS_LIMITED",
+      "fixture": "tools/ci/test_delivery_policy.py#test_missing_check_fails",
+      "evidence": [
+        "tools/ci/test_delivery_policy.py#test_exact_success_passes",
+        "tools/ci/test_delivery_policy.py#test_missing_check_fails",
+        "tools/ci/test_delivery_policy.py#test_stale_sha_fails",
+        "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails"
+      ],
+      "test_results": [
+        {
+          "ref": "tools/ci/test_delivery_policy.py#test_missing_check_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_delivery_policy.py#test_exact_success_passes",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/ci/test_delivery_policy.py#test_stale_sha_fails",
+          "result": "PASS"
+        },
+        {
+          "ref": "tools/spec_check/test_spec_check.py#test_candidate_done_without_delivery_evidence_fails",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Synthetic CI observations distinguish configured checks, exact-SHA successful execution, missing/stale/skipped checks and required unknown evidence.",
+      "limitation": "Local contract tests do not prove branch protection, human review, production readiness or deployment enforcement."
+    },
+    {
+      "id": "C149",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCUsesRequiredDomainDeleteOrder",
+      "evidence": [
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCUsesRequiredDomainDeleteOrder",
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCUsesRequiredDomainDeleteOrder",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A synthetic three-level module graph and live/shared references are queried before and after GC; delete events must follow explicit leaf-before-parent order.",
+      "limitation": ""
+    },
+    {
+      "id": "C150",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackWholeGenerationAfterInjectedFailure",
+      "evidence": [
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackWholeGenerationAfterInjectedFailure"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackWholeGenerationAfterInjectedFailure",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "Failure injection fires at a fixed delete stage; independent row counts, retired state and profile/record fixtures must equal their before snapshot.",
+      "limitation": ""
+    },
+    {
+      "id": "C151",
+      "command_ids": [
+        "sqlite"
+      ],
+      "result": "PASS",
+      "fixture": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly",
+      "evidence": [
+        "internal/store/sqlite/generation_gc_test.go#TestPublishRejectsModuleCycleBeforeChangingGeneration",
+        "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly"
+      ],
+      "test_results": [
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly",
+          "result": "PASS"
+        },
+        {
+          "ref": "internal/store/sqlite/generation_gc_test.go#TestPublishRejectsModuleCycleBeforeChangingGeneration",
+          "result": "PASS"
+        }
+      ],
+      "independent_oracle": "A deliberately corrupt cycle is inserted in fixture SQL; publish/GC must fail closed and dry-run must leave all queried table hashes unchanged.",
+      "limitation": ""
+    }
+  ],
+  "counts": {
+    "cases": 69,
+    "pass": 52,
+    "pass_limited": 17,
+    "fail": 0
+  }
+}

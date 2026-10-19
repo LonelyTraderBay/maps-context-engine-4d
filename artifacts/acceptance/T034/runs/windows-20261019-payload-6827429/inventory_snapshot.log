@@ -1,0 +1,89 @@
+=== RUN   TestScanHonorsGitIgnoreAndSecurityBoundaries
+--- PASS: TestScanHonorsGitIgnoreAndSecurityBoundaries (0.43s)
+=== RUN   TestScanDisablesHostGlobalIgnoreConfigAndReportsEffectiveMode
+--- PASS: TestScanDisablesHostGlobalIgnoreConfigAndReportsEffectiveMode (0.41s)
+=== RUN   TestScanRefreshesMembershipAndRepresentsMoveAsDeleteAndAdd
+--- PASS: TestScanRefreshesMembershipAndRepresentsMoveAsDeleteAndAdd (1.00s)
+=== RUN   TestScanHandlesUnbornBranchAndDetachedHead
+--- PASS: TestScanHandlesUnbornBranchAndDetachedHead (0.97s)
+=== RUN   TestScanStopsAtNestedRepositoriesAndSubmodules
+--- PASS: TestScanStopsAtNestedRepositoriesAndSubmodules (0.90s)
+=== RUN   TestScanReportsUnmergedIndexState
+--- PASS: TestScanReportsUnmergedIndexState (0.63s)
+=== RUN   TestScanReportsSparseDirectoryWithoutWalkingIt
+--- PASS: TestScanReportsSparseDirectoryWithoutWalkingIt (0.45s)
+=== RUN   TestScanDoesNotFollowSymlinkTargets
+--- PASS: TestScanDoesNotFollowSymlinkTargets (0.44s)
+=== RUN   TestScanTreatsIndexSymlinkModeAsBoundaryEvenWhenWorktreeFileIsAbsent
+--- PASS: TestScanTreatsIndexSymlinkModeAsBoundaryEvenWhenWorktreeFileIsAbsent (0.36s)
+=== RUN   TestScanUsesNULDelimitedPaths
+--- PASS: TestScanUsesNULDelimitedPaths (0.27s)
+=== RUN   TestScanMarksNonUTF8UntrackedPathAsUnsupported
+    inventory_test.go:295: Windows filenames cannot contain arbitrary non-UTF-8 bytes
+--- SKIP: TestScanMarksNonUTF8UntrackedPathAsUnsupported (0.00s)
+=== RUN   TestScanRejectsCaseFoldCollisionWhenFilesystemIsInsensitive
+    inventory_test.go:313: the Windows test filesystem cannot store case-only distinct names
+--- SKIP: TestScanRejectsCaseFoldCollisionWhenFilesystemIsInsensitive (0.00s)
+=== RUN   TestScanRejectsInvalidOptionsAndHonorsCancellation
+--- PASS: TestScanRejectsInvalidOptionsAndHonorsCancellation (0.24s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/inventory	6.481s
+=== RUN   TestBuildHashesFullBytesAndCanonicalizesInputOrder
+--- PASS: TestBuildHashesFullBytesAndCanonicalizesInputOrder (0.00s)
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/duplicate_path
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/captured_without_bytes
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/excluded_bytes
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/traversal_path
+=== RUN   TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/unknown_status
+--- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs (0.00s)
+    --- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/duplicate_path (0.00s)
+    --- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/captured_without_bytes (0.00s)
+    --- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/excluded_bytes (0.00s)
+    --- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/traversal_path (0.00s)
+    --- PASS: TestBuildRejectsAmbiguousOrUnsafeCaptureInputs/unknown_status (0.00s)
+=== RUN   TestGitStateValidatesUnbornAndDetachedWithoutAssumingHEAD
+--- PASS: TestGitStateValidatesUnbornAndDetachedWithoutAssumingHEAD (0.00s)
+=== RUN   TestCompareValidationRequiresFullContentAndReportsCurrent
+--- PASS: TestCompareValidationRequiresFullContentAndReportsCurrent (0.00s)
+=== RUN   TestCompareValidationDetectsSameSizeSamePathByteChanges
+--- PASS: TestCompareValidationDetectsSameSizeSamePathByteChanges (0.00s)
+=== RUN   TestCompareValidationDetectsAddedUntrackedMembership
+--- PASS: TestCompareValidationDetectsAddedUntrackedMembership (0.00s)
+=== RUN   TestCompareValidationKeepsIncompleteCoverageUnknown
+--- PASS: TestCompareValidationKeepsIncompleteCoverageUnknown (0.00s)
+=== RUN   TestCompareValidationInvalidatesPinnedRecordAndGroupRevisions
+--- PASS: TestCompareValidationInvalidatesPinnedRecordAndGroupRevisions (0.00s)
+=== RUN   TestCompareValidationInvalidatesProviderAndDependencyVersions
+--- PASS: TestCompareValidationInvalidatesProviderAndDependencyVersions (0.00s)
+=== RUN   TestCompareValidationRejectsSourcePreconditionOutsideCapture
+--- PASS: TestCompareValidationRejectsSourcePreconditionOutsideCapture (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot	0.314s
+=== RUN   TestValidateRequiresTwoStableContentPasses
+--- PASS: TestValidateRequiresTwoStableContentPasses (0.00s)
+=== RUN   TestValidateRetriesMembershipChangeThenReportsStale
+--- PASS: TestValidateRetriesMembershipChangeThenReportsStale (0.00s)
+=== RUN   TestValidateReturnsUnknownWhenMembershipKeepsChanging
+--- PASS: TestValidateReturnsUnknownWhenMembershipKeepsChanging (0.00s)
+=== RUN   TestValidateStopsAsUnknownAfterBoundedWorkspaceInstability
+--- PASS: TestValidateStopsAsUnknownAfterBoundedWorkspaceInstability (0.00s)
+=== RUN   TestValidateRechecksScopeVectorAndInvalidatesRecordEpoch
+--- PASS: TestValidateRechecksScopeVectorAndInvalidatesRecordEpoch (0.00s)
+=== RUN   TestValidateReturnsUnknownWhenInventoryIsPartial
+--- PASS: TestValidateReturnsUnknownWhenInventoryIsPartial (0.00s)
+=== RUN   TestValidateCanceledContextReturnsUnknownWithoutStartingWorkspaceReads
+--- PASS: TestValidateCanceledContextReturnsUnknownWithoutStartingWorkspaceReads (0.00s)
+=== RUN   TestValidateExpiredDeadlineReturnsUnknownWithoutStartingWorkspaceReads
+--- PASS: TestValidateExpiredDeadlineReturnsUnknownWithoutStartingWorkspaceReads (0.00s)
+=== RUN   TestLocalWorkspaceHashesSameSizeAssumeUnchangedAndFindsNewFile
+--- PASS: TestLocalWorkspaceHashesSameSizeAssumeUnchangedAndFindsNewFile (1.34s)
+=== RUN   TestValidateRetriesWhenSameBytesAreReplacedByDifferentFileIdentity
+    service_test.go:277: verified Windows directory handles prevent atomic file replacement in this fixture
+--- SKIP: TestValidateRetriesWhenSameBytesAreReplacedByDifferentFileIdentity (0.00s)
+=== RUN   TestValidateMarksMovedTrackedSourceStale
+--- PASS: TestValidateMarksMovedTrackedSourceStale (0.83s)
+=== RUN   TestValidateMarksDeletedTrackedSourceStale
+--- PASS: TestValidateMarksDeletedTrackedSourceStale (0.81s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/validate	3.353s

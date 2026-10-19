@@ -1,0 +1,73 @@
+=== RUN   TestAcceptanceMatrixCoversAssignedCasesAndBindsEvidence
+--- PASS: TestAcceptanceMatrixCoversAssignedCasesAndBindsEvidence (0.01s)
+=== RUN   TestR1PointerAliasDoesNotInventDataFlowRelations
+--- PASS: TestR1PointerAliasDoesNotInventDataFlowRelations (1.18s)
+=== RUN   TestR1BuildProfilesSeparateOSArchitectureTagsAndCGO
+--- PASS: TestR1BuildProfilesSeparateOSArchitectureTagsAndCGO (1.95s)
+=== RUN   TestScaleAcceptanceWorkload
+    scale_test.go:38: SCALE_METRIC {"available_bytes_after":528311414784,"available_bytes_before":528338518016,"benchmark_scope":"synthetic inventory/capture and SQLite facts fixture; not product index support evidence","cache_bytes_measured":513162,"churn_added":100,"churn_changed":0,"churn_removed":100,"cohort":"S","controlled_process_tree_elapsed_ms":8006,"elapsed_ms":7442,"logical_processors":24,"manifest_bytes":180346,"manifest_sha256":"66f924cf3998ab6878dc3fa15f8d8a7745a88930460a77a73968c518b46fd475","mode":"combined","phase_ms":{"capture_manifest":12,"churn":28,"independent_oracle_and_content_hash":6561,"initial_inventory":408,"materialize":213,"post_churn_inventory":201,"sqlite_fixture":16},"physical_git_worktrees":2,"plan_sha256":"39f07ef4e95bf8e249f0af90c0b6337ed3fde27bcdb1b639d509bb432755e313","primary_scale_worktrees":1,"process_tree_rss_peak_bytes":32321536,"result":"PASS","retained_worktree_bytes":1048576,"retained_worktree_files":1,"runtime_arch":"amd64","runtime_os":"windows","sealed_index_deadline_seconds":7200,"sealed_limits":{"max_indexed_files":1000000,"max_file_bytes":2097152,"max_source_bytes_per_snapshot":34359738368,"max_capture_manifest_bytes":34359738368,"max_worktree_cache_bytes":412316860416,"process_tree_rss_budget_bytes":8589934592,"volume_reserve_bytes":2147483648,"volume_warning_bytes":4294967296,"index_timeout_seconds":7200},"source_bytes":20971520,"source_files":1000,"sqlite_database_file":"synthetic scale facts fixture; not production index schema","sqlite_wal_peak_bytes":173072,"storage_admission":[{"VolumeID":"windows-volume-serial:4ac00ebc","AvailableBytes":528338526208,"RequiredBytes":2316521984,"Warning":false,"Admitted":true}],"storage_preflight":"admitted","storage_warnings":[],"test_binary_timeout_seconds":1200,"volume_id":"windows-volume-4ac00ebc","worker_timeout_seconds":900}
+--- PASS: TestScaleAcceptanceWorkload (8.13s)
+=== RUN   TestScaleCohortDeadlinesAreFinite
+=== RUN   TestScaleCohortDeadlinesAreFinite/S
+=== RUN   TestScaleCohortDeadlinesAreFinite/M
+=== RUN   TestScaleCohortDeadlinesAreFinite/L
+=== RUN   TestScaleCohortDeadlinesAreFinite/XL
+--- PASS: TestScaleCohortDeadlinesAreFinite (0.00s)
+    --- PASS: TestScaleCohortDeadlinesAreFinite/S (0.00s)
+    --- PASS: TestScaleCohortDeadlinesAreFinite/M (0.00s)
+    --- PASS: TestScaleCohortDeadlinesAreFinite/L (0.00s)
+    --- PASS: TestScaleCohortDeadlinesAreFinite/XL (0.00s)
+=== RUN   TestScaleRetentionAdmissionCountsSharedVolumeReservationsOnce
+--- PASS: TestScaleRetentionAdmissionCountsSharedVolumeReservationsOnce (0.00s)
+=== RUN   TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot
+--- PASS: TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot (0.25s)
+=== RUN   TestSymlinkSwapNeverReturnsBytesOutsideRegisteredRoot
+--- PASS: TestSymlinkSwapNeverReturnsBytesOutsideRegisteredRoot (0.10s)
+=== RUN   TestAllPublicMCPRoutesKeepTheSyntheticCanaryUnchanged
+--- PASS: TestAllPublicMCPRoutesKeepTheSyntheticCanaryUnchanged (0.14s)
+=== RUN   TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture
+--- PASS: TestPoisonedGoEnvironmentDoesNotDownloadOrAcceptMutatedCapture (0.06s)
+=== RUN   TestDirectoryJunctionCannotExposeSourceOutsideRegisteredRoot
+--- PASS: TestDirectoryJunctionCannotExposeSourceOutsideRegisteredRoot (0.18s)
+=== RUN   TestSelfIndexWorker
+    self_index_test.go:55: worker runs only from the copied, pinned acceptance binary
+--- SKIP: TestSelfIndexWorker (0.00s)
+=== RUN   TestSelfIndexPinnedBinaryAcceptance
+    self_index_test.go:182: SELF_INDEX target_revision=6827429e6360741ceb8a42db94a5b4b0778b4991 analyzer_source_revision=a7ebda7e5846c82dceffb4a87961a1726188ef5b candidate_test_binary_sha256=b49ffde0a7f154c15a6d4faa088eb2dab87a3a3548d36a6ee7db8f200a233523 inventory_files=322 package_files=5 source_bytes=130533 declarations=193 provider_change_invalidates=true direct_tool_fallback=go list + go/parser cli_index_claimed=false state_outside_target=true
+--- PASS: TestSelfIndexPinnedBinaryAcceptance (4.83s)
+=== RUN   TestSelfIndexSpecOnlyKeepsIntendedPlaneSeparate
+--- PASS: TestSelfIndexSpecOnlyKeepsIntendedPlaneSeparate (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/acceptance	18.070s
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/S/count-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/S/byte-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/S/combined
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/M/count-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/M/byte-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/M/combined
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/L/count-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/L/byte-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/L/combined
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/XL/count-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/XL/byte-only
+=== RUN   TestCohortPlansHaveIndependentCountAndByteOracles/XL/combined
+--- PASS: TestCohortPlansHaveIndependentCountAndByteOracles (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/S/count-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/S/byte-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/S/combined (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/M/count-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/M/byte-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/M/combined (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/L/count-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/L/byte-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/L/combined (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/XL/count-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/XL/byte-only (0.00s)
+    --- PASS: TestCohortPlansHaveIndependentCountAndByteOracles/XL/combined (0.00s)
+=== RUN   TestXLV1PlanCarriesSealedVerificationLimits
+--- PASS: TestXLV1PlanCarriesSealedVerificationLimits (0.00s)
+=== RUN   TestPlanRejectsUnsupportedOrIncorrectOracles
+--- PASS: TestPlanRejectsUnsupportedOrIncorrectOracles (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale	0.268s

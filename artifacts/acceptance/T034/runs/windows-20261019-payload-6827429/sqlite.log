@@ -1,0 +1,94 @@
+=== RUN   TestMeasureIndexCacheReportsLogicalFilesAndPageAccounting
+--- PASS: TestMeasureIndexCacheReportsLogicalFilesAndPageAccounting (0.06s)
+=== RUN   TestOwnedCacheAccountingIncludesRenameAndOtherScratchFiles
+--- PASS: TestOwnedCacheAccountingIncludesRenameAndOtherScratchFiles (0.05s)
+=== RUN   TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput
+--- PASS: TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput (0.10s)
+=== RUN   TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback
+--- PASS: TestAdmissionJournalCanonicalBoundsBindingAndAtomicReadback (0.01s)
+=== RUN   TestAdmissionJournalAccepts256Entries
+--- PASS: TestAdmissionJournalAccepts256Entries (0.01s)
+=== RUN   TestAdmissionJournalRejectsMoreThan256Entries
+--- PASS: TestAdmissionJournalRejectsMoreThan256Entries (0.00s)
+=== RUN   TestOnlineSQLiteBackupCopiesSnapshotAndRefusesOverwrite
+--- PASS: TestOnlineSQLiteBackupCopiesSnapshotAndRefusesOverwrite (0.02s)
+=== RUN   TestBackupWorktreeCapturesConsistentStoreSetAndReferencedArtifacts
+--- PASS: TestBackupWorktreeCapturesConsistentStoreSetAndReferencedArtifacts (0.47s)
+=== RUN   TestPublishRejectsModuleCycleBeforeChangingGeneration
+--- PASS: TestPublishRejectsModuleCycleBeforeChangingGeneration (0.08s)
+=== RUN   TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent
+--- PASS: TestGenerationGCRespectsRetentionSharedBlobsAndIsIdempotent (0.23s)
+=== RUN   TestGenerationGCUsesRequiredDomainDeleteOrder
+--- PASS: TestGenerationGCUsesRequiredDomainDeleteOrder (0.17s)
+=== RUN   TestGenerationGCRemovesOnlyVerifiedUnreferencedManifest
+--- PASS: TestGenerationGCRemovesOnlyVerifiedUnreferencedManifest (0.19s)
+=== RUN   TestGenerationGCRollsBackWholeGenerationAfterInjectedFailure
+--- PASS: TestGenerationGCRollsBackWholeGenerationAfterInjectedFailure (0.42s)
+=== RUN   TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly
+--- PASS: TestGenerationGCRollsBackCorruptModuleCycleAndDryRunIsReadOnly (0.09s)
+=== RUN   TestGenerationPublishSwitchesPointerAtomicallyAndIsIdempotent
+--- PASS: TestGenerationPublishSwitchesPointerAtomicallyAndIsIdempotent (0.64s)
+=== RUN   TestGenerationCommitFailureRollsBackStateAndActivePointer
+--- PASS: TestGenerationCommitFailureRollsBackStateAndActivePointer (0.15s)
+=== RUN   TestGenerationBatchFailureRollsBackStagedFacts
+--- PASS: TestGenerationBatchFailureRollsBackStagedFacts (0.07s)
+=== RUN   TestGenerationWriterLeaseCoversMultipleShortBatches
+--- PASS: TestGenerationWriterLeaseCoversMultipleShortBatches (0.22s)
+=== RUN   TestGenerationOwnerCASCancellationAndRollbackPreserveActive
+--- PASS: TestGenerationOwnerCASCancellationAndRollbackPreserveActive (0.25s)
+=== RUN   TestPublishedSnapshotRemainsConsistentWhileWriterAdvances
+--- PASS: TestPublishedSnapshotRemainsConsistentWhileWriterAdvances (0.26s)
+=== RUN   TestPublishedSnapshotNeverExposesBuildingGeneration
+--- PASS: TestPublishedSnapshotNeverExposesBuildingGeneration (0.07s)
+=== RUN   TestContinuousReadersStayGenerationConsistentAcrossRepeatedPublishes
+--- PASS: TestContinuousReadersStayGenerationConsistentAcrossRepeatedPublishes (0.44s)
+=== RUN   TestStoreLifecycleAndWriterLeasesStayScopedToTheirWorktree
+--- PASS: TestStoreLifecycleAndWriterLeasesStayScopedToTheirWorktree (0.14s)
+=== RUN   TestStoreOwnershipWaitsForHomeLifecycleBeforeCreatingWorktreeLocks
+--- PASS: TestStoreOwnershipWaitsForHomeLifecycleBeforeCreatingWorktreeLocks (0.03s)
+=== RUN   TestAdmissionConfigDriftWaitsForLiveOwnerAndUpdatesEmptyJournal
+--- PASS: TestAdmissionConfigDriftWaitsForLiveOwnerAndUpdatesEmptyJournal (0.60s)
+=== RUN   TestAdmissionHoldsSharedConfigLockThroughJournalWrite
+--- PASS: TestAdmissionHoldsSharedConfigLockThroughJournalWrite (0.10s)
+=== RUN   TestAdmissionRecoveryReclaimsOnlyAnUnlockedVerifiedOwner
+--- PASS: TestAdmissionRecoveryReclaimsOnlyAnUnlockedVerifiedOwner (0.09s)
+=== RUN   TestOpenIndexAdmissionRejectsPeakBeforeCreatingSQLite
+--- PASS: TestOpenIndexAdmissionRejectsPeakBeforeCreatingSQLite (0.01s)
+=== RUN   TestOwnedIndexPathUsesTheSameHomePathSpelling
+--- PASS: TestOwnedIndexPathUsesTheSameHomePathSpelling (0.00s)
+=== RUN   TestRenameResultSpoolIsImmutableAndReadableWhileSQLiteWriterIsHeld
+--- PASS: TestRenameResultSpoolIsImmutableAndReadableWhileSQLiteWriterIsHeld (0.08s)
+=== RUN   TestRenameResultSpoolAggregateQuotaSerializesIndependentOwners
+--- PASS: TestRenameResultSpoolAggregateQuotaSerializesIndependentOwners (0.11s)
+=== RUN   TestRenameResultReservationRecoversAnExitedOwner
+--- PASS: TestRenameResultReservationRecoversAnExitedOwner (0.09s)
+=== RUN   TestRenameResultSpoolRejectsAlreadyCanceledWrite
+--- PASS: TestRenameResultSpoolRejectsAlreadyCanceledWrite (0.05s)
+=== RUN   TestOpenIndexCreatesOrderedSchemaAndAppliesEveryPoolSetting
+--- PASS: TestOpenIndexCreatesOrderedSchemaAndAppliesEveryPoolSetting (0.16s)
+=== RUN   TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath
+=== RUN   TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/empty_worktree_on_missing_path
+=== RUN   TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/malformed_worktree_on_missing_path
+=== RUN   TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/empty_worktree_on_empty_file
+=== RUN   TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/malformed_worktree_on_empty_file
+--- PASS: TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath (0.00s)
+    --- PASS: TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/empty_worktree_on_missing_path (0.00s)
+    --- PASS: TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/malformed_worktree_on_missing_path (0.00s)
+    --- PASS: TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/empty_worktree_on_empty_file (0.00s)
+    --- PASS: TestOpenIndexRejectsInvalidFreshIdentityBeforeMutatingPath/malformed_worktree_on_empty_file (0.00s)
+=== RUN   TestOpenIndexMigratesV1AndPreservesIdentity
+--- PASS: TestOpenIndexMigratesV1AndPreservesIdentity (0.21s)
+=== RUN   TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails
+--- PASS: TestIndexMigrationRollsBackSchemaWhenIdentityGuardFails (0.17s)
+=== RUN   TestOpenIndexRejectsFutureSchemaWithoutChangingFile
+--- PASS: TestOpenIndexRejectsFutureSchemaWithoutChangingFile (0.22s)
+=== RUN   TestOpenIndexRejectsNonemptyUnmanagedDatabaseWithoutMutation
+--- PASS: TestOpenIndexRejectsNonemptyUnmanagedDatabaseWithoutMutation (0.03s)
+=== RUN   TestCaptureManifestReferenceIsCanonicalAndBoundToGeneration
+--- PASS: TestCaptureManifestReferenceIsCanonicalAndBoundToGeneration (0.08s)
+=== RUN   TestCaptureManifestReadRejectsSnapshotDigestMismatch
+--- PASS: TestCaptureManifestReadRejectsSnapshotDigestMismatch (0.05s)
+=== RUN   TestSQLiteContextDeadlineInterruptsBusyWriter
+--- PASS: TestSQLiteContextDeadlineInterruptsBusyWriter (0.22s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/store/sqlite	7.120s

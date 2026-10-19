@@ -1,0 +1,106 @@
+=== RUN   TestPublishAtomicFileFlushesAndRefusesReplacement
+--- PASS: TestPublishAtomicFileFlushesAndRefusesReplacement (0.01s)
+=== RUN   TestCopyAtomicFileReplacesOnlyAfterVerifiedContainedStream
+--- PASS: TestCopyAtomicFileReplacesOnlyAfterVerifiedContainedStream (0.02s)
+=== RUN   TestPublishAtomicFileNoReplaceIsRaceSafe
+--- PASS: TestPublishAtomicFileNoReplaceIsRaceSafe (0.01s)
+=== RUN   TestRemoveRegularFileDeletesOnlyOneVerifiedContainedFile
+--- PASS: TestRemoveRegularFileDeletesOnlyOneVerifiedContainedFile (0.00s)
+=== RUN   TestOpenRegularFileCannotBeRedirectedByDirectoryReplacement
+--- PASS: TestOpenRegularFileCannotBeRedirectedByDirectoryReplacement (0.01s)
+=== RUN   TestAvailableBytesRejectsPathNotBoundToRootHandle
+--- PASS: TestAvailableBytesRejectsPathNotBoundToRootHandle (0.00s)
+=== RUN   TestLockChildProcess
+--- PASS: TestLockChildProcess (0.00s)
+=== RUN   TestLockModesAreSharedExclusiveAndBounded
+--- PASS: TestLockModesAreSharedExclusiveAndBounded (0.03s)
+=== RUN   TestHomeConfigLockCoordinatesReadersAndWriters
+--- PASS: TestHomeConfigLockCoordinatesReadersAndWriters (0.05s)
+=== RUN   TestWorktreeLockLayoutRejectsNoncanonicalIdentity
+--- PASS: TestWorktreeLockLayoutRejectsNoncanonicalIdentity (0.00s)
+=== RUN   TestAcquireExistingLockDoesNotCreateLockfile
+--- PASS: TestAcquireExistingLockDoesNotCreateLockfile (0.00s)
+=== RUN   TestLockContextCancellationReleasesAttemptHandle
+--- PASS: TestLockContextCancellationReleasesAttemptHandle (0.04s)
+=== RUN   TestProcessExitReleasesKernelLock
+--- PASS: TestProcessExitReleasesKernelLock (0.14s)
+=== RUN   TestLockfileRejectsHardlinksAndLinks
+--- PASS: TestLockfileRejectsHardlinksAndLinks (0.00s)
+=== RUN   TestRootIdentityAndAvailableBytesAreBoundToOpenedDirectory
+--- PASS: TestRootIdentityAndAvailableBytesAreBoundToOpenedDirectory (0.00s)
+=== RUN   TestWriteAtomicFileStaysUnderVerifiedRootAndRejectsLinks
+--- PASS: TestWriteAtomicFileStaysUnderVerifiedRootAndRejectsLinks (0.14s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime	0.792s
+=== RUN   TestDefaultsResolveWorkersAndMatchContract
+--- PASS: TestDefaultsResolveWorkersAndMatchContract (0.02s)
+=== RUN   TestValidateUsesWholeCandidateAndReportsHomeSource
+--- PASS: TestValidateUsesWholeCandidateAndReportsHomeSource (0.02s)
+=== RUN   TestCanonicalSourceDigestIgnoresObjectKeyOrder
+--- PASS: TestCanonicalSourceDigestIgnoresObjectKeyOrder (0.01s)
+=== RUN   TestEffectiveDigestTracksCPUResolutionButSourceDigestDoesNot
+--- PASS: TestEffectiveDigestTracksCPUResolutionButSourceDigestDoesNot (0.02s)
+=== RUN   TestAlternateAndCLISharedFieldsCannotOverrideHome
+--- PASS: TestAlternateAndCLISharedFieldsCannotOverrideHome (0.02s)
+=== RUN   TestHardCapsAndCrossFieldLimitsRejectBeforeUse
+--- PASS: TestHardCapsAndCrossFieldLimitsRejectBeforeUse (0.02s)
+=== RUN   TestValidateEffectiveRequiresActiveResourceLimits
+=== RUN   TestValidateEffectiveRequiresActiveResourceLimits/storage_reserve
+=== RUN   TestValidateEffectiveRequiresActiveResourceLimits/RSS_budget
+=== RUN   TestValidateEffectiveRequiresActiveResourceLimits/monitor_interval
+--- PASS: TestValidateEffectiveRequiresActiveResourceLimits (0.00s)
+    --- PASS: TestValidateEffectiveRequiresActiveResourceLimits/storage_reserve (0.00s)
+    --- PASS: TestValidateEffectiveRequiresActiveResourceLimits/RSS_budget (0.00s)
+    --- PASS: TestValidateEffectiveRequiresActiveResourceLimits/monitor_interval (0.00s)
+=== RUN   TestStrictSourceRejectsDuplicateAndMalformedInput
+--- PASS: TestStrictSourceRejectsDuplicateAndMalformedInput (0.01s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config	0.529s
+=== RUN   TestRunUsesExplicitEnvironmentAndBoundsOutput
+--- PASS: TestRunUsesExplicitEnvironmentAndBoundsOutput (0.14s)
+=== RUN   TestRunHelperProcess
+--- PASS: TestRunHelperProcess (0.00s)
+=== RUN   TestRunRejectsUnknownEnvironmentAndShellWrapper
+--- PASS: TestRunRejectsUnknownEnvironmentAndShellWrapper (0.00s)
+=== RUN   TestRunCancelsOwnedProcessTreeAndSettlesChild
+--- PASS: TestRunCancelsOwnedProcessTreeAndSettlesChild (0.03s)
+=== RUN   TestRunSettlesDescendantsAfterParentSuccess
+--- PASS: TestRunSettlesDescendantsAfterParentSuccess (0.26s)
+=== RUN   TestRunCancelsWhenProcessTreeRSSExceedsBudget
+--- PASS: TestRunCancelsWhenProcessTreeRSSExceedsBudget (0.00s)
+=== RUN   TestRunRejectsUnadmittedStorageBeforeStartingTool
+--- PASS: TestRunRejectsUnadmittedStorageBeforeStartingTool (0.00s)
+=== RUN   TestDefaultProcessLimitsMatchRuntimeConfiguration
+--- PASS: TestDefaultProcessLimitsMatchRuntimeConfiguration (0.00s)
+=== RUN   TestEvaluateResourceAdmissionAggregatesSharedVolumeAndRemainingReservations
+--- PASS: TestEvaluateResourceAdmissionAggregatesSharedVolumeAndRemainingReservations (0.00s)
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_observation
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_scope
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/stale_observation
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/future_observation
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/negative_remaining
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/conflicting_reservation
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/overflow_future_demand
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/warning_below_block
+=== RUN   TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_max_age
+--- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_observation (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_scope (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/stale_observation (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/future_observation (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/negative_remaining (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/conflicting_reservation (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/overflow_future_demand (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/warning_below_block (0.00s)
+    --- PASS: TestEvaluateResourceAdmissionRejectsUnknownStaleInvalidAndOverflowInputs/missing_max_age (0.00s)
+=== RUN   TestMeasureStorageDestinationsGroupsOpenedVolume
+--- PASS: TestMeasureStorageDestinationsGroupsOpenedVolume (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/exec	0.780s
+=== RUN   TestWorktreeMaintenanceDrainsOnlyTargetWorktree
+--- PASS: TestWorktreeMaintenanceDrainsOnlyTargetWorktree (0.05s)
+=== RUN   TestWorktreeMaintenanceHonorsCancellationAndValidation
+--- PASS: TestWorktreeMaintenanceHonorsCancellationAndValidation (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/maintenance	0.361s

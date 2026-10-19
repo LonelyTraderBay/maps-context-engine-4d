@@ -1,0 +1,46 @@
+=== RUN   TestConcurrencyHelperProcess
+--- PASS: TestConcurrencyHelperProcess (0.00s)
+=== RUN   TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses
+--- PASS: TestWorktreeWritersAndPublishedReadersAreIndependentAcrossProcesses (0.44s)
+=== RUN   TestFreshSyntheticGitAndSQLiteFixtureTeardownEligibility
+--- PASS: TestFreshSyntheticGitAndSQLiteFixtureTeardownEligibility (0.01s)
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/missing_authority
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/baseline_existed
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/not_reconstructible
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/writer_still_active
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/crash_leftover
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/old_or_shared_data
+=== RUN   TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/staged_data
+--- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates (0.09s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/missing_authority (0.01s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/baseline_existed (0.01s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/not_reconstructible (0.01s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/writer_still_active (0.01s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/crash_leftover (0.02s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/old_or_shared_data (0.01s)
+    --- PASS: TestFixtureTeardownRefusesProtectedAndUnprovenCandidates/staged_data (0.01s)
+=== RUN   TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement
+=== RUN   TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/linked_common_directory
+=== RUN   TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/unexpected_file
+=== RUN   TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/identity_replaced
+--- PASS: TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement (0.04s)
+    --- PASS: TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/linked_common_directory (0.02s)
+    --- PASS: TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/unexpected_file (0.01s)
+    --- PASS: TestFixtureTeardownRefusesLinkedGitAndUnexpectedReplacement/identity_replaced (0.01s)
+=== RUN   TestTelemetrySanitizesFixedSchemaAndMetricAllowlist
+--- PASS: TestTelemetrySanitizesFixedSchemaAndMetricAllowlist (0.00s)
+=== RUN   TestTelemetryAllowsEveryS16Metric
+--- PASS: TestTelemetryAllowsEveryS16Metric (0.00s)
+=== RUN   TestTelemetryDebugIsOptInAndStillSanitized
+--- PASS: TestTelemetryDebugIsOptInAndStillSanitized (0.00s)
+=== RUN   TestTelemetryByteCapDegradesOnceWithoutFailingCaller
+--- PASS: TestTelemetryByteCapDegradesOnceWithoutFailingCaller (0.00s)
+=== RUN   TestTelemetryPartialWriteDisablesSinkAndSanitizesFailure
+--- PASS: TestTelemetryPartialWriteDisablesSinkAndSanitizesFailure (0.00s)
+=== RUN   TestTelemetryConcurrentRecordsRemainWholeJSONLines
+--- PASS: TestTelemetryConcurrentRecordsRemainWholeJSONLines (0.00s)
+=== RUN   TestTelemetryOpenFileCountsExistingBytesAndDoesNotTruncate
+--- PASS: TestTelemetryOpenFileCountsExistingBytesAndDoesNotTruncate (0.00s)
+PASS
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration	1.283s
