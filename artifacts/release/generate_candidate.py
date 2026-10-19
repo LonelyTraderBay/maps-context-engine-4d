@@ -13,16 +13,16 @@ ROOT = Path.cwd()
 RELEASE = ROOT / "artifacts/release"
 SCRIPT_REF = "artifacts/release/generate_candidate.py"
 T002_REF = "artifacts/preflight/T002/dependency-review.json"
-SUPPORT_REF = "artifacts/git-delivery-support/T041-r1-4aac9ac0-6c86-4bf6-a091-f9d4797c5791"
+SUPPORT_REF = "artifacts/git-delivery-support/T041-r2-936739b7-193e-4428-887a-a0da3bcd69fa"
 VULN_REF = SUPPORT_REF + "/security/govulncheck-attempt-1/record.json"
-FOCUSED_REF = SUPPORT_REF + "/security/focused-controls-tests.log"
+FOCUSED_REF = SUPPORT_REF + "/security/govulncheck-attempt-1/focused-controls-tests.log"
 VULN_LOG_REF = SUPPORT_REF + "/security/govulncheck-attempt-1/scan.log"
 VULN_VERSION_REF = SUPPORT_REF + "/security/govulncheck-attempt-1/version.log"
 REPO = "github.com/LonelyTraderBay/maps-context-engine-4d"
-T041_SOURCE = "10d823e4d5012506f189c1ef62fd4477b8aa453e"
-T041_ALLOCATION = "68cbc596514e27df6a903fcd7ccb974fe653f145"
-T041_PROGRESS_RUN = 39316166881
-T041_ALLOCATION_RUN = 39314829467
+T041_SOURCE = "c39b08be3ebf99fc10af7a228d8e88a64e908460"
+T041_ALLOCATION = "1991e07ae2bbc92380df54afe562d237512e1659"
+T041_PROGRESS_RUN = 39327929671
+T041_ALLOCATION_RUN = 39327034066
 REPO_ID = 1421031011
 LICENSE_ATTRIBUTES_REF = "artifacts/release/licenses/.gitattributes"
 LICENSE_ATTRIBUTES = b"* -text whitespace=-blank-at-eof\n"
@@ -368,6 +368,8 @@ def main() -> None:
     parser.add_argument("--source-revision", required=True)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--write", action="store_true")
+    mode.add_argument("--replace-existing", action="store_true",
+                      help="explicitly regenerate and replace existing release artifacts")
     mode.add_argument("--check", action="store_true")
     args = parser.parse_args()
     expected = build_outputs(args.source_revision)
@@ -387,14 +389,14 @@ def main() -> None:
                           "source_revision": args.source_revision}, sort_keys=True))
         return
     mismatches = sorted(ref for ref, data in expected.items() if (ROOT / ref).exists() and (ROOT / ref).read_bytes() != data)
-    if mismatches:
+    if mismatches and not args.replace_existing:
         raise SystemExit("Refusing to overwrite existing release artifacts with different bytes: " + repr(mismatches))
     for ref, data in expected.items():
         path = ROOT / ref
         path.parent.mkdir(parents=True, exist_ok=True)
-        if not path.exists():
+        if args.replace_existing or not path.exists():
             path.write_bytes(data)
-    print(json.dumps({"result": "WRITTEN", "files": len(expected),
+    print(json.dumps({"result": "REPLACED" if args.replace_existing else "WRITTEN", "files": len(expected),
                       "manifest_sha256": sha((ROOT / "artifacts/release/release-candidate.json").read_bytes()),
                       "source_revision": args.source_revision}, sort_keys=True))
 
