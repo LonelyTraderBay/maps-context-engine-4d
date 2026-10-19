@@ -70,8 +70,28 @@ func TestImportUsageAggregatesRetriesAndSeparateCosts(t *testing.T) {
 	if got, want := *report.Variants[0].InputTokens, int64(9010); got != want {
 		t.Fatalf("A input tokens = %d, want %d (including failed attempt)", got, want)
 	}
-	if got, want := *report.Variants[0].CachedInputTokens, int64(1801); got != want {
-		t.Fatalf("A cached input tokens = %d, want %d (including failed attempt and retry)", got, want)
+	for _, expected := range []struct {
+		variant Variant
+		cached  int64
+	}{
+		{variant: VariantA, cached: 1801},
+		{variant: VariantB, cached: 1620},
+		{variant: VariantC, cached: 1260},
+	} {
+		var metric *VariantMetrics
+		for index := range report.Variants {
+			if report.Variants[index].Variant == expected.variant {
+				metric = &report.Variants[index]
+				break
+			}
+		}
+		if metric == nil || metric.CachedInputTokens == nil || *metric.CachedInputTokens != expected.cached {
+			var got any
+			if metric != nil {
+				got = metric.CachedInputTokens
+			}
+			t.Fatalf("%s cached input tokens = %v, want %d", expected.variant, got, expected.cached)
+		}
 	}
 	if report.Variants[0].Proxy.PayloadBytes != 9100 {
 		t.Fatalf("A proxy bytes = %d, want 9100", report.Variants[0].Proxy.PayloadBytes)
