@@ -284,11 +284,11 @@ func selfIndexWorkspaceRoot(t *testing.T) string {
 
 func clonePinnedSnapshot(t *testing.T, gitBinary, sourceRoot, targetRoot, revision string) {
 	t.Helper()
-	command := osexec.Command(gitBinary, "clone", "--quiet", "--no-hardlinks", "--no-checkout", "--", sourceRoot, targetRoot)
+	command := osexec.Command(gitBinary, "-c", "core.longpaths=true", "clone", "--quiet", "--no-hardlinks", "--no-checkout", "--", sourceRoot, targetRoot)
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("clone immutable self-index target: %v: %s", err, bytes.TrimSpace(output))
 	}
-	command = osexec.Command(gitBinary, "-C", targetRoot, "checkout", "--quiet", "--detach", revision)
+	command = osexec.Command(gitBinary, "-C", targetRoot, "-c", "core.longpaths=true", "checkout", "--quiet", "--detach", revision)
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("checkout pinned self-index target %s: %v: %s", revision, err, bytes.TrimSpace(output))
 	}
