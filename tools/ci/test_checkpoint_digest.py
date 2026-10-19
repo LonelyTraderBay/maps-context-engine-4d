@@ -102,6 +102,11 @@ class CheckpointDigestTests(unittest.TestCase):
             initial = compute_checkpoint_digests(root, "T003")
             self.assertEqual(initial, compute_checkpoint_digests(root, "T003"))
 
+            nested_repository = root / "outside/nested-repository"
+            nested_repository.mkdir()
+            _git(nested_repository, "init", "-b", "main")
+            self.assertEqual(initial, compute_checkpoint_digests(root, "T003"))
+
             spec_path = root / "Maps-Context-Engine-4D_SPEC.md"
             spec_path.write_text(SPEC.format(checkpoint="second"), encoding="utf-8", newline="\n")
             checkpoint_only = compute_checkpoint_digests(root, "T003")

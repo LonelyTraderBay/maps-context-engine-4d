@@ -45,6 +45,9 @@ def _decode_paths(raw: bytes, owner: str) -> set[str]:
             path = value.decode("utf-8", "strict")
         except UnicodeDecodeError as exc:
             raise DigestError(f"{owner} có đường dẫn không phải UTF-8: {exc}") from exc
+        # Git reports an untracked nested repository as a directory marker.
+        if path.endswith("/"):
+            path = path[:-1]
         if path.startswith("/") or "\\" in path or any(part in ("", ".", "..") for part in path.split("/")):
             raise DigestError(f"{owner} có đường dẫn không an toàn: {path!r}")
         paths.add(path)
