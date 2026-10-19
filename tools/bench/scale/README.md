@@ -32,3 +32,21 @@ Trước cohort nặng, giữ lại kế hoạch gốc `NOT_RUN`, số đo host 
 admission. Benchmark deadline sửa đổi chỉ dùng để hoàn tất phép đo synthetic và
 so sánh với sealed target; không sửa sealed XL-V1 hay interactive defaults bằng
 metric fixture.
+
+## Kết quả đo XL tổng hợp
+
+Windows 11 x64/NTFS, Go 1.27.2, 24 logical processors: fixture đã materialize
+và đối chiếu đủ 1.000.000 file, 34.359.738.368 byte (32 GiB), với hai Git
+worktree và churn 100.000 file thêm/xóa. Acceptance trả `PASS` sau 9.880.308 ms
+(2 giờ 44 phút 40 giây); riêng oracle/hash độc lập mất 9.174.228 ms.
+
+RSS đỉnh của process tree là 984.006.656 byte; capture manifest 179.900.446
+byte; cache fixture đo được 478.901.294 byte; SQLite WAL fixture đạt đỉnh
+149.943.312 byte. Dung lượng khả dụng giảm từ 542.109.077.504 xuống
+493.300.916.224 byte; admission yêu cầu 49.442.488.832 byte và được chấp nhận.
+
+Fixture vượt sealed XL-V1 index deadline 7.200 giây thêm 2.680.308 ms. Vì đây
+là inventory/capture và SQLite facts fixture tổng hợp, kết quả chỉ chứng minh
+phép thử này hoàn tất dưới benchmark ceiling 4 giờ; nó không chứng minh product
+index đạt deadline hoặc xác nhận XL là envelope được hỗ trợ. Log và JSON metrics
+được giữ trong evidence archive của T053.
