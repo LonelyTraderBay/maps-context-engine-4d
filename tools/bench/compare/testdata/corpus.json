@@ -1,0 +1,742 @@
+{
+  "format_version": 1,
+  "suite_id": "mce4d-context-benchmark-synthetic-v1",
+  "synthetic": true,
+  "recommended_repeats": 3,
+  "repositories": [
+    {
+      "id": "alpha",
+      "module": "example.com/synthetic/alpha",
+      "fixture_path": "fixtures/alpha",
+      "fixture_revision": "b6555398b1d6e921225cff5d3bb50ae7e7abed0be049878113faa2d8a7a8730f",
+      "fixture_sha256": "b6555398b1d6e921225cff5d3bb50ae7e7abed0be049878113faa2d8a7a8730f",
+      "dependency_sha256": "f2d728d751e097ad69f6a77c41a26fe875ea046a0348f4fa5d4936f20a9e35c4",
+      "dependency_files": [
+        "go.mod"
+      ]
+    },
+    {
+      "id": "beta",
+      "module": "example.com/synthetic/beta",
+      "fixture_path": "fixtures/beta",
+      "fixture_revision": "8ca2542e357b301ff36a826f53f8b6ca889bc3e868e7a93dc42f32e704528163",
+      "fixture_sha256": "8ca2542e357b301ff36a826f53f8b6ca889bc3e868e7a93dc42f32e704528163",
+      "dependency_sha256": "a92be47349d35c6bf62767c10ff9037493aa786d6d6a2e77f404d34a658ccd2a",
+      "dependency_files": [
+        "go.mod"
+      ]
+    },
+    {
+      "id": "gamma",
+      "module": "example.com/synthetic/gamma",
+      "fixture_path": "fixtures/gamma",
+      "fixture_revision": "ea7437b159d0c55742b1c3d51c9955c2342a50201da6ec27f7cf9e796d0d741b",
+      "fixture_sha256": "ea7437b159d0c55742b1c3d51c9955c2342a50201da6ec27f7cf9e796d0d741b",
+      "dependency_sha256": "93209e2550c075bc0365178b95e4a1b1dbd6bb116a481410191d3ba6ddf42f8e",
+      "dependency_files": [
+        "go.mod"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "alpha-01-local_rename",
+      "repository_id": "alpha",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/alpha; case 01.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-02-interface_change",
+      "repository_id": "alpha",
+      "scenario": "interface_change",
+      "request": "Add one required method to the target interface and update every implementation and caller. Synthetic target: example.com/synthetic/alpha; case 02.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-03-field_change",
+      "repository_id": "alpha",
+      "scenario": "field_change",
+      "request": "Change the named data field consistently across constructors, readers, and consumers. Synthetic target: example.com/synthetic/alpha; case 03.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-04-type_change",
+      "repository_id": "alpha",
+      "scenario": "type_change",
+      "request": "Change the named internal type while preserving serialized/public compatibility. Synthetic target: example.com/synthetic/alpha; case 04.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-05-behavior_bug",
+      "repository_id": "alpha",
+      "scenario": "behavior_bug",
+      "request": "Fix the described edge case and add or update a focused regression check. Synthetic target: example.com/synthetic/alpha; case 05.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-06-contract_preservation",
+      "repository_id": "alpha",
+      "scenario": "contract_preservation",
+      "request": "Update the implementation while preserving the documented API and error behavior. Synthetic target: example.com/synthetic/alpha; case 06.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-07-dirty_worktree",
+      "repository_id": "alpha",
+      "scenario": "dirty_worktree",
+      "request": "Implement the requested local change and leave every pre-existing dirty file byte-identical. Synthetic target: example.com/synthetic/alpha; case 07.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "notes/alpha-07-dirty_worktree.md": "Synthetic pre-existing user note. Benchmark variants must preserve these exact bytes.\n"
+        },
+        "sha256": "110d4ca14e26f72445aff79d007b4f55fbe0f9e4fd2ed2616713ca109f8483f3"
+      }
+    },
+    {
+      "id": "alpha-08-missing_dependency",
+      "repository_id": "alpha",
+      "scenario": "missing_dependency",
+      "request": "Restore a buildable optional integration without network access or changing the dependency policy. Synthetic target: example.com/synthetic/alpha; case 08.",
+      "expected_changed_paths": [
+        "calc/calc.go",
+        "integration/missing_dependency.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "integration/missing_dependency.go": "package integration\n\nimport _ \"example.com/fixture/missing-dependency\"\n\nfunc OptionalDependencyFixture() {}\n"
+        },
+        "sha256": "227c869d4af3fb1534dcd7eaa71e260a4be1820ebfc34acc5b1ba8718bbf0cea"
+      }
+    },
+    {
+      "id": "alpha-09-large_fanout",
+      "repository_id": "alpha",
+      "scenario": "large_fanout",
+      "request": "Change the shared helper and update all downstream fanout consumers with no unrelated edits. Synthetic target: example.com/synthetic/alpha; case 09.",
+      "expected_changed_paths": [
+        "calc/calc.go",
+        "fanout/consumer_01.go",
+        "fanout/consumer_02.go",
+        "fanout/consumer_03.go",
+        "fanout/consumer_04.go",
+        "fanout/consumer_05.go",
+        "fanout/consumer_06.go",
+        "fanout/consumer_07.go",
+        "fanout/consumer_08.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "alpha-10-local_rename",
+      "repository_id": "alpha",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/alpha; case 10.",
+      "expected_changed_paths": [
+        "calc/calc.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-01-local_rename",
+      "repository_id": "beta",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/beta; case 01.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-02-interface_change",
+      "repository_id": "beta",
+      "scenario": "interface_change",
+      "request": "Add one required method to the target interface and update every implementation and caller. Synthetic target: example.com/synthetic/beta; case 02.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-03-field_change",
+      "repository_id": "beta",
+      "scenario": "field_change",
+      "request": "Change the named data field consistently across constructors, readers, and consumers. Synthetic target: example.com/synthetic/beta; case 03.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-04-type_change",
+      "repository_id": "beta",
+      "scenario": "type_change",
+      "request": "Change the named internal type while preserving serialized/public compatibility. Synthetic target: example.com/synthetic/beta; case 04.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-05-behavior_bug",
+      "repository_id": "beta",
+      "scenario": "behavior_bug",
+      "request": "Fix the described edge case and add or update a focused regression check. Synthetic target: example.com/synthetic/beta; case 05.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-06-contract_preservation",
+      "repository_id": "beta",
+      "scenario": "contract_preservation",
+      "request": "Update the implementation while preserving the documented API and error behavior. Synthetic target: example.com/synthetic/beta; case 06.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-07-dirty_worktree",
+      "repository_id": "beta",
+      "scenario": "dirty_worktree",
+      "request": "Implement the requested local change and leave every pre-existing dirty file byte-identical. Synthetic target: example.com/synthetic/beta; case 07.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "notes/beta-07-dirty_worktree.md": "Synthetic pre-existing user note. Benchmark variants must preserve these exact bytes.\n"
+        },
+        "sha256": "2f1571ec35a463b3ba4f515111052002c70c0abedce498703adf0542a819a746"
+      }
+    },
+    {
+      "id": "beta-08-missing_dependency",
+      "repository_id": "beta",
+      "scenario": "missing_dependency",
+      "request": "Restore a buildable optional integration without network access or changing the dependency policy. Synthetic target: example.com/synthetic/beta; case 08.",
+      "expected_changed_paths": [
+        "integration/missing_dependency.go",
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "integration/missing_dependency.go": "package integration\n\nimport _ \"example.com/fixture/missing-dependency\"\n\nfunc OptionalDependencyFixture() {}\n"
+        },
+        "sha256": "227c869d4af3fb1534dcd7eaa71e260a4be1820ebfc34acc5b1ba8718bbf0cea"
+      }
+    },
+    {
+      "id": "beta-09-large_fanout",
+      "repository_id": "beta",
+      "scenario": "large_fanout",
+      "request": "Change the shared helper and update all downstream fanout consumers with no unrelated edits. Synthetic target: example.com/synthetic/beta; case 09.",
+      "expected_changed_paths": [
+        "fanout/consumer_01.go",
+        "fanout/consumer_02.go",
+        "fanout/consumer_03.go",
+        "fanout/consumer_04.go",
+        "fanout/consumer_05.go",
+        "fanout/consumer_06.go",
+        "fanout/consumer_07.go",
+        "fanout/consumer_08.go",
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "beta-10-local_rename",
+      "repository_id": "beta",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/beta; case 10.",
+      "expected_changed_paths": [
+        "store/store.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-01-local_rename",
+      "repository_id": "gamma",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/gamma; case 01.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-02-interface_change",
+      "repository_id": "gamma",
+      "scenario": "interface_change",
+      "request": "Add one required method to the target interface and update every implementation and caller. Synthetic target: example.com/synthetic/gamma; case 02.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-03-field_change",
+      "repository_id": "gamma",
+      "scenario": "field_change",
+      "request": "Change the named data field consistently across constructors, readers, and consumers. Synthetic target: example.com/synthetic/gamma; case 03.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-04-type_change",
+      "repository_id": "gamma",
+      "scenario": "type_change",
+      "request": "Change the named internal type while preserving serialized/public compatibility. Synthetic target: example.com/synthetic/gamma; case 04.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-05-behavior_bug",
+      "repository_id": "gamma",
+      "scenario": "behavior_bug",
+      "request": "Fix the described edge case and add or update a focused regression check. Synthetic target: example.com/synthetic/gamma; case 05.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-06-contract_preservation",
+      "repository_id": "gamma",
+      "scenario": "contract_preservation",
+      "request": "Update the implementation while preserving the documented API and error behavior. Synthetic target: example.com/synthetic/gamma; case 06.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-07-dirty_worktree",
+      "repository_id": "gamma",
+      "scenario": "dirty_worktree",
+      "request": "Implement the requested local change and leave every pre-existing dirty file byte-identical. Synthetic target: example.com/synthetic/gamma; case 07.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "notes/gamma-07-dirty_worktree.md": "Synthetic pre-existing user note. Benchmark variants must preserve these exact bytes.\n"
+        },
+        "sha256": "02e4623975210810be2ef2f8efb37b42348a4e99ea90218f372eb34f071b9ed6"
+      }
+    },
+    {
+      "id": "gamma-08-missing_dependency",
+      "repository_id": "gamma",
+      "scenario": "missing_dependency",
+      "request": "Restore a buildable optional integration without network access or changing the dependency policy. Synthetic target: example.com/synthetic/gamma; case 08.",
+      "expected_changed_paths": [
+        "graph/graph.go",
+        "integration/missing_dependency.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {
+          "integration/missing_dependency.go": "package integration\n\nimport _ \"example.com/fixture/missing-dependency\"\n\nfunc OptionalDependencyFixture() {}\n"
+        },
+        "sha256": "227c869d4af3fb1534dcd7eaa71e260a4be1820ebfc34acc5b1ba8718bbf0cea"
+      }
+    },
+    {
+      "id": "gamma-09-large_fanout",
+      "repository_id": "gamma",
+      "scenario": "large_fanout",
+      "request": "Change the shared helper and update all downstream fanout consumers with no unrelated edits. Synthetic target: example.com/synthetic/gamma; case 09.",
+      "expected_changed_paths": [
+        "fanout/consumer_01.go",
+        "fanout/consumer_02.go",
+        "fanout/consumer_03.go",
+        "fanout/consumer_04.go",
+        "fanout/consumer_05.go",
+        "fanout/consumer_06.go",
+        "fanout/consumer_07.go",
+        "fanout/consumer_08.go",
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "gamma-10-local_rename",
+      "repository_id": "gamma",
+      "scenario": "local_rename",
+      "request": "Rename one local helper and every in-repository reference; preserve behavior and public contracts. Synthetic target: example.com/synthetic/gamma; case 10.",
+      "expected_changed_paths": [
+        "graph/graph.go"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod",
+        "go.sum"
+      ],
+      "required_invariants": [
+        "Không sửa ngoài scope được yêu cầu.",
+        "Chạy oracle độc lập và ghi critical omissions/false edits."
+      ],
+      "oracle": "Oracle độc lập của task phải kiểm diff paths, test của module và các invariant nêu trên; không dùng context pack của variant làm oracle.",
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}
