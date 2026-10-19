@@ -76,7 +76,7 @@ def run_matrix(report_dir: Path) -> int:
         print(f"[{command_id}] exit={result.returncode} log={log_path.relative_to(ROOT).as_posix()}")
 
     all_logs = "\n".join(
-        (report_root / str(result["log"])).read_text(encoding="utf-8", errors="replace")
+        (ROOT / str(result["log"])).read_text(encoding="utf-8", errors="replace")
         for result in command_results.values()
     )
     cases = []
