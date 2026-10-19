@@ -131,6 +131,16 @@ func TestImportRejectsMalformedAndMismatchedRecords(t *testing.T) {
 	if _, err := ImportUsage(suite, filepath.Join("testdata"), duplicateKey); err == nil || !strings.Contains(err.Error(), "duplicate JSON key") {
 		t.Fatalf("duplicate JSON key error = %v", err)
 	}
+	withoutProxy := bytes.Split(bytes.TrimSpace(usage), []byte{'\n'})
+	var attemptFields map[string]json.RawMessage
+	if err := json.Unmarshal(withoutProxy[1], &attemptFields); err != nil {
+		t.Fatal(err)
+	}
+	delete(attemptFields, "proxy")
+	withoutProxy[1], _ = json.Marshal(attemptFields)
+	if _, err := ImportUsage(suite, filepath.Join("testdata"), bytes.Join(withoutProxy, []byte{'\n'})); err == nil || !strings.Contains(err.Error(), `required JSON field "proxy"`) {
+		t.Fatalf("missing proxy error = %v", err)
+	}
 	var header RunHeader
 	if err := json.Unmarshal(bytes.SplitN(usage, []byte{'\n'}, 2)[0], &header); err != nil {
 		t.Fatal(err)

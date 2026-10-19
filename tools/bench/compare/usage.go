@@ -4,10 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -151,6 +149,9 @@ func parseUsageJSONL(data []byte) (importedUsage, error) {
 			if headerSeen || len(imported.attempts) > 0 || len(imported.costs) > 0 {
 				return importedUsage{}, fmt.Errorf("line %d: run_header must be the first record: %w", lineNumber, ErrInvalidUsage)
 			}
+			if err := requireJSONFields(envelope, "kind", "format_version", "run_id", "suite_id", "seed", "repeat_count", "model", "model_version", "reasoning", "prompt_sha256", "tool_permissions_sha256", "budget_sha256"); err != nil {
+				return importedUsage{}, fmt.Errorf("line %d: %w: %v", lineNumber, ErrInvalidUsage, err)
+			}
 			if err := decodeStrictJSON(line, &imported.header); err != nil {
 				return importedUsage{}, fmt.Errorf("line %d: %w: %v", lineNumber, ErrInvalidUsage, err)
 			}
@@ -158,6 +159,16 @@ func parseUsageJSONL(data []byte) (importedUsage, error) {
 		case "attempt":
 			if !headerSeen {
 				return importedUsage{}, fmt.Errorf("line %d: run_header is missing: %w", lineNumber, ErrInvalidUsage)
+			}
+			if err := requireJSONFields(envelope, "kind", "task_id", "repository_id", "repeat", "variant", "attempt", "order_index", "start_revision", "dependency_sha256", "setup_sha256", "status", "accepted", "proxy", "critical_omissions", "false_edits"); err != nil {
+				return importedUsage{}, fmt.Errorf("line %d: %w: %v", lineNumber, ErrInvalidUsage, err)
+			}
+			var proxy map[string]json.RawMessage
+			if err := json.Unmarshal(envelope["proxy"], &proxy); err != nil {
+				return importedUsage{}, fmt.Errorf("line %d: proxy must be an object: %w", lineNumber, ErrInvalidUsage)
+			}
+			if err := requireJSONFields(proxy, "payload_bytes", "lines", "files", "read_calls"); err != nil {
+				return importedUsage{}, fmt.Errorf("line %d: proxy: %w: %v", lineNumber, ErrInvalidUsage, err)
 			}
 			var attempt UsageAttempt
 			if err := decodeStrictJSON(line, &attempt); err != nil {
@@ -167,6 +178,9 @@ func parseUsageJSONL(data []byte) (importedUsage, error) {
 		case "cost":
 			if !headerSeen {
 				return importedUsage{}, fmt.Errorf("line %d: run_header is missing: %w", lineNumber, ErrInvalidUsage)
+			}
+			if err := requireJSONFields(envelope, "kind", "sample_id", "repository_id", "variant", "start_revision", "dependency_sha256", "stage", "cache_state", "duration_ms"); err != nil {
+				return importedUsage{}, fmt.Errorf("line %d: %w: %v", lineNumber, ErrInvalidUsage, err)
 			}
 			var cost CostObservation
 			if err := decodeStrictJSON(line, &cost); err != nil {
@@ -184,6 +198,16 @@ func parseUsageJSONL(data []byte) (importedUsage, error) {
 		return importedUsage{}, fmt.Errorf("run header and at least one measurement are required: %w", ErrInvalidUsage)
 	}
 	return imported, nil
+}
+
+func requireJSONFields(record map[string]json.RawMessage, fields ...string) error {
+	for _, field := range fields {
+		value, ok := record[field]
+		if !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+			return fmt.Errorf("required JSON field %q is missing or null", field)
+		}
+	}
+	return nil
 }
 
 func validateHeader(header RunHeader, suite Suite) error {
@@ -300,38 +324,6 @@ func nonNegative(values ...int64) bool {
 	return true
 }
 
-func usageDigest(data []byte) string {
-	digest := sha256.Sum256(data)
-	return hex.EncodeToString(digest[:])
-}
-
-func sortedVariants() []Variant {
-	return append([]Variant(nil), variants...)
-}
-
 func canonicalJSON(value any) ([]byte, error) {
 	return json.Marshal(value)
-}
-
-func verifyUniquePathList(paths []string) error {
-	if !validPathSet(paths) {
-		return fmt.Errorf("path list is invalid or duplicated")
-	}
-	return nil
-}
-
-func sortAttempts(attempts []UsageAttempt) {
-	sort.Slice(attempts, func(i, j int) bool {
-		a, b := attempts[i], attempts[j]
-		if a.TaskID != b.TaskID {
-			return a.TaskID < b.TaskID
-		}
-		if a.Repeat != b.Repeat {
-			return a.Repeat < b.Repeat
-		}
-		if a.Variant != b.Variant {
-			return a.Variant < b.Variant
-		}
-		return a.Attempt < b.Attempt
-	})
 }
