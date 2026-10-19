@@ -35,8 +35,8 @@ func (tree *linuxProcessTree) Attach(command *osexec.Cmd) error {
 	if tree == nil || command == nil || command.Process == nil || command.Process.Pid <= 0 {
 		return ErrInvalidCommand
 	}
-	state, group, startTicks, err := linuxProcessDetails(command.Process.Pid)
-	if err != nil || state == 'Z' || state == 'X' || group != command.Process.Pid {
+	_, group, startTicks, err := linuxProcessDetails(command.Process.Pid)
+	if err != nil || group != command.Process.Pid {
 		return errors.Join(ErrResourceMonitor, err)
 	}
 	tree.mu.Lock()
