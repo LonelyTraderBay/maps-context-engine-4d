@@ -70,6 +70,9 @@ func TestImportUsageAggregatesRetriesAndSeparateCosts(t *testing.T) {
 	if got, want := *report.Variants[0].InputTokens, int64(9010); got != want {
 		t.Fatalf("A input tokens = %d, want %d (including failed attempt)", got, want)
 	}
+	if got, want := *report.Variants[0].CachedInputTokens, int64(1801); got != want {
+		t.Fatalf("A cached input tokens = %d, want %d (including failed attempt and retry)", got, want)
+	}
 	if report.Variants[0].Proxy.PayloadBytes != 9100 {
 		t.Fatalf("A proxy bytes = %d, want 9100", report.Variants[0].Proxy.PayloadBytes)
 	}
