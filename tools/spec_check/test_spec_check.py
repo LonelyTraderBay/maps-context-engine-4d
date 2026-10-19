@@ -10,6 +10,7 @@ import io
 import json
 import re
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -134,6 +135,46 @@ class SpecContractTests(unittest.TestCase):
         lines[index] = "|".join(cells)
         errors = validate_spec_text("\n".join(lines) + "\n")
         self.assertTrue(any("candidate DONE thiếu evidence" in error for error in errors))
+
+    def test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts(self) -> None:
+        def update_owner(task_id: str, owner: str) -> tuple[str, str]:
+            row = next(line for line in SPEC_TEXT.splitlines() if line.startswith(f"| {task_id} |"))
+            cells = row.split("|")
+            cells[8] = f" {owner} "
+            return row, "|".join(cells)
+
+        def merge(base_text: str, ours_text: str, theirs_text: str) -> tuple[int, str]:
+            with tempfile.TemporaryDirectory(prefix="mce4d-tracker-merge-") as directory:
+                root = Path(directory)
+                paths = [root / name for name in ("ours.md", "base.md", "theirs.md")]
+                for path, content in zip(paths, (ours_text, base_text, theirs_text), strict=True):
+                    path.write_text(content, encoding="utf-8", newline="\n")
+                result = subprocess.run(
+                    ["git", "merge-file", "--stdout", *(str(path) for path in paths)],
+                    cwd=root,
+                    capture_output=True,
+                    check=False,
+                )
+                return result.returncode, result.stdout.decode("utf-8", "strict")
+
+        row_a, update_a = update_owner("T039", "Codex-agent-a")
+        row_b, update_b = update_owner("T050", "Codex-agent-b")
+        ours = SPEC_TEXT.replace(row_a, update_a, 1)
+        theirs = SPEC_TEXT.replace(row_b, update_b, 1)
+        code, merged = merge(SPEC_TEXT, ours, theirs)
+
+        self.assertEqual(0, code)
+        self.assertIn("| Codex-agent-a |", merged)
+        self.assertIn("| Codex-agent-b |", merged)
+        self.assertEqual([], validate_spec_text(merged))
+
+        conflicting_a = SPEC_TEXT.replace(row_a, update_a, 1)
+        conflicting_b = SPEC_TEXT.replace(row_a, update_owner("T039", "Codex-agent-b")[1], 1)
+        conflict_code, conflict = merge(SPEC_TEXT, conflicting_a, conflicting_b)
+
+        self.assertEqual(1, conflict_code)
+        self.assertIn("<<<<<<<", conflict)
+        self.assertTrue(validate_spec_text(conflict))
 
     def test_unbalanced_fence_fails(self) -> None:
         errors = validate_spec_text(SPEC_TEXT + "\n```json\n{}\n")
