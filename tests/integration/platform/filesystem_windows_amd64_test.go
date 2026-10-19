@@ -414,12 +414,16 @@ func assertWindowsACLOracle(t *testing.T, path string, directory bool) {
 		t.Fatalf("read native Windows security descriptor: %v", err)
 	}
 	user, err := windows.GetCurrentProcessToken().GetTokenUser()
-	if err != nil || user == nil || user.User.Sid == nil {
+	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
 		t.Fatalf("read current Windows user SID: %v", err)
 	}
+	admins, err := windows.StringToSid("S-1-5-32-544")
+	if err != nil {
+		t.Fatalf("parse built-in Administrators SID: %v", err)
+	}
 	owner, _, err := descriptor.Owner()
-	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
-		t.Fatal("private object ACL owner does not match the current Windows user")
+	if err != nil || owner == nil || (!owner.Equals(user.User.Sid) && !owner.Equals(admins)) {
+		t.Fatal("private object ACL owner is neither the current Windows user nor Administrators")
 	}
 	dacl, _, err := descriptor.DACL()
 	if err != nil || dacl == nil || dacl.AceCount != 3 {

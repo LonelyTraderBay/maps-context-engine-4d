@@ -114,12 +114,16 @@ func privateWindowsSecurityDescriptor(directory bool) (*windows.SECURITY_DESCRIP
 	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
 		return nil, errors.Join(ErrUnsupportedOS, err)
 	}
+	owner, err := currentWindowsOwnerSID()
+	if err != nil {
+		return nil, errors.Join(ErrUnsupportedOS, err)
+	}
 	inheritance := ""
 	if directory {
 		inheritance = "OICI"
 	}
 	userSID := user.User.Sid.String()
-	sddl := "O:" + userSID + "D:P" +
+	sddl := "O:" + owner.String() + "D:P" +
 		"(A;" + inheritance + ";FA;;;SY)" +
 		"(A;" + inheritance + ";FA;;;BA)" +
 		"(A;" + inheritance + ";FA;;;" + userSID + ")"
@@ -130,44 +134,89 @@ func privateWindowsSecurityDescriptor(directory bool) (*windows.SECURITY_DESCRIP
 	return descriptor, nil
 }
 
+func currentWindowsOwnerSID() (*windows.SID, error) {
+	var information [1024]byte
+	var returned uint32
+	if err := windows.GetTokenInformation(windows.GetCurrentProcessToken(), windows.TokenOwner,
+		&information[0], uint32(len(information)), &returned); err != nil {
+		return nil, err
+	}
+	owner := (*windows.SIDAndAttributes)(unsafe.Pointer(&information[0]))
+	if owner.Sid == nil || !owner.Sid.IsValid() {
+		return nil, ErrUnsupportedOS
+	}
+	return owner.Sid.Copy()
+}
+
 func validatePrivateWindowsACL(handle windows.Handle, directory bool) error {
 	user, err := windows.GetCurrentProcessToken().GetTokenUser()
 	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
-		return errors.Join(ErrUnsupportedOS, err)
+		return errors.Join(fmt.Errorf("read current Windows user SID: %w", ErrUnsupportedOS), err)
 	}
 	descriptor, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT,
 		windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
 	if err != nil || descriptor == nil {
-		return errors.Join(ErrPathDenied, err)
+		return errors.Join(fmt.Errorf("read private object owner and DACL: %w", ErrPathDenied), err)
+	}
+	expectedOwner, err := currentWindowsOwnerSID()
+	if err != nil {
+		return errors.Join(fmt.Errorf("read current Windows token owner: %w", ErrUnsupportedOS), err)
 	}
 	owner, _, err := descriptor.Owner()
-	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
-		return errors.Join(ErrPathDenied, err)
+	if err != nil || owner == nil || !owner.Equals(expectedOwner) {
+		return errors.Join(fmt.Errorf("private object owner does not match the process token owner: %w", ErrPathDenied), err)
 	}
 	dacl, _, err := descriptor.DACL()
 	if err != nil || dacl == nil || dacl.AceCount != 3 {
-		return errors.Join(ErrPathDenied, err)
+		count := uint16(0)
+		if dacl != nil {
+			count = dacl.AceCount
+		}
+		return errors.Join(fmt.Errorf("private object DACL has %d ACEs; want exactly three: %w", count, ErrPathDenied), err)
 	}
-	sddl := descriptor.String()
-	if !strings.Contains(sddl, "D:P") {
-		return ErrPathDenied
+	control, _, err := descriptor.Control()
+	if err != nil || control&windows.SE_DACL_PROTECTED == 0 {
+		return errors.Join(fmt.Errorf("private object DACL is not protected from inheritance: %w", ErrPathDenied), err)
 	}
-	inheritance := ""
+	inheritanceFlags := uint8(0)
 	if directory {
-		inheritance = "OICI"
+		inheritanceFlags = windows.OBJECT_INHERIT_ACE | windows.CONTAINER_INHERIT_ACE
 	}
-	for _, sid := range []string{"SY", "BA", user.User.Sid.String()} {
-		ace := "(A;" + inheritance + ";FA;;;" + sid + ")"
-		if strings.Count(sddl, ace) != 1 {
-			return ErrPathDenied
+	allowed := map[string]bool{
+		"S-1-5-18":             false,
+		"S-1-5-32-544":         false,
+		user.User.Sid.String(): false,
+	}
+	for index := uint32(0); index < uint32(dacl.AceCount); index++ {
+		var ace *windows.ACCESS_ALLOWED_ACE
+		if err := windows.GetAce(dacl, index, &ace); err != nil || ace == nil {
+			return errors.Join(fmt.Errorf("read private object DACL ACE %d: %w", index, ErrPathDenied), err)
+		}
+		if ace.Header.AceType != windows.ACCESS_ALLOWED_ACE_TYPE || ace.Header.AceFlags != inheritanceFlags ||
+			ace.Mask != 0x001f01ff {
+			return fmt.Errorf("private object DACL ACE %d has unexpected type, flags, or access mask: %w", index, ErrPathDenied)
+		}
+		sid := (*windows.SID)(unsafe.Pointer(&ace.SidStart))
+		if !sid.IsValid() {
+			return fmt.Errorf("private object DACL ACE %d has an invalid principal SID: %w", index, ErrPathDenied)
+		}
+		principal := sid.String()
+		if _, ok := allowed[principal]; !ok || allowed[principal] {
+			return fmt.Errorf("private object DACL ACE %d grants an unexpected or duplicate principal: %w", index, ErrPathDenied)
+		}
+		allowed[principal] = true
+	}
+	for principal, present := range allowed {
+		if !present {
+			return fmt.Errorf("private object DACL is missing an allowed principal %s: %w", principal, ErrPathDenied)
 		}
 	}
 	return nil
 }
 
 func secureExistingPrivateWindowsDirectory(handle windows.Handle) error {
-	user, err := windows.GetCurrentProcessToken().GetTokenUser()
-	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
+	expectedOwner, err := currentWindowsOwnerSID()
+	if err != nil {
 		return errors.Join(ErrUnsupportedOS, err)
 	}
 	current, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT,
@@ -176,8 +225,8 @@ func secureExistingPrivateWindowsDirectory(handle windows.Handle) error {
 		return errors.Join(ErrPathDenied, err)
 	}
 	owner, _, err := current.Owner()
-	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
-		return errors.Join(ErrPathDenied, err)
+	if err != nil || owner == nil || !owner.Equals(expectedOwner) {
+		return errors.Join(fmt.Errorf("private directory owner does not match the process token owner: %w", ErrPathDenied), err)
 	}
 	descriptor, err := privateWindowsSecurityDescriptor(true)
 	if err != nil {

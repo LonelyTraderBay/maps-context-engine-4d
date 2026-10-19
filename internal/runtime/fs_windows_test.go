@@ -4,11 +4,10 @@ package runtime
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
+	"unsafe"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths"
 	"golang.org/x/sys/windows"
@@ -102,13 +101,13 @@ func assertWindowsPrivateACL(t *testing.T, path string, directory bool) {
 	if err != nil || security == nil {
 		t.Fatalf("read Windows security descriptor: err=%v descriptor=%v", err, security != nil)
 	}
-	user, err := windows.GetCurrentProcessToken().GetTokenUser()
-	if err != nil || user == nil || user.User.Sid == nil {
-		t.Fatalf("read current Windows user SID: %v", err)
+	ownerSID, err := currentWindowsOwnerSID()
+	if err != nil {
+		t.Fatalf("read current Windows token owner SID: %v", err)
 	}
 	owner, _, err := security.Owner()
-	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
-		t.Fatalf("private object owner does not match current user: err=%v", err)
+	if err != nil || owner == nil || !owner.Equals(ownerSID) {
+		t.Fatalf("private object owner does not match current token owner: err=%v", err)
 	}
 	dacl, _, err := security.DACL()
 	count := uint16(0)
@@ -118,18 +117,44 @@ func assertWindowsPrivateACL(t *testing.T, path string, directory bool) {
 	if err != nil || dacl == nil || count != 3 {
 		t.Fatalf("private object DACL has %d ACEs (err=%v); want exactly user, SYSTEM, and Administrators", count, err)
 	}
-	sddl := security.String()
-	if !strings.Contains(sddl, "D:P") {
+	control, _, err := security.Control()
+	if err != nil || control&windows.SE_DACL_PROTECTED == 0 {
 		t.Fatal("private object DACL is not protected from ambient inheritance")
 	}
-	inheritance := ""
-	if directory {
-		inheritance = "OICI"
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
+		t.Fatalf("read current Windows user SID: %v", err)
 	}
-	for _, sid := range []string{"SY", "BA", user.User.Sid.String()} {
-		ace := fmt.Sprintf("(A;%s;FA;;;%s)", inheritance, sid)
-		if strings.Count(sddl, ace) != 1 {
-			t.Fatal("private object ACL lacks exactly one full-control ACE for an allowed principal")
+	inheritanceFlags := uint8(0)
+	if directory {
+		inheritanceFlags = windows.OBJECT_INHERIT_ACE | windows.CONTAINER_INHERIT_ACE
+	}
+	allowed := map[string]bool{
+		"S-1-5-18":             false,
+		"S-1-5-32-544":         false,
+		user.User.Sid.String(): false,
+	}
+	for index := uint32(0); index < uint32(dacl.AceCount); index++ {
+		var ace *windows.ACCESS_ALLOWED_ACE
+		if err := windows.GetAce(dacl, index, &ace); err != nil || ace == nil {
+			t.Fatalf("read native private ACL ACE %d: %v", index, err)
+		}
+		if ace.Header.AceType != windows.ACCESS_ALLOWED_ACE_TYPE || ace.Header.AceFlags != inheritanceFlags || ace.Mask != 0x001f01ff {
+			t.Fatalf("private ACL ACE %d has unexpected type, inheritance, or permissions", index)
+		}
+		sid := (*windows.SID)(unsafe.Pointer(&ace.SidStart))
+		if !sid.IsValid() {
+			t.Fatalf("private ACL ACE %d has an invalid SID", index)
+		}
+		principal := sid.String()
+		if _, ok := allowed[principal]; !ok || allowed[principal] {
+			t.Fatalf("private ACL contains an unexpected or duplicate principal: %s", principal)
+		}
+		allowed[principal] = true
+	}
+	for principal, present := range allowed {
+		if !present {
+			t.Fatalf("private ACL is missing allowed principal %s", principal)
 		}
 	}
 }
