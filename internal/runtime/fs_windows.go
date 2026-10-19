@@ -109,6 +109,92 @@ func caseModeForHandle(handle uintptr) (paths.CaseMode, error) {
 	return paths.CaseInsensitive, nil
 }
 
+func privateWindowsSecurityDescriptor(directory bool) (*windows.SECURITY_DESCRIPTOR, error) {
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
+		return nil, errors.Join(ErrUnsupportedOS, err)
+	}
+	inheritance := ""
+	if directory {
+		inheritance = "OICI"
+	}
+	userSID := user.User.Sid.String()
+	sddl := "O:" + userSID + "D:P" +
+		"(A;" + inheritance + ";FA;;;SY)" +
+		"(A;" + inheritance + ";FA;;;BA)" +
+		"(A;" + inheritance + ";FA;;;" + userSID + ")"
+	descriptor, err := windows.SecurityDescriptorFromString(sddl)
+	if err != nil {
+		return nil, errors.Join(ErrUnsupportedOS, err)
+	}
+	return descriptor, nil
+}
+
+func validatePrivateWindowsACL(handle windows.Handle, directory bool) error {
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
+		return errors.Join(ErrUnsupportedOS, err)
+	}
+	descriptor, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT,
+		windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
+	if err != nil || descriptor == nil {
+		return errors.Join(ErrPathDenied, err)
+	}
+	owner, _, err := descriptor.Owner()
+	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
+		return errors.Join(ErrPathDenied, err)
+	}
+	dacl, _, err := descriptor.DACL()
+	if err != nil || dacl == nil || dacl.AceCount != 3 {
+		return errors.Join(ErrPathDenied, err)
+	}
+	sddl := descriptor.String()
+	if !strings.Contains(sddl, "D:P") {
+		return ErrPathDenied
+	}
+	inheritance := ""
+	if directory {
+		inheritance = "OICI"
+	}
+	for _, sid := range []string{"SY", "BA", user.User.Sid.String()} {
+		ace := "(A;" + inheritance + ";FA;;;" + sid + ")"
+		if strings.Count(sddl, ace) != 1 {
+			return ErrPathDenied
+		}
+	}
+	return nil
+}
+
+func secureExistingPrivateWindowsDirectory(handle windows.Handle) error {
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil || user == nil || user.User.Sid == nil || !user.User.Sid.IsValid() {
+		return errors.Join(ErrUnsupportedOS, err)
+	}
+	current, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT,
+		windows.OWNER_SECURITY_INFORMATION)
+	if err != nil || current == nil {
+		return errors.Join(ErrPathDenied, err)
+	}
+	owner, _, err := current.Owner()
+	if err != nil || owner == nil || !owner.Equals(user.User.Sid) {
+		return errors.Join(ErrPathDenied, err)
+	}
+	descriptor, err := privateWindowsSecurityDescriptor(true)
+	if err != nil {
+		return err
+	}
+	dacl, _, err := descriptor.DACL()
+	if err != nil || dacl == nil {
+		return errors.Join(ErrUnsupportedOS, err)
+	}
+	if err := windows.SetSecurityInfo(handle, windows.SE_FILE_OBJECT,
+		windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION,
+		nil, nil, dacl, nil); err != nil {
+		return errors.Join(ErrPathDenied, err)
+	}
+	return validatePrivateWindowsACL(handle, true)
+}
+
 func openRelative(rootHandle uintptr, rootPath, relative string) (*os.File, func() error, error) {
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
@@ -259,6 +345,10 @@ func availableBytesForHandle(handle uintptr, finalPath string) (int64, error) {
 }
 
 func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
+	securityDescriptor, err := privateWindowsSecurityDescriptor(true)
+	if err != nil {
+		return err
+	}
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
 	owned := make([]windows.Handle, 0, len(segments))
@@ -282,11 +372,11 @@ func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
 			cleanup()
 			return ErrOpenFailed
 		}
-		object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name, Attributes: attributes}
+		object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name, Attributes: attributes, SecurityDescriptor: securityDescriptor}
 		var opened windows.Handle
 		var status windows.IO_STATUS_BLOCK
 		err = windows.NtCreateFile(&opened,
-			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+			windows.FILE_LIST_DIRECTORY|windows.FILE_TRAVERSE|windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL|windows.WRITE_DAC|windows.SYNCHRONIZE,
 			object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
 			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, windows.FILE_OPEN_IF,
 			windows.FILE_OPEN_REPARSE_POINT|windows.FILE_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
@@ -302,6 +392,11 @@ func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
 			cleanup()
 			return ErrPathEscape
 		}
+		if err := secureExistingPrivateWindowsDirectory(opened); err != nil {
+			_ = windows.CloseHandle(opened)
+			cleanup()
+			return fmt.Errorf("private directory ownership or ACL invalid: %w", err)
+		}
 		owned = append(owned, opened)
 		parent = opened
 	}
@@ -310,6 +405,10 @@ func makeRelativeDirs(rootHandle uintptr, rootPath, relative string) error {
 }
 
 func openRelativeLock(rootHandle uintptr, rootPath, relative string, create bool) (*os.File, error) {
+	securityDescriptor, err := privateWindowsSecurityDescriptor(false)
+	if err != nil {
+		return nil, err
+	}
 	segments := strings.Split(relative, "/")
 	parent := windows.Handle(rootHandle)
 	ownedDirectories := make([]windows.Handle, 0, len(segments))
@@ -343,11 +442,14 @@ func openRelativeLock(rootHandle uintptr, rootPath, relative string, create bool
 			createDisposition = windows.FILE_OPEN_IF
 		}
 		if index < len(segments)-1 {
-			access |= windows.FILE_LIST_DIRECTORY | windows.FILE_TRAVERSE
+			access |= windows.FILE_LIST_DIRECTORY | windows.FILE_TRAVERSE | windows.READ_CONTROL
 			options |= windows.FILE_DIRECTORY_FILE
 		} else {
-			access |= windows.FILE_READ_DATA | windows.FILE_WRITE_DATA
+			access |= windows.FILE_READ_DATA | windows.FILE_WRITE_DATA | windows.READ_CONTROL
 			options |= windows.FILE_NON_DIRECTORY_FILE
+			if create {
+				object.SecurityDescriptor = securityDescriptor
+			}
 		}
 		err = windows.NtCreateFile(&opened, access, object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
 			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, createDisposition, options, 0, 0)
@@ -368,6 +470,11 @@ func openRelativeLock(rootHandle uintptr, rootPath, relative string, create bool
 				cleanup()
 				return nil, ErrNotDirectory
 			}
+			if err := validatePrivateWindowsACL(opened, true); err != nil {
+				_ = windows.CloseHandle(opened)
+				cleanup()
+				return nil, fmt.Errorf("private lock directory ACL invalid: %w", err)
+			}
 			ownedDirectories = append(ownedDirectories, opened)
 			parent = opened
 			continue
@@ -376,6 +483,11 @@ func openRelativeLock(rootHandle uintptr, rootPath, relative string, create bool
 			_ = windows.CloseHandle(opened)
 			cleanup()
 			return nil, ErrNotRegularFile
+		}
+		if err := validatePrivateWindowsACL(opened, false); err != nil {
+			_ = windows.CloseHandle(opened)
+			cleanup()
+			return nil, fmt.Errorf("private lockfile ownership or ACL invalid: %w", err)
 		}
 		file := os.NewFile(uintptr(opened), relative)
 		if file == nil {
@@ -443,6 +555,10 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, writeVal
 			_ = windows.CloseHandle(opened)
 			return ErrPathEscape
 		}
+		if err := validatePrivateWindowsACL(opened, true); err != nil {
+			_ = windows.CloseHandle(opened)
+			return fmt.Errorf("atomic file parent directory ACL invalid: %w", err)
+		}
 		ownedDirectories = append(ownedDirectories, opened)
 		parent = opened
 	}
@@ -491,11 +607,15 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, writeVal
 	if err != nil {
 		return ErrOpenFailed
 	}
-	object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name}
+	securityDescriptor, err := privateWindowsSecurityDescriptor(false)
+	if err != nil {
+		return err
+	}
+	object := &windows.OBJECT_ATTRIBUTES{Length: uint32(unsafe.Sizeof(windows.OBJECT_ATTRIBUTES{})), RootDirectory: parent, ObjectName: name, SecurityDescriptor: securityDescriptor}
 	var temporaryHandle windows.Handle
 	var status windows.IO_STATUS_BLOCK
 	err = windows.NtCreateFile(&temporaryHandle,
-		windows.DELETE|windows.FILE_WRITE_DATA|windows.FILE_READ_ATTRIBUTES|windows.SYNCHRONIZE,
+		windows.DELETE|windows.FILE_WRITE_DATA|windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL|windows.SYNCHRONIZE,
 		object, &status, nil, windows.FILE_ATTRIBUTE_NORMAL,
 		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, windows.FILE_CREATE,
 		windows.FILE_OPEN_REPARSE_POINT|windows.FILE_NON_DIRECTORY_FILE|windows.FILE_SYNCHRONOUS_IO_NONALERT, 0, 0)
@@ -522,6 +642,9 @@ func writeAtomicRelative(rootHandle uintptr, rootPath, relative string, writeVal
 			}
 		}
 	}()
+	if err := validatePrivateWindowsACL(temporaryHandle, false); err != nil {
+		return fmt.Errorf("atomic temporary file ownership or ACL invalid: %w", err)
+	}
 	info, err := fileInfo(temporaryHandle)
 	if err != nil || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DEVICE) != 0 || info.NumberOfLinks != 1 {
 		return ErrPathEscape
