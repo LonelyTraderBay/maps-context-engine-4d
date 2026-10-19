@@ -1,0 +1,383 @@
+{
+  "benchmark": {
+    "component_profile": {
+      "clock_source": "Windows QueryPerformanceCounter",
+      "filesystem": "NTFS",
+      "result": "PASS",
+      "results": [
+        {
+          "name": "warm_full_byte_freshness_scan_and_compare",
+          "p50_ns": 55523500,
+          "p95_ns": 57379400,
+          "pending": false,
+          "target_ms": 5000,
+          "target_pass": true
+        },
+        {
+          "name": "warm_symbol_search",
+          "p50_ns": 175200,
+          "p95_ns": 198300,
+          "pending": false,
+          "target_ms": 500,
+          "target_pass": true
+        },
+        {
+          "name": "warm_graph_only_context_pack",
+          "p50_ns": 903000,
+          "p95_ns": 1051600,
+          "pending": false,
+          "target_ms": 1500,
+          "target_pass": true
+        }
+      ],
+      "warm_samples": 30
+    },
+    "not_run": {
+      "abc_model_task_comparison": "NOT_RUN: no authorized independent host task-runner usage stream",
+      "cold_cache": "NOT_RUN: deterministic OS cache eviction unavailable",
+      "full_end_to_end_index": "NOT_RUN: no index orchestration command in current checkout",
+      "model_token_telemetry": "NOT_RUN: absent; proxy bytes are not converted into tokens",
+      "real_repositories": "NOT_RUN: suite and measurement fixtures are synthetic"
+    },
+    "package_analyzer": {
+      "bytes_per_op": [
+        50213890,
+        50211445,
+        50294544
+      ],
+      "inventory_files": 444,
+      "ns_per_op": [
+        414686267,
+        414458400,
+        400856900
+      ],
+      "package": "internal/analysis/golang",
+      "package_files": 5,
+      "package_source_bytes": 130533,
+      "result": "PASS",
+      "scope": "actual analyzer package microbenchmark; not end-to-end index",
+      "symbols": 193
+    },
+    "partition_invalidation": {
+      "allocs_per_op": 10331,
+      "bytes_per_op": 2353600,
+      "changed_exports": 1,
+      "ns_per_op": [
+        4848258,
+        5800637,
+        6383974
+      ],
+      "partitions": 2048,
+      "result": "PASS"
+    },
+    "scale_measurement": {
+      "bytes": 2640,
+      "path": "artifacts/bench/T039/scale-S-attempt-1/measurement.json",
+      "sha256": "06bbf8b1f64e3bc94f1c321346ebc8fa42cbca36293e29d2fd2c57ff93cde846"
+    },
+    "scale_s": {
+      "elapsed_ms": 7329,
+      "files": 1000,
+      "hardware": {
+        "filesystem": "NTFS",
+        "go": "go1.27.2 windows/amd64",
+        "logical_processors": 24,
+        "memory_bytes": 68151590912,
+        "model": "Gigabyte Z890 AORUS ELITE WIFI7",
+        "os": "Windows 11 Pro 10.0.26300",
+        "python": "3.12.10"
+      },
+      "process_tree_elapsed_ms": 7881,
+      "rss_peak_bytes": 37453824,
+      "source_bytes": 20971520
+    },
+    "scope_warning": "Scale S is synthetic inventory/capture plus a SQLite facts fixture, explicitly not product index support or production-capacity evidence. Analyzer/indexer and component profiles measure separate internal components. Passing finite-fixture performance targets does not prove product-wide support.",
+    "source_revision": "e754e1a116adba275953b61eece4f0db847da2e5",
+    "suite": {
+      "repositories": 3,
+      "synthetic": true,
+      "tasks": 30
+    },
+    "summary": {
+      "bytes": 6267,
+      "path": "artifacts/bench/T039/results-summary-attempt-2.json",
+      "sha256": "ace303efeaf1993a1f666a846580f29a9ee5ab1856c64a15162a01641deae4f0"
+    }
+  },
+  "correctness_and_contracts": {
+    "case_denominator": 69,
+    "coverage_counts": {
+      "complete": 52,
+      "limited": 17
+    },
+    "limited_cases": [
+      {
+        "id": "C005",
+        "limitation": "The negative alias oracle is tested; positive READS/WRITES relations for a proven alias are not implemented or claimed."
+      },
+      {
+        "id": "C011",
+        "limitation": "Generated/vendor/sparse/submodule metadata is checked on synthetic Git fixtures; no third-party repository corpus is included."
+      },
+      {
+        "id": "C024",
+        "limitation": "UNC, ADS, invalid UTF-8 and other operating systems are not executed by the Windows and Ubuntu CI pair."
+      },
+      {
+        "id": "C031",
+        "limitation": "AI host session creation and real context compaction are outside this engine process and are not exercised here."
+      },
+      {
+        "id": "C035",
+        "limitation": "The settling checks are bounded test fixtures; long-duration production LSP/MCP soak is not run."
+      },
+      {
+        "id": "C036",
+        "limitation": "Disk-full and real permission-denied filesystem conditions are not induced on the host volume."
+      },
+      {
+        "id": "C040",
+        "limitation": "A real Codex installation/version roundtrip and non-overwrite check require a supported host and are NOT_RUN."
+      },
+      {
+        "id": "C043",
+        "limitation": "Static tracker validation is tested; simultaneous independent editor processes are not stress-tested by this case."
+      },
+      {
+        "id": "C044",
+        "limitation": "This single-run local benchmark does not produce warm/cold cache or AI cached-token comparisons, and is not a performance baseline."
+      },
+      {
+        "id": "C047",
+        "limitation": "The fixture proves no request reached its local proxy under the poisoned environment; host-wide packet capture and unrelated external destinations are not measured."
+      },
+      {
+        "id": "C053",
+        "limitation": "The runnable matrix defaults to controlled S/combined. It makes no M/L/XL or 1,000,000-file/32-GiB product-support claim; separate T053 measurements remain scoped to their recorded revision."
+      },
+      {
+        "id": "C138",
+        "limitation": "The current implement assignment and prompt sources are validated; no separate docs-only task execution is launched."
+      },
+      {
+        "id": "C139",
+        "limitation": "The fixture enforces tracked task/contract boundaries; it does not implement an external dependency approval service."
+      },
+      {
+        "id": "C143",
+        "limitation": "The fixtures cover isolated admission and same-resource serialization; unknown external writers are represented as uncertainty, not observed host workloads."
+      },
+      {
+        "id": "C146",
+        "limitation": "Fresh fixture teardown is exercised; an uncatchable host crash and legacy user leftovers are reported as protected and are not cleaned."
+      },
+      {
+        "id": "C147",
+        "limitation": "The selected mutation targets one critical cache freshness invariant; this is not a repository-wide mutation score."
+      },
+      {
+        "id": "C148",
+        "limitation": "Local contract tests do not prove branch protection, human review, production readiness or deployment enforcement."
+      }
+    ],
+    "meaning": "T034 acceptance evidence is task-scoped. Limited rows retain explicit gaps and do not imply unsupported behavior passed.",
+    "t034_scope": [
+      "C001-C054",
+      "C137-C151"
+    ],
+    "t042_exact_sha_ci": {
+      "denominator": 4,
+      "passed_contexts": 4,
+      "result": "PASS",
+      "run_id": 39336056560,
+      "summary": {
+        "bytes": 3921,
+        "path": "artifacts/git-delivery-support/T042-r1-3a3d8198-9b9c-42cc-917a-a9a62603a84a/archive-view/ci/allocation-progress-exact/collector-summary.json",
+        "sha256": "0838c21a29c97e12ffcc6d86c1af96c3711373a00f78dda71c69d56653f43704"
+      }
+    },
+    "t042_local_checks": {
+      "denominator": 11,
+      "passed": 11,
+      "result": "PASS",
+      "summary": {
+        "bytes": 4911,
+        "path": "artifacts/git-delivery-support/T042-r1-3a3d8198-9b9c-42cc-917a-a9a62603a84a/local-checks/allocation/progress-attempt-2/summary.json",
+        "sha256": "521e2e38d1fddc7b9b8dbcf0251d29b154b4eceab3fdf2f2b0069e8abce05502"
+      }
+    }
+  },
+  "created_at_utc": "2026-10-19T22:43:18.823288Z",
+  "delivery_id": "3a3d8198-9b9c-42cc-917a-a9a62603a84a",
+  "effective_state_at_review": {
+    "completion_after_t042_closure": "52/52 R1 tasks; 108-task implementation continues",
+    "g4_tasks": {
+      "counts": {
+        "DONE": 11
+      },
+      "denominator": 11,
+      "unfinished": []
+    },
+    "next_task_after_t042_closure": "T081",
+    "r1": {
+      "counts": {
+        "DONE": 51,
+        "IN_PROGRESS": 1
+      },
+      "denominator": 52,
+      "unfinished": [
+        {
+          "effective_status": "IN_PROGRESS",
+          "task_id": "T042"
+        }
+      ]
+    },
+    "t042_dependency": {
+      "effective_status": "DONE",
+      "task_id": "T041"
+    }
+  },
+  "evidence": {
+    "acceptance_matrix": {
+      "bytes": 41170,
+      "path": "artifacts/acceptance/T034/matrix.json",
+      "sha256": "102ad7b48488929753f12220ce20b6afda55667ae00bcead8d4e37df7a599411"
+    },
+    "release_candidate_generator": {
+      "bytes": 25047,
+      "path": "artifacts/release/generate_candidate.py",
+      "sha256": "1942a7f63d2b2bcbedc984f8f146f442c4e7dab59d8b1d6b9d60744a8e30e557"
+    },
+    "release_security_audit": {
+      "bytes": 3005,
+      "path": "artifacts/release/security-audit.json",
+      "sha256": "b2dce2b2699f58ba2dda791d68e0951dfe2e40d044dd99cd59c06858a2fa1191"
+    },
+    "t041_dependency_closure": {
+      "archive_manifest_sha256": "f314297d699a99a8aea18293e7f287b421e3d249b7804e11ea4bce5625ff137c",
+      "closing_sha": "94a5c95631456a1e65f9ee0f03903c20cf75725e",
+      "live_verification_id": "d481da13-ed62-48a7-bc77-da3282f7b616"
+    },
+    "wsl2_environment": {
+      "bytes": 602,
+      "path": "artifacts/git-delivery-support/T036-r1-6d0cdf9d-0474-4ab0-b08f-611dc8000285/archive-view/platform/wsl2-payload-p3-attempt-5/environment.txt",
+      "sha256": "7523eb0927ae045478d7cece1e25a5befdce9c706b78fb0b663f19925942d0ff"
+    },
+    "wsl2_platform_test": {
+      "bytes": 625,
+      "path": "artifacts/git-delivery-support/T036-r1-6d0cdf9d-0474-4ab0-b08f-611dc8000285/archive-view/platform/wsl2-payload-p3-attempt-5/platform-test.log",
+      "sha256": "7a2d8cd4a66f9346bcff235191e3de86befd31712382b6ec8c20bbf1064b66e7"
+    }
+  },
+  "format_version": 1,
+  "gate_disposition": "READY_FOR_G5_INTERNAL_PASS_AFTER_T042_EFFECTIVE_DONE",
+  "handover": {
+    "checkpoint_at_review": "T042 remains IN_PROGRESS until payload, closing CI, archive and live verification are recorded.",
+    "effective_gate_transition": "Pending T042 effective DONE; this report does not replace closing CI/archive/live evidence.",
+    "resume_rule": "After the T042 closing commit is exact-SHA verified, archived/read back, and live-observed, continue with T081. Final user acceptance remains once after all 108 tasks."
+  },
+  "kind": "t042_final_gate_review",
+  "platform_matrix": {
+    "browser": {
+      "applicability": "NOT_APPLICABLE_TO_R1_CORE_GATE",
+      "reason": "Explorer/browser work starts after G5 in S47; browser acceptance belongs to later Explorer tasks."
+    },
+    "github_actions": {
+      "go": "go1.27.2 on spec-contract jobs",
+      "matrix": "ubuntu-latest + windows-latest",
+      "observed_jobs": {
+        "contexts": [
+          {
+            "name": "bootstrap (ubuntu-latest)",
+            "observed_image": "Ubuntu 24.04; ubuntu24/20261012.334"
+          },
+          {
+            "name": "bootstrap (windows-latest)",
+            "observed_image": "Microsoft Windows Server 2025; win25-vs2026/20261007.264"
+          },
+          {
+            "go": "go1.27.2 linux/amd64",
+            "name": "spec-contract (ubuntu-latest)",
+            "observed_image": "Ubuntu 24.04; ubuntu24/20261012.334"
+          },
+          {
+            "go": "go1.27.2 windows/amd64",
+            "name": "spec-contract (windows-latest)",
+            "observed_image": "Microsoft Windows Server 2025; win25-vs2026/20261007.264"
+          }
+        ],
+        "exact_sha_contexts": 4,
+        "head_sha": "ce355ed041794cb57da07cbb65b860c9bc27a4b3",
+        "jobs": 4,
+        "result": "PASS",
+        "runner_evidence": {
+          "bytes": 1226,
+          "path": "artifacts/git-delivery-support/T042-r1-3a3d8198-9b9c-42cc-917a-a9a62603a84a/archive-view/ci/allocation-progress-exact/runner-environment.txt",
+          "sha256": "c88951cadb4308043ed6787d6ee9c9bbe72d741b4b50ed59dab55ef663dd4ddc"
+        },
+        "workflow_run_id": 39336056560,
+        "workflow_url": "https://github.com/LonelyTraderBay/maps-context-engine-4d/actions/runs/39336056560"
+      },
+      "result": "PASS_EXACT_SHA"
+    },
+    "linux_wsl2": {
+      "filesystem": "ext4",
+      "fts5": "PASS",
+      "go": "go1.27.2 linux/amd64",
+      "kernel": "6.18.54.1-microsoft-standard-WSL2",
+      "os": "Linux amd64 under WSL2",
+      "result": "PASS_SCOPED_TO_T036",
+      "sqlite": "3.53.4",
+      "wal": "PASS"
+    },
+    "local_windows": {
+      "go": "go1.27.2 windows/amd64",
+      "os": "Windows 11 Pro 10.0.26300 x64",
+      "result": "PASS_ON_RECORDED_TASK_CHECKS"
+    },
+    "macos": "NOT_RUN",
+    "other_native_linux": "NOT_RUN_SEPARATELY_FROM_WSL2_AND_HOSTED_UBUNTU"
+  },
+  "r1_label_after_closure": "R1_VALIDATED_ON_FIXTURES",
+  "release_and_permissions": {
+    "candidate_manifest": {
+      "candidate_status": "NOT_FOR_DISTRIBUTION",
+      "evidence": {
+        "bytes": 109243,
+        "path": "artifacts/release/release-candidate.json",
+        "sha256": "0d23ef0350f520074093f892d644cf520723d70c451e53aa7aff9d3954be7d53"
+      },
+      "license": "NOASSERTION",
+      "production_claim_gate": "BLOCKED",
+      "publication_authorized": false,
+      "source_revision": "c39b08be3ebf99fc10af7a228d8e88a64e908460"
+    },
+    "codex_security": "NOT_RUN",
+    "distribution": "BLOCKED",
+    "govulncheck": {
+      "findings": 0,
+      "result": "PASS",
+      "scope": "does not constitute a complete security audit"
+    },
+    "production_claim": "BLOCKED",
+    "project_license": "NOASSERTION",
+    "publish_deploy_package": "NOT_AUTHORIZED_AND_NOT_PERFORMED",
+    "security_audit": {
+      "evidence": {
+        "bytes": 3005,
+        "path": "artifacts/release/security-audit.json",
+        "sha256": "b2dce2b2699f58ba2dda791d68e0951dfe2e40d044dd99cd59c06858a2fa1191"
+      },
+      "status": "BLOCKED"
+    },
+    "user_target_uat": "NOT_RUN"
+  },
+  "review_result": "PASS_WITH_LIMITATIONS",
+  "review_source": {
+    "branch": "main",
+    "commit": "ce355ed041794cb57da07cbb65b860c9bc27a4b3"
+  },
+  "spec_revision": "1.6.13",
+  "task_id": "T042",
+  "task_revision": 1
+}

@@ -12,6 +12,7 @@ from urllib.parse import quote
 ROOT = Path.cwd()
 RELEASE = ROOT / "artifacts/release"
 SCRIPT_REF = "artifacts/release/generate_candidate.py"
+FINAL_REVIEW_REF = "artifacts/release/T042-final-gate-review.json"
 T002_REF = "artifacts/preflight/T002/dependency-review.json"
 SUPPORT_REF = "artifacts/git-delivery-support/T041-r2-936739b7-193e-4428-887a-a0da3bcd69fa"
 VULN_REF = SUPPORT_REF + "/security/govulncheck-attempt-1/record.json"
@@ -376,7 +377,9 @@ def main() -> None:
     script_path = ROOT / SCRIPT_REF
     actual_files = {path.relative_to(ROOT).as_posix() for path in RELEASE.rglob("*") if path.is_file()}
     expected_files = set(expected) | {SCRIPT_REF}
-    extras = actual_files - expected_files
+    # The T042 handover review is repository evidence, not a release payload.
+    # Keep the candidate inventory strict while permitting this one fixed file.
+    extras = actual_files - expected_files - {FINAL_REVIEW_REF}
     if extras:
         raise SystemExit("Unexpected release files: " + ", ".join(sorted(extras)))
     if args.check:
