@@ -17,6 +17,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unsafe"
 
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths"
 	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
@@ -429,16 +430,45 @@ func assertWindowsACLOracle(t *testing.T, path string, directory bool) {
 	if err != nil || dacl == nil || dacl.AceCount != 3 {
 		t.Fatalf("Windows ACL has %v entries (err=%v); want the current user, SYSTEM, and Administrators only", dacl, err)
 	}
-	sddl := descriptor.String()
-	if strings.Count(sddl, "(A;") != 3 || strings.Count(sddl, ";;;") != 3 {
-		t.Fatal("private object ACL contains an unexpected access rule")
+	control, _, err := descriptor.Control()
+	if err != nil || (directory && control&windows.SE_DACL_PROTECTED == 0) {
+		t.Fatal("private object ACL is not protected from ambient inheritance")
 	}
-	if directory && !strings.Contains(sddl, "D:P") {
-		t.Fatal("private state directory ACL is not protected from ambient inheritance")
+	allowed := map[string]bool{
+		"S-1-5-18":             false,
+		"S-1-5-32-544":         false,
+		user.User.Sid.String(): false,
 	}
-	for _, sid := range []string{"SY", "BA", user.User.Sid.String()} {
-		if !strings.Contains(sddl, ";FA;;;"+sid+")") {
-			t.Fatal("private object ACL does not grant the expected owner/SYSTEM/Administrators access")
+	inheritanceFlags := uint8(0)
+	if directory {
+		inheritanceFlags = windows.OBJECT_INHERIT_ACE | windows.CONTAINER_INHERIT_ACE
+	}
+	for index := uint32(0); index < uint32(dacl.AceCount); index++ {
+		var ace *windows.ACCESS_ALLOWED_ACE
+		if err := windows.GetAce(dacl, index, &ace); err != nil || ace == nil {
+			t.Fatalf("read independent Windows ACL ACE %d: %v", index, err)
+		}
+		validFlags := ace.Header.AceFlags == inheritanceFlags
+		if !directory {
+			validFlags = validFlags || ace.Header.AceFlags == windows.INHERITED_ACE ||
+				ace.Header.AceFlags == windows.OBJECT_INHERIT_ACE|windows.INHERITED_ACE
+		}
+		if ace.Header.AceType != windows.ACCESS_ALLOWED_ACE_TYPE || !validFlags || ace.Mask != 0x001f01ff {
+			t.Fatalf("Windows ACL ACE %d has unexpected type, inheritance flags, or access mask", index)
+		}
+		principal := (*windows.SID)(unsafe.Pointer(&ace.SidStart))
+		if !principal.IsValid() {
+			t.Fatalf("Windows ACL ACE %d has an invalid principal SID", index)
+		}
+		value := principal.String()
+		if _, ok := allowed[value]; !ok || allowed[value] {
+			t.Fatalf("Windows ACL contains an unexpected or duplicate principal SID: %s", value)
+		}
+		allowed[value] = true
+	}
+	for principal, present := range allowed {
+		if !present {
+			t.Fatalf("Windows ACL is missing required principal SID %s", principal)
 		}
 	}
 }
