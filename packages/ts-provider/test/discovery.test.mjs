@@ -29,16 +29,26 @@ test("pinned API exposes compiler and language-service entrypoints", () => {
   }
 });
 
-test("syntax parsing is local and does not load a project configuration", () => {
-  const source = typescript.createSourceFile(
-    "fixture.tsx",
-    "export const View = () => <main />;",
-    typescript.ScriptTarget.Latest,
-    true,
-    typescript.ScriptKind.TSX,
-  );
-  assert.equal(source.parseDiagnostics.length, 0);
-  assert.equal(source.fileName, "fixture.tsx");
+test("syntax parsing covers TypeScript, JavaScript, TSX, and JSX fixtures", () => {
+  const fixtures = [
+    ["fixture.ts", "export const count: number = 1;", typescript.ScriptKind.TS],
+    ["fixture.js", "export const count = 1;", typescript.ScriptKind.JS],
+    ["fixture.tsx", "export const View = () => <main />;", typescript.ScriptKind.TSX],
+    ["fixture.jsx", "export const View = () => <main />;", typescript.ScriptKind.JSX],
+  ];
+
+  for (const [fileName, text, scriptKind] of fixtures) {
+    const source = typescript.createSourceFile(
+      fileName,
+      text,
+      typescript.ScriptTarget.Latest,
+      true,
+      scriptKind,
+    );
+    assert.equal(source.parseDiagnostics.length, 0, `${fileName} must parse`);
+    assert.equal(source.fileName, fileName);
+    assert.equal(source.scriptKind, scriptKind);
+  }
 });
 
 test("owned profile fixture is closed and does not enable plugins", async () => {
