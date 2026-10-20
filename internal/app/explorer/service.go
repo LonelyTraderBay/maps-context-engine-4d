@@ -98,8 +98,11 @@ func (service *Service) Bootstrap(ctx context.Context) (transport.AccessGrant, e
 		return transport.AccessGrant{}, transport.ErrAccessDenied
 	}
 	state, err := service.readCatalog(ctx)
-	if err != nil || state.rootStatus != "registered" {
-		return transport.AccessGrant{}, transport.ErrAccessDenied
+	if err != nil {
+		return transport.AccessGrant{}, fmt.Errorf("%w: local Explorer catalog is unavailable: %v", transport.ErrAccessDenied, err)
+	}
+	if state.rootStatus != "registered" {
+		return transport.AccessGrant{}, fmt.Errorf("%w: Explorer worktree status is %q", transport.ErrAccessDenied, state.rootStatus)
 	}
 	return transport.AccessGrant{
 		ExpiresAt:    time.Now().UTC().Add(30 * time.Minute),
@@ -182,7 +185,7 @@ func (service *Service) readCatalog(ctx context.Context) (catalogState, error) {
 	path := filepath.Join(service.home, "catalog.sqlite")
 	db, err := openReadOnlySQLite(ctx, path)
 	if err != nil {
-		return catalogState{}, fmt.Errorf("open local Explorer catalog: %w", errMetadataUnavailable)
+		return catalogState{}, fmt.Errorf("open local Explorer catalog: %w: %v", errMetadataUnavailable, err)
 	}
 	defer db.Close()
 	tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
@@ -191,7 +194,10 @@ func (service *Service) readCatalog(ctx context.Context) (catalogState, error) {
 	}
 	defer tx.Rollback()
 	var schemaVersion, minReader int64
-	if err := tx.QueryRowContext(ctx, `SELECT schema_version,min_reader_version FROM schema_meta WHERE singleton=1`).Scan(&schemaVersion, &minReader); err != nil || schemaVersion < 1 || schemaVersion > catalogSchemaVersion || minReader > catalogSchemaVersion {
+	if err := tx.QueryRowContext(ctx, `SELECT schema_version,min_reader_version FROM schema_meta WHERE singleton=1`).Scan(&schemaVersion, &minReader); err != nil {
+		return catalogState{}, fmt.Errorf("catalog schema is unavailable: %w: %v", errMetadataUnavailable, err)
+	}
+	if schemaVersion < 1 || schemaVersion > catalogSchemaVersion || minReader > catalogSchemaVersion {
 		return catalogState{}, fmt.Errorf("catalog schema is unsupported: %w", errMetadataUnavailable)
 	}
 	var state catalogState
@@ -205,10 +211,10 @@ func (service *Service) readCatalog(ctx context.Context) (catalogState, error) {
 		WHERE ci.singleton=1`, string(service.worktree), string(service.profile)).Scan(
 		&state.incarnation, &state.binding, &state.rootStatus, &state.policyDigest, &state.policyEpoch, &rawConfig)
 	if err != nil {
-		return catalogState{}, fmt.Errorf("read registered Explorer scope: %w", errMetadataUnavailable)
+		return catalogState{}, fmt.Errorf("read registered Explorer scope: %w: %v", errMetadataUnavailable, err)
 	}
 	if _, err := model.ParseUUID(string(state.incarnation)); err != nil || state.binding < 1 || state.rootStatus != "registered" || state.policyEpoch < 1 || state.policyEpoch > model.MaxSafeInteger {
-		return catalogState{}, errMetadataUnavailable
+		return catalogState{}, fmt.Errorf("invalid Explorer scope metadata: %w (status=%q binding=%d policy_epoch=%d)", errMetadataUnavailable, state.rootStatus, state.binding, state.policyEpoch)
 	}
 	if _, err := model.ParseHash(string(state.policyDigest)); err != nil {
 		return catalogState{}, errMetadataUnavailable
@@ -237,7 +243,7 @@ func (service *Service) readCatalog(ctx context.Context) (catalogState, error) {
 		return catalogState{}, errMetadataUnavailable
 	}
 	if err := tx.Commit(); err != nil {
-		return catalogState{}, fmt.Errorf("finish catalog read: %w", errMetadataUnavailable)
+		return catalogState{}, fmt.Errorf("finish catalog read: %w: %v", errMetadataUnavailable, err)
 	}
 	return state, nil
 }
@@ -280,11 +286,17 @@ func openReadOnlySQLite(ctx context.Context, path string) (*sql.DB, error) {
 		return nil, errMetadataUnavailable
 	}
 	info, err := os.Lstat(path)
-	if err != nil || !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 {
+	if err != nil {
+		return nil, fmt.Errorf("%w: inspect SQLite path: %v", errMetadataUnavailable, err)
+	}
+	if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 {
 		return nil, errMetadataUnavailable
 	}
 	resolved, err := filepath.EvalSymlinks(path)
-	if err != nil || !sameLocalPath(filepath.Clean(path), filepath.Clean(resolved)) {
+	if err != nil {
+		return nil, fmt.Errorf("%w: resolve SQLite path: %v", errMetadataUnavailable, err)
+	}
+	if !sameLocalPath(filepath.Clean(path), filepath.Clean(resolved)) {
 		return nil, errMetadataUnavailable
 	}
 	uriPath := filepath.ToSlash(path)
@@ -306,7 +318,7 @@ func openReadOnlySQLite(ctx context.Context, path string) (*sql.DB, error) {
 	db.SetMaxIdleConns(1)
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		return nil, errMetadataUnavailable
+		return nil, fmt.Errorf("%w: ping read-only SQLite file: %v", errMetadataUnavailable, err)
 	}
 	return db, nil
 }

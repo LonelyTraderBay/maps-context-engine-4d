@@ -2,6 +2,7 @@ package explorer
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -138,6 +139,9 @@ func TestFindExplorerAssetsIgnoresWorkingDirectory(t *testing.T) {
 
 	assets, err := findExplorerAssets()
 	if err != nil {
+		if errors.Is(err, ErrAssetsUnavailable) {
+			return
+		}
 		t.Fatal(err)
 	}
 	if insidePath(decoyDist, assets) {

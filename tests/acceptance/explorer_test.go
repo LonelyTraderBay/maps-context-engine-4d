@@ -351,6 +351,9 @@ type explorerWorkspaceResult struct {
 
 func startExplorerAPI(t *testing.T, service transport.Services) (*http.Client, string, string, func()) {
 	t.Helper()
+	if _, err := service.Bootstrap(context.Background()); err != nil {
+		t.Fatalf("Explorer fixture failed direct bootstrap authorization: %v", err)
+	}
 	listener, err := transport.ListenLoopback(0)
 	if err != nil {
 		t.Fatal(err)
