@@ -1,5 +1,6 @@
 import * as typescript from "@typescript/typescript6";
 import { languageProviderDescriptor } from "./descriptor.mjs";
+import { frontendCapabilities } from "./frontend.mjs";
 
 const EXPECTED_COMPILER_VERSION = "6.0.3";
 
@@ -27,8 +28,10 @@ export const providerDescriptor = Object.freeze({
   configRoots: "owned_captured_roots_only",
   targetScripts: "never_execute",
   targetBuilds: "never_start",
+  frontendCapabilities,
 });
 
 export { languageProviderDescriptor, typescript };
 export { analyzeProviderRequest } from "./analyze.mjs";
+export { analyzeFrontendRequest, frontendCapabilities } from "./frontend.mjs";
 export { runProviderCLI } from "./protocol.mjs";
