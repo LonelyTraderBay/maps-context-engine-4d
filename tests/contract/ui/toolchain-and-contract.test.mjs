@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -204,4 +205,16 @@ test("fixture plan distinguishes design coverage from future browser acceptance"
   assert.ok(plan.fixtures.every((fixture) =>
     fixture.expected_oracle && fixture.owner_task === "T081" && fixture.execution_status === "SEALED_NOT_EXECUTED",
   ));
+});
+
+test("Explorer AppShell typechecks, builds, and passes its component and API tests", () => {
+  const explorer = join(root, "web/explorer");
+  const run = (script, args) => execFileSync(process.execPath, [join(root, script), ...args], {
+    cwd: explorer,
+    stdio: "inherit",
+  });
+
+  run("node_modules/typescript/bin/tsc", ["--noEmit", "--project", "tsconfig.json"]);
+  run("node_modules/vite/bin/vite.js", ["build"]);
+  run("node_modules/vitest/vitest.mjs", ["run"]);
 });
