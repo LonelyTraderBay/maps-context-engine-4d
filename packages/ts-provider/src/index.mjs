@@ -1,10 +1,14 @@
 import * as typescript from "@typescript/typescript6";
+import { languageProviderDescriptor } from "./descriptor.mjs";
 
 const EXPECTED_COMPILER_VERSION = "6.0.3";
 
 if (typescript.version !== EXPECTED_COMPILER_VERSION) {
   throw new Error(
-    `TypeScript compatibility API version mismatch: expected ${EXPECTED_COMPILER_VERSION}, got ${typescript.version ?? "unknown"}`,
+    "TypeScript compatibility API version mismatch: expected " +
+      EXPECTED_COMPILER_VERSION +
+      ", got " +
+      (typescript.version ?? "unknown"),
   );
 }
 
@@ -14,7 +18,9 @@ export const providerDescriptor = Object.freeze({
   compilerPackage: "@typescript/typescript6",
   compilerPackageVersion: "6.0.2",
   compilerVersion: typescript.version,
-  languages: Object.freeze(["typescript", "javascript", "tsx", "jsx"]),
+  providerDigest: languageProviderDescriptor.digest,
+  languages: languageProviderDescriptor.languages,
+  capabilities: languageProviderDescriptor.capabilities,
   defaultAnalysisMode: "syntax",
   optionalAnalysisMode: "typed_when_available",
   allowProjectPlugins: false,
@@ -23,6 +29,6 @@ export const providerDescriptor = Object.freeze({
   targetBuilds: "never_start",
 });
 
-// T043 chỉ phát hiện API đã pin. T044 phải đặt compiler sau lớp đọc config
-// và capture-root; consumer không được chuyển thẳng config mục tiêu vào API này.
-export { typescript };
+export { languageProviderDescriptor, typescript };
+export { analyzeProviderRequest } from "./analyze.mjs";
+export { runProviderCLI } from "./protocol.mjs";

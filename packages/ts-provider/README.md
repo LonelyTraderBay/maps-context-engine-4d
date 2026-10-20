@@ -1,16 +1,31 @@
-# TypeScript / JavaScript provider discovery
+# TypeScript / JavaScript provider
 
-Gói này khóa API tương thích TypeScript 6 cho các bước phân tích do MCE4D quản lý. Workspace Explorer tiếp tục dùng TypeScript CLI 7; hai phạm vi có lockfile độc lập.
+Provider dùng TypeScript compatibility API đã pin @typescript/typescript6@6.0.2, compiler typescript@6.0.3 và Node 24.22.0. Descriptor công bố typescript, javascript, tsx, jsx, license Apache-2.0 và digest SHA-256 của manifest gồm lockfile, package metadata và mọi module trong src/.
 
-`@typescript/typescript6@6.0.2` là lớp tương thích chính thức. Lockfile cố định compiler thực tế `typescript@6.0.3` và integrity của cả hai tarball. API mặc định chỉ cho chế độ `syntax`; chế độ typed được bật có điều kiện ở bước tích hợp sau.
+## Phạm vi phân tích
 
-`fixtures/profile.json` là EffectiveProfile fixture theo S43, chỉ trỏ tới `fixtures/tsconfig.json` nằm trong package. Nó không mô tả một repository mục tiêu. Không nạp tsconfig mục tiêu, plugin, build hay script trong bước discovery này. T044 phải giới hạn config vào root đã capture và từ chối plugin trước khi gọi các API có thể phân giải project.
+Provider trả về descriptor, symbols, relations và diagnostics theo shared LanguageProvider contract. Symbol và relation có ID xác định từ path, byte range và identity; range là offset UTF-8 như Go contract yêu cầu.
 
-Chạy kiểm thử bằng Node `24.22.0` đã seal:
+Chế độ syntax giữ declarations và import/re-export đã khai báo, nhưng để target chưa được bind là null. Chế độ typed_when_available tạo TypeScript program trên captured files, dùng checker cho symbol identity, scopes, imports, named/star re-exports, path aliases và project references. Nếu một config hoặc source không có trong project đã resolve, provider giữ facts cú pháp và ghi gap thay vì nâng thành typed.
 
-```sh
-npm ci --ignore-scripts --no-audit --no-fund
-npm test
-```
+any, import(), CommonJS require, import không bind được và runtime JSX/framework semantics được ghi thành diagnostics/relations có trạng thái unknown. Đây không phải bằng chứng về hành vi runtime.
 
-Xem quyết định và cách tạo fingerprint tại [`adr/0001-typescript-api.md`](adr/0001-typescript-api.md).
+## Ranh giới dữ liệu và thực thi
+
+Provider chỉ nhận các file có path tương đối, base64 và SHA-256 khớp. Tổng source tối đa 10 MiB, tối đa 4.096 files, 1 MiB path bytes, 64 config files trong đồ thị config. Duplicate path, traversal, file ngoài root, UTF-8 sai và profile không khớp toolchain bị từ chối.
+
+tsconfig, extends và project references chỉ được chấp nhận khi file tương ứng nằm trong captured root. Compiler plugins bị từ chối trước khi gọi API phân tích project. Host ảo chỉ đọc captured files và .d.ts của compiler đã pin; emit bị tắt. Provider không chạy code, script, plugin, build, notebook hay network của target.
+
+CLI đọc và ghi đúng một framed JSON message theo Content-Length, giới hạn frame 16 MiB và header 64 KiB. stdout chỉ chứa response frame; request lỗi trả mã thoát khác 0 và thông báo chung trên stderr.
+
+## Chạy
+
+Dùng Node 24.22.0 đã seal và npm 11.19.1:
+
+    npm ci --ignore-scripts --no-audit --no-fund
+    npm test
+    npm start
+
+npm start nhận một request frame qua stdin. Package tests bao phủ các ngôn ngữ được khai báo, identity same-name, re-export, aliases, project references, plugin rejection, dynamic gaps, byte ranges, profile/digest và framing.
+
+Xem quyết định tương thích tại [adr/0001-typescript-api.md](adr/0001-typescript-api.md).
