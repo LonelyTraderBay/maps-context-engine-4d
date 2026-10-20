@@ -299,7 +299,12 @@ func openReadOnlySQLite(ctx context.Context, path string) (*sql.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: resolve SQLite path failed (not_found=%t permission=%t)", errMetadataUnavailable, errors.Is(err, os.ErrNotExist), errors.Is(err, os.ErrPermission))
 	}
-	if !sameLocalPath(filepath.Clean(path), filepath.Clean(resolved)) {
+	resolvedParent, err := filepath.EvalSymlinks(filepath.Dir(path))
+	if err != nil {
+		return nil, fmt.Errorf("%w: resolve SQLite parent failed (not_found=%t permission=%t)", errMetadataUnavailable, errors.Is(err, os.ErrNotExist), errors.Is(err, os.ErrPermission))
+	}
+	expectedResolvedPath := filepath.Join(resolvedParent, filepath.Base(path))
+	if !sameLocalPath(filepath.Clean(expectedResolvedPath), filepath.Clean(resolved)) {
 		return nil, fmt.Errorf("%w: SQLite path resolves to a different local path", errMetadataUnavailable)
 	}
 	uriPath := filepath.ToSlash(path)

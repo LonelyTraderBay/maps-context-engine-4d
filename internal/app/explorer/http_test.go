@@ -2,9 +2,11 @@ package explorer
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,6 +39,55 @@ func TestOpenReadOnlySQLiteReportsNonRegularPath(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "not a regular non-symlink file") {
 		t.Fatalf("openReadOnlySQLite(directory) error=%v; want a useful internal reason", err)
+	}
+}
+
+func TestOpenReadOnlySQLiteResolvesParentAlias(t *testing.T) {
+	root := t.TempDir()
+	targetDir := filepath.Join(root, "target")
+	aliasDir := filepath.Join(root, "alias")
+	if err := os.Mkdir(targetDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(targetDir, aliasDir); err != nil {
+		t.Skipf("directory symlinks are unavailable: %v", err)
+	}
+
+	databasePath := filepath.Join(targetDir, "catalog.sqlite")
+	uriPath := filepath.ToSlash(databasePath)
+	if filepath.VolumeName(databasePath) != "" {
+		uriPath = "/" + uriPath
+	}
+	fileURL := &url.URL{Scheme: "file", Path: uriPath}
+	db, err := sql.Open("sqlite", fileURL.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(context.Background(), `CREATE TABLE fixture (id INTEGER PRIMARY KEY)`); err != nil {
+		_ = db.Close()
+		t.Fatal(err)
+	}
+	if err := db.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	reader, err := openReadOnlySQLite(context.Background(), filepath.Join(aliasDir, "catalog.sqlite"))
+	if err != nil {
+		t.Fatalf("openReadOnlySQLite through a parent alias: %v", err)
+	}
+	if err := reader.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	leafAlias := filepath.Join(root, "catalog-alias.sqlite")
+	if err := os.Symlink(databasePath, leafAlias); err != nil {
+		t.Skipf("file symlinks are unavailable: %v", err)
+	}
+	if reader, err := openReadOnlySQLite(context.Background(), leafAlias); err == nil {
+		_ = reader.Close()
+		t.Fatal("openReadOnlySQLite accepted a symlink at the database leaf")
+	} else if !errors.Is(err, errMetadataUnavailable) {
+		t.Fatalf("openReadOnlySQLite(leaf symlink) error=%v; want metadata unavailable", err)
 	}
 }
 
