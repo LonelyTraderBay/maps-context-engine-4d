@@ -30,6 +30,16 @@ func TestGraphRequestRejectsLimitsOutsideFrozenSchema(t *testing.T) {
 	}
 }
 
+func TestOpenReadOnlySQLiteReportsNonRegularPath(t *testing.T) {
+	_, err := openReadOnlySQLite(context.Background(), t.TempDir())
+	if !errors.Is(err, errMetadataUnavailable) {
+		t.Fatalf("openReadOnlySQLite(directory) error=%v; want metadata unavailable", err)
+	}
+	if !strings.Contains(err.Error(), "not a regular non-symlink file") {
+		t.Fatalf("openReadOnlySQLite(directory) error=%v; want a useful internal reason", err)
+	}
+}
+
 func TestParseLoopbackAddress(t *testing.T) {
 	for _, value := range []string{"", "127.0.0.1:0", "127.0.0.1:1", "127.0.0.1:65535"} {
 		t.Run("accept/"+value, func(t *testing.T) {

@@ -185,7 +185,7 @@ func (service *Service) readCatalog(ctx context.Context) (catalogState, error) {
 	path := filepath.Join(service.home, "catalog.sqlite")
 	db, err := openReadOnlySQLite(ctx, path)
 	if err != nil {
-		return catalogState{}, fmt.Errorf("open local Explorer catalog: %w: %v", errMetadataUnavailable, err)
+		return catalogState{}, fmt.Errorf("open local Explorer catalog: %w", err)
 	}
 	defer db.Close()
 	tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
@@ -252,7 +252,7 @@ func (service *Service) readRecords(ctx context.Context) (recordsState, error) {
 	path := filepath.Join(service.home, "worktrees", string(service.worktree), "records.sqlite")
 	db, err := openReadOnlySQLite(ctx, path)
 	if err != nil {
-		return recordsState{}, fmt.Errorf("open Explorer records metadata: %w", errMetadataUnavailable)
+		return recordsState{}, fmt.Errorf("open Explorer records metadata: %w", err)
 	}
 	defer db.Close()
 	tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
@@ -282,22 +282,25 @@ func (service *Service) readRecords(ctx context.Context) (recordsState, error) {
 }
 
 func openReadOnlySQLite(ctx context.Context, path string) (*sql.DB, error) {
-	if ctx == nil || !filepath.IsAbs(path) {
-		return nil, errMetadataUnavailable
+	if ctx == nil {
+		return nil, fmt.Errorf("%w: context is missing", errMetadataUnavailable)
+	}
+	if !filepath.IsAbs(path) {
+		return nil, fmt.Errorf("%w: SQLite path is not absolute", errMetadataUnavailable)
 	}
 	info, err := os.Lstat(path)
 	if err != nil {
-		return nil, fmt.Errorf("%w: inspect SQLite path: %v", errMetadataUnavailable, err)
+		return nil, fmt.Errorf("%w: inspect SQLite path failed (not_found=%t permission=%t)", errMetadataUnavailable, errors.Is(err, os.ErrNotExist), errors.Is(err, os.ErrPermission))
 	}
 	if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 {
-		return nil, errMetadataUnavailable
+		return nil, fmt.Errorf("%w: SQLite path is not a regular non-symlink file (mode=%s)", errMetadataUnavailable, info.Mode())
 	}
 	resolved, err := filepath.EvalSymlinks(path)
 	if err != nil {
-		return nil, fmt.Errorf("%w: resolve SQLite path: %v", errMetadataUnavailable, err)
+		return nil, fmt.Errorf("%w: resolve SQLite path failed (not_found=%t permission=%t)", errMetadataUnavailable, errors.Is(err, os.ErrNotExist), errors.Is(err, os.ErrPermission))
 	}
 	if !sameLocalPath(filepath.Clean(path), filepath.Clean(resolved)) {
-		return nil, errMetadataUnavailable
+		return nil, fmt.Errorf("%w: SQLite path resolves to a different local path", errMetadataUnavailable)
 	}
 	uriPath := filepath.ToSlash(path)
 	if filepath.VolumeName(path) != "" {
@@ -312,7 +315,7 @@ func openReadOnlySQLite(ctx context.Context, path string) (*sql.DB, error) {
 	fileURL.RawQuery = query.Encode()
 	db, err := sql.Open("sqlite", fileURL.String())
 	if err != nil {
-		return nil, errMetadataUnavailable
+		return nil, fmt.Errorf("%w: create read-only SQLite connection failed (%T)", errMetadataUnavailable, err)
 	}
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)

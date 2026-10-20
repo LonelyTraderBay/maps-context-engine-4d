@@ -9,17 +9,18 @@
     "policy_mismatch_error_code": "INDEX_STALE",
     "ready_partial": "PASS",
     "secret_source_redaction": "PASS",
-    "stale_source_generation": "PASS"
+    "stale_source_generation": "PASS",
+    "internal_sqlite_path_rejection_reason": "PASS"
   },
-  "command": "go test ./tests/acceptance -run 'TestExplorer(PublishedSnapshotHTTP|MissingPartialAndPolicyChangedStates|RejectsSecretBytesAndStaleSource)$' -count=1 -v",
-  "delivery_id": "4a669df8-18d1-46d0-9345-34279c01a962",
+  "command": "go test ./internal/app/explorer -run TestOpenReadOnlySQLiteReportsNonRegularPath -count=1 -v; go test ./tests/acceptance -run TestExplorer(PublishedSnapshotHTTP|MissingPartialAndPolicyChangedStates|RejectsSecretBytesAndStaleSource)$ -count=1 -v",
+  "delivery_id": "5b8bd7cf-9208-4a7c-898c-a4bd412a2051",
   "fixture": "Synthetic catalog/records DDL and manually seeded published index generation; app reads using SQLite public read-only snapshot API.",
   "format_version": 1,
   "go_version": "go version go1.27.2 windows/amd64",
   "kind": "explorer_api_acceptance",
   "log_ref": "artifacts/acceptance/T084/explorer-api-acceptance.log",
-  "observed_at_utc": "2026-10-20T08:54:19.451185Z",
+  "observed_at_utc": "2026-10-20T09:10:12.037852Z",
   "result": "PASS",
   "task_id": "T084",
-  "task_revision": 4
+  "task_revision": 5
 }
