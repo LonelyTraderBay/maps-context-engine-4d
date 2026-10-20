@@ -6,6 +6,7 @@ import { dirname, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { analyzeProviderRequest, languageProviderDescriptor } from "../src/index.mjs";
+import { computeProviderManifestDigest } from "../src/descriptor.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const compilerDigest = "a4a28b171436f8794f04854d885a222914a275da85751cf7e3a1f06bb30f6ea5";
@@ -126,16 +127,30 @@ test("provider digest matches the canonical package source manifest", () => {
     "package.json",
     ...readdirSync(sourceDirectory).filter((name) => name.endsWith(".mjs")).map((name) => "src/" + name),
   ].sort(compareUtf8);
-  const manifest = paths.map((path) => {
-    const bytes = readFileSync(resolve(packageRoot, path));
-    return {
-      byte_length: bytes.length,
-      path,
-      sha256: createHash("sha256").update(bytes).digest("hex"),
-    };
-  });
-  const digest = createHash("sha256").update(JSON.stringify(manifest), "utf8").digest("hex");
-  assert.equal(languageProviderDescriptor.digest, digest);
+  const files = paths.map((path) => ({
+    path,
+    bytes: readFileSync(resolve(packageRoot, path)),
+  }));
+  assert.equal(languageProviderDescriptor.digest, computeProviderManifestDigest(files));
+});
+
+test("provider digest is stable across LF, CRLF, and lone-CR checkout bytes", () => {
+  const source = "export const label = \"café\";\nexport const ready = true;\n";
+  const json = "{\n  \"type\": \"module\"\n}\n";
+  const toFiles = (newline) => [
+    { path: "src/main.mjs", bytes: Buffer.from(source.replace(/\n/g, newline), "utf8") },
+    { path: "package.json", bytes: Buffer.from(json.replace(/\n/g, newline), "utf8") },
+  ];
+  const lfDigest = computeProviderManifestDigest(toFiles("\n"));
+  assert.equal(computeProviderManifestDigest(toFiles("\r\n")), lfDigest);
+  assert.equal(computeProviderManifestDigest(toFiles("\r")), lfDigest);
+});
+
+test("provider digest rejects manifest content that is not UTF-8", () => {
+  assert.throws(
+    () => computeProviderManifestDigest([{ path: "src/main.mjs", bytes: Buffer.from([0xc3, 0x28]) }]),
+    /encoded data/,
+  );
 });
 
 test("analysis emits syntax symbols for JavaScript and JSX files", () => {
