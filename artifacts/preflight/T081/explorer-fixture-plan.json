@@ -1,0 +1,134 @@
+{
+  "schema_version": "mce4d.explorer-fixture-plan.v1",
+  "spec_version": "1.6.13",
+  "task_id": "T081",
+  "status": "SEALED_TEST_PLAN_NOT_PRODUCT_EXECUTION",
+  "product_runtime_claim": "NOT_RUN",
+  "target_execution": "NOT_IN_T081_SCOPE",
+  "contract_sources": [
+    "contracts/mce4d.v1.schema.json",
+    "contracts/operations.v1.json",
+    "Maps-Context-Engine-4D_SPEC.md#S43",
+    "Maps-Context-Engine-4D_SPEC.md#S51"
+  ],
+  "toolchain": {
+    "node": "24.22.0",
+    "npm": "11.19.1",
+    "react": "19.3.1",
+    "react_flow": "12.12.0",
+    "dagre": "3.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5",
+    "playwright": "1.64.1",
+    "chromium_revision": "1248",
+    "chromium_version": "156.0.8078.4"
+  },
+  "execution_boundary": {
+    "fixture_only_tests_in_T081": true,
+    "launch_target_application": false,
+    "launch_browser_for_product_acceptance": false,
+    "use_synthetic_graph_as_product_ui": false,
+    "network_or_script_execution_from_project": false,
+    "downstream_product_acceptance": "Must be recorded by the owning implementation task with runtime evidence."
+  },
+  "resource_budget_policy": {
+    "source": "Maps-Context-Engine-4D_SPEC.md S51 RUN-03 through RUN-05",
+    "fixed_byte_limits": null,
+    "reason": "S51 requires budgets from measured workload and destination data; T081 does not invent a host-wide quota.",
+    "T081_browser_artifacts": "None; tests inspect browser API metadata and executable path without launching Chromium or writing traces, screenshots, or downloads.",
+    "downstream_browser_runs": "The owning task records measured volume availability, bounded output limits, retention, and artifact bytes before execution."
+  },
+  "fixtures": [
+    {
+      "case_id": "C081",
+      "owner_task": "T081",
+      "expected_oracle": "After resize and graph/source/backend/frontend selection, the graph remains in the left pane, the right pane follows the selected mode, the splitter and list are accessible, and layout does not clear selection.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C082",
+      "owner_task": "T081",
+      "expected_oracle": "Missing, partial, real-fixture, empty, and error index states retain provenance; no demo graph is synthesized and source bytes match the fixture.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C123",
+      "owner_task": "T081",
+      "expected_oracle": "A producer map ID remains stable for identical content; a new binding is explicit, while map or source mismatch prevents exact graph/source claims.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C124",
+      "owner_task": "T081",
+      "expected_oracle": "Wire input rejects forbidden generation or instance-list fields; server anchor references remain distinct from browser DOM instances.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C125",
+      "owner_task": "T081",
+      "expected_oracle": "A spoofed or stale READY nonce and a missing imported build manifest cannot establish a binding or grant source capability before handshake and engine binding.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C126",
+      "owner_task": "T081",
+      "expected_oracle": "A delayed MODE_ACK after reload or disarm cannot arm an old command; the shield stays or returns and the server applies its acknowledgement deadline and compare-and-swap guard.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C140",
+      "owner_task": "T081",
+      "expected_oracle": "The command contract records effects, permissions, cwd, argv, and output; placeholder or unsafe child commands are rejected, and a dry-run name alone is not read-only proof.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C141",
+      "owner_task": "T081",
+      "expected_oracle": "Low, unreadable, negative, overflowed, and invalid budget measurements fail closed at the correct volume boundary; tests use a fake meter and small disposable fixtures instead of filling a disk.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C142",
+      "owner_task": "T081",
+      "expected_oracle": "Paths on a shared backing volume are grouped; an existing partial reservation is counted once, and an unavailable destination prevents the workload.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C152",
+      "owner_task": "T081",
+      "expected_oracle": "The same producer, source, profile, and policy with two resolver digests creates two distinct valid immutable bindings; repeating the same natural tuple cannot create a third binding.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C153",
+      "owner_task": "T081",
+      "expected_oracle": "Reimport of identical binding bytes is idempotent; changed content or an invalid source range is rejected without replacing the existing binding.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C174",
+      "owner_task": "T081",
+      "expected_oracle": "Go and Node canonical codec vectors produce identical bytes and SHA-256 across Unicode, null, missing fields, integers, key and array order, and line endings; invalid surrogate, fraction, overflow, and duplicate-key inputs are rejected.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C175",
+      "owner_task": "T081",
+      "expected_oracle": "Capture identity changes only with identity inputs, manifest counts and bytes are enforced, canonical raw manifest bytes match cross-language goldens, and noncanonical worker artifacts are rejected.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C176",
+      "owner_task": "T081",
+      "expected_oracle": "Portable paths and closed profile, mapping, and admission schemas reject traversal, invalid UTF-8, unknown fields/statuses, and private-model dispatch over HTTP or MCP.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    },
+    {
+      "case_id": "C180",
+      "owner_task": "T081",
+      "expected_oracle": "Audit closure, progress, task state, and evidence stay synchronized; documentation evidence never changes an implementation task to DONE or a product NOT_RUN claim to PASS.",
+      "execution_status": "SEALED_NOT_EXECUTED"
+    }
+  ]
+}

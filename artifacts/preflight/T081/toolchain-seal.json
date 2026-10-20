@@ -1,0 +1,83 @@
+{
+  "format_version": 1,
+  "kind": "explorer_toolchain_seal",
+  "task_id": "T081",
+  "spec_version": "1.6.13",
+  "status": "SEALED_FOR_CONTRACT_TESTS",
+  "runtime": {
+    "node": "24.22.0",
+    "npm": "11.19.1",
+    "node_distribution": "https://nodejs.org/dist/v24.22.0/node-v24.22.0-win-x64.zip",
+    "node_distribution_sha256": "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3"
+  },
+  "packages": {
+    "@dagrejs/dagre": "3.1.1",
+    "@playwright/test": "1.64.1",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "@xyflow/react": "12.12.0",
+    "jsdom": "30.1.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  },
+  "integrity": {
+    "package_lock_sha256": "834fe3b948892212497a096a269607b1fc17dfc44c56bcbc1284092321943579",
+    "check_plan_sha256": "bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c"
+  },
+  "ci": {
+    "workflow": ".github/workflows/bootstrap.yml",
+    "node_action_commit": "949feb2413d6458794dcd2491c4babbbce0c15c1",
+    "node_action_runtime": "node24",
+    "matrix": ["ubuntu-latest", "windows-latest"],
+    "check_contexts": [
+      "bootstrap (ubuntu-latest)",
+      "bootstrap (windows-latest)",
+      "spec-contract (ubuntu-latest)",
+      "spec-contract (windows-latest)",
+      "explorer-contract (ubuntu-latest)",
+      "explorer-contract (windows-latest)"
+    ],
+    "install_command": "npm ci --ignore-scripts --no-audit --no-fund",
+    "contract_command": "npm run test:contract:ui"
+  },
+  "browser": {
+    "playwright": "1.64.1",
+    "chromium_revision": "1248",
+    "chromium_version": "156.0.8078.4",
+    "registry_source": "node_modules/playwright-core/browsers.json",
+    "launched": false,
+    "local_executable_present_at_probe": false
+  },
+  "license_metadata_observation": {
+    "external_locked_packages": 121,
+    "external_packages_without_license_metadata": 0,
+    "license_counts": {
+      "Apache-2.0": 9,
+      "BlueOak-1.0.0": 1,
+      "BSD-2-Clause": 2,
+      "BSD-3-Clause": 3,
+      "CC0-1.0": 1,
+      "ISC": 10,
+      "MIT": 91,
+      "MIT-0": 2,
+      "MPL-2.0": 2
+    },
+    "react_flow_license": "MIT",
+    "dagre_license": "MIT",
+    "project_license": "NOASSERTION",
+    "distribution_approval": "NOT_ASSERTED"
+  },
+  "resource_budget_policy": {
+    "source": "Maps-Context-Engine-4D_SPEC.md S51 RUN-03 through RUN-05",
+    "host_wide_limit": null,
+    "T081_browser_artifact_writes": 0,
+    "future_run_budget": "Measure destination volume and bounded output before each owning browser/build task."
+  }
+}

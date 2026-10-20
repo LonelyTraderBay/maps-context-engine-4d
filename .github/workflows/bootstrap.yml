@@ -63,3 +63,25 @@ jobs:
         run: go vet ./...
       - name: Build Go packages
         run: go build ./...
+
+  explorer-contract:
+    name: explorer-contract (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up pinned Node.js toolchain
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24.22.0
+      - name: Install locked workspace dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate Explorer contracts and pinned tool APIs
+        run: npm run test:contract:ui
