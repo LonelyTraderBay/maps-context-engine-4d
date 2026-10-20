@@ -2215,7 +2215,7 @@ class GitHubObserverTests(unittest.TestCase):
         }, expected_sha=closing_sha, payload_sha=payload_sha)
 
         self.assertEqual("docs(progress): Đóng task", snapshot["subject"])
-        self.assertEqual("\nNội dung và trailer đầy đủ", snapshot["body"])
+        self.assertEqual("Nội dung và trailer đầy đủ", snapshot["body"])
 
     def test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body(self) -> None:
         payload_sha = "a" * 40
@@ -2229,7 +2229,12 @@ class GitHubObserverTests(unittest.TestCase):
                 "files": [{"filename": "Maps-Context-Engine-4D_SPEC.md"}],
             }, expected_sha=closing_sha, payload_sha=payload_sha)
 
-        self.assertEqual("\r\nbody", project("subject\r\n\r\nbody")["body"])
+        self.assertEqual("body", project("subject\r\n\r\nbody")["body"])
+        self.assertEqual("line one\r\nline two", project("subject\n\nline one\r\nline two")["body"])
+        self.assertEqual(
+            "\nbody begins after an intentional blank line",
+            project("subject\n\n\nbody begins after an intentional blank line")["body"],
+        )
         self.assertEqual("", project("subject only")["body"])
 
     def test_current_tracker_reader_rejects_malformed_row_without_index_error(self) -> None:

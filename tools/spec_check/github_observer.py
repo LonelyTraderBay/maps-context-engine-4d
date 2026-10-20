@@ -200,13 +200,21 @@ def _closing_commit_snapshot(commit_body: dict[str, Any], *, expected_sha: str, 
         raise GitHubObserverError("fresh closing commit source thiếu exact parent/message/file graph")
     subject_line, separator, remainder = message.partition("\n")
     subject = subject_line.removesuffix("\r")
-    body = remainder if separator else ""
+    body = remainder
+    if separator:
+        # GitHub REST retains the blank line that separates the subject from
+        # the body; `git show %b` omits that separator. Remove exactly one
+        # newline so any additional leading body newline remains meaningful.
+        if body.startswith("\r\n"):
+            body = body[2:]
+        elif body.startswith("\n"):
+            body = body[1:]
     return {
         "kind": "git_commit_snapshot", "sha": expected_sha,
         "parents": [item["sha"] for item in parents],
         "subject": subject,
-        # REST exposes subject + separator + body in commit.message; the
-        # retained GitCommitSnapshot stores subject separately and `%b` here.
+        # REST exposes the message separator in commit.message; the retained
+        # GitCommitSnapshot stores subject separately and `%b` here.
         "body": body,
         "changed_paths": sorted(item["filename"] for item in files),
     }
