@@ -11,6 +11,7 @@ func TestCommittedStorageMigrationsMatchSpecDDL(t *testing.T) {
 		"catalog/001.sql": "MCE4D_DDL_CATALOG_001",
 		"index/001.sql":   "MCE4D_DDL_INDEX_001",
 		"index/002.sql":   "MCE4D_DDL_INDEX_002",
+		"index/003.sql":   "MCE4D_DDL_INDEX_003",
 		"records/001.sql": "MCE4D_DDL_RECORDS_001",
 	}
 	root := storageRepoRoot(t)
@@ -28,7 +29,6 @@ func TestCommittedStorageMigrationsMatchSpecDDL(t *testing.T) {
 	}
 
 	for _, futurePath := range []string{
-		"index/003.sql",
 		"index/004.sql",
 		"records/002.sql",
 	} {

@@ -21,6 +21,10 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	root := filepath.Clean(filepath.Join(filepath.Dir(sourceFile), "..", ".."))
 	allowed := map[string]map[string]bool{
 		"internal/model": {},
+		"internal/contracts": {
+			modulePath + "/contracts":      true,
+			modulePath + "/internal/model": true,
+		},
 		// Telemetry is a local leaf package with no project imports.
 		"internal/telemetry": {},
 		"internal/indexer": {
