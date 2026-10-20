@@ -248,6 +248,11 @@ func normalizeRequest(request Request, descriptor Descriptor) (requestEnvelope, 
 			Path: file.Path, ContentBase64: copyOfSource, ContentSHA256: model.SHA256(copyOfSource),
 		})
 	}
+	if request.Language == "python" {
+		if err := validatePythonProfile(request.Profile, descriptor, fileBytes); err != nil {
+			return requestEnvelope{}, nil, fmt.Errorf("%w: Python profile: %v", ErrInvalidProviderInput, err)
+		}
+	}
 	profile := request.Profile
 	profile.Config = append(json.RawMessage(nil), request.Profile.Config...)
 	envelope := requestEnvelope{
