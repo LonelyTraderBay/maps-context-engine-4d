@@ -124,6 +124,9 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/contracts":             true,
 			modulePath + "/internal/app/response": true,
 		},
+		"internal/explorer": {
+			modulePath + "/contracts": true,
+		},
 		"internal/ports": {modulePath + "/internal/model": true},
 		"contracts":      {modulePath + "/internal/model": true},
 		"tests/contract": {
