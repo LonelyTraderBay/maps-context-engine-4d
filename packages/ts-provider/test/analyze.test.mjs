@@ -18,6 +18,22 @@ function compareUtf8(left, right) {
   return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
 }
 
+function independentProviderManifestDigest(files) {
+  const manifest = files
+    .map(({ path, bytes }) => {
+      const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+      const canonicalBytes = Buffer.from(text.replace(/\r\n?/g, "\n"), "utf8");
+      return {
+        byte_length: canonicalBytes.length,
+        path,
+        sha256: createHash("sha256").update(canonicalBytes).digest("hex"),
+      };
+    })
+    .sort((left, right) => compareUtf8(left.path, right.path));
+
+  return createHash("sha256").update(JSON.stringify(manifest), "utf8").digest("hex");
+}
+
 function capturedFile(path, text) {
   const bytes = Buffer.from(text, "utf8");
   return {
@@ -120,7 +136,7 @@ function assertResultContract(result, request) {
   assert.deepEqual(result.provider, languageProviderDescriptor);
 }
 
-test("provider digest matches the canonical package source manifest", () => {
+test("provider digest matches the canonical package source manifest with an independent oracle", () => {
   const sourceDirectory = resolve(packageRoot, "src");
   const paths = [
     "package-lock.json",
@@ -131,7 +147,12 @@ test("provider digest matches the canonical package source manifest", () => {
     path,
     bytes: readFileSync(resolve(packageRoot, path)),
   }));
-  assert.equal(languageProviderDescriptor.digest, computeProviderManifestDigest(files));
+  const expectedDigest = JSON.parse(readFileSync(resolve(packageRoot, "fixtures/profile.json"), "utf8")).provider_digest;
+  const oracleDigest = independentProviderManifestDigest(files);
+
+  assert.equal(oracleDigest, expectedDigest);
+  assert.equal(languageProviderDescriptor.digest, oracleDigest);
+  assert.equal(computeProviderManifestDigest(files), oracleDigest);
 });
 
 test("provider digest is stable across LF, CRLF, and lone-CR checkout bytes", () => {
@@ -141,9 +162,13 @@ test("provider digest is stable across LF, CRLF, and lone-CR checkout bytes", ()
     { path: "src/main.mjs", bytes: Buffer.from(source.replace(/\n/g, newline), "utf8") },
     { path: "package.json", bytes: Buffer.from(json.replace(/\n/g, newline), "utf8") },
   ];
-  const lfDigest = computeProviderManifestDigest(toFiles("\n"));
-  assert.equal(computeProviderManifestDigest(toFiles("\r\n")), lfDigest);
-  assert.equal(computeProviderManifestDigest(toFiles("\r")), lfDigest);
+  const newlineForms = ["\n", "\r\n", "\r"].map(toFiles);
+  const expectedDigest = independentProviderManifestDigest(newlineForms[0]);
+
+  for (const files of newlineForms) {
+    assert.equal(independentProviderManifestDigest(files), expectedDigest);
+    assert.equal(computeProviderManifestDigest(files), expectedDigest);
+  }
 });
 
 test("provider digest rejects manifest content that is not UTF-8", () => {

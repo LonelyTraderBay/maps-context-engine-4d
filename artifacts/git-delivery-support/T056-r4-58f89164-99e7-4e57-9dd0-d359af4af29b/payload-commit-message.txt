@@ -1,0 +1,5 @@
+test(provider): [P2][T056] Kiểm chứng digest bằng oracle độc lập
+
+Mục đích: Đối chiếu digest provider với oracle độc lập trên byte UTF-8 của manifest đã đóng băng.
+Thay đổi: Bổ sung phép tính manifest riêng trong test, so descriptor với digest fixture và kiểm tra LF/CRLF/CR.
+Kiểm tra: 13/13 lệnh frozen và 15/15 tổng thể PASS; npm test provider 29/29; Explorer contract, Go test/vet/build và git diff --check PASS; validate_commit_message PASS.
