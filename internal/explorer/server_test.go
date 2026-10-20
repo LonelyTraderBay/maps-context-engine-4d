@@ -297,7 +297,7 @@ func TestAuthorizationIsCheckedOnEveryReadAndCanRevokeSession(t *testing.T) {
 		t.Fatalf("read route statuses workspace=%d graph=%d", first.Code, second.Code)
 	}
 	services.mu.Lock()
-	services.authorizeErr = fmt.Errorf("permission revoked")
+	services.authorizeErr = fmt.Errorf("permission revoked: %w", ErrAccessDenied)
 	services.mu.Unlock()
 	revoked := authenticatedRequest(server, http.MethodPost, apiPrefix+"/source/read", testSourceReadRequest(), bearer, cookie)
 	if revoked.Code != http.StatusForbidden || !strings.Contains(revoked.Body.String(), "ACCESS_DENIED") {
@@ -307,6 +307,39 @@ func TestAuthorizationIsCheckedOnEveryReadAndCanRevokeSession(t *testing.T) {
 	defer services.mu.Unlock()
 	if services.authorizeCalls != 3 || services.executeCalls != 2 {
 		t.Fatalf("authorize=%d execute=%d", services.authorizeCalls, services.executeCalls)
+	}
+}
+
+func TestBootstrapServiceFailureIsInternalAndSanitized(t *testing.T) {
+	services := newFakeServices()
+	services.bootstrapFn = func(context.Context) (AccessGrant, error) {
+		return AccessGrant{}, fmt.Errorf("storage key /private/workspace failed")
+	}
+	server := newTestServer(t, services)
+	code, ok := server.TakeBootstrapCode()
+	if !ok {
+		t.Fatal("bootstrap code unavailable")
+	}
+	response := request(server, http.MethodPost, apiPrefix+"/session/bootstrap", fmt.Sprintf(`{"code":%q}`, code))
+	if response.Code != http.StatusInternalServerError || !strings.Contains(response.Body.String(), "INTERNAL_ERROR") {
+		t.Fatalf("bootstrap service status=%d body=%s", response.Code, response.Body.String())
+	}
+	if strings.Contains(response.Body.String(), "/private/workspace") {
+		t.Fatalf("bootstrap response leaked service detail: %s", response.Body.String())
+	}
+}
+
+func TestAuthorizeServiceFailureIsInternalAndSanitized(t *testing.T) {
+	services := newFakeServices()
+	server := newTestServer(t, services)
+	bearer, cookie := bootstrap(t, server)
+	services.authorizeErr = fmt.Errorf("database path /private/index.db unavailable")
+	response := authenticatedRequest(server, http.MethodPost, apiPrefix+"/preview/status", `{"session_id":"12345678-1234-4234-8234-123456789abc"}`, bearer, cookie)
+	if response.Code != http.StatusInternalServerError || !strings.Contains(response.Body.String(), "INTERNAL_ERROR") {
+		t.Fatalf("authorize service status=%d body=%s", response.Code, response.Body.String())
+	}
+	if strings.Contains(response.Body.String(), "/private/index.db") {
+		t.Fatalf("authorize response leaked service detail: %s", response.Body.String())
 	}
 }
 

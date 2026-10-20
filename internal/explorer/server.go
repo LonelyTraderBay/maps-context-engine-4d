@@ -49,6 +49,7 @@ const (
 var (
 	ErrInvalidListener = errors.New("Explorer requires a TCP listener bound to 127.0.0.1")
 	ErrInvalidServices = errors.New("Explorer application services are required")
+	ErrAccessDenied    = errors.New("Explorer access denied")
 )
 
 // AccessGrant is a current, server-derived source permission. ExpiresAt must
@@ -66,9 +67,11 @@ type Principal struct {
 	Capabilities []string
 }
 
-// Services is the boundary to application/query services. Implementations
-// re-check source policy in Authorize on every request and must return a full
-// S43 response envelope from Execute. This package never opens a store.
+// Services is the boundary to application/query services. Bootstrap and
+// Authorize return ErrAccessDenied for policy denials; other errors represent
+// service failures. Implementations re-check source policy in Authorize on
+// every request and return a full S43 response envelope from Execute. This
+// package never opens a store.
 type Services interface {
 	Bootstrap(context.Context) (AccessGrant, error)
 	Authorize(context.Context, Principal, string, json.RawMessage) (AccessGrant, error)
@@ -337,7 +340,11 @@ func (s *Server) bootstrap(w http.ResponseWriter, r *http.Request) {
 	}
 	grant, err := s.services.Bootstrap(r.Context())
 	if err != nil {
-		s.writeError(w, bootstrapOperation, http.StatusForbidden, "ACCESS_DENIED", "Local source authorization was denied.", false, "none")
+		if errors.Is(err, ErrAccessDenied) {
+			s.writeError(w, bootstrapOperation, http.StatusForbidden, "ACCESS_DENIED", "Local source authorization was denied.", false, "none")
+		} else {
+			s.writeError(w, bootstrapOperation, http.StatusInternalServerError, "INTERNAL_ERROR", "Explorer could not check local source authorization.", false, "none")
+		}
 		return
 	}
 	now := s.now()
@@ -494,7 +501,10 @@ func (s *Server) authenticate(ctx context.Context, r *http.Request, operation st
 	s.mu.Unlock()
 	grant, err := s.services.Authorize(ctx, principal, operation, append(json.RawMessage(nil), request...))
 	if err != nil {
-		return Principal{}, empty, http.StatusForbidden, "ACCESS_DENIED"
+		if errors.Is(err, ErrAccessDenied) {
+			return Principal{}, empty, http.StatusForbidden, "ACCESS_DENIED"
+		}
+		return Principal{}, empty, http.StatusInternalServerError, "INTERNAL_ERROR"
 	}
 	checkNow := s.now()
 	newDeadline, newExpiry, currentCapabilities, valid := grantDeadline(checkNow, grant, maxSessionTTL)
