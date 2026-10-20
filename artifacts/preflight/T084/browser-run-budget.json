@@ -1,0 +1,29 @@
+{
+  "task_id": "T084",
+  "task_revision": 1,
+  "workload": "Install pinned Playwright Chromium headless shell and run local browser acceptance",
+  "node": "24.22.0",
+  "playwright": "1.64.1",
+  "chromium": "156.0.8078.4",
+  "destinations": [
+    "C:\\Users\\Joker-PC\\AppData\\Local\\ms-playwright",
+    "C:\\Users\\Joker-PC\\AppData\\Local\\Temp\\playwright-download"
+  ],
+  "volumes": [
+    {
+      "safety_reserve_bytes": 268435456,
+      "sample_shell_1243_bytes": 288903476,
+      "available_bytes": 530159706112,
+      "admission": "PASS",
+      "warning_threshold_bytes": 1073741824,
+      "block_threshold_bytes": 536870912,
+      "estimated_peak_remaining_bytes": 577806952,
+      "drive": "C:",
+      "required_bytes": 846242408
+    }
+  ],
+  "coordination_scope": "Current Codex process only; external writers/reservations not observable",
+  "output_cap": "One pinned browser package; acceptance emits one compact JSON line and no screenshot/trace",
+  "retention": "Keep pinned browser in user Playwright cache; no cleanup performed",
+  "measured_at": "2026-10-20T08:10:05.8428799Z"
+}

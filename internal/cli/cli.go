@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	appconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config"
+	appexplorer "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
 	runtimeconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config"
@@ -45,6 +46,7 @@ Commands:
   mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json
   mce4d store recover --target worktree --worktree-id <uuid> --report-only --json
   mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
+  mce4d explorer --worktree-id <uuid> --profile-id <sha256> --listen 127.0.0.1:<port>
 
 Config show layers the canonical home config, an explicit alternate preview,
 and process overrides in that order. Validate and set use the complete candidate
@@ -85,9 +87,42 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runConfig(ctx, args[1:], stdin, stdout, stderr)
 	case "store":
 		return runStore(ctx, args[1:], stdout, stderr)
+	case "explorer":
+		return runExplorer(ctx, args[1:], stdout, stderr)
 	default:
 		return writeFailure(stderr, fmt.Errorf("%w: %q", errUsage, args[0]))
 	}
+}
+
+func runExplorer(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	options, err := parseOptions(args, map[string]optionSpec{
+		"worktree-id": {value: true}, "profile-id": {value: true}, "listen": {value: true},
+	})
+	if err != nil {
+		return writeFailure(stderr, err)
+	}
+	for _, required := range []string{"worktree-id", "profile-id", "listen"} {
+		if !has(options, required) {
+			return writeFailure(stderr, fmt.Errorf("%w: explorer requires --%s", errUsage, required))
+		}
+	}
+	worktreeID, err := model.ParseUUID(first(options, "worktree-id"))
+	if err != nil {
+		return writeFailure(stderr, fmt.Errorf("%w: explorer worktree ID is invalid", errUsage))
+	}
+	profileID, err := model.ParseHash(first(options, "profile-id"))
+	if err != nil {
+		return writeFailure(stderr, fmt.Errorf("%w: explorer profile ID must be a canonical SHA-256", errUsage))
+	}
+	homePath, err := resolveHomePath()
+	if err != nil {
+		return writeFailure(stderr, err)
+	}
+	err = appexplorer.Run(ctx, appexplorer.Options{HomePath: homePath, WorktreeID: worktreeID, ProfileID: profileID}, first(options, "listen"), stdout)
+	if err != nil {
+		return writeFailure(stderr, err)
+	}
+	return 0
 }
 
 func runVersion(args []string, stdout, stderr io.Writer) int {

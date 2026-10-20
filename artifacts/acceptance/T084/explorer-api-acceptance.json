@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "kind": "explorer_api_acceptance",
+  "task_id": "T084",
+  "task_revision": 3,
+  "delivery_id": "dc19362d-37d0-493f-ac55-8b3877b236b9",
+  "result": "PASS",
+  "observed_at_utc": "2026-10-20T08:36:35.178111Z",
+  "command": "go test ./tests/acceptance -run 'TestExplorer(PublishedSnapshotHTTP|MissingPartialAndPolicyChangedStates|RejectsSecretBytesAndStaleSource)$' -count=1 -v",
+  "go_version": "go version go1.27.2 windows/amd64",
+  "fixture": "Synthetic catalog/records DDL and manually seeded published index generation; app reads using SQLite public read-only snapshot API.",
+  "cases": {
+    "graph_edges_nodes_source": "PASS",
+    "missing_index": "PASS",
+    "ready_partial": "PASS",
+    "policy_digest_mismatch": "PASS",
+    "secret_source_redaction": "PASS",
+    "stale_source_generation": "PASS",
+    "forged_origin_and_no_cors": "PASS",
+    "graph_request_schema_bounds": "PASS",
+    "missing_index_error_code": "INDEX_MISSING",
+    "policy_mismatch_error_code": "INDEX_STALE"
+  },
+  "log_ref": "artifacts/acceptance/T084/explorer-api-acceptance.log"
+}

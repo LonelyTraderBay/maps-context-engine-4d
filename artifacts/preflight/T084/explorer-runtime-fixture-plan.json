@@ -1,0 +1,56 @@
+{
+  "delivery_id": "dc19362d-37d0-493f-ac55-8b3877b236b9",
+  "fixtures": [
+    {
+      "case": "C082-missing-index",
+      "catalog_records": "synthetic fixture using shipped catalog/records DDL",
+      "expected": "registered scope with index_state=missing; empty scopes; graph/source not synthesized",
+      "index": "absent",
+      "status": "PASS"
+    },
+    {
+      "case": "C082-published-real-index",
+      "catalog_records": "synthetic fixture using shipped catalog/records DDL",
+      "expected": "graph nodes/edges and SourceRef bind worktree/profile/generation/snapshot/policy/incarnations; source response equals exact raw blob bytes/hash/range",
+      "index": "Manually seeded published-generation rows/blob with shipped test DDL; consumed via public read-only snapshot APIs; no public writable Store opener exists",
+      "status": "PASS"
+    },
+    {
+      "case": "C082-partial-index",
+      "catalog_records": "synthetic fixture using shipped catalog/records DDL",
+      "expected": "partial status plus truthful provenance and no substitute graph",
+      "index": "Manually seeded READY_PARTIAL generation with shipped test DDL; consumed via public read-only snapshot APIs",
+      "status": "PASS"
+    },
+    {
+      "case": "C082-policy-or-store-unavailable",
+      "catalog_records": "missing, mismatched, stale epoch or denied path cases",
+      "expected": "sanitized unavailable/error state; no registry or source leakage",
+      "index": "published or absent",
+      "status": "PASS"
+    },
+    {
+      "case": "C083-http-boundary",
+      "catalog_records": "synthetic fixture",
+      "expected": "existing server forged Host/Origin/CSRF/expiry tests stay PASS; app path has no CORS/proxy/shell; static Explorer denies framing",
+      "index": "published fixture",
+      "status": "PASS"
+    },
+    {
+      "case": "C081-browser-roundtrip",
+      "catalog_records": "synthetic fixture",
+      "expected": "real AppShell served same-origin; bootstrap, workspace, graph selection, source bytes, accessible panes and resize state checked in browser",
+      "index": "published fixture",
+      "status": "PASS"
+    }
+  ],
+  "format_version": 1,
+  "kind": "t084_explorer_runtime_fixture_plan",
+  "network_fetch": false,
+  "provenance": "Synthetic metadata stores use shipped DDL. Published SQLite index generation rows/blob are manually seeded with test DDL because no public writable Store opener exists; production reads consume it through OpenIndexReadOnly/WithPublishedSnapshot. No result represents a user repository, staging, or production run.",
+  "spec_version": "1.6.13",
+  "status": "EXECUTED_FIXTURE_ONLY",
+  "target_application_started": false,
+  "task_id": "T084",
+  "task_revision": 3
+}
