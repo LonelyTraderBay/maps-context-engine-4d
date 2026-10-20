@@ -31,7 +31,13 @@ const syntheticTestGraph: GraphData = {
       kind: "module",
       label: "Orders module",
       plane: "observed_static",
-      ref: { kind: "module" },
+      ref: {
+        kind: "module",
+        worktree_id: sourceRef.worktree_id,
+        profile_id: sourceRef.profile_id,
+        generation_id: sourceRef.generation_id,
+        module_id: "orders",
+      },
       evidence_refs: [],
       source_refs: [sourceRef],
       expandable_count: 0,
@@ -41,7 +47,13 @@ const syntheticTestGraph: GraphData = {
       kind: "function",
       label: "saveOrder",
       plane: "observed_static",
-      ref: { kind: "symbol" },
+      ref: {
+        kind: "symbol",
+        worktree_id: sourceRef.worktree_id,
+        profile_id: sourceRef.profile_id,
+        generation_id: sourceRef.generation_id,
+        symbol_id: "save-order",
+      },
       evidence_refs: [],
       source_refs: [],
       expandable_count: null,
@@ -202,6 +214,29 @@ describe("Explorer AppShell", () => {
     expect(await screen.findByText("Truy vấn không có nút")).toBeTruthy();
     expect(api.graph).toHaveBeenCalledOnce();
     expect(screen.queryByRole("option")).toBeNull();
+  });
+
+  it("resizes panes by pointer drag and clamps the graph width", async () => {
+    const api = createApi("published");
+    await connect(api);
+
+    const splitter = await screen.findByRole("separator", { name: "Điều chỉnh độ rộng hai pane" });
+    const layout = splitter.parentElement;
+    expect(layout).not.toBeNull();
+    if (!layout) throw new Error("split layout missing");
+    vi.spyOn(layout, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 0, width: 1000, height: 800, top: 0, right: 1000, bottom: 800, left: 0, toJSON: () => ({}),
+    } as DOMRect);
+
+    fireEvent.pointerDown(splitter, { pointerId: 1, clientX: 450 });
+    fireEvent.pointerMove(splitter, { pointerId: 1, clientX: 550 });
+    expect(splitter.getAttribute("aria-valuenow")).toBe("55");
+
+    fireEvent.pointerMove(splitter, { pointerId: 1, clientX: 2000 });
+    expect(splitter.getAttribute("aria-valuenow")).toBe("70");
+    fireEvent.pointerUp(splitter, { pointerId: 1 });
+    fireEvent.pointerMove(splitter, { pointerId: 1, clientX: 100 });
+    expect(splitter.getAttribute("aria-valuenow")).toBe("70");
   });
 
   it("keeps workspace provenance visible when the graph request fails", async () => {

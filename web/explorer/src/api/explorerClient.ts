@@ -48,6 +48,7 @@ type GraphNodeCandidate = Record<string, unknown> & {
   kind?: unknown;
   label?: unknown;
   plane?: unknown;
+  ref?: unknown;
   expandable_count?: unknown;
   source_refs?: unknown;
   evidence_refs?: unknown;
@@ -69,6 +70,23 @@ type SourceDataCandidate = Record<string, unknown> & {
 
 function asRecord<T extends Record<string, unknown>>(value: unknown): T | null {
   return isRecord(value) ? value as unknown as T : null;
+}
+
+function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
+  return Object.keys(value).length === keys.length
+    && keys.every((key) => Object.prototype.hasOwnProperty.call(value, key));
+}
+
+function isID(value: unknown): value is string {
+  return typeof value === "string" && value.length >= 1 && value.length <= 192;
+}
+
+function isUUID(value: unknown): value is string {
+  return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
+}
+
+function isHash(value: unknown): value is string {
+  return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 }
 
 function boundedSignal(signal?: AbortSignal): AbortSignal {
@@ -248,15 +266,18 @@ export function createExplorerApi(): ExplorerApi {
 export function isSourceRef(value: unknown): value is SourceRef {
   const ref = asRecord<SourceRefCandidate>(value);
   const range = asRecord<ByteRangeCandidate>(ref?.range);
-  if (!ref || !range) {
+  if (!ref || !hasExactKeys(ref, ["worktree_id", "profile_id", "generation_id", "path", "content_hash", "range"])
+    || !range
+    || !hasExactKeys(range, ["start_byte", "end_byte"])) {
     return false;
   }
-  return typeof ref.worktree_id === "string"
-    && typeof ref.profile_id === "string"
-    && typeof ref.generation_id === "string"
+  return isUUID(ref.worktree_id)
+    && isHash(ref.profile_id)
+    && isUUID(ref.generation_id)
     && typeof ref.path === "string"
-    && typeof ref.content_hash === "string"
-    && /^[0-9a-f]{64}$/.test(ref.content_hash)
+    && ref.path.length >= 1
+    && ref.path.length <= 4096
+    && isHash(ref.content_hash)
     && typeof range.start_byte === "number"
     && Number.isSafeInteger(range.start_byte)
     && typeof range.end_byte === "number"
@@ -265,12 +286,82 @@ export function isSourceRef(value: unknown): value is SourceRef {
     && range.end_byte >= range.start_byte;
 }
 
-export function isGraphData(value: unknown): value is GraphData {
-  const data = asRecord<GraphDataCandidate>(value);
-  if (!data || data.operation !== "graph_query" || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
+function isGraphRef(value: unknown): boolean {
+  const ref = asRecord(value);
+  const kind = ref?.["kind"];
+  if (!ref || typeof kind !== "string") return false;
+
+  const common = ["kind", "worktree_id", "profile_id", "generation_id"];
+  if (!isUUID(ref["worktree_id"]) || !isHash(ref["profile_id"]) || !isUUID(ref["generation_id"])) return false;
+  switch (kind) {
+    case "symbol":
+      return hasExactKeys(ref, [...common, "symbol_id"]) && isID(ref["symbol_id"]);
+    case "entity":
+      return hasExactKeys(ref, [...common, "entity_id"]) && isID(ref["entity_id"]);
+    case "module":
+      return hasExactKeys(ref, [...common, "module_id"]) && isID(ref["module_id"]);
+    case "source_anchor":
+      return hasExactKeys(ref, [...common, "build_map_id", "anchor_id", "binding_id"])
+        && isHash(ref["build_map_id"])
+        && isHash(ref["anchor_id"])
+        && isHash(ref["binding_id"]);
+    case "file":
+      return hasExactKeys(ref, [...common, "path", "content_hash"])
+        && typeof ref["path"] === "string"
+        && ref["path"].length >= 1
+        && ref["path"].length <= 4096
+        && (ref["content_hash"] === null || isHash(ref["content_hash"]));
+    default:
+      return false;
+  }
+}
+
+const evidenceKinds = new Set([
+  "syntax_exact", "type_resolved", "type_possible", "explicit_document", "text_match",
+  "unresolved", "build_anchored", "runtime_observed", "manual_declared", "proposed",
+]);
+const evidenceOrigins = new Set([
+  "static_analyzer", "build_instrumentation", "runtime_observation", "manual_approved", "ai_proposal",
+]);
+
+function isEvidenceRef(value: unknown): boolean {
+  const ref = asRecord(value);
+  if (!ref
+    || !hasExactKeys(ref, ["evidence_id", "origin", "kind", "source_refs", "record_ref", "artifact_id"])
+    || !isID(ref["evidence_id"])
+    || typeof ref["origin"] !== "string"
+    || !evidenceOrigins.has(ref["origin"])
+    || typeof ref["kind"] !== "string"
+    || !evidenceKinds.has(ref["kind"])
+    || !Array.isArray(ref["source_refs"])
+    || ref["source_refs"].length > 16
+    || !ref["source_refs"].every(isSourceRef)
+    || !(ref["artifact_id"] === null || isHash(ref["artifact_id"]))) {
     return false;
   }
-  if (typeof data.subgraph_digest !== "string" || !/^[0-9a-f]{64}$/.test(data.subgraph_digest)) {
+
+  if (ref["record_ref"] === null) return true;
+  const record = asRecord(ref["record_ref"]);
+  return record !== null
+    && hasExactKeys(record, ["record_id", "version"])
+    && isUUID(record["record_id"])
+    && typeof record["version"] === "number"
+    && Number.isSafeInteger(record["version"])
+    && record["version"] >= 1;
+}
+
+export function isGraphData(value: unknown): value is GraphData {
+  const data = asRecord<GraphDataCandidate>(value);
+  if (!data
+    || !hasExactKeys(data, ["operation", "nodes", "edges", "subgraph_digest"])
+    || data.operation !== "graph_query"
+    || !Array.isArray(data.nodes)
+    || data.nodes.length > GRAPH_NODE_LIMIT
+    || !Array.isArray(data.edges)
+    || data.edges.length > GRAPH_EDGE_LIMIT) {
+    return false;
+  }
+  if (!isHash(data.subgraph_digest)) {
     return false;
   }
 
@@ -279,18 +370,23 @@ export function isGraphData(value: unknown): value is GraphData {
   for (const rawNode of data.nodes) {
     const item = asRecord<GraphNodeCandidate>(rawNode);
     if (!item
-      || typeof item.node_id !== "string"
+      || !hasExactKeys(item, ["node_id", "ref", "kind", "label", "plane", "evidence_refs", "source_refs", "expandable_count"])
+      || !isID(item.node_id)
       || nodeIds.has(item.node_id)
-      || typeof item.kind !== "string"
+      || !isGraphRef(item.ref)
+      || !isID(item.kind)
       || typeof item.label !== "string"
+      || item.label.length > 512
       || !(typeof item.expandable_count === "number" || item.expandable_count === null)
       || (typeof item.expandable_count === "number" && (!Number.isSafeInteger(item.expandable_count) || item.expandable_count < 0))
       || (item.plane !== "intended" && item.plane !== "observed_static" && item.plane !== "observed_runtime" && item.plane !== "annotation")
       || !Array.isArray(item.source_refs)
-      || !Array.isArray(item.evidence_refs)) {
+      || item.source_refs.length > 16
+      || !Array.isArray(item.evidence_refs)
+      || item.evidence_refs.length > 16) {
       return false;
     }
-    if (!item.source_refs.every(isSourceRef)) {
+    if (!item.source_refs.every(isSourceRef) || !item.evidence_refs.every(isEvidenceRef)) {
       return false;
     }
     nodeIds.add(item.node_id);
@@ -299,14 +395,17 @@ export function isGraphData(value: unknown): value is GraphData {
   for (const rawEdge of data.edges) {
     const item = asRecord<GraphEdgeCandidate>(rawEdge);
     if (!item
-      || typeof item.edge_id !== "string"
+      || !hasExactKeys(item, ["edge_id", "from_node_id", "to_node_id", "relation_kind", "resolution_status", "evidence_refs", "expand_ref"])
+      || !isID(item.edge_id)
       || edgeIds.has(item.edge_id)
-      || typeof item.from_node_id !== "string"
-      || typeof item.to_node_id !== "string"
-      || typeof item.relation_kind !== "string"
+      || !isID(item.from_node_id)
+      || !isID(item.to_node_id)
+      || !isID(item.relation_kind)
       || (item.resolution_status !== "exact_in_supported_scope" && item.resolution_status !== "candidate" && item.resolution_status !== "unresolved")
-      || !(typeof item.expand_ref === "string" || item.expand_ref === null)
-      || !Array.isArray(item.evidence_refs)) {
+      || !(item.expand_ref === null || (typeof item.expand_ref === "string" && item.expand_ref.length >= 1 && item.expand_ref.length <= 32_768))
+      || !Array.isArray(item.evidence_refs)
+      || item.evidence_refs.length > 16
+      || !item.evidence_refs.every(isEvidenceRef)) {
       return false;
     }
     edgeIds.add(item.edge_id);

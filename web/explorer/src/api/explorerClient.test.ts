@@ -83,12 +83,57 @@ describe("Explorer API boundary", () => {
       kind: "module",
       label: "Module",
       plane: "observed_static",
-      ref: {},
+      ref: {
+        kind: "module",
+        worktree_id: "88ce9543-7114-4263-ab0e-7ce99632b17a",
+        profile_id: "a".repeat(64),
+        generation_id: "60ce9543-7114-4263-ab0e-7ce99632b17a",
+        module_id: "module",
+      },
       evidence_refs: [],
       source_refs: [],
       expandable_count: null,
     };
     expect(isGraphData({ operation: "graph_query", subgraph_digest: "a".repeat(64), nodes: [node, node], edges: [] })).toBe(false);
+  });
+
+  it("enforces the S43 graph reference and evidence contracts", () => {
+    const baseNode = {
+      node_id: "module:orders",
+      kind: "module",
+      label: "Orders",
+      plane: "observed_static",
+      ref: {
+        kind: "module",
+        worktree_id: "88ce9543-7114-4263-ab0e-7ce99632b17a",
+        profile_id: "a".repeat(64),
+        generation_id: "60ce9543-7114-4263-ab0e-7ce99632b17a",
+        module_id: "orders",
+      },
+      evidence_refs: [{
+        evidence_id: "evidence:orders",
+        origin: "static_analyzer",
+        kind: "syntax_exact",
+        source_refs: [],
+        record_ref: null,
+        artifact_id: null,
+      }],
+      source_refs: [],
+      expandable_count: null,
+    };
+    const graph = (node: unknown) => ({
+      operation: "graph_query",
+      subgraph_digest: "a".repeat(64),
+      nodes: [node],
+      edges: [],
+    });
+
+    expect(isGraphData(graph(baseNode))).toBe(true);
+    expect(isGraphData(graph({ ...baseNode, ref: { kind: "module" } }))).toBe(false);
+    expect(isGraphData(graph({
+      ...baseNode,
+      evidence_refs: [{ evidence_id: "evidence:orders", kind: "syntax_exact", source_refs: [] }],
+    }))).toBe(false);
   });
 
   it("does not display source content when the API answers for a different snapshot ref", async () => {
