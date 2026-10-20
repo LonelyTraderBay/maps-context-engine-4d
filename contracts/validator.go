@@ -17,13 +17,14 @@ import (
 	"github.com/google/jsonschema-go/jsonschema"
 )
 
-//go:embed mce4d.v1.schema.json operations.v1.json
+//go:embed mce4d.v1.schema.json operations.v1.json language-provider.v1.schema.json
 var contractFiles embed.FS
 
 var (
-	ErrUnknownOperation  = errors.New("unknown contract operation")
-	ErrUnknownDefinition = errors.New("unknown contract definition")
-	ErrContractViolation = errors.New("contract validation failed")
+	ErrUnknownOperation        = errors.New("unknown contract operation")
+	ErrUnknownDefinition       = errors.New("unknown contract definition")
+	ErrContractViolation       = errors.New("contract validation failed")
+	ErrLanguageProviderMessage = errors.New("invalid language provider message")
 )
 
 type Operation struct {
@@ -36,6 +37,52 @@ type Validator struct {
 	operations map[string]Operation
 	resolved   map[string]*jsonschema.Resolved
 	mu         sync.Mutex
+}
+
+var (
+	languageProviderSchemaOnce sync.Once
+	languageProviderSchema     *jsonschema.Resolved
+	languageProviderSchemaErr  error
+)
+
+// ValidateLanguageProviderMessage validates one provider request or response
+// against the sealed local schema after strict JSON decoding. The provider
+// schema has no remote references and never loads project supplied schemas.
+func ValidateLanguageProviderMessage(raw []byte) error {
+	if len(raw) > MaxJSONBytes {
+		return fmt.Errorf("%w: message exceeds %d bytes", ErrLanguageProviderMessage, MaxJSONBytes)
+	}
+	instance, err := DecodeJSON(raw)
+	if err != nil {
+		return fmt.Errorf("%w: %v", ErrLanguageProviderMessage, err)
+	}
+	languageProviderSchemaOnce.Do(func() {
+		schemaBytes, readErr := contractFiles.ReadFile("language-provider.v1.schema.json")
+		if readErr != nil {
+			languageProviderSchemaErr = fmt.Errorf("read embedded language provider schema: %w", readErr)
+			return
+		}
+		var schema jsonschema.Schema
+		if unmarshalErr := json.Unmarshal(schemaBytes, &schema); unmarshalErr != nil {
+			languageProviderSchemaErr = fmt.Errorf("decode language provider schema: %w", unmarshalErr)
+			return
+		}
+		languageProviderSchema, languageProviderSchemaErr = schema.Resolve(&jsonschema.ResolveOptions{ValidateDefaults: true})
+		if languageProviderSchemaErr != nil {
+			languageProviderSchemaErr = fmt.Errorf("resolve language provider schema: %w", languageProviderSchemaErr)
+		}
+	})
+	if languageProviderSchemaErr != nil {
+		return fmt.Errorf("%w: %v", ErrLanguageProviderMessage, languageProviderSchemaErr)
+	}
+	schemaInstance, err := numericSchemaValue(instance)
+	if err != nil {
+		return fmt.Errorf("%w: %v", ErrLanguageProviderMessage, err)
+	}
+	if err := languageProviderSchema.Validate(schemaInstance); err != nil {
+		return fmt.Errorf("%w: %v", ErrLanguageProviderMessage, err)
+	}
+	return nil
 }
 
 func NewValidator() (*Validator, error) {

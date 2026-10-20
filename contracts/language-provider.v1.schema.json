@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maps-context-engine-4d.invalid/contracts/language-provider.v1.schema.json",
+  "title": "MCE4D language provider process protocol v1",
+  "oneOf": [
+    { "$ref": "#/$defs/analyze_request" },
+    { "$ref": "#/$defs/analyze_response" }
+  ],
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z][A-Za-z0-9._:/+-]*$"
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_byte", "end_byte"],
+      "properties": {
+        "start_byte": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "end_byte": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$", "maxLength": 64 }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_id", "schema_version", "profile_id", "config"],
+      "properties": {
+        "schema_id": { "$ref": "#/$defs/identifier" },
+        "schema_version": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+        "profile_id": { "$ref": "#/$defs/hash" },
+        "config": { "type": "object" }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "content_base64", "content_sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "content_base64": { "type": "string", "maxLength": 16777216 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "execution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_code", "project_scripts", "project_plugins", "notebook_cells", "network"],
+      "properties": {
+        "target_code": { "const": "never_execute" },
+        "project_scripts": { "const": "never_execute" },
+        "project_plugins": { "const": "never_execute" },
+        "notebook_cells": { "const": "never_execute" },
+        "network": { "const": false }
+      }
+    },
+    "analyze_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "message_type", "request_id", "language", "profile", "files", "execution_policy"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "message_type": { "const": "analyze_request" },
+        "request_id": { "$ref": "#/$defs/uuid" },
+        "language": { "$ref": "#/$defs/identifier" },
+        "profile": { "$ref": "#/$defs/profile" },
+        "files": { "type": "array", "minItems": 1, "maxItems": 4096, "items": { "$ref": "#/$defs/file" } },
+        "execution_policy": { "$ref": "#/$defs/execution_policy" }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "license", "digest", "languages", "capabilities"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$", "maxLength": 64 },
+        "license": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9.-]*$" },
+        "digest": { "$ref": "#/$defs/hash" },
+        "languages": { "type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/identifier" } },
+        "capabilities": { "type": "array", "minItems": 1, "maxItems": 128, "uniqueItems": true, "items": { "$ref": "#/$defs/capability" } }
+      }
+    },
+    "symbol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "path", "range", "analysis_status"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "path": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "range": { "$ref": "#/$defs/range" },
+        "analysis_status": { "enum": ["syntax", "typed", "unknown"] }
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source_symbol_id", "target_symbol_id", "kind", "evidence_kind", "path", "range", "analysis_status"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "source_symbol_id": { "$ref": "#/$defs/identifier" },
+        "target_symbol_id": { "oneOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+        "kind": { "$ref": "#/$defs/identifier" },
+        "evidence_kind": { "enum": ["declared", "inferred", "unknown"] },
+        "path": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "range": { "$ref": "#/$defs/range" },
+        "analysis_status": { "enum": ["syntax", "typed", "unknown"] }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message", "path", "range"],
+      "properties": {
+        "code": { "$ref": "#/$defs/identifier" },
+        "severity": { "enum": ["info", "warning", "error"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "path": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "range": { "$ref": "#/$defs/range" }
+      }
+    },
+    "analyze_response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "message_type", "request_id", "provider", "symbols", "relations", "diagnostics"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "message_type": { "const": "analyze_response" },
+        "request_id": { "$ref": "#/$defs/uuid" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "symbols": { "type": "array", "maxItems": 1000000, "items": { "$ref": "#/$defs/symbol" } },
+        "relations": { "type": "array", "maxItems": 2000000, "items": { "$ref": "#/$defs/relation" } },
+        "diagnostics": { "type": "array", "maxItems": 100000, "items": { "$ref": "#/$defs/diagnostic" } }
+      }
+    }
+  }
+}
