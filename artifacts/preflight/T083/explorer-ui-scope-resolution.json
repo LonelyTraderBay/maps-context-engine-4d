@@ -1,0 +1,38 @@
+{
+  "format_version": 1,
+  "kind": "t083_fixture_scope_resolution",
+  "spec_version": "1.6.13",
+  "task_id": "T083",
+  "delivery_id": "80ce9543-7114-4263-ab0e-7ce99632b17a",
+  "decision_id": "D082",
+  "status": "RESOLVED_IN_SPEC_PRODUCT_UNVERIFIED",
+  "authority_ref": "S53/AW-01/AW-02:user-assignment-2026-10-15",
+  "task_scope": {
+    "T083": {
+      "C081": "AppShell selection, accessible list, keyboard and pointer splitter; local UI proof only.",
+      "C082": "Missing, empty, partial and error API states; no synthetic data presented as product evidence.",
+      "real_indexed_snapshot": "OUT_OF_SCOPE_AFTER_D082"
+    },
+    "T084": {
+      "C082": "Serve a real published snapshot through registered Explorer application services; verify graph and raw source provenance in acceptance tests.",
+      "owned_paths": [
+        "internal/app/explorer/",
+        "internal/cli/cli.go",
+        "tests/acceptance/explorer*",
+        "artifacts/preflight/T084/",
+        "artifacts/acceptance/"
+      ]
+    }
+  },
+  "task_count": 108,
+  "dependency_change": false,
+  "product_runtime_claim": "NOT_RUN",
+  "browser_claim": "NOT_RUN",
+  "evidence_basis": [
+    "internal/explorer/server.go requires Services",
+    "internal/explorer/server_test.go provides only fake test Services",
+    "internal/cli/cli.go has no Explorer service registration",
+    "mce4d --help lists no Explorer runtime capability"
+  ],
+  "rollback": "Restore the prior T083/T084 descriptions and S47 paths; retain the real indexed fixture as NOT_RUN and keep both tasks incomplete until an actual service binding is implemented."
+}
