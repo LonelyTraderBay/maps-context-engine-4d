@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .descriptor import language_provider_descriptor
+from .metadata import extract_notebook_metadata
 from .profile import METADATA_NAMES, validate_provider_request
 
 MAX_AST_NODES = 200_000
@@ -127,11 +128,13 @@ class FileAnalyzer(ast.NodeVisitor):
         root_symbol_id: str,
         module_index: dict[str, list[str]],
         roots: list[str],
+        typed_mode: bool = False,
     ) -> None:
         self.path = path
         self.offsets = SourceOffsets(source_bytes)
         self.module_index = module_index
         self.roots = roots
+        self.typed_mode = typed_mode
         self.symbols: list[dict[str, Any]] = []
         self.relations: list[dict[str, Any]] = []
         self.diagnostics: list[dict[str, Any]] = []
@@ -145,7 +148,14 @@ class FileAnalyzer(ast.NodeVisitor):
         self.pending_nonlocal_bindings: list[tuple[Scope, str, ast.Name]] = []
         self.pending_references: list[tuple[Scope, str, ast.Name]] = []
 
-    def add_symbol(self, kind: str, name: str, node: ast.AST | None, stable_parts: tuple[object, ...] = ()) -> str:
+    def add_symbol(
+        self,
+        kind: str,
+        name: str,
+        node: ast.AST | None,
+        stable_parts: tuple[object, ...] = (),
+        analysis_status: str = "syntax",
+    ) -> str:
         source_range = self.offsets.range(node)
         symbol_id = _identity("sym", self.path, kind, *stable_parts, source_range["start_byte"], source_range["end_byte"])
         if symbol_id not in self._symbol_ids:
@@ -158,7 +168,7 @@ class FileAnalyzer(ast.NodeVisitor):
                 "name": name,
                 "path": self.path,
                 "range": source_range,
-                "analysis_status": "syntax",
+                "analysis_status": analysis_status,
             })
         return symbol_id
 
@@ -208,6 +218,51 @@ class FileAnalyzer(ast.NodeVisitor):
             "path": self.path,
             "range": source_range,
         })
+
+    @classmethod
+    def _annotation_label(cls, node: ast.AST) -> str | None:
+        """Render only inert type-expression syntax; never evaluate annotations."""
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            prefix = cls._annotation_label(node.value)
+            return f"{prefix}.{node.attr}" if prefix else None
+        if isinstance(node, ast.Subscript):
+            value = cls._annotation_label(node.value)
+            items = node.slice.elts if isinstance(node.slice, ast.Tuple) else [node.slice]
+            rendered = [cls._annotation_label(item) for item in items]
+            if value is None or any(item is None for item in rendered):
+                return None
+            return f"{value}[{', '.join(item for item in rendered if item is not None)}]"
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+            left = cls._annotation_label(node.left)
+            right = cls._annotation_label(node.right)
+            return f"{left} | {right}" if left and right else None
+        if isinstance(node, ast.Constant) and node.value is None:
+            return "None"
+        if isinstance(node, ast.Constant) and node.value is Ellipsis:
+            return "..."
+        return None
+
+    def add_typed_annotation(self, source_symbol_id: str, node: ast.AST | None) -> None:
+        if not self.typed_mode or node is None:
+            return
+        try:
+            label = self._annotation_label(node)
+        except RecursionError:
+            label = None
+        if label is None or len(label.encode("utf-8")) > 512:
+            self.add_diagnostic(
+                "TYPE_ANNOTATION_UNKNOWN",
+                "Annotation syntax is outside the inert declared-type subset and is not evaluated.",
+                node,
+            )
+            return
+        type_symbol_id = self.add_symbol("type_annotation", label, node, ("declared", label), "typed")
+        self.add_relation(
+            "typed_annotation", source_symbol_id, type_symbol_id, node,
+            evidence="declared", status="typed", identity=label,
+        )
 
     def _declare_named_scope(self, kind: str, name: str, node: ast.AST) -> tuple[str, Scope]:
         parent_scope = self.scope
@@ -331,11 +386,15 @@ class FileAnalyzer(ast.NodeVisitor):
             self.add_diagnostic("TYPE_PARAMETER_SCOPE_UNKNOWN", "Generic type parameter semantics are not resolved by this provider.", node)
         self._push(child_scope)
         for argument in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs]:
-            self._bind_variable(argument.arg, argument, "parameter")
+            parameter_id = self._bind_variable(argument.arg, argument, "parameter")
+            self.add_typed_annotation(parameter_id, argument.annotation)
         if node.args.vararg:
-            self._bind_variable(node.args.vararg.arg, node.args.vararg, "parameter")
+            parameter_id = self._bind_variable(node.args.vararg.arg, node.args.vararg, "parameter")
+            self.add_typed_annotation(parameter_id, node.args.vararg.annotation)
         if node.args.kwarg:
-            self._bind_variable(node.args.kwarg.arg, node.args.kwarg, "parameter")
+            parameter_id = self._bind_variable(node.args.kwarg.arg, node.args.kwarg, "parameter")
+            self.add_typed_annotation(parameter_id, node.args.kwarg.annotation)
+        self.add_typed_annotation(declaration_id, node.returns)
         for statement in node.body:
             self.visit(statement)
         self._pop()
@@ -549,6 +608,11 @@ class FileAnalyzer(ast.NodeVisitor):
         if self._has_attribute_target(node.target):
             self._record_attribute_mutation(node)
         self.generic_visit(node)
+        if isinstance(node.target, ast.Name):
+            target_scope = self._binding_scope(node.target.id)
+            target_symbol_id = target_scope.bindings.get(node.target.id)
+            if target_symbol_id is not None:
+                self.add_typed_annotation(target_symbol_id, node.annotation)
 
     def visit_Delete(self, node: ast.Delete) -> None:
         if any(self._has_attribute_target(target) for target in node.targets):
@@ -648,7 +712,7 @@ def analyze_provider_request(request: Any) -> dict[str, Any]:
                 name: [modules.get(candidate, _identity("sym", candidate, "module", name, 0, len(source_by_path[candidate])))
                        for candidate in module_paths]
                 for name, module_paths in module_index.items()
-            }, roots)
+            }, roots, typed_mode=config["analysis_mode"] == "typed_when_available")
             analyzer.symbols.append({"id": module_id, "kind": "module", "name": module_name, "path": path,
                                      "range": {"start_byte": 0, "end_byte": len(source_bytes)}, "analysis_status": "syntax"})
             analyzer._symbol_ids.add(module_id)
@@ -673,11 +737,27 @@ def analyze_provider_request(request: Any) -> dict[str, Any]:
                 "diagnostics": analyzer.diagnostics,
             }
         elif path.endswith(".ipynb"):
+            metadata_label, metadata_error = extract_notebook_metadata(source_by_path[path])
+            notebook_symbols: list[dict[str, Any]] = []
+            notebook_diagnostics = [{
+                "code": "NOTEBOOK_CELLS_UNINSPECTED", "severity": "info",
+                "message": "Only allowlisted notebook metadata is read; cells and outputs are ignored and never executed.",
+                "path": path, "range": {"start_byte": 0, "end_byte": 0},
+            }]
+            if metadata_error is not None:
+                notebook_diagnostics.append({
+                    "code": metadata_error, "severity": "warning" if metadata_error != "NOTEBOOK_METADATA_ABSENT" else "info",
+                    "message": "Allowlisted notebook metadata is absent, invalid, or outside its byte and structure limits.",
+                    "path": path, "range": {"start_byte": 0, "end_byte": 0},
+                })
+            if metadata_label is not None:
+                notebook_symbols.append({
+                    "id": _identity("sym", path, "notebook_metadata", metadata_label, 0, 0),
+                    "kind": "notebook_metadata", "name": metadata_label, "path": path,
+                    "range": {"start_byte": 0, "end_byte": 0}, "analysis_status": "syntax",
+                })
             results_by_path[path] = {
-                "symbols": [], "relations": [],
-                "diagnostics": [{"code": "NOTEBOOK_METADATA_UNSUPPORTED", "severity": "warning",
-                                 "message": "Notebook cells and metadata are not inspected or executed by this provider version.",
-                                 "path": path, "range": {"start_byte": 0, "end_byte": 0}}],
+                "symbols": notebook_symbols, "relations": [], "diagnostics": notebook_diagnostics,
             }
         elif path.rsplit("/", 1)[-1].lower() in METADATA_NAMES:
             results_by_path[path] = {
@@ -699,8 +779,8 @@ def analyze_provider_request(request: Any) -> dict[str, Any]:
     diagnostics: list[dict[str, Any]] = []
     if config["analysis_mode"] == "typed_when_available":
         path = python_paths[0]
-        diagnostics.append({"code": "TYPED_ANALYSIS_UNAVAILABLE", "severity": "info",
-                            "message": "Typed enrichment is not enabled for this Python provider version.",
+        diagnostics.append({"code": "TYPED_DECLARATIONS_ONLY", "severity": "info",
+                            "message": "Only inert declared annotation expressions are typed; value inference and runtime type checking are unavailable.",
                             "path": path, "range": {"start_byte": 0, "end_byte": 0}})
     metadata_present = any(path.rsplit("/", 1)[-1].lower() in METADATA_NAMES for path in source_by_path)
     if not metadata_present:

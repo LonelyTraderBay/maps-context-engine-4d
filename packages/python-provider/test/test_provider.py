@@ -177,6 +177,31 @@ mock.patch.object(Service, "method", lambda: None)
         self.assertIn("PYTHON_SYNTAX_INVALID", {item["code"] for item in response["diagnostics"]})
         self.assertNotIn("secret_marker", json.dumps(response))
 
+    def test_typed_mode_emits_only_inert_declared_annotation_facts(self) -> None:
+        response = analyze_provider_request(request_for({
+            "src/app.py": b"class User:\n    pass\n\ncurrent: User\ndef load(value: User, limit: list[int]) -> User:\n    return unresolved(value)\n",
+        }, mode="typed_when_available"))
+        annotations = [item for item in response["symbols"] if item["kind"] == "type_annotation"]
+        self.assertEqual({item["name"] for item in annotations}, {"User", "list[int]"})
+        self.assertTrue(all(item["analysis_status"] == "typed" for item in annotations))
+        typed_relations = [item for item in response["relations"] if item["kind"] == "typed_annotation"]
+        self.assertEqual(len(typed_relations), 4)
+        self.assertTrue(all(item["evidence_kind"] == "declared" for item in typed_relations))
+        self.assertTrue(all(item["analysis_status"] == "typed" for item in typed_relations))
+        self.assertIn("TYPED_DECLARATIONS_ONLY", {item["code"] for item in response["diagnostics"]})
+        self.assertIn("UNRESOLVED_BINDING", {item["code"] for item in response["diagnostics"]})
+        self.assertEqual(response, analyze_provider_request(request_for({
+            "src/app.py": b"class User:\n    pass\n\ncurrent: User\ndef load(value: User, limit: list[int]) -> User:\n    return unresolved(value)\n",
+        }, mode="typed_when_available")))
+
+    def test_forward_reference_annotations_remain_unknown_without_evaluation(self) -> None:
+        response = analyze_provider_request(request_for({
+            "src/app.py": b'def load(value: "SecretType") -> "SecretType":\n    return value\n',
+        }, mode="typed_when_available"))
+        self.assertIn("TYPE_ANNOTATION_UNKNOWN", {item["code"] for item in response["diagnostics"]})
+        self.assertNotIn("SecretType", json.dumps(response))
+        self.assertFalse(any(item["kind"] == "type_annotation" for item in response["symbols"]))
+
     def test_notebook_cells_and_environment_files_are_metadata_only(self) -> None:
         with self.subTest("notebook"):
             with tempfile.TemporaryDirectory(prefix="mce4d-notebook-") as temp_root:
@@ -184,7 +209,11 @@ mock.patch.object(Service, "method", lambda: None)
                 cell_source = f'open({str(sentinel)!r}, "w").write("executed")'
                 notebook = json.dumps({
                     "cells": [{"cell_type": "code", "source": [cell_source]}],
-                    "metadata": {"kernelspec": {"name": "python3"}},
+                    "metadata": {
+                        "kernelspec": {"name": "python3", "display_name": "Python 3"},
+                        "language_info": {"name": "python", "version": "3.12"},
+                        "unapproved": {"secret": "must-not-be-exported"},
+                    },
                 }).encode("utf-8")
                 request = request_for({
                     "src/app.py": b"value = 1\n",
@@ -193,7 +222,14 @@ mock.patch.object(Service, "method", lambda: None)
                 response = analyze_provider_request(request)
                 notebook_entry = next(item for item in request["files"] if item["path"] == "src/demo.ipynb")  # type: ignore[index]
                 self.assertEqual(base64.b64decode(notebook_entry["content_base64"]), notebook)  # type: ignore[index]
-                self.assertIn("NOTEBOOK_METADATA_UNSUPPORTED", {item["code"] for item in response["diagnostics"]})
+                self.assertIn("NOTEBOOK_CELLS_UNINSPECTED", {item["code"] for item in response["diagnostics"]})
+                notebook_facts = [item for item in response["symbols"] if item["kind"] == "notebook_metadata"]
+                self.assertEqual([item["name"] for item in notebook_facts], [
+                    "kernelspec.name=python3; kernelspec.display_name=Python 3; "
+                    "language_info.name=python; language_info.version=3.12",
+                ])
+                self.assertNotIn("open(", json.dumps(response))
+                self.assertNotIn("must-not-be-exported", json.dumps(response))
                 self.assertFalse(sentinel.exists())
         with self.subTest("environment metadata"):
             response = analyze_provider_request(request_for({
@@ -203,6 +239,17 @@ mock.patch.object(Service, "method", lambda: None)
             }))
             metadata_gaps = [item for item in response["diagnostics"] if item["code"] == "PYTHON_ENV_METADATA_UNSUPPORTED"]
             self.assertEqual({item["path"] for item in metadata_gaps}, {"src/pyproject.toml", "src/pyvenv.cfg"})
+
+    def test_notebook_metadata_rejects_duplicates_and_enforces_byte_cap(self) -> None:
+        duplicate = b'{"metadata":{"kernelspec":{"name":"safe","name":"unsafe"}},"cells":[]}'
+        response = analyze_provider_request(request_for({"src/app.py": b"value = 1\n", "src/demo.ipynb": duplicate}))
+        self.assertIn("NOTEBOOK_METADATA_INVALID", {item["code"] for item in response["diagnostics"]})
+        self.assertFalse(any(item["kind"] == "notebook_metadata" for item in response["symbols"]))
+
+        oversized = b'{"metadata":{},"padding":"' + b"x" * (1024 * 1024) + b'"}'
+        request = request_for({"src/app.py": b"value = 1\n", "src/demo.ipynb": oversized})
+        response = analyze_provider_request(request)
+        self.assertIn("NOTEBOOK_METADATA_LIMIT", {item["code"] for item in response["diagnostics"]})
 
     def test_python_startup_hooks_are_not_executed_and_capture_bytes_stay_unchanged(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-python-hooks-") as temp_root:

@@ -9,11 +9,29 @@ const providerRequestFixture = `{"schema_version":1,"message_type":"analyze_requ
 
 const providerResponseFixture = `{"schema_version":1,"message_type":"analyze_response","request_id":"123e4567-e89b-12d3-a456-426614174000","provider":{"id":"typescript-v6","version":"1.0.0","license":"Apache-2.0","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","languages":["typescript"],"capabilities":[{"id":"symbols.syntax","version":"1.0.0"}]},"symbols":[],"relations":[],"diagnostics":[]}`
 
+const pythonTypedResponseFixture = `{"schema_version":1,"message_type":"analyze_response","request_id":"123e4567-e89b-12d3-a456-426614174000","provider":{"id":"python-v1","version":"1.0.0","license":"Apache-2.0","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","languages":["python"],"capabilities":[{"id":"relations.typed_annotations","version":"1.0.0"}]},"symbols":[{"id":"sym:function","kind":"function","name":"load","path":"src/app.py","range":{"start_byte":0,"end_byte":12},"analysis_status":"syntax"},{"id":"sym:type","kind":"type_annotation","name":"User","path":"src/app.py","range":{"start_byte":10,"end_byte":14},"analysis_status":"typed"}],"relations":[{"id":"rel:annotation","source_symbol_id":"sym:function","target_symbol_id":"sym:type","kind":"typed_annotation","evidence_kind":"declared","path":"src/app.py","range":{"start_byte":10,"end_byte":14},"analysis_status":"typed"}],"diagnostics":[{"code":"TYPED_DECLARATIONS_ONLY","severity":"info","message":"Only inert declared annotation expressions are typed.","path":"src/app.py","range":{"start_byte":0,"end_byte":0}}]}`
+
 func TestValidateLanguageProviderMessageAcceptsRequestAndResponse(t *testing.T) {
 	for _, fixture := range []string{providerRequestFixture, providerResponseFixture} {
 		if err := ValidateLanguageProviderMessage([]byte(fixture)); err != nil {
 			t.Fatalf("valid provider message rejected: %v", err)
 		}
+	}
+}
+
+func TestValidateLanguageProviderMessageAcceptsDeclaredTypedPythonFacts(t *testing.T) {
+	if err := ValidateLanguageProviderMessage([]byte(pythonTypedResponseFixture)); err != nil {
+		t.Fatalf("valid declared typed Python response rejected: %v", err)
+	}
+	for name, fixture := range map[string]string{
+		"unknown analysis status": strings.Replace(pythonTypedResponseFixture, `"analysis_status":"typed"`, `"analysis_status":"inferred"`, 1),
+		"unknown evidence kind":   strings.Replace(pythonTypedResponseFixture, `"evidence_kind":"declared"`, `"evidence_kind":"runtime"`, 1),
+	} {
+		t.Run(name, func(t *testing.T) {
+			if err := ValidateLanguageProviderMessage([]byte(fixture)); err == nil {
+				t.Fatal("invalid typed evidence accepted")
+			}
+		})
 	}
 }
 

@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 import unittest
+
+PACKAGE_SRC = Path(__file__).resolve().parents[1] / "src"
+sys.path.insert(0, str(PACKAGE_SRC))
+
+from mce4d_python_provider.descriptor import language_provider_descriptor
 
 
 class ProfileSchemaTests(unittest.TestCase):
@@ -13,6 +19,9 @@ class ProfileSchemaTests(unittest.TestCase):
         self.assertEqual(schema["properties"]["language"]["const"], "python")
         self.assertEqual(schema["properties"]["allow_project_plugins"]["const"], False)
         self.assertIn("python_executable_digest", schema["required"])
+        capability_ids = {item["id"] for item in language_provider_descriptor["capabilities"]}
+        self.assertIn("relations.typed_annotations", capability_ids)
+        self.assertIn("symbols.notebook_metadata", capability_ids)
 
 
 if __name__ == "__main__":

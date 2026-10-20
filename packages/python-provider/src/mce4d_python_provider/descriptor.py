@@ -54,6 +54,8 @@ language_provider_descriptor = {
         {"id": "diagnostics.gaps", "version": "1.0.0"},
         {"id": "relations.imports", "version": "1.0.0"},
         {"id": "relations.scopes", "version": "1.0.0"},
+        {"id": "relations.typed_annotations", "version": "1.0.0"},
+        {"id": "symbols.notebook_metadata", "version": "1.0.0"},
         {"id": "symbols.syntax", "version": "1.0.0"},
     ],
 }
