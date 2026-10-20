@@ -100,6 +100,54 @@ def __imported_but_not_called():
         again = analyze_provider_request(request_for({"src/app.py": source}))
         self.assertEqual(response, again)
 
+    def test_unbound_nonlocal_store_remains_unknown(self) -> None:
+        response = analyze_provider_request(request_for({
+            "src/app.py": b"def outer():\n    def inner():\n        nonlocal missing\n        missing = 1\n        return missing\n    return inner\n",
+        }))
+
+        self.assertIn("UNRESOLVED_BINDING", {item["code"] for item in response["diagnostics"]})
+        self.assertFalse(any(
+            item["kind"] == "variable" and item["name"] == "missing"
+            for item in response["symbols"]
+        ))
+        self.assertTrue(any(
+            item["kind"] == "reference" and item["target_symbol_id"] is None
+            and item["analysis_status"] == "unknown"
+            for item in response["relations"]
+        ))
+
+    def test_nonlocal_resolves_forward_enclosing_binding_through_nested_scopes(self) -> None:
+        source = b"""\
+def outer():
+    value = 0
+    def middle():
+        def inner():
+            nonlocal value
+            value = value + 1
+        value = 1
+        return inner
+    return middle
+"""
+        response = analyze_provider_request(request_for({"src/app.py": source}))
+
+        value_symbols = [
+            item for item in response["symbols"]
+            if item["kind"] == "variable" and item["name"] == "value"
+        ]
+        self.assertEqual(len(value_symbols), 2)
+        self.assertNotIn("UNRESOLVED_BINDING", {item["code"] for item in response["diagnostics"]})
+        value_ids = {item["id"] for item in value_symbols}
+        middle_value = next(
+            item for item in value_symbols
+            if item["range"]["start_byte"] == source.index(b"value = 1")
+        )
+        value_references = [
+            item for item in response["relations"]
+            if item["kind"] == "reference" and item["target_symbol_id"] in value_ids
+        ]
+        self.assertEqual(len(value_references), 1)
+        self.assertEqual(value_references[0]["target_symbol_id"], middle_value["id"])
+
     def test_unicode_line_separator_does_not_shift_python_byte_ranges(self) -> None:
         source = 'value = "before\u2028after"\r\nnext_name = 1\r\n'.encode("utf-8")
         response = analyze_provider_request(request_for({"src/app.py": source}))

@@ -142,6 +142,7 @@ class FileAnalyzer(ast.NodeVisitor):
         self.scope = self.root_scope
         self.scope_stack = [self.root_scope]
         self.dynamic_import_aliases: set[str] = set()
+        self.pending_nonlocal_bindings: list[tuple[Scope, str, ast.Name]] = []
         self.pending_references: list[tuple[Scope, str, ast.Name]] = []
 
     def add_symbol(self, kind: str, name: str, node: ast.AST | None, stable_parts: tuple[object, ...] = ()) -> str:
@@ -440,9 +441,38 @@ class FileAnalyzer(ast.NodeVisitor):
 
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, (ast.Store, ast.Del)):
-            self._bind_variable(node.id, node)
+            if node.id in self.scope.nonlocal_names:
+                self.pending_nonlocal_bindings.append((self.scope, node.id, node))
+            else:
+                self._bind_variable(node.id, node)
             return
         self.pending_references.append((self.scope, node.id, node))
+
+    @staticmethod
+    def _enclosing_function_binding(scope: Scope, name: str) -> Scope | None:
+        current = scope.parent
+        while current is not None:
+            if current.kind == "function" and name in current.bindings:
+                return current
+            current = current.parent
+        return None
+
+    def resolve_pending_nonlocal_bindings(self) -> None:
+        for scope, name, node in self.pending_nonlocal_bindings:
+            target_scope = self._enclosing_function_binding(scope, name)
+            if target_scope is None:
+                self.add_relation("reference", scope.symbol_id, None, node, "unknown", "unknown", name)
+                self.add_diagnostic(
+                    "UNRESOLVED_BINDING",
+                    "Name binding is not proven by captured declarations or builtins.",
+                    node,
+                )
+                continue
+            symbol_id = target_scope.bindings.get(name)
+            if symbol_id is None:
+                symbol_id = self.add_symbol("variable", name, node, (target_scope.symbol_id, name))
+                target_scope.bindings[name] = symbol_id
+            self.add_relation("declares", target_scope.symbol_id, symbol_id, node, identity=name)
 
     def resolve_pending_references(self) -> None:
         for scope, name, node in self.pending_references:
@@ -633,6 +663,7 @@ def analyze_provider_request(request: Any) -> dict[str, Any]:
                             analyzer.dynamic_import_aliases.add(alias.asname or alias.name)
             try:
                 analyzer.visit(tree)
+                analyzer.resolve_pending_nonlocal_bindings()
                 analyzer.resolve_pending_references()
             except RecursionError as exc:
                 raise ProviderAnalysisError("Python AST traversal exceeded its bounded resources") from exc
