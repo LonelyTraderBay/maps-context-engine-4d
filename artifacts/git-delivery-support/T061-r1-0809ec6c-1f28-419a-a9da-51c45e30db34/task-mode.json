@@ -1,0 +1,38 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "internal/contracts/events/**",
+      "internal/contracts/schema/**",
+      "tests/contract/import_boundary_test.go",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T061/**"
+    ],
+    "behavior": [
+      "Hỗ trợ đúng AsyncAPI 3.1.0 JSON subset; operations.action chỉ send/receive; YAML, 2.x và version khác là unsupported/gap, không tự coi tương thích.",
+      "Channels, messages, payload content type/schema format và namespace/server binding có identity theo repo/environment/profile/protocol/namespace/server/contract/version/source hash.",
+      "Chỉ resolve local JSON Pointer/URI trong source bundle đã capture; remote, traversal, cycle, thiếu ref và reference sai vị trí giữ unresolved diagnostic; không fetch hoặc tự mở file.",
+      "Address động/wildcard được đánh dấu template/unknown, không tạo exact bridge; cùng topic khác environment/namespace/server sinh identity/cache key khác nhau.",
+      "Binding control chỉ phát hiện allowlisted field paths dưới bindings, giữ source pointer và declared-only; bỏ raw values, không kết luận ack/retry thực thi, dedup hoặc exactly-once.",
+      "Không lưu raw server URL, credentials, message examples/defaults hoặc payload data; parser thuần, deterministic, giới hạn document/bundle/node/ref/fact và không mutate input.",
+      "Shared schema.Identity cho phép protocol asyncapi_3.1.0 với server_binding opaque bắt buộc; không đổi public wire schema, DDL hoặc runtime storage.",
+      "Import guard chỉ thêm chính xác events -> schema/model và tests -> events/schema; giữ unknown-package rejection, forbidden-edge checks và cycle detection."
+    ]
+  },
+  "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+  "format_version": 1,
+  "kind": "git_task_mode",
+  "mode": "implement",
+  "objective": "Hiện thực contract AsyncAPI 3.1.0 JSON subset cho send/receive, channel/message/schema refs, namespace/cache identity và delivery-binding evidence có provenance, không phóng đại semantics.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S47-work-order-076",
+  "task_id": "T061",
+  "task_revision": 1,
+  "verification_plan": [
+    "Fixtures positive cho send/receive, channels/messages, local payload refs, schema fields, server defaults, namespace separation và deterministic keys.",
+    "Fixtures negative cho duplicate JSON keys, malformed/oversized/deep input, missing/remote/traversal/cyclic refs, version/format ngoài subset, invalid action và invalid identity.",
+    "Wildcard/address expression và binding-control evidence giữ template/declared-only; không có exactly-once claim hoặc raw server URL/value trong result.",
+    "Gofmt, package tests, import-boundary guard, full go test ./..., go vet ./..., go build ./..., SPEC/tracker checks, frozen local checks và exact-SHA six-context CI cho allocation/payload/closing.",
+    "Self-review deterministic output, source hash/range identity, namespace/cache separation, resource bounds, no network/filesystem/process/database access and unchanged public wire/DDL."
+  ]
+}
