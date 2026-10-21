@@ -1,0 +1,47 @@
+{
+  "acceptance_case": "C064",
+  "cases": [
+    {
+      "expect": "Unique multi-signal mapping is exact; unchanged fact is not emitted as behavior change.",
+      "id": "same-declaration-exact-lineage",
+      "setup": "Two retained complete snapshots share worktree, profile/provider semantics, qualified declaration and source content/range across distinct generations."
+    },
+    {
+      "expect": "No name/path-only exact match; uncertain candidates remain probable or ambiguous; competing candidates are ambiguous.",
+      "id": "same-name-moved-or-renamed",
+      "setup": "Declarations share a display name but move path/range or qualified owner; include competing candidates."
+    },
+    {
+      "expect": "Provider/profile delta is explicit; no false semantic removal/addition.",
+      "id": "provider-profile-delta",
+      "setup": "Same captured source, different provider digest/profile and changed emitted graph."
+    },
+    {
+      "expect": "Explicit typed missing-snapshot result; no Git lookup or latest fallback.",
+      "id": "missing-snapshot",
+      "setup": "Left or right snapshot is absent, expired, or unavailable."
+    },
+    {
+      "expect": "Effective status remains approved; version and refs unchanged.",
+      "id": "decision-source-stable",
+      "setup": "Approved immutable record source ref matches retained current source path/hash/range."
+    },
+    {
+      "expect": "Effective status is needs_review; declared status and refs are unchanged; no automatic reanchor.",
+      "id": "decision-source-drift",
+      "setup": "Approved immutable record source ref is missing or source hash/range changed."
+    }
+  ],
+  "delivery_id": "382c62fe-416e-455a-8fb6-e400da18feab",
+  "format_version": 1,
+  "invariants": [
+    "Same-name is not identity.",
+    "Ambiguity remains explicit.",
+    "Unknown or partial snapshots never imply removed facts.",
+    "No mutation of record versions or source refs."
+  ],
+  "kind": "semantic_snapshot_diff_fixture_plan",
+  "scope": "self-authored in-memory fixtures; no target repository access",
+  "task_id": "T064",
+  "task_revision": 1
+}
