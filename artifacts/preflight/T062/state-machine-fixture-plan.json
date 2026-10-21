@@ -1,0 +1,95 @@
+{
+  "base_sha": "b4422e5dccd46523115ba4bd299332007282c227",
+  "delivery_id": "784ed9da-3a4e-4198-909f-d96b1efe6865",
+  "discovery": {
+    "official_format": "W3C SCXML 1.0",
+    "official_reference": "https://www.w3.org/TR/scxml/",
+    "repository_finding": "No SCXML/XState state machine source found in current repository; the existing index schema has state_transitions and app/history records implement approval records.",
+    "scope": "Captured bytes only; parse structural SCXML declarations in the supported subset. No network, filesystem reference resolution, XInclude, interpreter, simulator, or target execution."
+  },
+  "fixtures": [
+    {
+      "cases": [
+        "initial resolution",
+        "nested state parentage",
+        "final state",
+        "event transition",
+        "machine-scope isolation"
+      ],
+      "id": "positive-nested-machine"
+    },
+    {
+      "cases": [
+        "proposed to approved",
+        "same-source stable approval",
+        "content hash change invalidates to needs_review",
+        "changed machine scope invalidates approval"
+      ],
+      "id": "positive-review-lifecycle"
+    },
+    {
+      "cases": [
+        "cond source reference only",
+        "onentry/onexit action reference only",
+        "reachability unknown when guard-dependent"
+      ],
+      "id": "positive-guard-action-refs"
+    },
+    {
+      "cases": [
+        "duplicate id",
+        "missing initial target",
+        "transition target missing",
+        "guard reference missing",
+        "initial target outside parent"
+      ],
+      "id": "negative-structure"
+    },
+    {
+      "cases": [
+        "malformed XML",
+        "wrong namespace/version",
+        "oversize/deep document",
+        "DTD/directive/external reference/XInclude",
+        "parallel/history/unsupported nodes"
+      ],
+      "id": "negative-input"
+    }
+  ],
+  "format_version": 1,
+  "kind": "state_machine_fixture_plan",
+  "limits": {
+    "document_bytes": 1048576,
+    "machine_facts": 100000,
+    "states": 10000,
+    "transitions": 50000,
+    "xml_depth": 64
+  },
+  "oracle": "Independent expected fact sets and diagnostics authored from the W3C 1.0 structural subset; no interpreter output or parser self-output used as oracle.",
+  "supported_subset": {
+    "actions": "record source references and names only; never interpret executable content",
+    "approvals": "source facts start proposed; only explicit record approval becomes approved; changed source hash/scope becomes needs_review",
+    "attributes": [
+      "id",
+      "name",
+      "initial",
+      "event",
+      "target",
+      "cond",
+      "type"
+    ],
+    "elements": [
+      "scxml",
+      "state",
+      "final",
+      "transition",
+      "onentry",
+      "onexit"
+    ],
+    "guards": "record source reference and analysis_status=unknown; never evaluate cond",
+    "hierarchy": "nested sequential state elements; parallel/history are explicit unsupported gaps",
+    "root": "scxml in http://www.w3.org/2005/07/scxml namespace, version=1.0"
+  },
+  "task_id": "T062",
+  "task_revision": 1
+}

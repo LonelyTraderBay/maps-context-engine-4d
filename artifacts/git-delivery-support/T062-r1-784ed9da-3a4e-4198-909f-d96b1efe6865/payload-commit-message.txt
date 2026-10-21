@@ -1,0 +1,7 @@
+feat(state): [P2][T062] Phân tích state machine SCXML an toàn
+
+Thêm parser cấu trúc SCXML 1.0 subset trên captured bytes, gắn state/transition/guard/action vào SourceRef, đặt giới hạn byte/depth/facts và giữ unsupported constructs thành gaps. Không eval guard, chạy action, truy cập filesystem/network hoặc mô phỏng transition.
+
+Gate state_model chỉ giữ approval khi machine hoàn chỉnh và source snapshot/scope hiện hành được xác minh; thay đổi hash/scope hoặc nguồn không đủ bằng chứng trả needs_review. Record history không bị ghi đè.
+
+Local PASS 12/12: go test ./..., go vet ./..., go build ./..., gofmt, SPEC check + 142 fixtures, CI/policy fixtures và import boundary. Allocation exact-SHA CI run 39583224200 đạt 6/6 ở attempt 2.

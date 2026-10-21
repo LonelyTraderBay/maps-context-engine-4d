@@ -1,0 +1,74 @@
+{
+  "base_sha": "b4422e5dccd46523115ba4bd299332007282c227",
+  "contracts_reviewed": [
+    "S24 expansion contract and cross-repository boundaries",
+    "S28 logical state_transitions and approved_records identity; declared vs inferred vs observed separation",
+    "S29 machine scope, state/event/transition/guard/action/entry/exit, failure obligations and no guard execution",
+    "S30 approved decision records, source hash, stale invalidation and needs_review",
+    "S43 SourceRef/ScopeVector canonical identities and physical schema authority",
+    "S45 state transition/source binding algorithm and no semantic inference",
+    "C062 hierarchy/guard/action/approval/stale/false-instruction negatives",
+    "S47 work order 085, DF14/DF15/DF19"
+  ],
+  "delivery_id": "784ed9da-3a4e-4198-909f-d96b1efe6865",
+  "dependencies": [
+    {
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery-support/T047-r7-a004e264-287b-4c6c-bacc-049b4cfa20f3/selection.json"
+      ],
+      "scope": "Decision record approval lifecycle, source invalidation and history service prerequisites.",
+      "task_id": "T047"
+    },
+    {
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/selection.json"
+      ],
+      "scope": "SQL contract mapping source and data lineage precedent.",
+      "task_id": "T059"
+    },
+    {
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/56b7f5e0-4457-4632-98c6-860dcebf3076/publication.json"
+      ],
+      "scope": "HTTP/schema/proto contract adapter predecessor and exact closing evidence.",
+      "task_id": "T060"
+    },
+    {
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/8b4df9b5-86ca-4186-a318-93d07d783617/publication.json",
+        "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/archive-view/live-verification/33eef8fe-2b15-4a76-b8ca-a039e5990add/live-verification.json"
+      ],
+      "scope": "AsyncAPI/event contract is sealed and fresh live remote C was observed; task dependency is effective DONE.",
+      "task_id": "T061"
+    }
+  ],
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "limitations": [
+    "SCXML 1.0 structural subset only; parser does not implement SCXML execution semantics.",
+    "Parallel/history states and unsupported XML constructs remain gaps.",
+    "Guard truth/reachability, runtime state, retry/compensation policy and business approval remain unknown without evidence."
+  ],
+  "result": "READY",
+  "sequence": {
+    "predecessor": "T058",
+    "predecessor_status": "effective DONE",
+    "work_order": "S47 P11, card 085"
+  },
+  "source_review": {
+    "allowed_project_edges_planned": [
+      "internal/domain/state -> internal/model",
+      "internal/domain/state -> internal/history",
+      "internal/history -> internal/model"
+    ],
+    "import_guard": "tests/contract/import_boundary_test.go",
+    "network_access": "none",
+    "untrusted_source_execution": "none"
+  },
+  "task_id": "T062",
+  "task_revision": 1
+}

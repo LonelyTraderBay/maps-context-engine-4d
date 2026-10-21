@@ -1,0 +1,35 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "internal/domain/state/**",
+      "internal/history/records*",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T062/**"
+    ],
+    "behavior": [
+      "Parse only captured W3C SCXML 1.0 documents in a closed structural subset: scxml/state/final/transition, nested sequential states, IDs, initial/target/event/cond, onentry/onexit action declarations as source references. Unsupported namespace/version/elements and parallel/history constructs return bounded gaps, never inferred support.",
+      "Resolve all state/transition identities within one machine scope; validate unique IDs, declared initial states and transition targets, guard references, and hierarchical parentage. Keep machine definition separate from machine instance/runtime observation.",
+      "Store guards and actions as source references plus analysis status only; never evaluate cond, execute SCXML content, interpret scripts, invoke services, follow URI/XInclude, or simulate transitions. Reachability dependent on guards/runtime is unknown.",
+      "Use proposed/approved/stale record lifecycle; only approved constraints may affect downstream context. Source hash or scope change invalidates approval to needs_review; preserve source and prior record history.",
+      "No fabricated business policy: explicit invariants/vocabulary/failure obligations require source or approved record; absent evidence stays unknown/not_applicable_with_reason. No new DDL/wire schema/dependency without the owning seal."
+    ]
+  },
+  "delivery_id": "784ed9da-3a4e-4198-909f-d96b1efe6865",
+  "format_version": 1,
+  "kind": "git_task_mode",
+  "mode": "implement",
+  "objective": "Tạo parser/model state machine an toàn cho subset SCXML khai báo đã khóa sau discovery; bảo toàn identity/scope/source refs cho machine, state, transition, guard, action và record proposed/approved/stale; không interpreter hoặc bịa business rules.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S47-work-order-085",
+  "task_id": "T062",
+  "task_revision": 1,
+  "verification_plan": [
+    "Discovery/fixture trước parser: ghi rõ SCXML 1.0 subset, positive and negative fixtures, unsupported gaps, limits, source-bound references; no actual target machine source found in current repo.",
+    "Positive fixtures cho nested states, initial/final, transition events, guard/action source refs, machine-scope identity, approval lifecycle and source-change invalidation.",
+    "Negative fixtures cho malformed/oversized/deep XML, duplicate/missing IDs, initial/target/guard dangling refs, wrong namespace/version, forbidden external/include constructs, unsupported parallel/history, unexpected nodes; assert no reads/network/process/evaluation.",
+    "Structural validity may reject missing initial/target refs; reachability dependent on conditions/runtime remains unknown; no graph-walk false dead-state claims.",
+    "Run gofmt, targeted domain/history tests, import-boundary tests if needed, full go test ./..., go vet ./..., go build ./..., spec/delivery governance checks, frozen local checks and exact-SHA six-context CI for allocation/payload/closing.",
+    "Self-review identity/approval/staleness consistency, deterministic facts, bounded parser resources, no source mutation, no DDL/wire change, and preserve prior record history."
+  ]
+}
