@@ -35,6 +35,7 @@ func oracleResult(sources []Source) Result {
 	triggerStart := strings.Index(string(schema), "CREATE TRIGGER")
 	triggerEnd := triggerStart + strings.IndexByte(string(schema[triggerStart:]), ';')
 	fromStart := strings.Index(string(schema[viewStart:viewEnd]), "FROM app.orders") + viewStart + len("FROM ")
+	starStart := strings.Index(string(schema[viewStart:viewEnd]), "SELECT *") + viewStart + len("SELECT ")
 	onStart := strings.Index(string(schema[triggerStart:triggerEnd]), "ON app.orders") + triggerStart + len("ON ")
 
 	tableRef := sourceRef("schema.sql", schema, 0, int64(tableEnd))
@@ -43,7 +44,10 @@ func oracleResult(sources []Source) Result {
 	viewRef := sourceRef("schema.sql", schema, int64(viewStart), int64(viewEnd))
 	triggerRef := sourceRef("schema.sql", schema, int64(triggerStart), int64(triggerEnd))
 	viewEvidence := sourceRef("schema.sql", schema, int64(fromStart), int64(fromStart+len("app.orders")))
+	viewColumnEvidence := sourceRef("schema.sql", schema, int64(starStart), int64(starStart+len("*")))
 	triggerEvidence := sourceRef("schema.sql", schema, int64(onStart), int64(onStart+len("app.orders")))
+	triggerBodyStart := strings.Index(string(schema[triggerStart:triggerEnd]), "SET NEW.id") + triggerStart
+	triggerBodyEnd := strings.IndexByte(string(schema[triggerStart:]), ';') + triggerStart
 	tableID := ObjectIDFor(ObjectTable, tableRef)
 	columnID := ObjectIDFor(ObjectColumn, columnRef)
 	viewID := ObjectIDFor(ObjectView, viewRef)
@@ -52,7 +56,7 @@ func oracleResult(sources []Source) Result {
 	return Result{
 		FormatVersion: ResultFormatVersion,
 		Profile:       Profile{Dialect: DialectMySQL, ParserVersion: 1},
-		Coverage:      CoverageComplete,
+		Coverage:      CoveragePartial,
 		Objects: []Object{
 			{ID: tableID, Kind: ObjectTable, Schema: "app", Name: "orders", Engine: &EngineIdentity{Class: EngineInnoDB, DeclaredName: "InnoDB"}, SourceRef: tableRef},
 			{ID: columnID, Kind: ObjectColumn, Schema: "app", Name: "id", ParentID: tableID, SourceRef: columnRef},
@@ -61,11 +65,15 @@ func oracleResult(sources []Source) Result {
 		},
 		Relations: []Relation{
 			{FromID: tableID, ToID: columnID, Kind: RelationTableHasColumn, SourceRef: columnEvidence},
+			{FromID: viewID, ToID: columnID, Kind: RelationViewReadsColumn, SourceRef: viewColumnEvidence},
 			{FromID: viewID, ToID: tableID, Kind: RelationViewReadsTable, SourceRef: viewEvidence},
 			{FromID: triggerID, ToID: tableID, Kind: RelationTriggerOnTable, SourceRef: triggerEvidence},
 		},
-		Diagnostics: []Diagnostic{},
-		Migrations:  []Migration{{Path: sources[1].Ref.Path, Order: 1, AppliedState: MigrationStateUnknown, SourceRef: sources[1].Ref}},
+		Diagnostics: []Diagnostic{{
+			Code:      DiagnosticUnsupportedSyntax,
+			SourceRef: sourceRef("schema.sql", schema, int64(triggerBodyStart), int64(triggerBodyEnd)),
+		}},
+		Migrations: []Migration{{Path: sources[1].Ref.Path, Order: 1, AppliedState: MigrationStateUnknown, SourceRef: sources[1].Ref}},
 	}
 }
 

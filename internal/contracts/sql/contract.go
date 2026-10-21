@@ -92,9 +92,10 @@ type Object struct {
 type RelationKind string
 
 const (
-	RelationTableHasColumn RelationKind = "table_has_column"
-	RelationViewReadsTable RelationKind = "view_reads_table"
-	RelationTriggerOnTable RelationKind = "trigger_on_table"
+	RelationTableHasColumn  RelationKind = "table_has_column"
+	RelationViewReadsTable  RelationKind = "view_reads_table"
+	RelationViewReadsColumn RelationKind = "view_reads_column"
+	RelationTriggerOnTable  RelationKind = "trigger_on_table"
 )
 
 type Relation struct {
@@ -323,7 +324,7 @@ func (result Result) ValidateAgainst(sources []Source) error {
 			if err := validateEngine(object.Engine); err != nil {
 				return err
 			}
-			tableNameCounts[object.Schema+"\x00"+object.Name]++
+			tableNameCounts[snapshotObjectNameKey(object.SourceRef, object.Schema, object.Name)]++
 		} else if object.Engine != nil {
 			return fmt.Errorf("%w: engine identity applies only to tables", ErrInvalidContract)
 		}
@@ -351,6 +352,8 @@ func (result Result) ValidateAgainst(sources []Source) error {
 	}
 
 	relationKeys := make(map[string]struct{}, len(result.Relations))
+	viewTableReads := make(map[string]struct{})
+	requiredViewTableReads := make(map[string]struct{})
 	for _, relation := range result.Relations {
 		from, fromOK := objects[relation.FromID]
 		to, toOK := objects[relation.ToID]
@@ -363,18 +366,32 @@ func (result Result) ValidateAgainst(sources []Source) error {
 				return fmt.Errorf("%w: invalid table-column relation", ErrInvalidContract)
 			}
 		case RelationViewReadsTable:
-			if from.Kind != ObjectView || to.Kind != ObjectTable || from.Schema == "" || to.Schema == "" {
+			if from.Kind != ObjectView || to.Kind != ObjectTable || from.Schema == "" || to.Schema == "" ||
+				!sameSnapshot(from.SourceRef, to.SourceRef) {
 				return fmt.Errorf("%w: view lineage requires explicit schema-qualified endpoints", ErrInvalidContract)
 			}
+			viewTableReads[relation.FromID+"\x00"+relation.ToID] = struct{}{}
+		case RelationViewReadsColumn:
+			if from.Kind != ObjectView || to.Kind != ObjectColumn || from.Schema == "" || to.Schema == "" ||
+				!sameSnapshot(from.SourceRef, to.SourceRef) {
+				return fmt.Errorf("%w: view column lineage requires explicit same-snapshot endpoints", ErrInvalidContract)
+			}
+			parent, ok := objects[to.ParentID]
+			if !ok || parent.Kind != ObjectTable || parent.Schema != to.Schema ||
+				tableNameCounts[snapshotObjectNameKey(parent.SourceRef, parent.Schema, parent.Name)] != 1 {
+				return fmt.Errorf("%w: view column lineage has an ambiguous table parent", ErrInvalidContract)
+			}
+			requiredViewTableReads[relation.FromID+"\x00"+parent.ID] = struct{}{}
 		case RelationTriggerOnTable:
-			if from.Kind != ObjectTrigger || to.Kind != ObjectTable || from.Schema == "" || to.Schema == "" {
+			if from.Kind != ObjectTrigger || to.Kind != ObjectTable || from.Schema == "" || to.Schema == "" ||
+				!sameSnapshot(from.SourceRef, to.SourceRef) {
 				return fmt.Errorf("%w: trigger lineage requires explicit schema-qualified endpoints", ErrInvalidContract)
 			}
 		default:
 			return fmt.Errorf("%w: unknown SQL relation kind", ErrInvalidContract)
 		}
 		if (relation.Kind == RelationViewReadsTable || relation.Kind == RelationTriggerOnTable) &&
-			tableNameCounts[to.Schema+"\x00"+to.Name] != 1 {
+			tableNameCounts[snapshotObjectNameKey(to.SourceRef, to.Schema, to.Name)] != 1 {
 			return fmt.Errorf("%w: lineage target table identity is ambiguous", ErrInvalidContract)
 		}
 		source, ok := sourceByPath[relation.SourceRef.Path]
@@ -391,8 +408,13 @@ func (result Result) ValidateAgainst(sources []Source) error {
 		}
 		start, end := relation.SourceRef.Range.StartByte, relation.SourceRef.Range.EndByte
 		expected := to.Name
-		if relation.Kind == RelationViewReadsTable || relation.Kind == RelationTriggerOnTable {
-			expected = to.Schema + "." + to.Name
+		if relation.Kind == RelationViewReadsColumn && string(source.Bytes[start:end]) == "*" {
+			expected = "*"
+		} else if relation.Kind == RelationViewReadsTable || relation.Kind == RelationTriggerOnTable {
+			if !qualifiedIdentifierEvidenceMatches(source.Bytes[start:end], to.Schema, to.Name) {
+				return fmt.Errorf("%w: relation evidence does not name its exact target", ErrInvalidContract)
+			}
+			expected = string(source.Bytes[start:end])
 		}
 		if string(source.Bytes[start:end]) != expected {
 			return fmt.Errorf("%w: relation evidence does not name its exact target", ErrInvalidContract)
@@ -402,6 +424,11 @@ func (result Result) ValidateAgainst(sources []Source) error {
 			return fmt.Errorf("%w: duplicate SQL relation", ErrInvalidContract)
 		}
 		relationKeys[key] = struct{}{}
+	}
+	for key := range requiredViewTableReads {
+		if _, ok := viewTableReads[key]; !ok {
+			return fmt.Errorf("%w: view column lineage lacks its table lineage", ErrInvalidContract)
+		}
 	}
 	if !sort.SliceIsSorted(result.Relations, func(i, j int) bool { return lessRelation(result.Relations[i], result.Relations[j]) }) {
 		return fmt.Errorf("%w: relations are not in canonical source order", ErrInvalidContract)
@@ -509,6 +536,26 @@ func validText(value string) bool {
 func sameSourceIdentity(left, right model.SourceRef) bool {
 	return left.WorktreeID == right.WorktreeID && left.ProfileID == right.ProfileID &&
 		left.GenerationID == right.GenerationID && left.Path == right.Path && left.ContentHash == right.ContentHash
+}
+
+func sameSnapshot(left, right model.SourceRef) bool {
+	return left.WorktreeID == right.WorktreeID && left.ProfileID == right.ProfileID &&
+		left.GenerationID == right.GenerationID
+}
+
+func snapshotObjectNameKey(source model.SourceRef, schema, name string) string {
+	return string(source.WorktreeID) + "\x00" + string(source.ProfileID) + "\x00" +
+		string(source.GenerationID) + "\x00" + schema + "\x00" + name
+}
+
+func qualifiedIdentifierEvidenceMatches(raw []byte, schema, name string) bool {
+	tokens, err := tokenizeSQLStatement(raw, sqlStatement{start: 0, end: len(raw)})
+	if err != nil || len(tokens) != 3 || !isIdentifier(tokens[0]) || !symbol(tokens[1], ".") || !isIdentifier(tokens[2]) {
+		return false
+	}
+	return !tokens[0].identifierHasEscaping && !tokens[2].identifierHasEscaping &&
+		tokens[0].text == schema && tokens[2].text == name &&
+		exactIdentifierBytes(raw, tokens[0]) && exactIdentifierBytes(raw, tokens[2])
 }
 
 func containsRange(parent, child model.ByteRange) bool {

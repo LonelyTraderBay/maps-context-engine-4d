@@ -1,0 +1,93 @@
+{
+  "format_version": 1,
+  "task_id": "T059",
+  "task_revision": 2,
+  "delivery_id": "e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4",
+  "phase": "payload-local-checks",
+  "checked_at_utc": "2026-10-21T05:32:17.737Z",
+  "base_sha": "04b7c2bc65e57b1fc82445cf2ea79f81f9bc2669",
+  "branch": "codex/t059-r2",
+  "result": "PASS",
+  "pass_count": 13,
+  "total_count": 13,
+  "runtime": {
+    "os": "Windows 11 x64",
+    "python": "3.12.10",
+    "go": "go1.27.2 windows/amd64",
+    "node": "v24.22.0",
+    "npm": "11.19.1",
+    "node_archive_sha256": "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3"
+  },
+  "checks": [
+    {
+      "id": "bootstrap",
+      "command": "python -B tools/ci/bootstrap_check.py",
+      "status": "PASS"
+    },
+    {
+      "id": "bootstrap-fixtures",
+      "command": "python -B tools/ci/test_bootstrap_check.py",
+      "status": "PASS"
+    },
+    {
+      "id": "delivery-plan",
+      "command": "python -B tools/ci/delivery_policy.py check-plan",
+      "status": "PASS"
+    },
+    {
+      "id": "spec-validator",
+      "command": "python -B tools/spec_check/check.py",
+      "status": "PASS"
+    },
+    {
+      "id": "spec-fixtures",
+      "command": "python -B tools/spec_check/test_spec_check.py",
+      "status": "PASS"
+    },
+    {
+      "id": "delivery-policy-fixtures",
+      "command": "python -B tools/ci/test_delivery_policy.py",
+      "status": "PASS"
+    },
+    {
+      "id": "checkpoint-digest-fixtures",
+      "command": "python -B tools/ci/test_checkpoint_digest.py",
+      "status": "PASS"
+    },
+    {
+      "id": "go-format",
+      "command": "python -B tools/ci/check_gofmt.py",
+      "status": "PASS"
+    },
+    {
+      "id": "go-test",
+      "command": "go test ./...",
+      "status": "PASS"
+    },
+    {
+      "id": "go-vet",
+      "command": "go vet ./...",
+      "status": "PASS"
+    },
+    {
+      "id": "go-build",
+      "command": "go build ./...",
+      "status": "PASS"
+    },
+    {
+      "id": "explorer-install",
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "status": "PASS"
+    },
+    {
+      "id": "explorer-contract",
+      "command": "npm run test:contract:ui",
+      "status": "PASS"
+    }
+  ],
+  "note": "Lần chạy đầu lỗi PATH/version; đã tải runtime Node chính thức vào thư mục tạm, xác minh SHA-256 theo trang phát hành Node.js, rồi chạy lại gate cuối thành PASS 13/13.",
+  "review_notes": [
+    "Reran all frozen 13 checks after final analyzer revisions.",
+    "Snapshot-local names, dynamic SQL quarantine, exact trigger header/body checks, SQL_MODE backslash ambiguity, aggregate statement/token/diagnostic bounds, and quoted MySQL identifiers."
+  ]
+}
