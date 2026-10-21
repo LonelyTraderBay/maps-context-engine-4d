@@ -247,7 +247,7 @@ func (a *analyzer) readChannels(raw map[string]any) {
 		} else if _, exists := value["messages"]; exists {
 			a.addDiagnostic("invalid_channel_messages", eventPointer(pointer, "messages"), "channel messages must be an object")
 		}
-		a.addControls(a.rootPath, pointer, value["bindings"])
+		a.addControls("channel", a.rootPath, pointer, value["bindings"])
 		a.result.Channels = append(a.result.Channels, channel)
 	}
 }
@@ -313,7 +313,7 @@ func (a *analyzer) readOperations(raw map[string]any) {
 				}
 			}
 		}
-		a.addControls(a.rootPath, pointer, value["bindings"])
+		a.addControls("operation", a.rootPath, pointer, value["bindings"])
 		a.result.Operations = append(a.result.Operations, operation)
 	}
 }
@@ -403,7 +403,7 @@ func (a *analyzer) addMessage(channelKey model.Hash, name, documentPath, pointer
 		Key: messageKey, ChannelKey: channelKey, Name: name, JSONPointer: pointer,
 		SourceRef: a.docs[documentPath].Ref,
 	})
-	a.addControls(documentPath, pointer, value["bindings"])
+	a.addControls("message", documentPath, pointer, value["bindings"])
 	a.readPayload(messageKey, documentPath, pointer, value)
 }
 
@@ -569,8 +569,11 @@ func (a *analyzer) addPayloadField(messageKey model.Hash, documentPath, pointer,
 	})
 }
 
-func (a *analyzer) addControls(documentPath, pointer string, raw any) {
+func (a *analyzer) addControls(scope, documentPath, pointer string, raw any) {
 	if raw == nil {
+		return
+	}
+	if scope != "operation" {
 		return
 	}
 	bindings, ok := raw.(map[string]any)

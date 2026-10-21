@@ -47,7 +47,7 @@ func baseDocument(payload string) []byte {
   "servers":{"primary":{"host":"user:server-secret@broker.example","protocol":"mqtts"}},
   "channels":{"orders":{"address":"orders.{region}.#","messages":{"created":{"$ref":"#/components/messages/Created"}},"bindings":{"mqtt":{"qos":2,"privateBindingValue":"hidden"}}}},
   "operations":{
-    "publish":{"action":"send","channel":{"$ref":"#/channels/orders"},"messages":[{"$ref":"#/components/messages/Created"}],"bindings":{"mqtt":{"retain":true}}},
+    "publish":{"action":"send","channel":{"$ref":"#/channels/orders"},"messages":[{"$ref":"#/components/messages/Created"}],"bindings":{"mqtt":{"qos":1,"retain":true},"amqp":{"ack":false}}},
     "consume":{"action":"receive","channel":{"$ref":"#/channels/orders"},"messages":[{"$ref":"#/components/messages/Created"}]}
   },
   "components":{"messages":{"Created":{"payload":` + payload + `,"bindings":{"amqp":{"ack":"raw-secret-value"}}}}}
@@ -106,7 +106,7 @@ func TestAnalyzeAsyncAPI31LinksDirectionsAndSourceBackedMessages(t *testing.T) {
 		t.Fatalf("expected allowlisted controls only, got %+v", result.Controls)
 	}
 	for _, control := range result.Controls {
-		if control.Status != BindingDeclaredOnly || strings.Contains(control.JSONPointer, "privateBindingValue") {
+		if control.Status != BindingDeclaredOnly || !strings.HasPrefix(control.JSONPointer, "/operations/") || strings.Contains(control.JSONPointer, "privateBindingValue") {
 			t.Fatalf("binding control is not presence-only: %+v", control)
 		}
 	}
