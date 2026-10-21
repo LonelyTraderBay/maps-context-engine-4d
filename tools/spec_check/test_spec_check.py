@@ -2237,6 +2237,21 @@ class GitHubObserverTests(unittest.TestCase):
         )
         self.assertEqual("", project("subject only")["body"])
 
+    def test_current_tracker_reader_accepts_optional_trailing_pipe(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-live-tracker-optional-pipe-") as temp:
+            spec = Path(temp) / "spec.md"
+            spec.write_text(
+                "## S19 — Tracker\n"
+                "| T003 | R1 | T001 | mô tả | R001 | C003 | DONE | Codex | "
+                "task_revision=1;delivery=01234567-89ab-4cde-8fab-0123456789ab\n"
+                "## S20 — Gates\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                ("T003", 1, "01234567-89ab-4cde-8fab-0123456789ab"),
+                _current_tracker_identity(spec, "T003"),
+            )
+
     def test_current_tracker_reader_rejects_malformed_row_without_index_error(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-live-tracker-") as temp:
             malformed = Path(temp) / "spec.md"

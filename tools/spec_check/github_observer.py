@@ -811,9 +811,14 @@ def _current_tracker_identity(spec_path: Path, task_id: str) -> tuple[str, int, 
     if len(rows) != 1:
         raise GitHubObserverError(f"S19 phải có đúng một hàng {task_id}")
     parts = rows[0].split("|")
-    if len(parts) != 11 or parts[0].strip() or parts[-1].strip() or parts[1].strip() != task_id:
+    if len(parts) < 2 or parts[0].strip() or parts[1].strip() != task_id:
         raise GitHubObserverError(f"S19 hàng {task_id} sai cấu trúc cột")
-    evidence = parts[9].strip()
+    fields = parts[1:]
+    if fields and not fields[-1].strip():
+        fields = fields[:-1]
+    if len(fields) != 9 or fields[0].strip() != task_id:
+        raise GitHubObserverError(f"S19 hàng {task_id} sai cấu trúc cột")
+    evidence = fields[8].strip()
     revision = re.search(r"(?:^|;)task_revision=([1-9][0-9]*)(?:;|$)", evidence)
     delivery = re.search(r"(?:^|;)delivery=([0-9a-f-]{36})(?:;|$)", evidence)
     if revision is None or delivery is None:
