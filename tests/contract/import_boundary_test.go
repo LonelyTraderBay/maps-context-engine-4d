@@ -34,6 +34,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/store/sqlite": true,
 		},
 		"internal/snapshot": {modulePath + "/internal/model": true},
+		"internal/history":  {modulePath + "/internal/model": true},
 		"internal/analysis/golang": {
 			modulePath + "/internal/model":        true,
 			modulePath + "/internal/runtime/exec": true,
@@ -83,6 +84,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/store/sqlite": {
 			modulePath + "/contracts":                    true,
+			modulePath + "/internal/history":             true,
 			modulePath + "/internal/model":               true,
 			modulePath + "/internal/runtime":             true,
 			modulePath + "/internal/runtime/maintenance": true,
@@ -95,6 +97,14 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		"internal/app/explorer": {
 			modulePath + "/internal/catalog":      true,
 			modulePath + "/internal/explorer":     true,
+			modulePath + "/internal/model":        true,
+			modulePath + "/internal/paths":        true,
+			modulePath + "/internal/policy":       true,
+			modulePath + "/internal/store/sqlite": true,
+		},
+		"internal/app/records": {
+			modulePath + "/internal/catalog":      true,
+			modulePath + "/internal/history":      true,
 			modulePath + "/internal/model":        true,
 			modulePath + "/internal/paths":        true,
 			modulePath + "/internal/policy":       true,
@@ -131,12 +141,16 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/snapshot":     true,
 		},
 		"internal/cli": {
+			modulePath + "/contracts":               true,
 			modulePath + "/internal/app/config":     true,
 			modulePath + "/internal/app/explorer":   true,
+			modulePath + "/internal/app/records":    true,
 			modulePath + "/internal/app/store":      true,
+			modulePath + "/internal/history":        true,
 			modulePath + "/internal/model":          true,
 			modulePath + "/internal/runtime":        true,
 			modulePath + "/internal/runtime/config": true,
+			modulePath + "/internal/store/sqlite":   true,
 		},
 		"internal/mcp": {
 			modulePath + "/contracts":             true,
