@@ -13,6 +13,8 @@ mce4d store gc --target worktree --worktree-id <uuid> --keep-per-profile <count>
 mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json
 mce4d store recover --target worktree --worktree-id <uuid> --report-only --json
 mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
+mce4d records list --worktree-id <uuid> --input-json <file-or-dash> --json
+mce4d records read --worktree-id <uuid> --input-json <file-or-dash> --json
 ```
 
 Successful commands emit one JSON result on stdout. Diagnostics go to stderr. Use
@@ -55,6 +57,21 @@ explicit. `--apply --confirm` resumes or rolls back a pending restore only after
 validating its preserved journal and evidence. A terminal verified journal
 remains safe if the operating system reports that marker-directory flushing is
 unsupported after removing the recovery marker.
+
+`records list` and `records read` accept the closed `RecordListRequest` and
+`RecordReadRequest` JSON shapes. Pass the worktree in `--worktree-id` or in
+`scope.worktree_id`; if both are present they must match. Profile and generation
+scope selectors are optional. The list defaults to 20 rows and accepts a
+bounded `limit` up to 100 plus a continuation cursor. A cursor is tied to the
+record store incarnation, record epoch, and list filters; any record mutation
+invalidates it. The read command returns the selected record version's durable
+summary. Both commands are read-only and have no proposal or review route.
+
+Each summary keeps its declared status and reports an effective status and
+provenance status derived from the current policy and retained index snapshot.
+When a snapshot has expired or its source no longer matches, the command keeps
+the record metadata, reports `needs_review` for a stale approval, and does not
+reconstruct source bytes. Index absence does not remove durable records.
 
 The canonical home path follows the SPEC: `MCE4D_HOME` when explicitly set;
 otherwise `%LOCALAPPDATA%\mce4d` on Windows, `$XDG_STATE_HOME/mce4d` on Linux

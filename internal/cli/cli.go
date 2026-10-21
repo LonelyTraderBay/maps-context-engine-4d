@@ -14,6 +14,8 @@ import (
 
 	appconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config"
 	appexplorer "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer"
+	apprecords "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records"
+	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/history"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
 	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
 	runtimeconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config"
@@ -46,6 +48,8 @@ Commands:
   mce4d store restore --manifest <approved-local-file> --confirm --wait-ms <bounded> --json
   mce4d store recover --target worktree --worktree-id <uuid> --report-only --json
   mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
+	mce4d records list --worktree-id <uuid> --input-json <file-or-dash> --json
+	mce4d records read --worktree-id <uuid> --input-json <file-or-dash> --json
   mce4d explorer --worktree-id <uuid> --profile-id <sha256> --listen 127.0.0.1:<port>
 
 Config show layers the canonical home config, an explicit alternate preview,
@@ -87,6 +91,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runConfig(ctx, args[1:], stdin, stdout, stderr)
 	case "store":
 		return runStore(ctx, args[1:], stdout, stderr)
+	case "records":
+		return runRecords(ctx, args[1:], stdin, stdout, stderr)
 	case "explorer":
 		return runExplorer(ctx, args[1:], stdout, stderr)
 	default:
@@ -390,9 +396,9 @@ func writeJSON(stdout, stderr io.Writer, value any) int {
 func writeFailure(stderr io.Writer, err error) int {
 	_, _ = fmt.Fprintln(stderr, err)
 	switch {
-	case errors.Is(err, errUsage), errors.Is(err, errInputTooLarge):
+	case errors.Is(err, errUsage), errors.Is(err, errInputTooLarge), errors.Is(err, apprecords.ErrInvalidRequest), errors.Is(err, history.ErrInvalidRecord):
 		return 2
-	case errors.Is(err, errInvalidHome), errors.Is(err, appconfig.ErrConflict), errors.Is(err, runtimeconfig.ErrInvalidConfig), errors.Is(err, appconfig.ErrInvalidRequest):
+	case errors.Is(err, errInvalidHome), errors.Is(err, appconfig.ErrConflict), errors.Is(err, runtimeconfig.ErrInvalidConfig), errors.Is(err, appconfig.ErrInvalidRequest), errors.Is(err, apprecords.ErrStalePage), errors.Is(err, apprecords.ErrSourceNotCurrent), errors.Is(err, history.ErrRecordNotFound):
 		return 3
 	case errors.Is(err, context.DeadlineExceeded):
 		return 4
