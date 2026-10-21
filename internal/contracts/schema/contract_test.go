@@ -180,6 +180,19 @@ func TestBundleIdentityAndPathsAreClosed(t *testing.T) {
 	}
 }
 
+func TestAsyncAPIIdentityRequiresOpaqueServerBinding(t *testing.T) {
+	source := []byte("{\"asyncapi\":\"3.1.0\"}")
+	identity, _ := testBundle(t, "asyncapi.json", map[string][]byte{"asyncapi.json": source}, ProtocolAsyncAPI31, "v1")
+	identity.ServerBinding = ""
+	if err := identity.Validate(); err == nil {
+		t.Fatal("shared identity accepted AsyncAPI without an opaque server binding")
+	}
+	identity.ServerBinding = "broker-prod"
+	if err := identity.Validate(); err != nil {
+		t.Fatalf("valid AsyncAPI identity rejected: %v", err)
+	}
+}
+
 func TestAnalyzeProto3ResolvesAllowlistedImportsAndFieldTags(t *testing.T) {
 	root := []byte("syntax = \"proto3\";\npackage billing.v1;\nimport \"common/money.proto\";\nmessage Charge {\n  string id = 1;\n  Money amount = 2;\n  repeated string labels = 3;\n}\nenum State {\n  STATE_UNSPECIFIED = 0;\n  SETTLED = 1;\n}\n")
 	common := []byte("syntax = \"proto3\";\npackage billing.v1;\nmessage Money {\n  int64 units = 1;\n}\n")

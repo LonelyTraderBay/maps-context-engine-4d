@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	eventcontract "github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/events"
 	httpcontract "github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http"
 	schemacontract "github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema"
 )
@@ -17,8 +18,8 @@ import (
 const modulePath = "github.com/LonelyTraderBay/maps-context-engine-4d"
 
 func TestHTTPAndSchemaContractProfilesArePinned(t *testing.T) {
-	if httpcontract.OpenAPI31 != "3.1.0" || schemacontract.JSONSchema202012 != "https://json-schema.org/draft/2020-12/schema" {
-		t.Fatal("HTTP and schema parser profile constants changed without an explicit contract update")
+	if httpcontract.OpenAPI31 != "3.1.0" || eventcontract.AsyncAPI31 != "3.1.0" || schemacontract.JSONSchema202012 != "https://json-schema.org/draft/2020-12/schema" {
+		t.Fatal("HTTP, event and schema parser profile constants changed without an explicit contract update")
 	}
 }
 
@@ -39,6 +40,10 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/contracts/schema": {
 			modulePath + "/internal/model": true,
+		},
+		"internal/contracts/events": {
+			modulePath + "/internal/contracts/schema": true,
+			modulePath + "/internal/model":            true,
 		},
 		"internal/contracts/http": {
 			modulePath + "/internal/contracts/schema": true,
@@ -199,6 +204,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		"contracts": {modulePath + "/internal/model": true},
 		"tests/contract": {
 			modulePath + "/contracts":                 true,
+			modulePath + "/internal/contracts/events": true,
 			modulePath + "/internal/contracts/http":   true,
 			modulePath + "/internal/contracts/schema": true,
 			modulePath + "/internal/model":            true,

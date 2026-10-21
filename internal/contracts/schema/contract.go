@@ -37,6 +37,7 @@ const (
 	ProtocolJSONSchema202012 Protocol = "json_schema_2020-12"
 	ProtocolProto3           Protocol = "proto3"
 	ProtocolOpenAPI31        Protocol = "openapi_3.1.0"
+	ProtocolAsyncAPI31       Protocol = "asyncapi_3.1.0"
 )
 
 // Identity is a sanitized, immutable contract scope. ServerBinding is an
@@ -78,12 +79,12 @@ func (identity Identity) Validate() error {
 		return fmt.Errorf("%w: source_hash: %v", ErrInvalidContract, err)
 	}
 	switch identity.Protocol {
-	case ProtocolJSONSchema202012, ProtocolProto3, ProtocolOpenAPI31:
+	case ProtocolJSONSchema202012, ProtocolProto3, ProtocolOpenAPI31, ProtocolAsyncAPI31:
 	default:
 		return fmt.Errorf("%w: unsupported protocol profile", ErrInvalidContract)
 	}
-	if identity.Protocol == ProtocolOpenAPI31 && identity.ServerBinding == "" {
-		return fmt.Errorf("%w: OpenAPI identity requires an opaque server binding", ErrInvalidContract)
+	if (identity.Protocol == ProtocolOpenAPI31 || identity.Protocol == ProtocolAsyncAPI31) && identity.ServerBinding == "" {
+		return fmt.Errorf("%w: HTTP and event identities require an opaque server binding", ErrInvalidContract)
 	}
 	return nil
 }
