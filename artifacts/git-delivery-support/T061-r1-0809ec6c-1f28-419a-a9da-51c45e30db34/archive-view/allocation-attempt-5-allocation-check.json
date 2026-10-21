@@ -1,0 +1,98 @@
+{
+  "base_sha": "b14dcd101ad7b2b4bec18c7f05509430f9ac1e1f",
+  "check_plan_ref": "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/check-plan-canonical.json",
+  "check_plan_sha256": "1fcd5926248a5390f96e42d45ac2c6b6b876150420fbdbad41c0675c7bdfccb3",
+  "checks": [
+    {
+      "argv": [
+        "python",
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan",
+        "--plan",
+        "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/check-plan-canonical.json",
+        "--workflow",
+        ".github/workflows/bootstrap.yml",
+        "--sha256",
+        "1fcd5926248a5390f96e42d45ac2c6b6b876150420fbdbad41c0675c7bdfccb3"
+      ],
+      "check_id": "delivery-plan",
+      "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+      "ended_at_utc": "2026-10-21T08:49:17.939Z",
+      "exit_code": 0,
+      "format_version": 1,
+      "kind": "local_check_execution",
+      "log_ref": "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/local-checks/allocation/records/delivery-plan-attempt-5.log",
+      "log_sha256": "50c56db749ef3e316ef7099616ebc520b3693471b7b42c5f8b98abb88791d30b",
+      "result": "PASS",
+      "started_at_utc": "2026-10-21T08:49:17.838Z",
+      "task_id": "T061",
+      "task_revision": 1
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "check_id": "spec-check",
+      "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+      "ended_at_utc": "2026-10-21T08:49:18.352Z",
+      "exit_code": 0,
+      "format_version": 1,
+      "kind": "local_check_execution",
+      "log_ref": "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/local-checks/allocation/records/spec-check-attempt-5.log",
+      "log_sha256": "3ecc6a52ef622df83692a8c08ee9fc4ec4a01f73b0271a2aa53bae96cb93e44a",
+      "result": "PASS",
+      "started_at_utc": "2026-10-21T08:49:17.943Z",
+      "task_id": "T061",
+      "task_revision": 1
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "check_id": "spec-check-fixtures",
+      "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+      "ended_at_utc": "2026-10-21T08:49:36.018Z",
+      "exit_code": 0,
+      "format_version": 1,
+      "kind": "local_check_execution",
+      "log_ref": "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/local-checks/allocation/records/spec-check-fixtures-attempt-5.log",
+      "log_sha256": "e23fc817752d1c7a4cc28c86a08ad54696c75b258be17a5761c697cfdda6efdf",
+      "result": "PASS",
+      "started_at_utc": "2026-10-21T08:49:18.353Z",
+      "task_id": "T061",
+      "task_revision": 1
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "check_id": "git-diff-check",
+      "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+      "ended_at_utc": "2026-10-21T08:49:36.076Z",
+      "exit_code": 2,
+      "format_version": 1,
+      "kind": "local_check_execution",
+      "log_ref": "artifacts/git-delivery-support/T061-r1-0809ec6c-1f28-419a-a9da-51c45e30db34/local-checks/allocation/records/git-diff-check-attempt-5.log",
+      "log_sha256": "c4987a5ed494f32778c82c1c2c17bc916522671fde8e2ec7ee264bda542ae914",
+      "result": "FAIL",
+      "started_at_utc": "2026-10-21T08:49:36.020Z",
+      "task_id": "T061",
+      "task_revision": 1
+    }
+  ],
+  "delivery_id": "0809ec6c-1f28-419a-a9da-51c45e30db34",
+  "failed_count": 1,
+  "format_version": 1,
+  "kind": "allocation_check",
+  "passed_count": 3,
+  "result": "FAIL",
+  "task_id": "T061",
+  "task_revision": 1
+}

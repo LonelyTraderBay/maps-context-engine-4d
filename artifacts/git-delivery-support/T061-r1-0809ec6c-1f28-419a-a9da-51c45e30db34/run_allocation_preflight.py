@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime as dt,hashlib,json,subprocess,sys,time
 from pathlib import Path
+sys.stdout.reconfigure(encoding='utf-8',errors='replace')
 root=Path.cwd(); delivery='0809ec6c-1f28-419a-a9da-51c45e30db34'; base='b14dcd101ad7b2b4bec18c7f05509430f9ac1e1f'; support=Path(f'artifacts/git-delivery-support/T061-r1-{delivery}')
 plan_ref=f'{support.as_posix()}/check-plan-canonical.json'; plan_sha='1fcd5926248a5390f96e42d45ac2c6b6b876150420fbdbad41c0675c7bdfccb3'; attempt=int(sys.argv[1]) if len(sys.argv)>1 else 2
 attempt_dir=support/f'local-checks/allocation/attempt-{attempt}'; attempt_dir.mkdir(parents=True,exist_ok=False); records_dir=support/'local-checks/allocation/records'
@@ -29,7 +30,7 @@ for i,t in enumerate(tokens):
   k,_=t.split('=',1)
   if k in values: tokens[i]=f'{k}={values[k]}'
 parts[9]=';'.join(tokens); lines[ri]='|'.join(parts)
-summary_refs=[f'{s.as_posix()}/archive-view/allocation-attempt-2-check.json sha256:{hashlib.sha256((s/"archive-view/allocation-attempt-2-check.json").read_bytes()).hexdigest()}', f'{s.as_posix()}/archive-view/allocation-attempt-2-preflight.json sha256:{hashlib.sha256((s/"archive-view/allocation-attempt-2-preflight.json").read_bytes()).hexdigest()}']
+s=support; summary_refs=[f'{s.as_posix()}/archive-view/allocation-attempt-2-check.json sha256:{hashlib.sha256((s/"archive-view/allocation-attempt-2-check.json").read_bytes()).hexdigest()}', f'{s.as_posix()}/archive-view/allocation-attempt-2-preflight.json sha256:{hashlib.sha256((s/"archive-view/allocation-attempt-2-preflight.json").read_bytes()).hexdigest()}']
 for c in checks:
  stem=c['check_id']+f'-attempt-{attempt}'
  for suffix in ('.json','.log'):
