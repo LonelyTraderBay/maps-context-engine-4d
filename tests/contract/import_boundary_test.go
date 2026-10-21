@@ -25,6 +25,10 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/contracts":      true,
 			modulePath + "/internal/model": true,
 		},
+		"internal/contracts/federation": {
+			modulePath + "/internal/catalog": true,
+			modulePath + "/internal/model":   true,
+		},
 		// Telemetry is a local leaf package with no project imports.
 		"internal/telemetry": {},
 		"internal/indexer": {
@@ -83,9 +87,11 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/ports": true,
 		},
 		"internal/store/sqlite": {
+			modulePath + "/internal/catalog":             true,
 			modulePath + "/contracts":                    true,
 			modulePath + "/internal/history":             true,
 			modulePath + "/internal/model":               true,
+			modulePath + "/internal/ports":               true,
 			modulePath + "/internal/runtime":             true,
 			modulePath + "/internal/runtime/maintenance": true,
 			// SQLite is the runtime lock consumer; the resulting graph remains acyclic.
@@ -109,6 +115,11 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/internal/paths":        true,
 			modulePath + "/internal/policy":       true,
 			modulePath + "/internal/store/sqlite": true,
+		},
+		"internal/app/groups": {
+			modulePath + "/internal/catalog": true,
+			modulePath + "/internal/model":   true,
+			modulePath + "/internal/ports":   true,
 		},
 		"internal/app/store": {
 			modulePath + "/internal/model":        true,
@@ -144,10 +155,13 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 			modulePath + "/contracts":               true,
 			modulePath + "/internal/app/config":     true,
 			modulePath + "/internal/app/explorer":   true,
+			modulePath + "/internal/app/groups":     true,
 			modulePath + "/internal/app/records":    true,
 			modulePath + "/internal/app/store":      true,
+			modulePath + "/internal/catalog":        true,
 			modulePath + "/internal/history":        true,
 			modulePath + "/internal/model":          true,
+			modulePath + "/internal/ports":          true,
 			modulePath + "/internal/runtime":        true,
 			modulePath + "/internal/runtime/config": true,
 			modulePath + "/internal/store/sqlite":   true,
@@ -159,8 +173,11 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		"internal/explorer": {
 			modulePath + "/contracts": true,
 		},
-		"internal/ports": {modulePath + "/internal/model": true},
-		"contracts":      {modulePath + "/internal/model": true},
+		"internal/ports": {
+			modulePath + "/internal/catalog": true,
+			modulePath + "/internal/model":   true,
+		},
+		"contracts": {modulePath + "/internal/model": true},
 		"tests/contract": {
 			modulePath + "/contracts":                 true,
 			modulePath + "/internal/model":            true,

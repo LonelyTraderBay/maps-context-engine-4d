@@ -17,6 +17,7 @@ import (
 	apprecords "github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/history"
 	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
+	"github.com/LonelyTraderBay/maps-context-engine-4d/internal/ports"
 	mceruntime "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime"
 	runtimeconfig "github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config"
 )
@@ -50,6 +51,7 @@ Commands:
   mce4d store recover --target worktree --worktree-id <uuid> --apply --confirm [--wait-ms <bounded>] --json
 	mce4d records list --worktree-id <uuid> --input-json <file-or-dash> --json
 	mce4d records read --worktree-id <uuid> --input-json <file-or-dash> --json
+  mce4d group get|list|put|remove --input-json <file-or-dash>
   mce4d explorer --worktree-id <uuid> --profile-id <sha256> --listen 127.0.0.1:<port>
 
 Config show layers the canonical home config, an explicit alternate preview,
@@ -93,6 +95,8 @@ func Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		return runStore(ctx, args[1:], stdout, stderr)
 	case "records":
 		return runRecords(ctx, args[1:], stdin, stdout, stderr)
+	case "group":
+		return runGroups(ctx, args[1:], stdin, stdout, stderr)
 	case "explorer":
 		return runExplorer(ctx, args[1:], stdout, stderr)
 	default:
@@ -398,7 +402,7 @@ func writeFailure(stderr io.Writer, err error) int {
 	switch {
 	case errors.Is(err, errUsage), errors.Is(err, errInputTooLarge), errors.Is(err, apprecords.ErrInvalidRequest), errors.Is(err, history.ErrInvalidRecord):
 		return 2
-	case errors.Is(err, errInvalidHome), errors.Is(err, appconfig.ErrConflict), errors.Is(err, runtimeconfig.ErrInvalidConfig), errors.Is(err, appconfig.ErrInvalidRequest), errors.Is(err, apprecords.ErrStalePage), errors.Is(err, apprecords.ErrSourceNotCurrent), errors.Is(err, history.ErrRecordNotFound):
+	case errors.Is(err, errInvalidHome), errors.Is(err, appconfig.ErrConflict), errors.Is(err, runtimeconfig.ErrInvalidConfig), errors.Is(err, appconfig.ErrInvalidRequest), errors.Is(err, apprecords.ErrStalePage), errors.Is(err, apprecords.ErrSourceNotCurrent), errors.Is(err, history.ErrRecordNotFound), errors.Is(err, ports.ErrGroupConflict), errors.Is(err, ports.ErrGroupNotFound), errors.Is(err, ports.ErrGroupStalePage):
 		return 3
 	case errors.Is(err, context.DeadlineExceeded):
 		return 4
