@@ -1,8 +1,10 @@
 package sqlite
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -251,6 +253,76 @@ func TestOpenIndexAdmissionRejectsPeakBeforeCreatingSQLite(t *testing.T) {
 	}
 	if _, err := os.Lstat(options.Path); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("index was created before admission: stat err=%v", err)
+	}
+}
+
+func TestRecordsAdmissionUsesVolumeOnlyAndRecoversWithoutDeletingDurableFile(t *testing.T) {
+	store := openTestIndex(t, 1234)
+	defer store.Close()
+	ctx := context.Background()
+	owner := store.ownership
+	worktreeID := store.WorktreeID()
+	path := model.AdmissionOwnedPath(recordsStorePath(worktreeID))
+	cacheBefore, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reservation, err := owner.admitDurableGrowth(ctx, recordsAdmissionOperation, path, 4096)
+	if err != nil {
+		t.Fatalf("reserve durable records growth: %v", err)
+	}
+	journal, err := owner.readJournalAnyConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(journal.Entries) != 1 {
+		t.Fatalf("records reservation entry count=%d", len(journal.Entries))
+	}
+	entry := journal.Entries[0]
+	if entry.OperationKind != recordsAdmissionOperation || entry.VolumeReservedRemainingBytes != 4096 || entry.CacheReservedRemainingBytes != 0 || len(entry.AllowedPaths) != 4 {
+		t.Fatalf("records reservation has wrong quota/path shape: %+v", entry)
+	}
+	for index, expected := range recordsStorePaths(worktreeID) {
+		if entry.AllowedPaths[index] != expected {
+			t.Fatalf("records allowed path %d=%q, want %q", index, entry.AllowedPaths[index], expected)
+		}
+	}
+	content := []byte("retain durable record history after interrupted writer")
+	if err := owner.root.WriteAtomicFile(string(path), content, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := reservation.lease.Close(); err != nil {
+		t.Fatalf("simulate interrupted record owner: %v", err)
+	}
+	recovered, err := owner.admitDurableGrowth(ctx, recordsAdmissionOperation, path, 4096)
+	if err != nil {
+		t.Fatalf("recover stale records reservation: %v", err)
+	}
+	journal, err = owner.readJournalAnyConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(journal.Entries) != 1 || journal.Entries[0].OperationID == reservation.operationID || journal.Entries[0].CacheReservedRemainingBytes != 0 {
+		t.Fatalf("recovered records reservation=%+v", journal.Entries)
+	}
+	if err := recovered.Close(); err != nil {
+		t.Fatalf("settle recovered records reservation: %v", err)
+	}
+	file, err := owner.root.OpenRegularFile(string(path))
+	if err != nil {
+		t.Fatalf("recovery deleted durable records output: %v", err)
+	}
+	actual, readErr := io.ReadAll(file)
+	closeErr := file.Close()
+	if readErr != nil || closeErr != nil || !bytes.Equal(actual, content) {
+		t.Fatalf("durable records output changed after recovery: bytes=%q read=%v close=%v", actual, readErr, closeErr)
+	}
+	cacheAfter, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cacheAfter != cacheBefore {
+		t.Fatalf("durable record bytes changed cache accounting: before=%d after=%d", cacheBefore, cacheAfter)
 	}
 }
 

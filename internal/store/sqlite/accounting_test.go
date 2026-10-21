@@ -97,6 +97,50 @@ func TestOwnedCacheAccountingIncludesRenameAndOtherScratchFiles(t *testing.T) {
 	}
 }
 
+func TestRecordsDatabaseAndSQLiteSidecarsStayOutsideCacheAccounting(t *testing.T) {
+	store := openTestIndex(t, 1234)
+	defer store.Close()
+	owner := store.ownership
+	worktreeID := store.WorktreeID()
+	base := recordsStorePath(worktreeID)
+	if err := owner.root.EnsurePrivateDirs("worktrees/" + string(worktreeID)); err != nil {
+		t.Fatal(err)
+	}
+	rootPath, err := owner.root.FinalPath()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, value := range map[string]string{
+		base:              "durable-record-database",
+		base + "-wal":     "durable-record-wal",
+		base + "-shm":     "durable-record-shm",
+		base + "-journal": "durable-record-journal",
+	} {
+		if err := os.WriteFile(filepath.Join(rootPath, filepath.FromSlash(name)), []byte(value), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cacheBefore, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	durableBytes, err := owner.measureRecordsStoreBytes(worktreeID, model.VolumeAdmissionJournal{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantDurable := int64(len("durable-record-database") + len("durable-record-wal") + len("durable-record-shm") + len("durable-record-journal"))
+	if durableBytes != wantDurable {
+		t.Fatalf("durable records measurement=%d; want %d", durableBytes, wantDurable)
+	}
+	cacheAfter, err := owner.worktreeCacheBytesFor(worktreeID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cacheAfter != cacheBefore {
+		t.Fatalf("records database or sidecar leaked into cache: before=%d after=%d", cacheBefore, cacheAfter)
+	}
+}
+
 func TestDurableAdmissionUsesVolumeBudgetAndPreservesCrashOutput(t *testing.T) {
 	store := openTestIndex(t, 1234)
 	owner := store.ownership

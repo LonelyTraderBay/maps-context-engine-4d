@@ -167,6 +167,92 @@ func (owner *storeOwnership) measureOwnedPathBytes(relative model.AdmissionOwned
 	return owner.measureOwnedTree(string(relative), owner.worktreeID, journal)
 }
 
+func recordsStorePath(worktreeID model.UUID) string {
+	return "worktrees/" + string(worktreeID) + "/records.sqlite"
+}
+
+func recordsStorePaths(worktreeID model.UUID) []model.AdmissionOwnedPath {
+	base := recordsStorePath(worktreeID)
+	return []model.AdmissionOwnedPath{
+		model.AdmissionOwnedPath(base),
+		model.AdmissionOwnedPath(base + "-wal"),
+		model.AdmissionOwnedPath(base + "-shm"),
+		model.AdmissionOwnedPath(base + "-journal"),
+	}
+}
+
+func isRecordsStorePath(relative string, worktreeID model.UUID) bool {
+	for _, path := range recordsStorePaths(worktreeID) {
+		if relative == string(path) {
+			return true
+		}
+	}
+	return false
+}
+
+func (owner *storeOwnership) measureAdmittedDurableBytes(operationKind string, paths []model.AdmissionOwnedPath, journal model.VolumeAdmissionJournal) (int64, error) {
+	if operationKind == recordsAdmissionOperation {
+		if len(paths) != len(recordsStorePaths(owner.worktreeID)) {
+			return 0, ErrAdmissionOwnership
+		}
+		for index, expected := range recordsStorePaths(owner.worktreeID) {
+			if paths[index] != expected {
+				return 0, ErrAdmissionOwnership
+			}
+		}
+		return owner.measureRecordsStoreBytes(owner.worktreeID, journal)
+	}
+	if len(paths) != 1 {
+		return 0, ErrAdmissionOwnership
+	}
+	return owner.measureOwnedPathBytes(paths[0], journal)
+}
+
+// measureRecordsStoreBytes bills only the durable records database and its
+// SQLite sidecars. It also verifies each present member through a no-follow
+// owned-file handle before trusting its length.
+func (owner *storeOwnership) measureRecordsStoreBytes(worktreeID model.UUID, _ model.VolumeAdmissionJournal) (int64, error) {
+	if owner == nil || owner.root == nil || worktreeID != owner.worktreeID {
+		return 0, fmt.Errorf("records bytes require the verified worktree owner: %w", ErrAdmissionOwnership)
+	}
+	var total int64
+	for _, relative := range recordsStorePaths(worktreeID) {
+		if err := relative.Validate(); err != nil {
+			return 0, fmt.Errorf("invalid records store locator: %w", ErrAdmissionOwnership)
+		}
+		rootPath, err := owner.root.FinalPath()
+		if err != nil {
+			return 0, err
+		}
+		absolute := filepath.Join(rootPath, filepath.FromSlash(string(relative)))
+		info, err := os.Lstat(absolute)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return 0, fmt.Errorf("inspect records store member: %w", err)
+		}
+		if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 || info.Mode()&os.ModeIrregular != 0 {
+			return 0, fmt.Errorf("records store member is not a regular file: %w", ErrInvalidStorePath)
+		}
+		file, err := owner.root.OpenRegularFile(string(relative))
+		if err != nil {
+			return 0, fmt.Errorf("securely open records store member: %w", err)
+		}
+		opened, statErr := file.Stat()
+		closeErr := file.Close()
+		if statErr != nil || closeErr != nil || !os.SameFile(info, opened) || opened.Size() != info.Size() || opened.Size() < 0 {
+			return 0, errors.Join(statErr, closeErr, ErrInvalidStorePath)
+		}
+		var ok bool
+		total, ok = addNonnegative(total, opened.Size())
+		if !ok || total > model.MaxSafeInteger {
+			return 0, ErrAdmissionReservationOverflow
+		}
+	}
+	return total, nil
+}
+
 // renameResultBytesFor measures actual result spools and interrupted atomic
 // write temporaries. Live atomic temporaries remain covered by their reservation.
 func (owner *storeOwnership) renameResultBytesFor(worktreeID model.UUID) (int64, error) {
@@ -227,6 +313,9 @@ func (owner *storeOwnership) measureOwnedTree(relativeRoot string, worktreeID mo
 			return fmt.Errorf("cache entry has an invalid home-relative locator: %w", ErrInvalidStorePath)
 		}
 		if entry.IsDir() {
+			if relativeRoot == "worktrees/"+string(worktreeID) && isRecordsStorePath(relative, worktreeID) {
+				return fmt.Errorf("records database and sidecars must be regular files: %w", ErrInvalidStorePath)
+			}
 			if err := owner.root.EnsurePrivateDirs(relative); err != nil {
 				return fmt.Errorf("cache directory is not contained beneath home: %w", ErrInvalidStorePath)
 			}
@@ -249,6 +338,9 @@ func (owner *storeOwnership) measureOwnedTree(relativeRoot string, worktreeID mo
 		closeErr := file.Close()
 		if statErr != nil || closeErr != nil || !os.SameFile(info, opened) || opened.Size() != info.Size() {
 			return errors.Join(statErr, closeErr, ErrInvalidStorePath)
+		}
+		if relativeRoot == "worktrees/"+string(worktreeID) && isRecordsStorePath(relative, worktreeID) {
+			return nil
 		}
 		fileCount++
 		if fileCount > maxOwnedCacheFiles {
