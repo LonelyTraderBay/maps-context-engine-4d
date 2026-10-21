@@ -1,0 +1,129 @@
+{
+  "base_sha": "8d4819de5265141b7dbff63f514c63dd1933db39",
+  "branch": "codex/t059-r2",
+  "checked_at_utc": "2026-10-21T05:45:40.569Z",
+  "checks": [
+    {
+      "command": "python -B tools/ci/bootstrap_check.py",
+      "id": "bootstrap",
+      "log_bytes": 72,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/bootstrap.log",
+      "log_sha256": "3aabc0dbc19efbafb371269be69ed8a8933f0acd903bea049f214297f8db1f0e",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/ci/test_bootstrap_check.py",
+      "id": "bootstrap-fixtures",
+      "log_bytes": 832,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/bootstrap-fixtures.log",
+      "log_sha256": "03b2308ad492fc6596d12bc5a06a7a709602e1c402382d5f4452b609bf6267b9",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/ci/delivery_policy.py check-plan --plan artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/check-plan-canonical.json --workflow .github/workflows/bootstrap.yml --sha256 c8b2176b2ac132dd8fceb61fa5d985733deeaa460cb5aa054338cfb3581e9c84",
+      "id": "delivery-plan",
+      "log_bytes": 140,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/delivery-plan.log",
+      "log_sha256": "12c443b90a1f67fc3ad7bfa770fceffff5d0298222b800a8c7ff0b8f6f7c5999",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/spec_check/check.py",
+      "id": "spec-validator",
+      "log_bytes": 115,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/spec-validator.log",
+      "log_sha256": "3ecc6a52ef622df83692a8c08ee9fc4ec4a01f73b0271a2aa53bae96cb93e44a",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/spec_check/test_spec_check.py",
+      "id": "spec-fixtures",
+      "log_bytes": 20843,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/spec-fixtures.log",
+      "log_sha256": "e69549239e8d2a2b79078870a4feef860212a8bd517778ac0cbb5376d469d0c3",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/ci/test_delivery_policy.py",
+      "id": "delivery-policy-fixtures",
+      "log_bytes": 4287,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/delivery-policy-fixtures.log",
+      "log_sha256": "c3cdef38ebc24a9a71bcbf6bc960b892303093c9c7f788ed5e1dec2ece1ce59e",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/ci/test_checkpoint_digest.py",
+      "id": "checkpoint-digest-fixtures",
+      "log_bytes": 894,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/checkpoint-digest-fixtures.log",
+      "log_sha256": "5a4b6340c06cb7c58b1a0a40d32b3ed6465218ebcf07333d5d5913d6ac74b767",
+      "status": "PASS"
+    },
+    {
+      "command": "python -B tools/ci/check_gofmt.py",
+      "id": "go-format",
+      "log_bytes": 58,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/go-format.log",
+      "log_sha256": "20e395a9d64805c1021c49a489a385645136194fdc6e13c175b08165164982b6",
+      "status": "PASS"
+    },
+    {
+      "command": "go test ./...",
+      "id": "go-test",
+      "log_bytes": 4511,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/go-test.log",
+      "log_sha256": "2d10725f593ab27c5d26d36a2024ded9cb4df9209c853b6a0df1cd6dec729224",
+      "status": "PASS"
+    },
+    {
+      "command": "go vet ./...",
+      "id": "go-vet",
+      "log_bytes": 0,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/go-vet.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "PASS"
+    },
+    {
+      "command": "go build ./...",
+      "id": "go-build",
+      "log_bytes": 0,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/go-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "PASS"
+    },
+    {
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "id": "explorer-install",
+      "log_bytes": 28,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/explorer-install.log",
+      "log_sha256": "a44cb5af747334eece23d08d094921d8a28521c06b7a4fc57144353ff20017ba",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run test:contract:ui",
+      "id": "explorer-contract",
+      "log_bytes": 1563,
+      "log_ref": "artifacts/git-delivery-support/T059-r2-e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4/local-checks/payload-progress-r2/explorer-contract.log",
+      "log_sha256": "245c526a81e2b599675d76e13313562a638779c20b4843ca54ac6b7a6a82e94a",
+      "status": "PASS"
+    }
+  ],
+  "delivery_id": "e871fbd7-a990-4ed5-b3a1-cd93cb0b00e4",
+  "execution_note": "All 13 required local checks passed. The task-frozen six-context plan was validated by its exact SHA-256. Initial Python subprocess launch of Windows npm.cmd and the inherited long PATH caused tool invocation errors; npm ci and npm contract were rerun directly in PowerShell with a bounded PATH and passed. Saved logs for the successful reruns replace those initial tool-launch logs.",
+  "format_version": 1,
+  "pass_count": 13,
+  "phase": "payload-progress-local-checks",
+  "plan_sha256": "c8b2176b2ac132dd8fceb61fa5d985733deeaa460cb5aa054338cfb3581e9c84",
+  "result": "PASS",
+  "runtime": {
+    "go": "go1.27.2 windows/amd64",
+    "node": "v24.22.0",
+    "node_archive_sha256": "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3",
+    "npm": "11.19.1",
+    "os": "Windows 11 x64",
+    "python": "3.12.10"
+  },
+  "task_id": "T059",
+  "task_revision": 2,
+  "total_count": 13
+}
