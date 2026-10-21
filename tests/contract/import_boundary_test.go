@@ -9,9 +9,18 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	httpcontract "github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http"
+	schemacontract "github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema"
 )
 
 const modulePath = "github.com/LonelyTraderBay/maps-context-engine-4d"
+
+func TestHTTPAndSchemaContractProfilesArePinned(t *testing.T) {
+	if httpcontract.OpenAPI31 != "3.1.0" || schemacontract.JSONSchema202012 != "https://json-schema.org/draft/2020-12/schema" {
+		t.Fatal("HTTP and schema parser profile constants changed without an explicit contract update")
+	}
+}
 
 func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 	_, sourceFile, _, ok := runtimeCaller(0)
@@ -27,6 +36,13 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/contracts/sql": {
 			modulePath + "/internal/model": true,
+		},
+		"internal/contracts/schema": {
+			modulePath + "/internal/model": true,
+		},
+		"internal/contracts/http": {
+			modulePath + "/internal/contracts/schema": true,
+			modulePath + "/internal/model":            true,
 		},
 		"internal/contracts/federation": {
 			modulePath + "/internal/catalog": true,
@@ -183,6 +199,8 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		"contracts": {modulePath + "/internal/model": true},
 		"tests/contract": {
 			modulePath + "/contracts":                 true,
+			modulePath + "/internal/contracts/http":   true,
+			modulePath + "/internal/contracts/schema": true,
 			modulePath + "/internal/model":            true,
 			modulePath + "/internal/catalog":          true,
 			modulePath + "/internal/paths":            true,
