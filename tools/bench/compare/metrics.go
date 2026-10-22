@@ -10,28 +10,57 @@ import (
 )
 
 type Report struct {
-	FormatVersion         int                  `json:"format_version"`
-	Kind                  string               `json:"kind"`
-	SuiteID               string               `json:"suite_id"`
-	Synthetic             bool                 `json:"synthetic"`
-	RunID                 string               `json:"run_id"`
-	SuiteSHA256           string               `json:"suite_sha256"`
-	UsageSHA256           string               `json:"usage_sha256"`
-	Model                 string               `json:"model"`
-	ModelVersion          string               `json:"model_version"`
-	Reasoning             string               `json:"reasoning"`
-	PromptSHA256          string               `json:"prompt_sha256"`
-	ToolPermissionsSHA256 string               `json:"tool_permissions_sha256"`
-	BudgetSHA256          string               `json:"budget_sha256"`
-	Environment           Environment          `json:"environment"`
-	Fairness              FairnessReport       `json:"fairness"`
-	Coverage              CoverageReport       `json:"coverage"`
-	TokenTelemetryStatus  string               `json:"token_telemetry_status"`
-	Variants              []VariantMetrics     `json:"variants"`
-	TokenSavings          *TokenSavingsReport  `json:"token_savings,omitempty"`
-	Costs                 []CostMetric         `json:"costs"`
-	LifetimeAmortization  []AmortizationMetric `json:"lifetime_amortization"`
-	Notes                 []string             `json:"notes"`
+	FormatVersion          int                    `json:"format_version"`
+	Kind                   string                 `json:"kind"`
+	SuiteID                string                 `json:"suite_id"`
+	Synthetic              bool                   `json:"synthetic"`
+	SyntheticOrReal        string                 `json:"synthetic_or_real"`
+	RealRepositoryResult   string                 `json:"real_repository_result"`
+	FixtureRevisions       []FixtureRevision      `json:"fixture_revisions"`
+	TaskCount              int                    `json:"task_count"`
+	RepoCount              int                    `json:"repo_count"`
+	EngineOutputIsOracle   bool                   `json:"engine_output_is_oracle"`
+	CorrectnessGate        bool                   `json:"correctness_failure_cannot_be_offset_by_context_savings"`
+	RunID                  string                 `json:"run_id"`
+	SuiteSHA256            string                 `json:"suite_sha256"`
+	UsageSHA256            string                 `json:"usage_sha256"`
+	Model                  string                 `json:"model"`
+	ModelVersion           string                 `json:"model_version"`
+	Reasoning              string                 `json:"reasoning"`
+	PromptSHA256           string                 `json:"prompt_sha256"`
+	ToolPermissionsSHA256  string                 `json:"tool_permissions_sha256"`
+	BudgetSHA256           string                 `json:"budget_sha256"`
+	Environment            Environment            `json:"environment"`
+	HostEnvironment        Environment            `json:"host_environment"`
+	ProfileAndToolVersions ProfileAndToolVersions `json:"profile_and_tool_versions"`
+	Fairness               FairnessReport         `json:"fairness"`
+	Coverage               CoverageReport         `json:"coverage"`
+	RecallStatus           string                 `json:"recall_status"`
+	TokenUsageStatus       string                 `json:"token_usage_status"`
+	TokenTelemetryStatus   string                 `json:"token_telemetry_status"`
+	Variants               []VariantMetrics       `json:"variants"`
+	DomainMetrics          []DomainMetrics        `json:"domain_metrics,omitempty"`
+	MedianAndDistribution  []CostMetric           `json:"median_and_distribution"`
+	TokenSavings           *TokenSavingsReport    `json:"token_savings,omitempty"`
+	Costs                  []CostMetric           `json:"costs"`
+	LifetimeAmortization   []AmortizationMetric   `json:"lifetime_amortization"`
+	Notes                  []string               `json:"notes"`
+}
+
+type FixtureRevision struct {
+	RepositoryID string `json:"repository_id"`
+	Revision     string `json:"fixture_revision"`
+}
+
+type ProfileAndToolVersions struct {
+	Model                 string `json:"model"`
+	ModelVersion          string `json:"model_version"`
+	Reasoning             string `json:"reasoning"`
+	GoVersion             string `json:"go_version,omitempty"`
+	MachineProfile        string `json:"machine_profile,omitempty"`
+	PromptSHA256          string `json:"prompt_sha256"`
+	ToolPermissionsSHA256 string `json:"tool_permissions_sha256"`
+	BudgetSHA256          string `json:"budget_sha256"`
 }
 
 type FairnessReport struct {
@@ -61,14 +90,25 @@ type CoverageReport struct {
 
 type VariantMetrics struct {
 	Variant                  Variant      `json:"variant"`
+	Mode                     string       `json:"mode"`
 	ExpectedTaskRuns         int          `json:"expected_task_runs"`
 	ObservedTaskRuns         int          `json:"observed_task_runs"`
 	AcceptedTaskRuns         int          `json:"accepted_task_runs"`
+	SuccessCount             int          `json:"success_count"`
+	FailedTaskRuns           int          `json:"failed_task_runs"`
+	FailureCount             int          `json:"failure_count"`
+	FailureTaskRunRate       float64      `json:"failure_task_run_rate"`
 	CompletionRate           float64      `json:"completion_rate"`
 	Attempts                 int          `json:"attempts"`
 	FailedAttempts           int          `json:"failed_attempts"`
 	CriticalOmissions        int64        `json:"critical_omissions"`
 	FalseEdits               int64        `json:"false_edits"`
+	RecallNumerator          int64        `json:"recall_numerator"`
+	RecallDenominator        int64        `json:"recall_denominator"`
+	RecallRate               *float64     `json:"recall_rate"`
+	ContextProxyBytes        int64        `json:"context_proxy_bytes"`
+	ContextProxyFiles        int64        `json:"context_proxy_files"`
+	ContextProxyReads        int64        `json:"context_proxy_reads"`
 	InputTokens              *int64       `json:"input_tokens"`
 	OutputTokens             *int64       `json:"output_tokens"`
 	TotalTokens              *int64       `json:"total_tokens"`
@@ -76,6 +116,24 @@ type VariantMetrics struct {
 	UncachedInputTokens      *int64       `json:"uncached_input_tokens"`
 	TokensPerAcceptedTaskRun *float64     `json:"tokens_per_accepted_task_run"`
 	Proxy                    ProxyMetrics `json:"context_proxy"`
+}
+
+type DomainMetrics struct {
+	Domain             string       `json:"domain"`
+	Variant            Variant      `json:"variant"`
+	Mode               string       `json:"mode"`
+	ExpectedTaskRuns   int          `json:"expected_task_runs"`
+	ObservedTaskRuns   int          `json:"observed_task_runs"`
+	SuccessfulTaskRuns int          `json:"successful_task_runs"`
+	FailedTaskRuns     int          `json:"failed_task_runs"`
+	FailureTaskRunRate float64      `json:"failure_task_run_rate"`
+	FailedAttempts     int          `json:"failed_attempts"`
+	CriticalOmissions  int64        `json:"critical_omissions"`
+	FalseEdits         int64        `json:"false_edits"`
+	RecallNumerator    int64        `json:"recall_numerator"`
+	RecallDenominator  int64        `json:"recall_denominator"`
+	RecallRate         *float64     `json:"recall_rate"`
+	Proxy              ProxyMetrics `json:"context_proxy"`
 }
 
 type ProxyMetrics struct {
@@ -165,6 +223,23 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 		suiteHashHex = hex.EncodeToString(suiteHash[:])
 	}
 	expectedRuns := len(suite.Tasks) * imported.header.RepeatCount
+	tasksByID := make(map[string]Task, len(suite.Tasks))
+	totalExpectedFacts := int64(0)
+	structuredFacts := false
+	for _, task := range suite.Tasks {
+		tasksByID[task.ID] = task
+		if len(task.ExpectedFactIDs) == 0 {
+			continue
+		}
+		structuredFacts = true
+		if err := addInt64(&totalExpectedFacts, int64(len(task.ExpectedFactIDs))); err != nil {
+			return Report{}, err
+		}
+	}
+	totalExpectedFacts, err = multiplyNonNegative(totalExpectedFacts, imported.header.RepeatCount)
+	if err != nil {
+		return Report{}, err
+	}
 	allTokenTelemetry := len(imported.attempts) > 0
 	anyTokenTelemetry := false
 	for _, attempt := range imported.attempts {
@@ -183,9 +258,12 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 
 	byVariant := make(map[Variant]*taskVariantMetrics, len(variants))
 	for _, variant := range variants {
-		byVariant[variant] = &taskVariantMetrics{metrics: VariantMetrics{Variant: variant, ExpectedTaskRuns: expectedRuns}}
+		byVariant[variant] = &taskVariantMetrics{metrics: VariantMetrics{
+			Variant: variant, Mode: modeFor(variant), ExpectedTaskRuns: expectedRuns,
+			RecallDenominator: totalExpectedFacts,
+		}}
 	}
-	for _, group := range validated.groups {
+	for key, group := range validated.groups {
 		for variant, observed := range group {
 			metrics := byVariant[variant]
 			metrics.metrics.ObservedTaskRuns++
@@ -225,6 +303,12 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 					}
 				}
 			}
+			if structuredFacts && len(observed.attempts) > 0 {
+				matched, _, _ := compareFactIDs(tasksByID[key.task], observed.attempts[len(observed.attempts)-1].ReportedFactIDs)
+				if err := addInt64(&metrics.metrics.RecallNumerator, matched); err != nil {
+					return Report{}, err
+				}
+			}
 			if accepted {
 				metrics.metrics.AcceptedTaskRuns++
 			}
@@ -236,6 +320,17 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 	for _, variant := range variants {
 		entry := byVariant[variant]
 		entry.metrics.CompletionRate = float64(entry.metrics.AcceptedTaskRuns) / float64(expectedRuns)
+		entry.metrics.FailedTaskRuns = expectedRuns - entry.metrics.AcceptedTaskRuns
+		entry.metrics.SuccessCount = entry.metrics.AcceptedTaskRuns
+		entry.metrics.FailureCount = entry.metrics.FailedTaskRuns
+		entry.metrics.FailureTaskRunRate = float64(entry.metrics.FailedTaskRuns) / float64(expectedRuns)
+		entry.metrics.ContextProxyBytes = entry.metrics.Proxy.PayloadBytes
+		entry.metrics.ContextProxyFiles = entry.metrics.Proxy.Files
+		entry.metrics.ContextProxyReads = entry.metrics.Proxy.ReadCalls
+		if entry.metrics.RecallDenominator > 0 {
+			rate := float64(entry.metrics.RecallNumerator) / float64(entry.metrics.RecallDenominator)
+			entry.metrics.RecallRate = &rate
+		}
 		acceptedByVariant[variant] = entry.metrics.AcceptedTaskRuns
 		if allTokenTelemetry {
 			total, err := addValues(entry.input, entry.output)
@@ -301,10 +396,28 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 			coverage.FailedAttempts++
 		}
 	}
+	domainMetrics, err := buildDomainMetrics(suite, validated.groups, imported.header.RepeatCount)
+	if err != nil {
+		return Report{}, err
+	}
+	recallStatus := "NOT_RUN"
+	if structuredFacts && len(imported.attempts) > 0 {
+		recallStatus = "MEASURED"
+		for _, variant := range variantReports {
+			if variant.ObservedTaskRuns != expectedRuns {
+				recallStatus = "PARTIAL"
+				break
+			}
+		}
+	}
 	notes := []string{
 		"Token totals include every recorded attempt, including failed attempts and retries; accepted-task denominator is accepted task runs.",
 		"Context proxy bytes, lines, files, and read calls are reported separately and are never converted into token estimates.",
 		"Index/update CPU, elapsed time, bytes, storage, and process-tree memory are kept separate from model token usage.",
+		"Variants A/B/C are reported as baseline/full/incremental; correctness failures remain separate from context-savings metrics.",
+	}
+	if structuredFacts {
+		notes = append(notes, "Recall compares host-reported fact IDs with independent suite facts; the engine output is not the oracle. Missing task runs remain in the recall denominator.")
 	}
 	if suite.Synthetic {
 		notes = append(notes, "This corpus is synthetic; its results do not establish production real-repository performance or correctness.")
@@ -318,15 +431,170 @@ func buildReport(suite Suite, imported importedUsage, usageHash [32]byte) (Repor
 	}
 	return Report{
 		FormatVersion: FormatVersion, Kind: "context_benchmark_usage_report", SuiteID: suite.SuiteID,
-		Synthetic: suite.Synthetic, RunID: imported.header.RunID,
+		Synthetic: suite.Synthetic, SyntheticOrReal: sourceKind(suite.Synthetic),
+		FixtureRevisions: fixtureRevisions(suite),
+		TaskCount:        len(suite.Tasks), RepoCount: len(suite.Repositories),
+		RealRepositoryResult: realRepositoryResult(suite.Synthetic), EngineOutputIsOracle: false, CorrectnessGate: true,
+		RecallStatus: recallStatus, DomainMetrics: domainMetrics, RunID: imported.header.RunID,
 		SuiteSHA256: suiteHashHex, UsageSHA256: hex.EncodeToString(usageHash[:]),
 		Model: imported.header.Model, ModelVersion: imported.header.ModelVersion,
 		Reasoning: imported.header.Reasoning, PromptSHA256: imported.header.PromptSHA256,
 		ToolPermissionsSHA256: imported.header.ToolPermissionsSHA256, BudgetSHA256: imported.header.BudgetSHA256,
-		Environment: imported.header.Environment, Fairness: fairness, Coverage: coverage,
-		TokenTelemetryStatus: tokenStatus, Variants: variantReports, TokenSavings: savings,
-		Costs: costs, LifetimeAmortization: amortization, Notes: notes,
+		Environment: imported.header.Environment, HostEnvironment: imported.header.Environment,
+		ProfileAndToolVersions: ProfileAndToolVersions{
+			Model: imported.header.Model, ModelVersion: imported.header.ModelVersion, Reasoning: imported.header.Reasoning,
+			GoVersion: imported.header.Environment.GoVersion, MachineProfile: imported.header.Environment.MachineProfile,
+			PromptSHA256: imported.header.PromptSHA256, ToolPermissionsSHA256: imported.header.ToolPermissionsSHA256,
+			BudgetSHA256: imported.header.BudgetSHA256,
+		}, Fairness: fairness, Coverage: coverage,
+		TokenUsageStatus: tokenStatus, TokenTelemetryStatus: tokenStatus, Variants: variantReports, TokenSavings: savings,
+		MedianAndDistribution: costs, Costs: costs, LifetimeAmortization: amortization, Notes: notes,
 	}, nil
+}
+
+func fixtureRevisions(suite Suite) []FixtureRevision {
+	repositories := append([]Repository(nil), suite.Repositories...)
+	sort.Slice(repositories, func(i, j int) bool { return repositories[i].ID < repositories[j].ID })
+	revisions := make([]FixtureRevision, 0, len(repositories))
+	for _, repository := range repositories {
+		revisions = append(revisions, FixtureRevision{RepositoryID: repository.ID, Revision: repository.FixtureRevision})
+	}
+	return revisions
+}
+
+func modeFor(variant Variant) string {
+	switch variant {
+	case VariantA:
+		return "baseline"
+	case VariantB:
+		return "full"
+	case VariantC:
+		return "incremental"
+	default:
+		return "unknown"
+	}
+}
+
+func sourceKind(synthetic bool) string {
+	if synthetic {
+		return "synthetic"
+	}
+	return "real"
+}
+
+func realRepositoryResult(synthetic bool) string {
+	if synthetic {
+		return "NOT_RUN"
+	}
+	return "MEASURED"
+}
+
+func multiplyNonNegative(value int64, factor int) (int64, error) {
+	if value < 0 || factor < 0 || (factor > 0 && value > math.MaxInt64/int64(factor)) {
+		return 0, fmt.Errorf("metric multiplication overflow or negative value: %w", ErrInvalidUsage)
+	}
+	return value * int64(factor), nil
+}
+
+func buildDomainMetrics(suite Suite, groups map[taskRunKey]map[Variant]*variantRun, repeats int) ([]DomainMetrics, error) {
+	tasksByID := make(map[string]Task, len(suite.Tasks))
+	taskCounts := make(map[string]int)
+	factCounts := make(map[string]int64)
+	for _, task := range suite.Tasks {
+		tasksByID[task.ID] = task
+		if task.Domain == "" {
+			continue
+		}
+		taskCounts[task.Domain]++
+		factCount := factCounts[task.Domain]
+		if err := addInt64(&factCount, int64(len(task.ExpectedFactIDs))); err != nil {
+			return nil, err
+		}
+		factCounts[task.Domain] = factCount
+	}
+	if len(taskCounts) == 0 {
+		return nil, nil
+	}
+	domains := make([]string, 0, len(taskCounts))
+	for domain := range taskCounts {
+		domains = append(domains, domain)
+	}
+	sort.Strings(domains)
+	byDomain := make(map[string]map[Variant]*DomainMetrics, len(domains))
+	for _, domain := range domains {
+		byDomain[domain] = make(map[Variant]*DomainMetrics, len(variants))
+		expectedTaskRuns := taskCounts[domain] * repeats
+		expectedFacts, err := multiplyNonNegative(factCounts[domain], repeats)
+		if err != nil {
+			return nil, err
+		}
+		for _, variant := range variants {
+			byDomain[domain][variant] = &DomainMetrics{
+				Domain: domain, Variant: variant, Mode: modeFor(variant),
+				ExpectedTaskRuns: expectedTaskRuns, RecallDenominator: expectedFacts,
+			}
+		}
+	}
+	for key, group := range groups {
+		task := tasksByID[key.task]
+		if task.Domain == "" {
+			continue
+		}
+		for variant, observed := range group {
+			metric := byDomain[task.Domain][variant]
+			metric.ObservedTaskRuns++
+			accepted := false
+			for _, attempt := range observed.attempts {
+				if attempt.Accepted {
+					accepted = true
+				}
+				if attempt.Status == "failed" {
+					metric.FailedAttempts++
+				}
+				if err := addInt64(&metric.CriticalOmissions, attempt.CriticalOmissions); err != nil {
+					return nil, err
+				}
+				if err := addInt64(&metric.FalseEdits, attempt.FalseEdits); err != nil {
+					return nil, err
+				}
+				if err := addInt64(&metric.Proxy.PayloadBytes, attempt.Proxy.PayloadBytes); err != nil {
+					return nil, err
+				}
+				if err := addInt64(&metric.Proxy.Lines, attempt.Proxy.Lines); err != nil {
+					return nil, err
+				}
+				if err := addInt64(&metric.Proxy.Files, attempt.Proxy.Files); err != nil {
+					return nil, err
+				}
+				if err := addInt64(&metric.Proxy.ReadCalls, attempt.Proxy.ReadCalls); err != nil {
+					return nil, err
+				}
+			}
+			if accepted {
+				metric.SuccessfulTaskRuns++
+			}
+			if len(observed.attempts) > 0 {
+				matched, _, _ := compareFactIDs(task, observed.attempts[len(observed.attempts)-1].ReportedFactIDs)
+				if err := addInt64(&metric.RecallNumerator, matched); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	result := make([]DomainMetrics, 0, len(domains)*len(variants))
+	for _, domain := range domains {
+		for _, variant := range variants {
+			metric := byDomain[domain][variant]
+			metric.FailedTaskRuns = metric.ExpectedTaskRuns - metric.SuccessfulTaskRuns
+			metric.FailureTaskRunRate = float64(metric.FailedTaskRuns) / float64(metric.ExpectedTaskRuns)
+			if metric.RecallDenominator > 0 {
+				rate := float64(metric.RecallNumerator) / float64(metric.RecallDenominator)
+				metric.RecallRate = &rate
+			}
+			result = append(result, *metric)
+		}
+	}
+	return result, nil
 }
 
 func makeSavingsReport(groups map[taskRunKey]map[Variant]*variantRun) (*TokenSavingsReport, error) {

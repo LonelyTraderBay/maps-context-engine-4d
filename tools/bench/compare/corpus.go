@@ -45,6 +45,7 @@ type Suite struct {
 type Repository struct {
 	ID               string   `json:"id"`
 	Module           string   `json:"module"`
+	Languages        []string `json:"languages,omitempty"`
 	FixturePath      string   `json:"fixture_path"`
 	FixtureRevision  string   `json:"fixture_revision"`
 	FixtureSHA256    string   `json:"fixture_sha256"`
@@ -55,12 +56,16 @@ type Repository struct {
 type Task struct {
 	ID                    string    `json:"id"`
 	RepositoryID          string    `json:"repository_id"`
+	CaseID                string    `json:"case_id,omitempty"`
+	Domain                string    `json:"domain,omitempty"`
 	Scenario              string    `json:"scenario"`
 	Request               string    `json:"request"`
 	ExpectedChangedPaths  []string  `json:"expected_changed_paths"`
 	ForbiddenChangedPaths []string  `json:"forbidden_changed_paths"`
 	RequiredInvariants    []string  `json:"required_invariants"`
 	Oracle                string    `json:"oracle"`
+	ExpectedFactIDs       []string  `json:"expected_fact_ids,omitempty"`
+	CriticalFactIDs       []string  `json:"critical_fact_ids,omitempty"`
 	Setup                 TaskSetup `json:"setup"`
 }
 
@@ -111,6 +116,9 @@ func ValidateSuite(suite Suite, suiteRoot string) error {
 			len(repo.DependencyFiles) == 0 {
 			return fmt.Errorf("repository %q metadata: %w", repo.ID, ErrInvalidSuite)
 		}
+		if len(repo.Languages) > 0 && !validIdentifierList(repo.Languages) {
+			return fmt.Errorf("repository %q languages: %w", repo.ID, ErrInvalidSuite)
+		}
 		if _, exists := repositories[repo.ID]; exists {
 			return fmt.Errorf("duplicate repository %q: %w", repo.ID, ErrInvalidSuite)
 		}
@@ -141,6 +149,8 @@ func ValidateSuite(suite Suite, suiteRoot string) error {
 
 	tasks := make(map[string]struct{}, len(suite.Tasks))
 	scenarios := make(map[string]int, len(requiredScenarios))
+	caseDomains := make(map[string]string)
+	structuredTasks, legacyTasks := 0, 0
 	for _, task := range suite.Tasks {
 		if !validIdentifier(task.ID) || strings.TrimSpace(task.Request) == "" ||
 			strings.TrimSpace(task.Oracle) == "" || len(task.RequiredInvariants) == 0 {
@@ -153,10 +163,29 @@ func ValidateSuite(suite Suite, suiteRoot string) error {
 		if _, ok := repositories[task.RepositoryID]; !ok {
 			return fmt.Errorf("task %q references unknown repository %q: %w", task.ID, task.RepositoryID, ErrInvalidSuite)
 		}
-		if !contains(requiredScenarios, task.Scenario) {
-			return fmt.Errorf("task %q has unknown scenario %q: %w", task.ID, task.Scenario, ErrInvalidSuite)
+		structured := task.CaseID != "" || task.Domain != "" || len(task.ExpectedFactIDs) > 0 || len(task.CriticalFactIDs) > 0
+		if structured {
+			structuredTasks++
+			if !validCaseID(task.CaseID) || !validIdentifier(task.Domain) || len(task.ExpectedFactIDs) == 0 || !validFactIDList(task.ExpectedFactIDs) ||
+				!validFactIDList(task.CriticalFactIDs) || len(task.CriticalFactIDs) == 0 {
+				return fmt.Errorf("task %q case/domain/oracle facts: %w", task.ID, ErrInvalidSuite)
+			}
+			if prior, exists := caseDomains[task.CaseID]; exists && prior != task.Domain {
+				return fmt.Errorf("case %q maps to multiple domains: %w", task.CaseID, ErrInvalidSuite)
+			}
+			caseDomains[task.CaseID] = task.Domain
+			for _, factID := range task.CriticalFactIDs {
+				if !contains(task.ExpectedFactIDs, factID) {
+					return fmt.Errorf("task %q critical fact %q is not expected: %w", task.ID, factID, ErrInvalidSuite)
+				}
+			}
+		} else {
+			legacyTasks++
+			if !contains(requiredScenarios, task.Scenario) {
+				return fmt.Errorf("task %q has unknown scenario %q: %w", task.ID, task.Scenario, ErrInvalidSuite)
+			}
+			scenarios[task.Scenario]++
 		}
-		scenarios[task.Scenario]++
 		if !validPathSet(task.ExpectedChangedPaths) || !validPathSet(task.ForbiddenChangedPaths) ||
 			!validStringList(task.RequiredInvariants) || !validSetup(task.Setup) {
 			return fmt.Errorf("task %q path/setup fields: %w", task.ID, ErrInvalidSuite)
@@ -167,9 +196,15 @@ func ValidateSuite(suite Suite, suiteRoot string) error {
 			}
 		}
 	}
-	for _, scenario := range requiredScenarios {
-		if scenarios[scenario] == 0 {
-			return fmt.Errorf("scenario %q is missing: %w", scenario, ErrInvalidSuite)
+	if structuredTasks > 0 {
+		if legacyTasks > 0 {
+			return fmt.Errorf("suite may not mix structured case tasks and legacy scenarios: %w", ErrInvalidSuite)
+		}
+	} else {
+		for _, scenario := range requiredScenarios {
+			if scenarios[scenario] == 0 {
+				return fmt.Errorf("scenario %q is missing: %w", scenario, ErrInvalidSuite)
+			}
 		}
 	}
 	return nil
@@ -272,7 +307,7 @@ func dependencySHA256(root string, files []string) (string, error) {
 	}
 	h := sha256.New()
 	for _, relative := range paths {
-		if !safeRelativePath(relative) || (relative != "go.mod" && relative != "go.sum") {
+		if !safeRelativePath(relative) {
 			return "", fmt.Errorf("unsupported dependency file %q: %w", relative, ErrInvalidSuite)
 		}
 		if _, exists := seen[relative]; exists {
@@ -439,6 +474,50 @@ func validStringList(values []string) bool {
 	}
 	for _, value := range values {
 		if strings.TrimSpace(value) == "" {
+			return false
+		}
+	}
+	return true
+}
+
+func validIdentifierList(values []string) bool {
+	seen := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		if !validIdentifier(value) {
+			return false
+		}
+		if _, exists := seen[value]; exists {
+			return false
+		}
+		seen[value] = struct{}{}
+	}
+	return len(values) > 0
+}
+
+func validFactIDList(values []string) bool {
+	return len(values) > 0 && validFactIDSet(values)
+}
+
+func validFactIDSet(values []string) bool {
+	seen := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		if !validIdentifier(value) {
+			return false
+		}
+		if _, exists := seen[value]; exists {
+			return false
+		}
+		seen[value] = struct{}{}
+	}
+	return true
+}
+
+func validCaseID(value string) bool {
+	if len(value) != 4 || value[0] != 'C' {
+		return false
+	}
+	for _, digit := range value[1:] {
+		if digit < '0' || digit > '9' {
 			return false
 		}
 	}

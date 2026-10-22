@@ -63,6 +63,7 @@ type UsageAttempt struct {
 	OutputTokens      *int64   `json:"output_tokens,omitempty"`
 	CachedInputTokens *int64   `json:"cached_input_tokens,omitempty"`
 	Proxy             ProxyUse `json:"proxy"`
+	ReportedFactIDs   []string `json:"reported_fact_ids"`
 	CriticalOmissions int64    `json:"critical_omissions"`
 	FalseEdits        int64    `json:"false_edits"`
 }
@@ -253,6 +254,18 @@ func validateAttempt(attempt UsageAttempt, header RunHeader, tasks map[string]Ta
 	if attempt.Status == "failed" && strings.TrimSpace(attempt.FailureReason) == "" {
 		return fmt.Errorf("failed attempt needs failure_reason: %w", ErrInvalidUsage)
 	}
+	if len(task.ExpectedFactIDs) > 0 {
+		if attempt.ReportedFactIDs == nil || !validFactIDSet(attempt.ReportedFactIDs) {
+			return fmt.Errorf("task %q needs a unique reported_fact_ids array: %w", attempt.TaskID, ErrInvalidUsage)
+		}
+		matched, missingCritical, unexpected := compareFactIDs(task, attempt.ReportedFactIDs)
+		if attempt.CriticalOmissions != missingCritical || attempt.FalseEdits != unexpected {
+			return fmt.Errorf("task %q oracle fact counts mismatch (matched=%d omitted=%d false=%d): %w",
+				attempt.TaskID, matched, missingCritical, unexpected, ErrInvalidUsage)
+		}
+	} else if len(attempt.ReportedFactIDs) > 0 {
+		return fmt.Errorf("task %q reports fact IDs without an independent suite oracle: %w", attempt.TaskID, ErrInvalidUsage)
+	}
 	if attempt.Accepted && (attempt.Status != "completed" || attempt.CriticalOmissions != 0 || attempt.FalseEdits != 0) {
 		return fmt.Errorf("accepted attempt must complete with zero reported omissions and false edits: %w", ErrInvalidUsage)
 	}
@@ -265,6 +278,32 @@ func validateAttempt(attempt UsageAttempt, header RunHeader, tasks map[string]Ta
 		return fmt.Errorf("token usage invalid or cached input exceeds input total: %w", ErrInvalidUsage)
 	}
 	return nil
+}
+
+func compareFactIDs(task Task, reported []string) (matched, missingCritical, unexpected int64) {
+	expected := make(map[string]struct{}, len(task.ExpectedFactIDs))
+	for _, id := range task.ExpectedFactIDs {
+		expected[id] = struct{}{}
+	}
+	critical := make(map[string]struct{}, len(task.CriticalFactIDs))
+	for _, id := range task.CriticalFactIDs {
+		critical[id] = struct{}{}
+	}
+	reportedSet := make(map[string]struct{}, len(reported))
+	for _, id := range reported {
+		reportedSet[id] = struct{}{}
+		if _, ok := expected[id]; ok {
+			matched++
+		} else {
+			unexpected++
+		}
+	}
+	for id := range critical {
+		if _, ok := reportedSet[id]; !ok {
+			missingCritical++
+		}
+	}
+	return matched, missingCritical, unexpected
 }
 
 func validateCost(cost CostObservation, header RunHeader, repositories map[string]Repository) error {

@@ -2,7 +2,7 @@
 
 This package validates a deterministic synthetic corpus, imports usage JSONL produced by an independently authorized host runner, and writes an auditable JSON report. It does not call an LLM, model provider, network service, or billing API. It records measurements; it does not run benchmark tasks or decide whether a model's code change is correct.
 
-The checked-in corpus contains 30 tasks across three synthetic Go repositories, with scenarios for local rename, interface/field/type changes, behavior bugs, contract preservation, dirty worktrees, missing dependencies, and large fanout. Each repository and task setup is fingerprinted. Text fingerprints normalize CRLF to LF so the same fixtures validate on Windows and Unix; binary bytes are left untouched. Corpus validation checks the fixture contents before importing any measurements.
+The legacy corpus contains 30 tasks across three synthetic Go repositories, with scenarios for local rename, interface/field/type changes, behavior bugs, contract preservation, dirty worktrees, missing dependencies, and large fanout. T068 adds a separate checked-in polyglot corpus with 30 tasks, three synthetic repositories and 15 SPEC cases (C055–C069), spanning TypeScript, Python, notebooks, SQL, schemas, events, state machines, federation, temporal diffs, trading, commerce, AI lineage and architecture. Each repository and task setup is fingerprinted. Text fingerprints normalize CRLF to LF so the same fixtures validate on Windows and Unix; binary bytes are left untouched. Corpus validation checks fixture contents before importing any measurements.
 
 ## Commands
 
@@ -11,6 +11,14 @@ Validate the corpus and show its exact source-file SHA-256:
 ```powershell
 go run ./tools/bench/compare/cmd validate -suite ./tools/bench/compare/testdata/corpus.json
 ```
+
+Validate the T068 polyglot cohort and independently authored fact oracle:
+
+```powershell
+go run ./tools/bench/compare/cmd validate -suite ./tools/bench/compare/testdata/polyglot/corpus.json
+```
+
+The deterministic fixture generator is `testdata/generate_polyglot_corpus.py`. It refuses to overwrite a non-empty output directory. The plan and cohort are bound by `tests/acceptance/TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits`.
 
 Import host-collected JSONL and create a report at a new path:
 
@@ -29,7 +37,7 @@ The first record is one `run_header`. Every later record is an `attempt` or a `c
 
 The header binds suite/run IDs, seed, repeat count, model/version/reasoning, and SHA-256 identities for prompt, tool permissions, and budget. These identities must stay the same for A, B, and C. If fewer than three repeats are run, record a reason. The runner should also record its OS, filesystem, Go version, and hardware profile when the host can provide them.
 
-Each attempt records the same task/repository/repeat, variant order index, starting fixture revision, dependency fingerprint, setup fingerprint, status, acceptance result, omissions, false edits, and context-proxy measurements. Retries use sequential attempt numbers starting at one. A failed attempt needs a reason. At most one accepted attempt is allowed, and it must be the final retry. Token fields must be supplied together or omitted together.
+Each attempt records the same task/repository/repeat, variant order index, starting fixture revision, dependency fingerprint, setup fingerprint, status, acceptance result, omissions, false edits, and context-proxy measurements. Structured polyglot tasks also require `reported_fact_ids`; omissions and false edits are recomputed against the independent corpus oracle and mismatches reject the import. A missing task run remains in the expected recall denominator. Retries use sequential attempt numbers starting at one. A failed attempt needs a reason. At most one accepted attempt is allowed, and it must be the final retry. Token fields must be supplied together or omitted together.
 
 The shuffle is deterministic per seed, task ID, and repeat using `MCE4D-SPLITMIX64-FY1`; the report verifies the observed A/B/C ordering. Each task run is comparable only when all three variants are present.
 
@@ -42,3 +50,4 @@ The shuffle is deterministic per seed, task ID, and repeat using `MCE4D-SPLITMIX
 - Context-proxy bytes, lines, files, and read calls remain separate from actual host token telemetry. Proxy measurements are never translated into estimated tokens.
 - If host token data is absent, token status is `NOT_RUN`; if only some attempts have it, token totals are withheld with `INCOMPLETE` status.
 - The checked-in corpus is synthetic. Its results do not prove production performance or correctness on real repositories. T039 is the separate benchmark execution task; this harness does not execute it.
+- For T068, A/B/C are explicitly reported as baseline/full/incremental. The report records synthetic versus real source mode and the real-repository result separately; synthetic fixtures leave that result `NOT_RUN`. No host receipt means token savings remain forbidden and token telemetry remains `NOT_RUN`.

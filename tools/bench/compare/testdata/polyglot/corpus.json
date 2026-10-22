@@ -1,0 +1,1014 @@
+{
+  "format_version": 1,
+  "suite_id": "mce4d-polyglot-benchmark-synthetic-v1",
+  "synthetic": true,
+  "recommended_repeats": 3,
+  "repositories": [
+    {
+      "id": "alpha",
+      "module": "synthetic/polyglot/alpha",
+      "languages": [
+        "go",
+        "json",
+        "python",
+        "sql",
+        "typescript",
+        "yaml"
+      ],
+      "fixture_path": "fixtures/alpha",
+      "fixture_revision": "3ae06b43090cbf85f754d579e31cbe9da63e87fb85d90e4c0da73abd6aad4161",
+      "fixture_sha256": "3ae06b43090cbf85f754d579e31cbe9da63e87fb85d90e4c0da73abd6aad4161",
+      "dependency_sha256": "226f0a54626d3b77b3428bf0c1d1e5d599a5d81c1e56db916bf0a665b8de30ed",
+      "dependency_files": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ]
+    },
+    {
+      "id": "beta",
+      "module": "synthetic/polyglot/beta",
+      "languages": [
+        "go",
+        "json",
+        "protobuf",
+        "yaml"
+      ],
+      "fixture_path": "fixtures/beta",
+      "fixture_revision": "b7aec899bf29ad44eb8f6e09f833b8808c1d70df62d5aa6d29b5d7e0461eb1da",
+      "fixture_sha256": "b7aec899bf29ad44eb8f6e09f833b8808c1d70df62d5aa6d29b5d7e0461eb1da",
+      "dependency_sha256": "655f378d93c88595f028371adf8c48dfd5d0144b36b85d41a1f8e87ac83ce5d6",
+      "dependency_files": [
+        "go.mod"
+      ]
+    },
+    {
+      "id": "gamma",
+      "module": "synthetic/polyglot/gamma",
+      "languages": [
+        "go",
+        "json",
+        "yaml"
+      ],
+      "fixture_path": "fixtures/gamma",
+      "fixture_revision": "d5d030ad4dc288d04b680b9d0247dfe713e506fc40c4ebfc68ec5a3982ffd347",
+      "fixture_sha256": "d5d030ad4dc288d04b680b9d0247dfe713e506fc40c4ebfc68ec5a3982ffd347",
+      "dependency_sha256": "6d2418d94d21e06aff3a6c4e5f76ff2c1415acf715808921c4fa17e52849196d",
+      "dependency_files": [
+        "go.mod"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "c055-a",
+      "repository_id": "alpha",
+      "case_id": "C055",
+      "domain": "typescript",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C055 facts for typescript case a.",
+      "expected_changed_paths": [
+        "src/client.ts"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c055-a-binding",
+        "c055-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c055-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c055-b",
+      "repository_id": "alpha",
+      "case_id": "C055",
+      "domain": "typescript",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C055 facts for typescript case b.",
+      "expected_changed_paths": [
+        "src/client.ts"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c055-b-binding",
+        "c055-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c055-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c056-a",
+      "repository_id": "alpha",
+      "case_id": "C056",
+      "domain": "frontend-backend",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C056 facts for frontend-backend case a.",
+      "expected_changed_paths": [
+        "web/routes.tsx"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c056-a-binding",
+        "c056-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c056-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c056-b",
+      "repository_id": "alpha",
+      "case_id": "C056",
+      "domain": "frontend-backend",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C056 facts for frontend-backend case b.",
+      "expected_changed_paths": [
+        "web/routes.tsx"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c056-b-binding",
+        "c056-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c056-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c057-a",
+      "repository_id": "alpha",
+      "case_id": "C057",
+      "domain": "python",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C057 facts for python case a.",
+      "expected_changed_paths": [
+        "python/decorators.py"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c057-a-binding",
+        "c057-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c057-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c057-b",
+      "repository_id": "alpha",
+      "case_id": "C057",
+      "domain": "python",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C057 facts for python case b.",
+      "expected_changed_paths": [
+        "python/decorators.py"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c057-b-binding",
+        "c057-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c057-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c058-a",
+      "repository_id": "alpha",
+      "case_id": "C058",
+      "domain": "python-notebook",
+      "scenario": "dirty_worktree",
+      "request": "Evaluate the independently listed C058 facts for python-notebook case a.",
+      "expected_changed_paths": [
+        "notebooks/workflow.ipynb"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c058-a-binding",
+        "c058-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c058-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c058-b",
+      "repository_id": "alpha",
+      "case_id": "C058",
+      "domain": "python-notebook",
+      "scenario": "dirty_worktree",
+      "request": "Evaluate the independently listed C058 facts for python-notebook case b.",
+      "expected_changed_paths": [
+        "notebooks/workflow.ipynb"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c058-b-binding",
+        "c058-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c058-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c059-a",
+      "repository_id": "alpha",
+      "case_id": "C059",
+      "domain": "sql",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C059 facts for sql case a.",
+      "expected_changed_paths": [
+        "db/schema.sql"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c059-a-binding",
+        "c059-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c059-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c059-b",
+      "repository_id": "alpha",
+      "case_id": "C059",
+      "domain": "sql",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C059 facts for sql case b.",
+      "expected_changed_paths": [
+        "db/schema.sql"
+      ],
+      "forbidden_changed_paths": [
+        "package.json",
+        "python/pyproject.toml",
+        "python/requirements.txt"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c059-b-binding",
+        "c059-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c059-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c060-a",
+      "repository_id": "beta",
+      "case_id": "C060",
+      "domain": "http-schema-proto",
+      "scenario": "missing_dependency",
+      "request": "Evaluate the independently listed C060 facts for http-schema-proto case a.",
+      "expected_changed_paths": [
+        "contracts/openapi.yaml"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c060-a-binding",
+        "c060-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c060-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c060-b",
+      "repository_id": "beta",
+      "case_id": "C060",
+      "domain": "http-schema-proto",
+      "scenario": "missing_dependency",
+      "request": "Evaluate the independently listed C060 facts for http-schema-proto case b.",
+      "expected_changed_paths": [
+        "contracts/openapi.yaml"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c060-b-binding",
+        "c060-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c060-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c061-a",
+      "repository_id": "beta",
+      "case_id": "C061",
+      "domain": "events",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C061 facts for events case a.",
+      "expected_changed_paths": [
+        "events/asyncapi.yaml"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c061-a-binding",
+        "c061-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c061-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c061-b",
+      "repository_id": "beta",
+      "case_id": "C061",
+      "domain": "events",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C061 facts for events case b.",
+      "expected_changed_paths": [
+        "events/asyncapi.yaml"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c061-b-binding",
+        "c061-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c061-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c062-a",
+      "repository_id": "beta",
+      "case_id": "C062",
+      "domain": "state-machine",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C062 facts for state-machine case a.",
+      "expected_changed_paths": [
+        "workflow/state-machine.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c062-a-binding",
+        "c062-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c062-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c062-b",
+      "repository_id": "beta",
+      "case_id": "C062",
+      "domain": "state-machine",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C062 facts for state-machine case b.",
+      "expected_changed_paths": [
+        "workflow/state-machine.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c062-b-binding",
+        "c062-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c062-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c063-a",
+      "repository_id": "beta",
+      "case_id": "C063",
+      "domain": "federation",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C063 facts for federation case a.",
+      "expected_changed_paths": [
+        "federation/snapshot.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c063-a-binding",
+        "c063-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c063-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c063-b",
+      "repository_id": "beta",
+      "case_id": "C063",
+      "domain": "federation",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C063 facts for federation case b.",
+      "expected_changed_paths": [
+        "federation/snapshot.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c063-b-binding",
+        "c063-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c063-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c064-a",
+      "repository_id": "beta",
+      "case_id": "C064",
+      "domain": "temporal-diff",
+      "scenario": "type_change",
+      "request": "Evaluate the independently listed C064 facts for temporal-diff case a.",
+      "expected_changed_paths": [
+        "snapshots/current.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c064-a-binding",
+        "c064-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c064-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c064-b",
+      "repository_id": "beta",
+      "case_id": "C064",
+      "domain": "temporal-diff",
+      "scenario": "type_change",
+      "request": "Evaluate the independently listed C064 facts for temporal-diff case b.",
+      "expected_changed_paths": [
+        "snapshots/current.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c064-b-binding",
+        "c064-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c064-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c065-a",
+      "repository_id": "gamma",
+      "case_id": "C065",
+      "domain": "trading",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C065 facts for trading case a.",
+      "expected_changed_paths": [
+        "trading/reserve.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c065-a-binding",
+        "c065-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c065-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c065-b",
+      "repository_id": "gamma",
+      "case_id": "C065",
+      "domain": "trading",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C065 facts for trading case b.",
+      "expected_changed_paths": [
+        "trading/reserve.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c065-b-binding",
+        "c065-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c065-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c066-a",
+      "repository_id": "gamma",
+      "case_id": "C066",
+      "domain": "commerce",
+      "scenario": "interface_change",
+      "request": "Evaluate the independently listed C066 facts for commerce case a.",
+      "expected_changed_paths": [
+        "commerce/webhook.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c066-a-binding",
+        "c066-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c066-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c066-b",
+      "repository_id": "gamma",
+      "case_id": "C066",
+      "domain": "commerce",
+      "scenario": "interface_change",
+      "request": "Evaluate the independently listed C066 facts for commerce case b.",
+      "expected_changed_paths": [
+        "commerce/webhook.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c066-b-binding",
+        "c066-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c066-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c067-a",
+      "repository_id": "gamma",
+      "case_id": "C067",
+      "domain": "ai-lineage",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C067 facts for ai-lineage case a.",
+      "expected_changed_paths": [
+        "ai/model-card.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c067-a-binding",
+        "c067-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c067-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c067-b",
+      "repository_id": "gamma",
+      "case_id": "C067",
+      "domain": "ai-lineage",
+      "scenario": "contract_preservation",
+      "request": "Evaluate the independently listed C067 facts for ai-lineage case b.",
+      "expected_changed_paths": [
+        "ai/model-card.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c067-b-binding",
+        "c067-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c067-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c068-a",
+      "repository_id": "gamma",
+      "case_id": "C068",
+      "domain": "architecture",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C068 facts for architecture case a.",
+      "expected_changed_paths": [
+        "architecture/allowed-dependencies.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c068-a-binding",
+        "c068-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c068-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c068-b",
+      "repository_id": "gamma",
+      "case_id": "C068",
+      "domain": "architecture",
+      "scenario": "behavior_bug",
+      "request": "Evaluate the independently listed C068 facts for architecture case b.",
+      "expected_changed_paths": [
+        "architecture/allowed-dependencies.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c068-b-binding",
+        "c068-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c068-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c069-a",
+      "repository_id": "gamma",
+      "case_id": "C069",
+      "domain": "benchmark",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C069 facts for benchmark case a.",
+      "expected_changed_paths": [
+        "benchmark/cohort.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c069-a-binding",
+        "c069-a-boundary"
+      ],
+      "critical_fact_ids": [
+        "c069-a-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "c069-b",
+      "repository_id": "gamma",
+      "case_id": "C069",
+      "domain": "benchmark",
+      "scenario": "large_fanout",
+      "request": "Evaluate the independently listed C069 facts for benchmark case b.",
+      "expected_changed_paths": [
+        "benchmark/cohort.json"
+      ],
+      "forbidden_changed_paths": [
+        "go.mod"
+      ],
+      "required_invariants": [
+        "Không thực thi plugin, cell, guard, migration, model hoặc fixture source.",
+        "Giữ namespace và boundary được ghi trong fixture.",
+        "So sánh với fact IDs độc lập; engine output không phải oracle."
+      ],
+      "oracle": "Expected fact IDs in this suite are the independent oracle; reported IDs are measured inputs only.",
+      "expected_fact_ids": [
+        "c069-b-binding",
+        "c069-b-boundary"
+      ],
+      "critical_fact_ids": [
+        "c069-b-binding"
+      ],
+      "setup": {
+        "files": {},
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}
