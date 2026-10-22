@@ -1,0 +1,61 @@
+{
+  "boundary": "Profile only. Preserve declared evidence and gaps; do not execute trading, payments, stock updates, or webhooks.",
+  "delivery_id": "79b3e5bf-99d3-4e62-a0e6-86098b786d92",
+  "fixtures": [
+    {
+      "assertions": [
+        "each transition/obligation is source-bound or remains an explicit gap",
+        "retry and partial-fill evidence are not collapsed into final ledger state",
+        "unknown precision/finality remains unknown; no amount arithmetic or execution"
+      ],
+      "case_id": "C065",
+      "context": "trading",
+      "input_gaps": [
+        "money_precision_not_declared",
+        "finality_not_declared"
+      ],
+      "scenario": [
+        "reserve",
+        "retry",
+        "partial_fill",
+        "cancel",
+        "ledger"
+      ]
+    },
+    {
+      "assertions": [
+        "order, payment, and stock evidence remain separate",
+        "duplicate/out-of-order obligations are evidence-bound; no exactly-once claim is inferred",
+        "only known impacted consumers are reported; missing causal links remain gaps"
+      ],
+      "case_id": "C066",
+      "context": "commerce",
+      "input_gaps": [
+        "provider_ordering_contract_not_declared",
+        "refund_finality_not_declared"
+      ],
+      "scenario": [
+        "payment_webhook_duplicate",
+        "payment_webhook_out_of_order",
+        "partial_refund"
+      ]
+    }
+  ],
+  "format_version": 1,
+  "kind": "domain_profile_fixture_plan",
+  "source_contracts": [
+    "Maps-Context-Engine-4D_SPEC.md#R051",
+    "Maps-Context-Engine-4D_SPEC.md#C065",
+    "Maps-Context-Engine-4D_SPEC.md#C066",
+    "Maps-Context-Engine-4D_SPEC.md#DF14",
+    "Maps-Context-Engine-4D_SPEC.md#DF15",
+    "Maps-Context-Engine-4D_SPEC.md#DF19"
+  ],
+  "task_id": "T065",
+  "task_revision": 1,
+  "verification_boundary": [
+    "No network or provider calls.",
+    "No persistence/schema migration/API/UI changes.",
+    "Never infer money precision, settlement finality, or webhook ordering from names alone."
+  ]
+}
