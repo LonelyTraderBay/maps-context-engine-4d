@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "task_id": "T066",
+  "task_revision": 1,
+  "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+  "decided_at_utc": "2026-10-22T03:41:34.298039Z",
+  "previous_scope_paths": [
+    "internal/domain/ai/**",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/preflight/T066/**"
+  ],
+  "added_scope_paths": [
+    "tests/contract/import_boundary_test.go"
+  ],
+  "reason": "The required Go import-boundary contract scans every production package under internal and fails with os.ErrInvalid when the new internal/domain/ai package is absent from its explicit allowlist. The focused test reproduced that failure. Add only the missing leaf package rule and its directly affected test contract; do not expand production imports.",
+  "evidence": {
+    "command": "go test ./tests/contract -run TestProductionImportDirectionHasNoCycle -count=1",
+    "exit_code": 1,
+    "result": "FAIL",
+    "log_ref": "artifacts/git-delivery-support/T066-r1-49058fb4-62ba-4172-a368-a3daf4c74244/scope-amendment/import-boundary-pre-amendment.log",
+    "log_sha256": "6deacb47a3e7b56d00d5fb142bf4e49d8af22fbf8739741bf755cff5865845e2"
+  },
+  "authority": "Autonomous implementation of T066 and project rule S47 requiring scope extensions to be recorded and the task card updated."
+}

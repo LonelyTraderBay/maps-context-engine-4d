@@ -73,6 +73,7 @@ func TestProductionImportDirectionHasNoCycle(t *testing.T) {
 		},
 		"internal/overview":        {modulePath + "/internal/model": true},
 		"internal/contextpack":     {modulePath + "/internal/model": true},
+		"internal/domain/ai":       {modulePath + "/internal/model": true},
 		"internal/domain/profiles": {},
 		"internal/cursor": {
 			modulePath + "/contracts":        true,
