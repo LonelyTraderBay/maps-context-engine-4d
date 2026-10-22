@@ -1,0 +1,20 @@
+{
+  "constraints": [
+    "Bind every reported lineage edge to supplied, declared source metadata or return an explicit gap.",
+    "Do not read or deserialize datasets, embeddings, model weights/checkpoints, pickle/joblib payloads, or notebook outputs.",
+    "Do not import/execute training code, download artifacts, call providers/LLMs, or claim model quality/data-leakage guarantees."
+  ],
+  "decision": "Select T066 because the S47 P11 predecessor T065 is effectively DONE at C2 with exact-SHA CI, sealed archive readback, and fresh live verification; T058, T060, and T062 are also DONE. T066 is the next dependency-ready task.",
+  "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "scope_paths": [
+    "internal/domain/ai/**",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/preflight/T066/**"
+  ],
+  "selected_at_utc": "2026-10-22T03:22:07.714362Z",
+  "sequence": "S47 P11 immediately after T065",
+  "task_id": "T066",
+  "task_revision": 1
+}

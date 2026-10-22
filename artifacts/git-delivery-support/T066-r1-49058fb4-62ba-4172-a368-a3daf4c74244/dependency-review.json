@@ -1,0 +1,87 @@
+{
+  "contracts_reviewed": [
+    "S24 R2 AI metadata lineage scope",
+    "S29 AI/ML/RAG lineage and payload exclusion",
+    "S30 metadata drift / source-bound representation",
+    "S43 CT-06 pinned source/member refs",
+    "S44 DB-07 immutable source retention",
+    "S45 AL-10 gaps and actionable errors",
+    "S42 DF14/DF15/DF19 query, decision and record coherence",
+    "S47 card 089 / T066"
+  ],
+  "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+  "dependencies": [
+    {
+      "closing_sha": "67f154d2d3b76e9f3efc92dbbd773032c814c5dd",
+      "delivery_id": "c6b492a5-85e9-4eb3-9e29-e6bc10c301fb",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/675164ce-1b51-491e-8361-d8ffbfaf9eb4/publication.json",
+        "artifacts/git-live/c6b492a5-85e9-4eb3-9e29-e6bc10c301fb/0943cd73-c125-45b9-9d44-9f29eb12bf56/live-verification.json"
+      ],
+      "task_id": "T058",
+      "task_revision": "1"
+    },
+    {
+      "closing_sha": "b14dcd101ad7b2b4bec18c7f05509430f9ac1e1f",
+      "delivery_id": "faf0bea0-54fd-4da2-b3c1-9f91c8cf2ff9",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/56b7f5e0-4457-4632-98c6-860dcebf3076/publication.json",
+        "artifacts/git-delivery-support/T060-r1-faf0bea0-54fd-4da2-b3c1-9f91c8cf2ff9/archive-view/live-verification/2ae581ad-54e4-492e-9e72-04f7118489ed/live-verification.json"
+      ],
+      "task_id": "T060",
+      "task_revision": "1"
+    },
+    {
+      "closing_sha": "86d3cba7f70ae37a5b4da4503e66fa001e31cdec",
+      "delivery_id": "de9fbc67-1780-4d64-9bc5-8fa54fd5e0c3",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/eb6e8055-df06-4839-8b66-8c74fb0466c2/publication.json",
+        "artifacts/git-live/de9fbc67-1780-4d64-9bc5-8fa54fd5e0c3/86728e34-83d8-4c4f-bf9c-a8668e8b26c7/live-verification.json"
+      ],
+      "task_id": "T062",
+      "task_revision": "2"
+    }
+  ],
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "limitations": [
+    "Metadata refs are opaque and cannot be opened by this task.",
+    "Do not claim model quality, absence of leakage, or runtime serving correctness.",
+    "Missing schema, split, metric, or revision contracts remain gaps."
+  ],
+  "result": "READY",
+  "sequence": {
+    "archive_publication_ref": "artifacts/git-delivery/operations/2b128a89-4f0a-4351-90f6-a9fabc94f927/publication.json",
+    "archive_publication_sha256": "cbfb21b8527dbeeed3994cbf26c566a22fd507e5d485e1679c8699945cc3954b",
+    "closing_sha": "76637d2496ca64c7ea7e590d3e2285352f822996",
+    "effective_status": "DONE",
+    "live_verification_id": "e8a07fe2-0414-4143-bdb6-1c4f138f5615",
+    "live_verification_ref": "artifacts/git-live/79b3e5bf-99d3-4e62-a0e6-86098b786d92/e8a07fe2-0414-4143-bdb6-1c4f138f5615/live-verification.json",
+    "live_verification_sha256": "cb0c7e1ca2d4fb6d5b275c11dc51ebc84274085f3c2977cb82ce6cf102df6ebe",
+    "task_id": "T065"
+  },
+  "source_review": {
+    "acceptance_cases": [
+      "C067"
+    ],
+    "flows": [
+      "DF14",
+      "DF15",
+      "DF19"
+    ],
+    "requirements": [
+      "R054"
+    ],
+    "scope_paths": [
+      "internal/domain/ai/",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T066/**"
+    ],
+    "task_card": "S47 card 089 / T066"
+  },
+  "task_id": "T066",
+  "task_revision": 1
+}

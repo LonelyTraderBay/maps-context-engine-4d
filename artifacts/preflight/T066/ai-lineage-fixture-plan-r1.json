@@ -1,0 +1,62 @@
+{
+  "boundary": "Metadata-only synthetic fixtures. Treat model/dataset artifact URIs as opaque references; never open them or invoke external providers.",
+  "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+  "fixtures": [
+    {
+      "assertions": [
+        "prompt/template, tokenizer, chunker, embedding model identifier, dimension and index schema links are source-bound or reported as gaps",
+        "dimension, tokenizer revision, prompt hash and retrieval-schema drift are explicit and do not trigger re-indexing or model calls",
+        "unversioned remote model identifiers remain observed/requested, not pinned or immutable"
+      ],
+      "case_id": "C067",
+      "context": "prompt_rag_lineage",
+      "input_gaps": [
+        "remote_model_revision_not_pinned",
+        "embedding_dimension_source_missing"
+      ],
+      "scenario": [
+        "prompt_template_change",
+        "tokenizer_revision_drift",
+        "embedding_dimension_mismatch",
+        "retrieval_index_schema_drift"
+      ]
+    },
+    {
+      "assertions": [
+        "dataset/schema/split digest, preprocessing/features, training configuration, artifact reference, evaluation and serving metadata links are represented without opening payloads",
+        "train/validation/test role and evaluation provenance are retained only when declared; missing links become gaps",
+        "checkpoint URI is never opened, deserialized or executed; no leakage-prevention or model-quality claim is made"
+      ],
+      "case_id": "C067",
+      "context": "dataset_eval_serving_lineage",
+      "input_gaps": [
+        "dataset_split_manifest_not_declared",
+        "eval_metric_provenance_missing",
+        "checkpoint_is_opaque_reference"
+      ],
+      "scenario": [
+        "dataset_digest_drift",
+        "schema_revision_drift",
+        "eval_metric_change",
+        "checkpoint_deserialization_trap"
+      ]
+    }
+  ],
+  "format_version": 1,
+  "kind": "ai_lineage_fixture_plan",
+  "source_contracts": [
+    "Maps-Context-Engine-4D_SPEC.md#R054",
+    "Maps-Context-Engine-4D_SPEC.md#C067",
+    "Maps-Context-Engine-4D_SPEC.md#DF14",
+    "Maps-Context-Engine-4D_SPEC.md#DF15",
+    "Maps-Context-Engine-4D_SPEC.md#DF19",
+    "Maps-Context-Engine-4D_SPEC.md#S29"
+  ],
+  "task_id": "T066",
+  "task_revision": 1,
+  "verification_boundary": [
+    "No payload file reads or deserialization, including torch.load, pickle, or joblib load.",
+    "No training module/notebook execution, artifact downloads, network calls, provider calls, or LLM invocation.",
+    "No persistence, database migration, API, CLI, or UI wiring."
+  ]
+}

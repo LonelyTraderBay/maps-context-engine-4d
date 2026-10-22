@@ -1,0 +1,35 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "internal/domain/ai/**",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T066/**"
+    ],
+    "behavior": [
+      "Represent declared AI/ML/RAG metadata lineage across dataset/schema/split, preprocessing/features, training configuration, model artifact references, inference/postprocessing, evaluation, serving, or prompt/tokenizer/chunker/embedding/retrieval/index/reranker/model/tool-validation/eval/fallback stages.",
+      "Bind metadata links and drift observations to source references; preserve missing or ambiguous links as actionable gaps.",
+      "Treat unversioned remote models as observed/requested identifiers only; do not infer immutable revisions or payload details."
+    ],
+    "exclusions": [
+      "No dataset rows, embeddings, checkpoints, weights, pickle/joblib payloads, notebook outputs, or model binaries may be read or deserialized.",
+      "No training-module import or execution, notebook execution, artifact download, network/provider/LLM call, or model inference.",
+      "No claim that metadata lineage guarantees model quality, reproducibility, absence of leakage, or actual serving behavior."
+    ]
+  },
+  "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Thêm mô hình metadata-only cho AI/ML/RAG lineage, phát hiện drift theo nguồn được khai báo và trả gap khi thiếu liên kết; tuyệt đối không nạp payload dữ liệu/model hay thực thi pipeline.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S24,S28-S30,S43-S45,S47",
+  "task_id": "T066",
+  "task_revision": 1,
+  "verification_plan": [
+    "C067: verify source-bound links for prompt, tokenizer, embedding dimensions, dataset/split/schema, evaluation, and serving metadata drift.",
+    "Verify missing or conflicting lineage edges become gaps and do not silently join by names alone.",
+    "Use synthetic metadata only; assert no payload deserialization, model load, network access, or LLM invocation.",
+    "Run gofmt, focused Go tests, go test ./..., go vet ./..., go build ./..., SPEC and delivery-policy checks."
+  ]
+}
