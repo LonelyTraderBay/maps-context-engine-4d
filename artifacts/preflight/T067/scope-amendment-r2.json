@@ -1,0 +1,29 @@
+{
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "task_id": "T067",
+  "task_revision": 1,
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "supersedes": "artifacts/git-delivery-support/T067-r1-b0e123c8-1a67-47f3-9360-9f8b6ec57bd4/scope-amendment/scope-amendment-r1.json",
+  "decided_at_utc": "2026-10-22T06:28:08.526311Z",
+  "scope_paths": [
+    "internal/domain/architecture/**",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/preflight/T067/**",
+    "tests/contract/import_boundary_test.go"
+  ],
+  "production_import_allowlist": {
+    "internal/domain/architecture": [
+      "github.com/LonelyTraderBay/maps-context-engine-4d/internal/model"
+    ]
+  },
+  "reason": "The architecture evaluator uses the existing model.SourceRef contract for S43 source identity/hash/range semantics. It structurally validates references and never opens source bytes. Permit exactly internal/domain/architecture -> internal/model in the existing closed import-boundary test; no other project dependency is authorized.",
+  "verification": {
+    "guard_ref": "tests/contract/import_boundary_test.go",
+    "existing_patterns": [
+      "internal/domain/ai -> internal/model"
+    ],
+    "prohibited": "Unknown production packages remain rejected; no additional import edges."
+  },
+  "authority": "Direct user authorization for autonomous implementation under S47/S53 within the preallocated package and import-guard paths."
+}
