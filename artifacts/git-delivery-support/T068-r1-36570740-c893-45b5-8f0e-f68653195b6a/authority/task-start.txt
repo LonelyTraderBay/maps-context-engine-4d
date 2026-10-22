@@ -1,0 +1,10 @@
+Task: T068 revision 1 — Polyglot multi-domain acceptance, regression, benchmark and capability matrix.
+Delivery: 36570740-c893-45b5-8f0e-f68653195b6a
+Base: 12547b660521fecb9592ae40cd786a13c25f63bb
+Priority: P2; mode: implement; owner: Codex.
+Approved scope: tests/acceptance/polyglot* and tools/bench/**; allocation/evidence under this delivery; S19/S21/S22 task tracking.
+Requirements: R040,R056; cases: C055-C069; flows: DF14,DF15,DF19; sequence: S47 P11 after T067 and before T048.
+Dependencies: T063,T064,T065,T066,T067 effective DONE; T067 closure is finalized atomically in this allocation from its exact C1, passing CI, sealed archive and fresh live receipt.
+Acceptance: >=30 tasks across >=3 isolated synthetic repositories; independently authored oracle; baseline/full/incremental from same revision; three repeats with recorded seed; preserve all known correctness/security boundaries; no engine-output oracle.
+Reporting: success/failure, critical omissions, false edits, recall numerator/denominator, context-proxy bytes/files/reads, environment/tool versions, and token fields only from host receipts. Missing token telemetry remains NOT_RUN and cannot support token-savings claims. Synthetic results are not production real-repository acceptance.
+No external user repository, API key, LLM call, target application, production database or arbitrary configuration plugin execution.

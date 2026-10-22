@@ -1,0 +1,51 @@
+{
+  "attempt": 1,
+  "checks": [
+    {
+      "errors": [
+        "T065 evidence E741 not in the active S21 evidence table",
+        "T068 evidence E743 not in the active S21 evidence table",
+        "S22 completed count 72 differs from 73 recomputed effective DONE"
+      ],
+      "id": "spec-check",
+      "result": "FAIL"
+    },
+    {
+      "failures": 2,
+      "id": "spec-fixtures",
+      "result": "FAIL",
+      "root_cause": "same three current-SPEC errors",
+      "tests": 142
+    },
+    {
+      "id": "delivery-policy-fixtures",
+      "result": "PASS",
+      "tests": 33
+    },
+    {
+      "contexts": 6,
+      "id": "frozen-check-plan",
+      "result": "PASS"
+    },
+    {
+      "errors": [
+        "same evidence/count errors",
+        "active allocation S19 uses plan_sha256 but foundation preflight reads plan"
+      ],
+      "id": "foundation-preflight",
+      "result": "FAIL"
+    },
+    {
+      "id": "git-diff-check",
+      "result": "PASS"
+    }
+  ],
+  "delivery_id": "36570740-c893-45b5-8f0e-f68653195b6a",
+  "format_version": 1,
+  "kind": "allocation_preflight_attempt",
+  "recorded_at_utc": "2026-10-22T08:21:48.053500Z",
+  "repair": "Relocate E738-E743 into the contiguous S21 evidence table, add the closure E742 to the S19 row, add the plan compatibility alias, and derive the completed task count from the checker.",
+  "result": "FAIL",
+  "root_cause": "New E741-E743 rows were appended after the contiguous S21 evidence table; historical E738-E740 were also outside that table. S22 count and foundation plan alias were not normalized for the active T068 allocation.",
+  "task_id": "T068"
+}

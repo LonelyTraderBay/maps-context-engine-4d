@@ -1,0 +1,24 @@
+{
+  "constraints": [
+    "Run C055-C069 regressions against independent expected facts and preserve domain-specific evidence gaps.",
+    "Compare baseline/full/incremental from identical fixture revisions; report failure and recall denominators.",
+    "Keep real and synthetic repository results separate; no real user repository is authorized.",
+    "No LLM/token-provider call or token-savings claim without a host-supplied usage receipt.",
+    "Correctness and safety failures cannot be traded for context-size savings.",
+    "T065 normalized state fields are derived only from its existing sealed manifest, seal and verified live receipt; historical bytes remain intact."
+  ],
+  "decision": "Select T068 as the next sequential R2 task after T067 C1 passed exact-SHA CI, archive readback and fresh live verification; T063-T066 and T067 closure are verified. T065 carried effective=DONE but omitted split derived archive/live fields, so its already-sealed receipts are verified and normalized without modifying the archive. Only owned synthetic fixtures are available; real-repository and token claims remain NOT_RUN.",
+  "delivery_id": "36570740-c893-45b5-8f0e-f68653195b6a",
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "scope_paths": [
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "Maps-Context-Engine-4D_SPEC.md"
+  ],
+  "selected_at_utc": "2026-10-22T08:17:49.945449Z",
+  "sequence": "S47 P11 immediately after T067; T048 review follows T068",
+  "task_id": "T068",
+  "task_revision": 1
+}

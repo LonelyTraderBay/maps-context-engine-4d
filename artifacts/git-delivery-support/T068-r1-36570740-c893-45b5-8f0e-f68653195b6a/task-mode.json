@@ -1,0 +1,38 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "tests/acceptance/polyglot*",
+      "tools/bench/**",
+      "artifacts/preflight/T068/**",
+      "Maps-Context-Engine-4D_SPEC.md"
+    ],
+    "behavior": [
+      "Cover C055-C069 as a cross-domain cohort while keeping TypeScript/Python/contracts/events/state/federation/diff/trading/commerce/AI/architecture capabilities distinguishable.",
+      "Use independently authored expectations; never treat the engine output as its own ground truth.",
+      "Run synthetic baseline/full/incremental modes over at least 30 tasks and 3 isolated fixtures, with repeat and seed provenance.",
+      "Report task success/failures, critical omissions, false edits, recall numerator/denominator, and context proxy metrics with per-mode denominators.",
+      "Label token usage absent when no host receipt is supplied; keep production real-repository acceptance NOT_RUN."
+    ],
+    "exclusions": [
+      "No user/production repository access, LLM/API token calls, production DB, runtime target, or plugin execution.",
+      "No safety-boundary relaxation to improve benchmark ratios.",
+      "No claim that synthetic fixtures prove all polyglot repositories or production token savings."
+    ]
+  },
+  "delivery_id": "36570740-c893-45b5-8f0e-f68653195b6a",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Tạo acceptance/regression và benchmark matrix polyglot đa domain theo independent oracle, cùng baseline/full/incremental từ fixture revision cố định; báo capability/gap và chỉ số đúng mẫu số.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S18,S24,S28-S30,S32,S43-S45,S47",
+  "task_id": "T068",
+  "task_revision": 1,
+  "verification_plan": [
+    "Add independently specified acceptance expectations for C055-C069 and test cross-domain capability/gap reporting.",
+    "Run baseline/full/incremental cohort on the same frozen fixtures; >=30 tasks, >=3 fixtures, recorded seed/repeats.",
+    "Verify correctness counters and denominators, synthetic/real labels, and token NOT_RUN behavior without host usage receipts.",
+    "Run gofmt, relevant acceptance and benchmark package tests, go test ./..., go vet ./..., go build ./..., SPEC and delivery-policy checks."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "constraints": [
+    "Run C055-C069 regressions against independent expected facts and preserve each provider/domain's explicit evidence gaps.",
+    "Compare baseline/full/incremental modes from the same fixture revision; report failure and recall denominators, not only successful tasks.",
+    "Keep real-repository and synthetic results separate; no user repository is authorized for this run.",
+    "Do not call an LLM, access a token provider, or claim token savings without host-supplied usage receipts.",
+    "Correctness and safety failures cannot be traded for context-size savings."
+  ],
+  "decision": "Select T068 as the next sequential R2 task after T067 C1 passed exact-SHA main/branch CI, archive cold readback, and fresh live verification; T063-T066 are effective DONE. Only owned synthetic fixtures are available, so the rebenchmark is labelled synthetic and real-repository/token claims remain NOT_RUN.",
+  "delivery_id": "36570740-c893-45b5-8f0e-f68653195b6a",
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "scope_paths": [
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "Maps-Context-Engine-4D_SPEC.md"
+  ],
+  "selected_at_utc": "2026-10-22T08:12:48.191941Z",
+  "sequence": "S47 P11 immediately after T067; T048 review follows T068",
+  "task_id": "T068",
+  "task_revision": 1
+}

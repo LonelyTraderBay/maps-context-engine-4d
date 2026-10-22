@@ -1,0 +1,131 @@
+{
+  "cases": [
+    {
+      "assertion": "aliases, reexports, project references preserve supported binding; dynamic JS any remains unknown; malicious plugin is not executed",
+      "domain": "typescript",
+      "id": "C055"
+    },
+    {
+      "assertion": "same route path in different services is not linked without explicit source evidence",
+      "domain": "frontend-backend",
+      "id": "C056"
+    },
+    {
+      "assertion": "decorators and dynamic imports remain bounded; target is not imported or executed",
+      "domain": "python",
+      "id": "C057"
+    },
+    {
+      "assertion": "cell, venv and config side effects do not execute; missing metadata stays a gap",
+      "domain": "python-notebook",
+      "id": "C058"
+    },
+    {
+      "assertion": "dialect-specific dynamic SQL lineage stays evidence-bound; deployment is not inferred",
+      "domain": "sql",
+      "id": "C059"
+    },
+    {
+      "assertion": "local refs are bounded; remote refs, cycles and mismatches do not trigger network or false handlers",
+      "domain": "http-schema-proto",
+      "id": "C060"
+    },
+    {
+      "assertion": "same topic across broker/environment boundaries is not bridged; retry/ack/replay are preserved",
+      "domain": "events",
+      "id": "C061"
+    },
+    {
+      "assertion": "only approved scoped guards/actions are represented; stale sources invalidate and guards do not execute",
+      "domain": "state-machine",
+      "id": "C062"
+    },
+    {
+      "assertion": "stale/denied/missing members remain partial with provenance and no namespace leakage",
+      "domain": "federation",
+      "id": "C063"
+    },
+    {
+      "assertion": "rename/provider changes are not force-matched; missing snapshots remain explicit",
+      "domain": "temporal-diff",
+      "id": "C064"
+    },
+    {
+      "assertion": "reserve/retry/partial-fill/cancel/ledger fixture yields obligations without money or finality inference",
+      "domain": "trading",
+      "id": "C065"
+    },
+    {
+      "assertion": "duplicate/out-of-order webhook and partial refund preserve distinct order/payment/stock states",
+      "domain": "commerce",
+      "id": "C066"
+    },
+    {
+      "assertion": "metadata drift is reported without loading models/datasets or calling an LLM",
+      "domain": "ai-lineage",
+      "id": "C067"
+    },
+    {
+      "assertion": "allowed and forbidden witnesses are exact; missing coverage cannot yield whole-system PASS",
+      "domain": "architecture",
+      "id": "C068"
+    },
+    {
+      "assertion": "baseline/full/incremental reports separate synthetic from real and include correct failure/recall denominators",
+      "domain": "benchmark",
+      "id": "C069"
+    }
+  ],
+  "cohort": {
+    "minimum_repositories": 3,
+    "minimum_tasks": 30,
+    "modes": [
+      "baseline",
+      "full",
+      "incremental"
+    ],
+    "randomization_seed": 68055,
+    "real_repository_result": "NOT_RUN",
+    "repeats": 3,
+    "repositories": [
+      "alpha",
+      "beta",
+      "gamma"
+    ],
+    "starting_revision_per_task": "identical immutable synthetic fixture revision"
+  },
+  "delivery_id": "36570740-c893-45b5-8f0e-f68653195b6a",
+  "format_version": 1,
+  "kind": "polyglot_acceptance_plan",
+  "oracle": "independently authored expected facts and acceptance assertions; engine output is never its own oracle",
+  "report_contract": {
+    "correctness_failure_may_not_be_offset_by_context_savings": true,
+    "required": [
+      "fixture_revision",
+      "synthetic_or_real",
+      "mode",
+      "task_count",
+      "repo_count",
+      "success_count",
+      "failure_count",
+      "critical_omissions",
+      "false_edits",
+      "recall_numerator",
+      "recall_denominator",
+      "context_proxy_bytes",
+      "context_proxy_files",
+      "context_proxy_reads",
+      "token_usage_status",
+      "input_tokens",
+      "output_tokens",
+      "median_and_distribution",
+      "profile_and_tool_versions",
+      "host_environment"
+    ],
+    "token_savings_claim_without_host_receipt": "FORBIDDEN",
+    "token_usage_status_without_host_receipt": "NOT_RUN"
+  },
+  "source_mode": "synthetic fixtures only; no user repository was authorized for this benchmark",
+  "task_id": "T068",
+  "task_revision": 1
+}
