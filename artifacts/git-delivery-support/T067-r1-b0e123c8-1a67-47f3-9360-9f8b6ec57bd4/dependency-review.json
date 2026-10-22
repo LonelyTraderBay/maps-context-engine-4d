@@ -1,0 +1,86 @@
+{
+  "contracts_reviewed": [
+    "S24 architecture context",
+    "S30 E04-E05 intended/observed architecture rules",
+    "S43 source-bound witness rules",
+    "S45 gap semantics",
+    "S47 card 090 / T067",
+    "S53 AW-08 task delivery"
+  ],
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "dependencies": [
+    {
+      "task_id": "T056",
+      "task_revision": "4",
+      "delivery_id": "58f89164-99e7-4e57-9dd0-d359af4af29b",
+      "effective_status": "DONE",
+      "closing_sha": "5612409d2949ad76516d1184fd526da638a57502",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/436b6077-dd79-48fd-91b6-c90f01e9e425/publication.json"
+      ]
+    },
+    {
+      "task_id": "T058",
+      "task_revision": "1",
+      "delivery_id": "c6b492a5-85e9-4eb3-9e29-e6bc10c301fb",
+      "effective_status": "DONE",
+      "closing_sha": "67f154d2d3b76e9f3efc92dbbd773032c814c5dd",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/675164ce-1b51-491e-8361-d8ffbfaf9eb4/publication.json",
+        "artifacts/git-live/c6b492a5-85e9-4eb3-9e29-e6bc10c301fb/0943cd73-c125-45b9-9d44-9f29eb12bf56/live-verification.json"
+      ]
+    },
+    {
+      "task_id": "T062",
+      "task_revision": "2",
+      "delivery_id": "de9fbc67-1780-4d64-9bc5-8fa54fd5e0c3",
+      "effective_status": "DONE",
+      "closing_sha": "86d3cba7f70ae37a5b4da4503e66fa001e31cdec",
+      "evidence_refs": [
+        "artifacts/git-delivery/operations/eb6e8055-df06-4839-8b66-8c74fb0466c2/publication.json",
+        "artifacts/git-live/de9fbc67-1780-4d64-9bc5-8fa54fd5e0c3/86728e34-83d8-4c4f-bf9c-a8668e8b26c7/live-verification.json"
+      ]
+    }
+  ],
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "limitations": [
+    "Architecture evidence is caller supplied; no full repository architecture claim without complete supported graph.",
+    "Only approved constraints are enforceable; absent mappings are not proof of absence.",
+    "No auto-remediation or risk score."
+  ],
+  "result": "READY",
+  "sequence": {
+    "task_id": "T066",
+    "task_revision": "1",
+    "delivery_id": "49058fb4-62ba-4172-a368-a3daf4c74244",
+    "effective_status": "DONE",
+    "closing_sha": "bf8e7ac247fbfbe092726e408a3b32997bc82f97",
+    "archive_publication_ref": "artifacts/git-delivery/operations/878fbf4d-722b-4ee4-a0ed-4f581e44cccf/publication.json",
+    "archive_publication_sha256": "f40aa32afb0125a19dfcab757f3460faa7acc42727e5f14f8fc00adbd4560d81",
+    "live_verification_id": "621c20fd-a679-4731-9f07-aeefb9b24ef8",
+    "live_verification_ref": "artifacts/git-delivery-support/T067-r1-b0e123c8-1a67-47f3-9360-9f8b6ec57bd4/archive-view/sequence-predecessor/T066/live-verification.json",
+    "live_verification_sha256": "cd9068ecc117ed054599179fe9a1fd7a69ab02996399a37baa783b335f2fd135"
+  },
+  "source_review": {
+    "acceptance_cases": [
+      "C068"
+    ],
+    "flows": [
+      "DF14",
+      "DF15",
+      "DF19"
+    ],
+    "requirements": [
+      "R055"
+    ],
+    "scope_paths": [
+      "internal/domain/architecture/",
+      "tests/contract/import_boundary_test.go",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T067/**"
+    ],
+    "task_card": "S47 card 090 / T067"
+  },
+  "task_id": "T067"
+}

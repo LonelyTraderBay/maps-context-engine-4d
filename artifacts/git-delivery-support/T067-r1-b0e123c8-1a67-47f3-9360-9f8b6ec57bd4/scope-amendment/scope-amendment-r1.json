@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "task_id": "T067",
+  "task_revision": 1,
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "decided_at_utc": "2026-10-22T06:10:30.214816Z",
+  "previous_scope_paths": [
+    "internal/domain/architecture/**",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/preflight/T067/**"
+  ],
+  "added_scope_paths": [
+    "tests/contract/import_boundary_test.go"
+  ],
+  "reason": "T067 introduces a production leaf package under internal/domain. The existing import-boundary contract enumerates every production package in an explicit allowlist and returns os.ErrInvalid when a package is unknown. Add only the new leaf package rule; no production import edge is needed.",
+  "evidence": {
+    "source_ref": "tests/contract/import_boundary_test.go",
+    "source_sha256": "2e99062c563a01a6cbb31930b2c42b1e6a7a4124d723ada190f01ac6e1d01701",
+    "allowlist_line": 32,
+    "unknown_package_error_line": 249,
+    "verification": "Source inspected at base C4; explicit map and unknown-package failure are present."
+  },
+  "authority": "Direct user assignment for autonomous task delivery plus S47 requirement to record narrow scope extensions."
+}

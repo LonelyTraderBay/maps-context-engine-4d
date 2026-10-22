@@ -1,0 +1,41 @@
+{
+  "format_version": 1,
+  "kind": "architecture_fixture_plan",
+  "task_id": "T067",
+  "task_revision": 1,
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "source_mode": "synthetic caller-supplied evidence only",
+  "cases": [
+    {
+      "id": "C068-allowed-direction",
+      "assert": "approved dependency direction is accepted when observed graph coverage is complete"
+    },
+    {
+      "id": "C068-forbidden-witness",
+      "assert": "forbidden edge includes path/source witness, severity category and rationale"
+    },
+    {
+      "id": "C068-exemption-validity",
+      "assert": "approved exemption is tied to an ID and expiry; expired exemption does not suppress drift"
+    },
+    {
+      "id": "C068-incomplete-coverage",
+      "assert": "missing graph coverage or provider mapping yields INCOMPLETE, never whole-system PASS"
+    },
+    {
+      "id": "C068-state-enum",
+      "assert": "implemented, planned, observed_in_run, unsupported and not_seen are distinct"
+    },
+    {
+      "id": "C068-no-inference-or-remediation",
+      "assert": "unmapped intended component is not asserted absent; no source edits or risk percentage are generated"
+    }
+  ],
+  "forbidden_inputs": [
+    "filesystem source scan",
+    "runtime process/network",
+    "secrets",
+    "user data",
+    "automatic source edits"
+  ]
+}

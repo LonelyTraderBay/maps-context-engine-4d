@@ -1,0 +1,106 @@
+{
+  "format_version": 1,
+  "kind": "allocation_draft_failure_capture",
+  "task_id": "T067",
+  "task_revision": 1,
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "captured_at_utc": "2026-10-22T06:13:53.890198Z",
+  "result": "FAIL",
+  "checks": [
+    {
+      "check_id": "spec-check",
+      "argv": [
+        "python",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "exit_code": 1,
+      "observed_errors": [
+        "T066 tham chiếu evidence chưa tồn tại: ['E730']",
+        "T067 tham chiếu evidence chưa tồn tại: ['E731']",
+        "S22 completed_scope_tasks lệch S19 effective DONE: 71!=70"
+      ]
+    },
+    {
+      "check_id": "spec-fixtures",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.spec_check.test_spec_check"
+      ],
+      "exit_code": 1,
+      "tests_run": 142,
+      "failures": 2,
+      "failing_cases": [
+        "test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts",
+        "test_current_spec_passes"
+      ],
+      "failure_cause": "Both fixture assertions detected the draft tracker errors listed by spec-check."
+    },
+    {
+      "check_id": "spec-check-repair-review",
+      "argv": [
+        "python",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "exit_code": 1,
+      "observed_errors": [
+        "E731 có Result không hợp lệ"
+      ],
+      "repair": "Use the contract enum NOT_RUN while allocation preflight is still running; final result is recorded after six checks."
+    },
+    {
+      "check_id": "allocation-artifacts",
+      "argv": [
+        "python",
+        "<inline allocation consistency assertions>"
+      ],
+      "exit_code": 1,
+      "observed_errors": [
+        "FAIL: KeyError: 'task_id'"
+      ],
+      "cause": "The dependency review omitted its top-level task_id despite correctly binding the sequence and dependencies."
+    },
+    {
+      "check_id": "allocation-preflight-emission",
+      "argv": [
+        "python",
+        "-B",
+        "artifacts/git-delivery-support/T067-r1-b0e123c8-1a67-47f3-9360-9f8b6ec57bd4/run_allocation_preflight.py"
+      ],
+      "exit_code": 1,
+      "observed_errors": [
+        "NameError: name 'docs' is not defined"
+      ],
+      "cause": "The runner emitted all six records and allocation-check, then referenced a local assertion variable while writing preflight.",
+      "repair": "Use allocation-r2 output directory and read scope_paths from the allocation document when serializing preflight."
+    },
+    {
+      "check_id": "allocation-preflight-runner-output",
+      "argv": [
+        "python",
+        "-B",
+        "artifacts/git-delivery-support/T067-r1-b0e123c8-1a67-47f3-9360-9f8b6ec57bd4/run_allocation_preflight.py"
+      ],
+      "exit_code": 1,
+      "observed_errors": [
+        "UnicodeEncodeError: cp1252 cannot encode non-ASCII check output at final json.dumps"
+      ],
+      "cause": "The six check records were emitted, but the runner command ended unsuccessfully while printing Vietnamese SPEC checker output.",
+      "repair": "Use ASCII-escaped JSON output and a unique attempt-3 path for records, summary, check and preflight artifacts."
+    }
+  ],
+  "repair_applied": [
+    "Moved E727-E731 into the actual S21 evidence ledger after E726; the appended rows had been outside the evidence table and therefore were not recognized.",
+    "Bound T066 effective DONE to separately parsed archive=PASS and live=PASS fields, keeping completed_scope_tasks aligned with the 71 DONE tasks.",
+    "Restored the T067 task table column separator and retained NOT_RUN only for unfinished allocation preflight.",
+    "Added task_id=T067 to dependency review and refreshed its allocation hash.",
+    "Kept 5/6 check report and incomplete preflight-emission attempt intact; retry output uses attempt-2 and separately revalidates all six checks.",
+    "Reran using unique attempt directories after correcting output encoding and record path binding; later successful runs remain separate from the preserved first-run failure summary."
+  ],
+  "capture_note": "This structured report records the direct tool-call outcomes. The unit-test output arrived in two incremental terminal responses; this summary preserves the exact test names, count, exit status and shared validation cause.",
+  "updated_at_utc": "2026-10-22T06:16:59.025362Z"
+}

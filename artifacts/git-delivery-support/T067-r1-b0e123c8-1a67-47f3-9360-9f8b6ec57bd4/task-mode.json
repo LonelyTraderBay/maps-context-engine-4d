@@ -1,0 +1,37 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "internal/domain/architecture/**",
+      "tests/contract/import_boundary_test.go",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/preflight/T067/**"
+    ],
+    "behavior": [
+      "Represent approved intended architecture constraints and caller-supplied observed dependency witnesses with explicit coverage state.",
+      "Evaluate allowed dependency direction and relevant provider/data/contract boundary constraints deterministically; attach witness path/source, severity category, rationale and any exemption ID/expiry.",
+      "Keep implemented, planned, observed_in_run, unsupported and not_seen states distinct; missing mappings remain unknown/not_seen, not proof of absence.",
+      "Return incomplete coverage when the observed graph or required mapping is incomplete; do not emit a system-wide PASS."
+    ],
+    "exclusions": [
+      "No automatic source refactoring, module movement, schema change, business requirement authoring or source tree scanner.",
+      "No uncalibrated risk percentage and no approval of intended constraints by the evaluator.",
+      "No claim that a partial observed graph proves conformance of the whole repository."
+    ]
+  },
+  "delivery_id": "b0e123c8-1a67-47f3-9360-9f8b6ec57bd4",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Mô hình hóa ràng buộc kiến trúc đã duyệt và đối chiếu với bằng chứng phụ thuộc được cung cấp; trả drift có witness/source, mức độ, lý do, exemption/expiry và coverage; graph thiếu thì INCOMPLETE, không tự sửa kiến trúc.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S24,S28-S30,S43-S45,S47",
+  "task_id": "T067",
+  "task_revision": 1,
+  "verification_plan": [
+    "C068: verify forbidden dependency witness and source, allowed direction, approved exemption/expiry, and incomplete graph coverage.",
+    "Verify implemented/planned/observed_in_run/unsupported/not_seen stay distinct and absent mapping never proves nonexistence.",
+    "Use synthetic evidence only; assert deterministic output, no auto-remediation and no risk percentage.",
+    "Run gofmt, focused architecture tests, import-boundary contract, go test ./..., go vet ./..., go build ./..., SPEC and delivery-policy checks."
+  ]
+}
