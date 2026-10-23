@@ -1,0 +1,44 @@
+{
+  "added_scope_paths": [
+    ".github/workflows/bootstrap.yml",
+    "artifacts/git-delivery-support/T068-r8-e26dd6b2-5fb4-43b2-a286-7fb211b7f541/**"
+  ],
+  "authority": "S53 AW-01 full 108-task assignment and the user continuation instruction; T068 revision-6 scope extension follows exact-P CI evidence E779.",
+  "decided_at_utc": "2026-10-23T22:58:41.741063Z",
+  "delivery_id": "e26dd6b2-5fb4-43b2-a286-7fb211b7f541",
+  "evidence": {
+    "added_rules": [
+      "artifacts/git-delivery-support/T068-r8-e26dd6b2-5fb4-43b2-a286-7fb211b7f541/** -text",
+      "artifacts/git-delivery-support/T068-r8-e26dd6b2-5fb4-43b2-a286-7fb211b7f541/**/*.log whitespace=cr-at-eol"
+    ],
+    "attributes_sha256": "24f351b8d9f89347f61046e5c080ff5de6c50ec58c20ef775aa221dfcff1a221",
+    "ci_failure_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/archive-view/ci/payload-P-26c7ae5214a9/collection.json",
+    "ci_failure_sha256": "5d67b26efff28868cb1d8ff641f5cbda0aa01c1a52985745e4b62fe3385ef010",
+    "observed_ci_failure": "Exact P 26c7ae5214a9192eed224df5cfe10585d2dd0c7c: main run 40035373961 and task-branch run 40035373953 each had 3/3 Windows checkout failures and 3/3 Ubuntu successes; six Windows jobs total failed before test commands with Filename too long on retained r6 paths.",
+    "source_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/archive-view/ci/payload-P-26c7ae5214a9/collection.json",
+    "verification": "A process-only GIT_CONFIG_COUNT probe resolves core.longpaths=true from command line; payload will put this config in workflow env so actions/checkout and child Git processes inherit it. No global or repository-local Git config is changed.",
+    "git_config_probe": {
+      "command": "git config --show-origin --get core.longpaths",
+      "environment_scope": "PowerShell process only",
+      "observed": "command line: true",
+      "result": "PASS"
+    }
+  },
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "previous_scope_paths": [
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/spec_check/**",
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
+    "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**",
+    ".gitattributes",
+    "tools/ci/bootstrap_check.py",
+    "tools/ci/test_bootstrap_check.py"
+  ],
+  "reason": "Exact-P CI showed that the remaining failure happens before tests because Windows checkout cannot materialize retained r6 evidence paths. Add the workflow file and r8 evidence scope; the payload will set core.longpaths at workflow scope and make the bootstrap contract reject removal of that setting.",
+  "task_id": "T068",
+  "task_revision": 6
+}

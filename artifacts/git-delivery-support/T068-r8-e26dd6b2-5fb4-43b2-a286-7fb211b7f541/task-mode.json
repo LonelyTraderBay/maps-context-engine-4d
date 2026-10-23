@@ -1,0 +1,53 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "tools/spec_check/**",
+      "tests/acceptance/polyglot*",
+      "tools/bench/**",
+      "artifacts/preflight/T068/**",
+      "artifacts/git-delivery-support/T068-r8-e26dd6b2-5fb4-43b2-a286-7fb211b7f541/**",
+      "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
+      "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**",
+      ".gitattributes",
+      "tools/ci/bootstrap_check.py",
+      "tools/ci/test_bootstrap_check.py",
+      ".github/workflows/bootstrap.yml"
+    ],
+    "behavior": [
+      "Keep all C055-C069 acceptance thresholds, independent oracle, >=30 tasks, >=3 fixtures, three repeats, seed, and correctness gates unchanged.",
+      "Add a closed S21 governance record that proves assignment lineage only from retained source locator bytes and hashes; do not edit prior selector or assignment bytes.",
+      "Allow a task-selection rationale wrapper only when its task, revision, delivery identity, and nested direct invalidation reference exactly match the current selector and retained invalidation record.",
+      "Retain direct invalidation reason_ref as the canonical form for the new revision.",
+      "Reopen and verify T003 because its validator contract and regression suite change; preserve exact-SHA verification and archive/live gates.",
+      "Keep synthetic and real-repository acceptance distinct; token telemetry remains NOT_RUN without a host receipt.",
+      "Use task-specific -text for hash-bound r8 evidence and cr-at-eol for captured Windows CRLF logs; do not change global Git configuration.",
+      "Update the bootstrap SPEC version guard and its negative fixture when the T068 SPEC version advances; keep previous-version rejection covered."
+    ],
+    "exclusions": [
+      "No production/user repository, LLM/API, production database, target runtime, or arbitrary plugin execution.",
+      "No safety-boundary relaxation, no omission of prior evidence, and no mutation of sealed archives or previous selectors.",
+      "No benchmark or token-saving claim without actual measured evidence.",
+      "No fallback to r6 CI or local checks for the new changed validator/source."
+    ]
+  },
+  "delivery_id": "e26dd6b2-5fb4-43b2-a286-7fb211b7f541",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Resolve the exact-P Windows long-path checkout blocker with workflow-scoped Git configuration and a regression guard, then finish T068 through exact-P/C verification, archive readback, and fresh live verification.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19,S21,S22,S24,S28-S30,S43-S45,S47,S53",
+  "task_id": "T068",
+  "task_revision": 6,
+  "verification_plan": [
+    "Preserve and cite the exact r7 P CI result; verify the failed Windows step is checkout and the retained path failure is Filename too long.",
+    "Set core.longpaths=true through workflow-scoped GIT_CONFIG_COUNT environment values before checkout; require the exact configuration in bootstrap_check.py and add a negative fixture that fails if the block is removed.",
+    "Verify process-scoped Git config resolution without changing user/global or repository-local Git configuration.",
+    "Run all 13 frozen local checks on the new exact payload SHA, plus bootstrap checker and its positive/negative fixtures.",
+    "Collect fresh six-context GitHub CI on origin/main and codex/t068-polyglot-matrix for the exact payload and closing SHAs; investigate any remaining failure before proceeding.",
+    "Run closing local checks, validate retained selector and assignment-lineage receipts, publish and read back the sealed archive, and perform fresh live verification.",
+    "Keep real-repository benchmark and token usage NOT_RUN when no actual measurement or host receipt exists."
+  ]
+}
