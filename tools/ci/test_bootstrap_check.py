@@ -60,6 +60,20 @@ class BootstrapValidatorTests(unittest.TestCase):
         errors = validate(self.root)
         self.assertTrue(any("Workflow bootstrap thiếu cấu hình bắt buộc" in e for e in errors))
 
+    def test_missing_long_paths_checkout_environment_fails(self) -> None:
+        path = self.root / ".github/workflows/bootstrap.yml"
+        workflow = path.read_text(encoding="utf-8")
+        block = (
+            "env:\n"
+            "  GIT_CONFIG_COUNT: '1'\n"
+            "  GIT_CONFIG_KEY_0: core.longpaths\n"
+            "  GIT_CONFIG_VALUE_0: 'true'\n"
+        )
+        self.assertIn(block, workflow)
+        path.write_text(workflow.replace(block, "", 1), encoding="utf-8", newline="")
+        errors = validate(self.root)
+        self.assertTrue(any("GIT_CONFIG_COUNT" in error for error in errors))
+
     def test_missing_markdown_heading_fails(self) -> None:
         path = self.root / "docs/AI_RULES_STORAGE_SUPPLEMENT.md"
         path.write_text("Nội dung không có tiêu đề.\n", encoding="utf-8", newline="")

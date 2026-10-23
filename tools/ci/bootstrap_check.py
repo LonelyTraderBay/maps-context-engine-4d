@@ -26,6 +26,7 @@ WORKFLOW_REQUIREMENTS = (
     "  workflow_dispatch:\n",
     "permissions:\n",
     "  contents: read\n",
+    "env:\n  GIT_CONFIG_COUNT: '1'\n  GIT_CONFIG_KEY_0: core.longpaths\n  GIT_CONFIG_VALUE_0: 'true'\n",
     f"actions/checkout@{CHECKOUT_ACTION_SHA}",
     "persist-credentials: false",
     "ubuntu-latest",
