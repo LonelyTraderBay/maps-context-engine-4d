@@ -2,6 +2,7 @@ package acceptance_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,6 +13,8 @@ import (
 type polyglotPlan struct {
 	FormatVersion int    `json:"format_version"`
 	TaskID        string `json:"task_id"`
+	DeliveryID    string `json:"delivery_id"`
+	TaskRevision  int    `json:"task_revision"`
 	Cases         []struct {
 		ID     string `json:"id"`
 		Domain string `json:"domain"`
@@ -28,15 +31,16 @@ type polyglotPlan struct {
 	Oracle         string `json:"oracle"`
 	SourceMode     string `json:"source_mode"`
 	ReportContract struct {
-		TokenWithoutReceipt string `json:"token_savings_claim_without_host_receipt"`
-		TokenStatus         string `json:"token_usage_status_without_host_receipt"`
-		CorrectnessGate     bool   `json:"correctness_failure_may_not_be_offset_by_context_savings"`
+		Required            []string `json:"required"`
+		TokenWithoutReceipt string   `json:"token_savings_claim_without_host_receipt"`
+		TokenStatus         string   `json:"token_usage_status_without_host_receipt"`
+		CorrectnessGate     bool     `json:"correctness_failure_may_not_be_offset_by_context_savings"`
 	} `json:"report_contract"`
 }
 
 func TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits(t *testing.T) {
 	root := filepath.Clean(filepath.Join("..", ".."))
-	planBytes, err := os.ReadFile(filepath.Join(root, "artifacts", "preflight", "T068", "polyglot-acceptance-plan-r1.json"))
+	planBytes, err := os.ReadFile(filepath.Join(root, "artifacts", "preflight", "T068", "polyglot-acceptance-plan-r2.json"))
 	if err != nil {
 		t.Fatalf("read T068 polyglot plan: %v", err)
 	}
@@ -44,8 +48,14 @@ func TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits(t *testing.T) {
 	if err := json.Unmarshal(planBytes, &plan); err != nil {
 		t.Fatalf("decode T068 polyglot plan: %v", err)
 	}
-	if plan.FormatVersion != 1 || plan.TaskID != "T068" || len(plan.Cases) != 15 {
-		t.Fatalf("unexpected T068 plan identity/case count: version=%d task=%q cases=%d", plan.FormatVersion, plan.TaskID, len(plan.Cases))
+	if plan.FormatVersion != 1 || plan.TaskID != "T068" || plan.TaskRevision != 2 || plan.DeliveryID != "d6398163-6693-4073-88b3-bd0e54e01c6d" || len(plan.Cases) != 15 {
+		t.Fatalf("unexpected T068 plan identity/case count: version=%d task=%q revision=%d delivery=%q cases=%d", plan.FormatVersion, plan.TaskID, plan.TaskRevision, plan.DeliveryID, len(plan.Cases))
+	}
+	for index, item := range plan.Cases {
+		expectedID := fmt.Sprintf("C%03d", 55+index)
+		if item.ID != expectedID {
+			t.Errorf("T068 plan case %d = %q, want %q", index, item.ID, expectedID)
+		}
 	}
 	if plan.Cohort.MinimumRepositories != 3 || plan.Cohort.MinimumTasks != 30 || plan.Cohort.Repeats != 3 || plan.Cohort.Seed != 68055 ||
 		plan.Cohort.RealRepository != "NOT_RUN" || len(plan.Cohort.Repositories) != 3 ||
@@ -53,8 +63,23 @@ func TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits(t *testing.T) {
 		t.Fatalf("T068 cohort does not bind the required synthetic A/B/C design: %+v", plan.Cohort)
 	}
 	if plan.Oracle != "independently authored expected facts and acceptance assertions; engine output is never its own oracle" ||
-		plan.SourceMode == "" || plan.ReportContract.TokenWithoutReceipt != "FORBIDDEN" || plan.ReportContract.TokenStatus != "NOT_RUN" || !plan.ReportContract.CorrectnessGate {
+		plan.SourceMode != "synthetic fixtures only; no user repository was authorized for this benchmark" || plan.ReportContract.TokenWithoutReceipt != "FORBIDDEN" || plan.ReportContract.TokenStatus != "NOT_RUN" || !plan.ReportContract.CorrectnessGate {
 		t.Fatalf("T068 plan weakens its oracle, source, token, or correctness contract: oracle=%q source=%q contract=%+v", plan.Oracle, plan.SourceMode, plan.ReportContract)
+	}
+	expectedRequired := []string{
+		"fixture_revision", "synthetic_or_real", "mode", "task_count", "repo_count",
+		"success_count", "failure_count", "critical_omissions", "false_edits",
+		"recall_numerator", "recall_denominator", "context_proxy_bytes", "context_proxy_files",
+		"context_proxy_reads", "token_usage_status", "input_tokens", "output_tokens",
+		"median_and_distribution", "profile_and_tool_versions", "host_environment",
+	}
+	if len(plan.ReportContract.Required) != len(expectedRequired) {
+		t.Fatalf("T068 report contract has %d required fields, want %d: %v", len(plan.ReportContract.Required), len(expectedRequired), plan.ReportContract.Required)
+	}
+	for index, field := range expectedRequired {
+		if plan.ReportContract.Required[index] != field {
+			t.Errorf("T068 report required field %d = %q, want %q", index, plan.ReportContract.Required[index], field)
+		}
 	}
 
 	suite, err := compare.LoadSuite(filepath.Join(root, "tools", "bench", "compare", "testdata", "polyglot", "corpus.json"))
