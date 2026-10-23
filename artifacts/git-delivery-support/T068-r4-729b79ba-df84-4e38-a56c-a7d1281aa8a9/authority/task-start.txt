@@ -1,0 +1,11 @@
+Task: T068 assignment revision 1 — close the C055-C069 polyglot acceptance/regression/benchmark deliverable.
+Delivery: 729b79ba-df84-4e38-a56c-a7d1281aa8a9
+Base: 96f3222e74fd32f0220efc20930f315ab0d46db0
+Priority: P2; mode: implement; owner: Codex.
+Approved scope: existing T068 acceptance/benchmark deliverable, T068 evidence, and S19/S21/S22 tracking.
+Requirements: R040,R056; cases C055-C069; sequence S47 P11 after T067 and before T048.
+Dependencies: T063,T064,T065,T066,T067 effective DONE per retained dependency review; source archives are not freshly re-read by this assignment.
+Recovery basis: r2 has an invalid selector predecessor link and reserved payload trailer. r3 no-op preflight was retained but CLOSE-DIFF-01 showed that current selector/S19 state must be in payload P. This assignment starts a fresh selector series at revision 1; historical r1-r3 evidence is preserved.
+Payload base: current main SHA 96f3222e74fd32f0220efc20930f315ab0d46db0; payload commit P will contain only selected task metadata, S19 VERIFY state, and assignment evidence. T068 implementation changes are already in P's ancestor history.
+Acceptance boundaries: >=30 tasks across >=3 isolated synthetic repositories; independent oracle; baseline/full/incremental from same revisions; three repeats with recorded seed; report failures, omissions, false edits, recall numerator/denominator, and context-proxy metrics. No token savings without host usage receipt.
+No external user repository, API key, LLM call, production database, target runtime, or arbitrary plugin execution.
