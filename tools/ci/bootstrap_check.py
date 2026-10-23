@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 SPEC_FILE = "Maps-Context-Engine-4D_SPEC.md"
-SPEC_VERSION = "1.6.13"
+SPEC_VERSION = "1.6.14"
 WORKFLOW_FILE = ".github/workflows/bootstrap.yml"
 CHECKOUT_ACTION_SHA = "3d3c42e5aac5ba805825da76410c181273ba90b1"
 MARKDOWN_FILES = (

@@ -42,7 +42,7 @@ class BootstrapValidatorTests(unittest.TestCase):
     def test_wrong_spec_version_fails(self) -> None:
         path = self.root / SPEC_FILE
         path.write_text(path.read_text(encoding="utf-8").replace(
-            "spec_version: 1.6.13", "spec_version: 1.6.12", 1
+            "spec_version: 1.6.14", "spec_version: 1.6.13", 1
         ), encoding="utf-8", newline="")
         errors = validate(self.root)
         self.assertTrue(any("Sai phiên bản đặc tả" in e for e in errors))

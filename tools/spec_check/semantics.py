@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import quote, urlsplit
 from uuid import UUID
 
+from .c14n import hash_value
 from .ci_order import (
     OrderingError,
     parse_instant,
@@ -329,6 +330,28 @@ def validate_semantics(kind: str, record: Any) -> list[str]:
         previous = _parse_time(record.get("previous_selection_updated_at_utc"))
         if previous and allocated and previous > allocated:
             error("selection trước cập nhật sau thời điểm allocate hiện tại")
+
+    if kind == "GitTaskAssignmentLineage":
+        sources = record.get("source_assignments")
+        if isinstance(sources, list):
+            refs = [item.get("assignment_ref") for item in sources if isinstance(item, dict)]
+            if (len(refs) != len(sources) or any(not _safe_relative_path(ref) for ref in refs)
+                    or len(refs) != len(set(ref for ref in refs if isinstance(ref, str)))):
+                error("source_assignments phải giữ locator an toàn và assignment_ref duy nhất")
+        rationale_ref = record.get("rationale_ref")
+        if not _safe_relative_path(rationale_ref):
+            error("rationale_ref lineage phải là locator relative an toàn")
+        if not isinstance(record.get("rationale_sha256"), str) or not SHA256.fullmatch(record["rationale_sha256"]):
+            error("rationale_sha256 lineage không hợp lệ")
+        if isinstance(sources, list) and isinstance(rationale_ref, str) and isinstance(record.get("rationale_sha256"), str):
+            basis = {
+                "task_id": record.get("task_id"),
+                "source_assignments": sources,
+                "rationale_ref": rationale_ref,
+                "rationale_sha256": record.get("rationale_sha256"),
+            }
+            if record.get("lineage_sha256") != hash_value("MCE4D-ASSIGNMENT-LINEAGE-1", basis):
+                error("lineage_sha256 không khớp canonical assignment-lineage evidence")
 
     if kind == "GitExecutionCheckpoint":
         command_state = record.get("command_state")
@@ -1292,6 +1315,105 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
         ref: value for ref, (kind, value) in records.items()
         if kind == "GitTaskDeliverySelection"
     }
+    assignment_lineage_records = {
+        ref: value for ref, (kind, value) in records.items()
+        if kind == "GitTaskAssignmentLineage"
+    }
+
+    def assignment_lineage_for(
+        task_id: Any, left_ref: Any, right_ref: Any, owner: str | None = None,
+    ) -> tuple[str, dict[str, Any]] | None:
+        if (not isinstance(task_id, str) or not isinstance(left_ref, str) or not isinstance(right_ref, str)
+                or not _safe_relative_path(left_ref) or not _safe_relative_path(right_ref)):
+            return None
+        adjacent_refs = {left_ref, right_ref}
+        candidates: list[tuple[str, dict[str, Any]]] = []
+        for ref, lineage in assignment_lineage_records.items():
+            sources = lineage.get("source_assignments")
+            if lineage.get("task_id") != task_id or not isinstance(sources, list):
+                continue
+            source_refs = {
+                item.get("assignment_ref") for item in sources
+                if isinstance(item, dict) and isinstance(item.get("assignment_ref"), str)
+            }
+            if adjacent_refs <= source_refs:
+                candidates.append((ref, lineage))
+        if len(candidates) != 1:
+            if owner is not None and len(candidates) > 1:
+                errors.append(f"{owner}: assignment lineage không duy nhất cho cùng task/assignment")
+            return None
+        lineage_ref, lineage = candidates[0]
+        sources = lineage.get("source_assignments")
+        if not isinstance(sources, list):
+            return None
+        source_refs: set[str] = set()
+        for item in sources:
+            if not isinstance(item, dict):
+                return None
+            source_ref, expected_hash = item.get("assignment_ref"), item.get("sha256")
+            if (not _safe_relative_path(source_ref) or not isinstance(expected_hash, str)
+                    or not SHA256.fullmatch(expected_hash) or source_ref in source_refs):
+                return None
+            source_refs.add(source_ref)
+        if not {left_ref, right_ref} <= source_refs:
+            return None
+        rationale_ref = lineage.get("rationale_ref")
+        rationale_hash = lineage.get("rationale_sha256")
+        rationale_bytes = raw_member_bytes.get(rationale_ref) if isinstance(raw_member_bytes, dict) else None
+        try:
+            rationale_text = rationale_bytes.decode("utf-8") if isinstance(rationale_bytes, bytes) else ""
+        except UnicodeDecodeError:
+            rationale_text = ""
+        valid = bool(rationale_text.strip()) and isinstance(rationale_hash, str) \
+            and hashlib.sha256(rationale_bytes).hexdigest() == rationale_hash
+        if not valid and owner is not None:
+            errors.append(f"{owner}: assignment lineage rationale bytes missing, blank, invalid UTF-8, or SHA-256 mismatch")
+        for item in sources:
+            source_ref, expected_hash = item["assignment_ref"], item["sha256"]
+            source_bytes = raw_member_bytes.get(source_ref) if isinstance(raw_member_bytes, dict) else None
+            if not isinstance(source_bytes, bytes) or hashlib.sha256(source_bytes).hexdigest() != expected_hash:
+                valid = False
+                if owner is not None:
+                    errors.append(f"{owner}: assignment lineage source bytes missing or SHA-256 mismatch at {source_ref}")
+        basis = {
+            "task_id": lineage.get("task_id"),
+            "source_assignments": sources,
+            "rationale_ref": rationale_ref,
+            "rationale_sha256": rationale_hash,
+        }
+        if lineage.get("lineage_sha256") != hash_value("MCE4D-ASSIGNMENT-LINEAGE-1", basis):
+            valid = False
+            if owner is not None:
+                errors.append(f"{owner}: assignment lineage canonical digest mismatch")
+        return (lineage_ref, lineage) if valid else None
+
+    def selection_reason_links_invalidation(
+        reason_ref: Any, selection: dict[str, Any], previous: dict[str, Any], invalidations: Any,
+    ) -> bool:
+        if isinstance(invalidations, list) and reason_ref in invalidations:
+            return True
+        reason = raw_members.get(reason_ref) if isinstance(reason_ref, str) else None
+        if not isinstance(reason, dict):
+            return False
+        nested_ref = reason.get("invalidation_ref")
+        selected_at = _parse_time(reason.get("selected_at_utc"))
+        updated = _parse_time(selection.get("updated_at_utc"))
+        return (
+            reason.get("kind") == "task_selection_reason"
+            and isinstance(reason.get("format_version"), int)
+            and not isinstance(reason.get("format_version"), bool)
+            and reason.get("format_version") == 1
+            and reason.get("task_id") == selection.get("task_id")
+            and not isinstance(reason.get("task_revision"), bool)
+            and reason.get("task_revision") == selection.get("task_revision")
+            and reason.get("delivery_id") == selection.get("active_delivery_id")
+            and reason.get("supersedes_delivery_id") == previous.get("active_delivery_id")
+            and nested_ref == reason.get("reason_ref")
+            and isinstance(invalidations, list) and nested_ref in invalidations
+            and _nonblank_text(reason.get("decision"))
+            and selected_at is not None and selected_at == updated
+        )
+
     selection_versions: dict[tuple[Any, Any, int], str] = {}
     for selection_ref, selection in selection_records.items():
         revision = selection.get("task_revision")
@@ -1328,7 +1450,12 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
             return
         previous = previous_entry[1]
         old_active = previous.get("active_delivery_id")
-        if (previous.get("task_id") != task_id or previous.get("assignment_ref") != assignment
+        assignment_matches = previous.get("assignment_ref") == assignment
+        if not assignment_matches and previous.get("task_id") == task_id:
+            assignment_matches = assignment_lineage_for(
+                task_id, previous.get("assignment_ref"), assignment, ref,
+            ) is not None
+        if (previous.get("task_id") != task_id or not assignment_matches
                 or isinstance(previous.get("task_revision"), bool)
                 or previous.get("task_revision") != revision - 1):
             errors.append(f"{ref}: previous selection phải cùng task/assignment và revision liền trước")
@@ -1346,7 +1473,7 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
             return
         if len(invalidations) != len(set(invalidations)):
             errors.append(f"{ref}: invalidation refs bị lặp")
-        if selection.get("reason_ref") not in invalidations:
+        if not selection_reason_links_invalidation(selection.get("reason_ref"), selection, previous, invalidations):
             errors.append(f"{ref}: reason_ref phải là một invalidation reason đã giữ lại")
         prior_updated = _parse_time(previous.get("updated_at_utc"))
         allocated = _parse_time(selection.get("allocated_at_utc"))
@@ -1402,10 +1529,31 @@ def validate_delivery_links(objects: Any, *, raw_members: Any = None, raw_member
                 return
             selection = selection_entry[1]
             invalidations = selection.get("invalidation_refs")
+            reason_ref = selection.get("reason_ref")
+            invalidation_refs = selection.get("invalidation_refs")
+            if (isinstance(reason_ref, str) and _safe_relative_path(reason_ref)
+                    and selection.get("previous_selection_ref") is not None
+                    and (not isinstance(invalidation_refs, list) or reason_ref not in invalidation_refs)):
+                required_members.add(reason_ref)
             if isinstance(invalidations, list):
                 for reason_ref in invalidations:
                     if isinstance(reason_ref, str) and _safe_relative_path(reason_ref):
                         required_members.add(reason_ref)
+            previous_ref = selection.get("previous_selection_ref")
+            previous_entry = record_for(previous_ref)
+            if (previous_entry is not None and previous_entry[0] == "GitTaskDeliverySelection"
+                    and previous_entry[1].get("assignment_ref") != selection.get("assignment_ref")):
+                lineage_entry = assignment_lineage_for(
+                    selection.get("task_id"), previous_entry[1].get("assignment_ref"),
+                    selection.get("assignment_ref"), None,
+                )
+                if lineage_entry is not None:
+                    lineage_ref, lineage = lineage_entry
+                    required_members.add(lineage_ref)
+                    for source in lineage.get("source_assignments", []):
+                        if isinstance(source, dict):
+                            require_member(source.get("assignment_ref"))
+                    require_member(lineage.get("rationale_ref"))
             current_ref = selection.get("previous_selection_ref")
             if current_ref is None:
                 return

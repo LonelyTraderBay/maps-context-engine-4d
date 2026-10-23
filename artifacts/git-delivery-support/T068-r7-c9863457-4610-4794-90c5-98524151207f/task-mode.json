@@ -8,7 +8,9 @@
       "artifacts/preflight/T068/**",
       "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
       "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**",
-      ".gitattributes"
+      ".gitattributes",
+      "tools/ci/bootstrap_check.py",
+      "tools/ci/test_bootstrap_check.py"
     ],
     "behavior": [
       "Keep all C055-C069 acceptance thresholds, independent oracle, >=30 tasks, >=3 fixtures, three repeats, seed, and correctness gates unchanged.",
@@ -17,7 +19,8 @@
       "Retain direct invalidation reason_ref as the canonical form for the new revision.",
       "Reopen and verify T003 because its validator contract and regression suite change; preserve exact-SHA verification and archive/live gates.",
       "Keep synthetic and real-repository acceptance distinct; token telemetry remains NOT_RUN without a host receipt.",
-      "Use task-specific -text for hash-bound r7 evidence and cr-at-eol for captured Windows CRLF logs; do not change global Git configuration."
+      "Use task-specific -text for hash-bound r7 evidence and cr-at-eol for captured Windows CRLF logs; do not change global Git configuration.",
+      "Update the bootstrap SPEC version guard and its negative fixture when the T068 SPEC version advances; keep previous-version rejection covered."
     ],
     "exclusions": [
       "No production/user repository, LLM/API, production database, target runtime, or arbitrary plugin execution.",
@@ -42,6 +45,7 @@
     "Replay the exact retained T068 selector chain and run full spec_check regression tests; verify no earlier selection bytes change.",
     "Reopen T003 and T068 as VERIFY; run T003 owner checks and all 13 T068 local checks on the new exact payload SHA.",
     "Collect fresh six-context GitHub CI on approved origin/main and task branch for exact P and exact C; publish/read back the sealed archive and perform fresh live verification.",
-    "Keep real-repository benchmark and token usage NOT_RUN where no actual measurement/host receipt exists."
+    "Keep real-repository benchmark and token usage NOT_RUN where no actual measurement/host receipt exists.",
+    "Run tools/ci/bootstrap_check.py and tools/ci/test_bootstrap_check.py against SPEC v1.6.14 in addition to the SPEC checker suite."
   ]
 }

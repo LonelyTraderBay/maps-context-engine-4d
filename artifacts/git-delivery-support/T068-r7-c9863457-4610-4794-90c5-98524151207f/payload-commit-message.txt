@@ -1,0 +1,7 @@
+fix(spec-check): [P2][T068] xác minh lineage selector
+
+Mục đích: Gỡ blocker D089 bằng cách xác minh chuỗi assignment liền kề qua lineage có hash ràng buộc.
+
+Thay đổi: Thêm schema/semantic GitTaskAssignmentLineage; kiểm tra wrapper reason theo identity và thời điểm invalidation; bổ sung regression dương/âm; đồng bộ bootstrap guard với SPEC 1.6.14; giữ evidence allocation r7 và khóa byte hash cho evidence r6 có CRLF.
+
+Kiểm tra: bootstrap + 7 fixtures; SPEC checker + 146 tests (1 skip do quyền symlink); delivery plan + 33 fixtures; checkpoint digest + 5 tests (1 skip); gofmt 230; go test/vet/build ./...; git diff --check.

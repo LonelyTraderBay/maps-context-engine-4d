@@ -1,4 +1,4 @@
-"""Đọc các bảng authority của SPEC v1.6.13 và kiểm tra liên kết hai chiều."""
+"""Đọc các bảng authority của SPEC v1.6.14 và kiểm tra liên kết hai chiều."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from .ci_order import OrderingError, parse_instant
 from .schema import SchemaError, extract_governance_schema
 
 
-SPEC_VERSION = "1.6.13"
+SPEC_VERSION = "1.6.14"
 TASK_COUNT = 108
 REQUIREMENT_COUNT = 130
 CASE_COUNT = 195
@@ -578,8 +578,8 @@ def validate_spec_text(text: str) -> list[str]:
     try:
         schema = extract_governance_schema(normalized)
         defs = schema.get("$defs", {})
-        if len(defs) != 24:
-            errors.append(f"S21 cần 24 governance definitions; thấy {len(defs)}")
+        if len(defs) != 25:
+            errors.append(f"S21 cần 25 governance definitions; thấy {len(defs)}")
         for name, definition in defs.items():
             if definition.get("additionalProperties") is not False:
                 errors.append(f"Governance definition {name} không đóng additionalProperties")
@@ -624,7 +624,7 @@ def validate_spec_text(text: str) -> list[str]:
         if modes != {"docs_only", "implement", "review", "integrate"}:
             errors.append("S50 task_mode enum drift")
     required_resume = {
-        "spec_version": "1.6.13",
+        "spec_version": "1.6.14",
         "last_request_mode": "implement_full_108",
         "next_task_mode": "implement",
         "autonomous_contract": "S53",

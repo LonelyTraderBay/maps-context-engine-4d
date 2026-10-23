@@ -1,0 +1,137 @@
+phase=closing
+revision=126925fe16c297a77a79bc474407a952e2e83375
+candidate_tree_oid=cfec20dfbe2d2fa74bf9cd99fb038081b19d7ff1
+command=go test ./...
+python=Python 3.12.14
+go=go version go1.27.2 windows/amd64
+node=v24.22.0
+npm=11.19.1
+started_at_utc=2026-10-23T20:31:58.0651115+00:00
+git_config=core.longpaths=true
+go: downloading modernc.org/sqlite v1.60.1
+go: downloading golang.org/x/mod v0.42.0
+go: downloading golang.org/x/tools v0.52.0
+go: downloading github.com/modelcontextprotocol/go-sdk v1.8.0
+go: downloading golang.org/x/sys v0.49.0
+go: downloading github.com/google/jsonschema-go v0.4.3
+go: downloading github.com/segmentio/encoding v0.5.4
+go: downloading golang.org/x/time v0.15.0
+go: downloading golang.org/x/oauth2 v0.35.0
+go: downloading golang.org/x/sync v0.24.0
+go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+go: downloading github.com/segmentio/asm v1.1.3
+go: downloading modernc.org/libc v1.77.1
+go: downloading github.com/ncruces/go-strftime v1.0.0
+go: downloading modernc.org/mathutil v1.7.1
+go: downloading modernc.org/memory v1.12.1
+go: downloading github.com/dustin/go-humanize v1.0.1
+go: downloading github.com/mattn/go-isatty v0.0.24
+go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/loader-fixture	[no test files]
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/smoke	[no test files]
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T043/profile-hash-check	[no test files]
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/cmd/mce4d	[no test files]
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/contracts	2.040s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/golang	2.438s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/providers	1.500s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config	1.317s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer	2.054s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/groups	0.172s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records	1.444s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/registration	1.108s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/rename	2.100s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/response	1.425s
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/store	[no test files]
+--- FAIL: TestLocalWorkspaceHashesSameSizeAssumeUnchangedAndFindsNewFile (0.34s)
+    service_test.go:262: same-size assume-unchanged bytes were not detected: {Freshness:{Status:unknown Scope:workspace CheckedAt:2026-10-23 20:32:21.7050621 +0000 UTC BufferScope:disk_only Consistency:captured_bytes_with_observed_stability ChangedCount:<nil> SourceView:indexed_snapshot} EditPreconditionValid:false ChangedPaths:[] MembershipChanged:false ConfigurationChanged:false RecordSetChanged:false ReasonCode:FRESHNESS_UNKNOWN}
+--- FAIL: TestValidateMarksMovedTrackedSourceStale (0.67s)
+    service_test.go:336: moved source was not reported as stale: {Freshness:{Status:unknown Scope:workspace CheckedAt:2026-10-23 20:32:22.3678717 +0000 UTC BufferScope:disk_only Consistency:captured_bytes_with_observed_stability ChangedCount:<nil> SourceView:indexed_snapshot} EditPreconditionValid:false ChangedPaths:[] MembershipChanged:false ConfigurationChanged:false RecordSetChanged:false ReasonCode:FRESHNESS_UNKNOWN}
+--- FAIL: TestValidateMarksDeletedTrackedSourceStale (0.24s)
+    service_test.go:358: deleted source was not reported as stale: {Freshness:{Status:unknown Scope:workspace CheckedAt:2026-10-23 20:32:22.6114404 +0000 UTC BufferScope:disk_only Consistency:captured_bytes_with_observed_stability ChangedCount:<nil> SourceView:indexed_snapshot} EditPreconditionValid:false ChangedPaths:[] MembershipChanged:false ConfigurationChanged:false RecordSetChanged:false ReasonCode:FRESHNESS_UNKNOWN}
+FAIL
+FAIL	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/validate	2.350s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/catalog	1.034s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cli	4.726s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contextpack	0.322s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts	1.353s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/events	0.208s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/federation	0.181s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http	0.205s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema	0.296s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/sql	0.290s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cursor	1.649s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/ai	0.269s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/architecture	0.290s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/profiles	0.241s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/explorer	1.970s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/history	0.199s
+--- FAIL: TestBuildSnapshotFromInventoryHashesAssumeUnchangedBytesWithSameMtime (0.39s)
+    invalidation_test.go:107: inventory root is not the Git worktree root
+FAIL
+FAIL	github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer	1.701s
+--- FAIL: TestScanHonorsGitIgnoreAndSecurityBoundaries (0.24s)
+    inventory_test.go:38: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanDisablesHostGlobalIgnoreConfigAndReportsEffectiveMode (0.13s)
+    inventory_test.go:87: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanRefreshesMembershipAndRepresentsMoveAsDeleteAndAdd (0.22s)
+    inventory_test.go:101: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanHandlesUnbornBranchAndDetachedHead (0.19s)
+    inventory_test.go:131: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanStopsAtNestedRepositoriesAndSubmodules (1.02s)
+    inventory_test.go:173: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanReportsUnmergedIndexState (0.44s)
+    inventory_test.go:198: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanReportsSparseDirectoryWithoutWalkingIt (0.30s)
+    inventory_test.go:216: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanTreatsIndexSymlinkModeAsBoundaryEvenWhenWorktreeFileIsAbsent (0.29s)
+    inventory_test.go:257: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanUsesNULDelimitedPaths (0.15s)
+    inventory_test.go:275: scan failed: inventory root is not the Git worktree root
+--- FAIL: TestScanRejectsInvalidOptionsAndHonorsCancellation (0.14s)
+    inventory_test.go:336: inventory root is not the Git worktree root
+FAIL
+FAIL	github.com/LonelyTraderBay/maps-context-engine-4d/internal/inventory	3.747s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/lsp	5.629s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/mcp	1.686s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/model	0.164s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/overview	0.172s
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths	[no test files]
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/policy	[no test files]
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/ports	[no test files]
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime	1.687s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config	1.489s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/exec	1.369s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/maintenance	1.256s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/search	1.641s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot	0.167s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/store/sqlite	11.015s
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/telemetry	[no test files]
+--- FAIL: TestScaleAcceptanceWorkload (0.68s)
+    scale_test.go:38: controlled S scale worker failed (reason=, RSS=18423808, storage=admitted): run controlled tool (exit 1): exit status 1
+        stdout:
+        === RUN   TestScaleAcceptanceWorkload
+            scale_test.go:33: initial inventory scan of scale fixture: inventory root is not the Git worktree root
+        --- FAIL: TestScaleAcceptanceWorkload (0.48s)
+        FAIL
+        
+        stderr:
+--- FAIL: TestMaliciousWorkspaceStaysDataAndCannotEscapeRoot (0.08s)
+    security_test.go:108: scan isolated canary with hostile local fsmonitor config: inventory root is not the Git worktree root
+--- FAIL: TestSelfIndexPinnedBinaryAcceptance (3.19s)
+    self_index_test.go:155: pinned worker mode engine failed: exit status 1
+        === RUN   TestSelfIndexWorker
+            self_index_test.go:79: analyze target with pinned engine APIs: scan target inventory: inventory root is not the Git worktree root
+        --- FAIL: TestSelfIndexWorker (0.29s)
+        FAIL
+FAIL
+FAIL	github.com/LonelyTraderBay/maps-context-engine-4d/tests/acceptance	10.313s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/contract	4.986s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration	2.611s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration/platform	2.580s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare	0.380s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare/cmd	0.413s
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale	0.192s
+?   	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale/cmd	[no test files]
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/selfindex	1.214s [no tests to run]
+ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/t039	1.573s
+FAIL

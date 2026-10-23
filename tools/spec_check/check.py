@@ -1,4 +1,4 @@
-"""Kiểm tra cấu trúc và traceability của SPEC v1.6.13."""
+"""Kiểm tra cấu trúc và traceability của SPEC v1.6.14."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
         for error in errors:
             print(f"LỖI: {error}", file=sys.stderr)
         return 1
-    print("ĐẠT: SPEC v1.6.13; 108 task, DAG/schedule, traceability hai chiều, work cards và 24 governance definitions.")
+    print("ĐẠT: SPEC v1.6.14; 108 task, DAG/schedule, traceability hai chiều, work cards và 25 governance definitions.")
     return 0
 
 

@@ -675,8 +675,8 @@ class GovernanceSchemaTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.schema = extract_governance_schema(SPEC_TEXT)
 
-    def test_schema_has_24_closed_definitions(self) -> None:
-        self.assertEqual(24, len(self.schema["$defs"]))
+    def test_schema_has_25_closed_definitions(self) -> None:
+        self.assertEqual(25, len(self.schema["$defs"]))
 
     def test_live_verification_resolves_file_refs_from_root_schema(self) -> None:
         record = {
@@ -768,6 +768,99 @@ class GovernanceSchemaTests(unittest.TestCase):
 
 
 class GovernanceSemanticsTests(unittest.TestCase):
+    @staticmethod
+    def _assignment_lineage_bundle():
+        old_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+        new_id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+        old_assignment = b"T003 task assignment source revision 1\\n"
+        new_assignment = b"T003 continuing task assignment source revision 2\\n"
+        lineage_rationale = b"The task-start sources are distinct immutable locators for one continuing T003 assignment.\\n"
+        source_assignments = [
+            {"assignment_ref": "authority/assignment-r1.txt", "sha256": hashlib.sha256(old_assignment).hexdigest()},
+            {"assignment_ref": "authority/assignment-r2.txt", "sha256": hashlib.sha256(new_assignment).hexdigest()},
+        ]
+        lineage = {
+            "format_version": 1,
+            "task_id": "T003",
+            "source_assignments": source_assignments,
+            "rationale_ref": "lineage/assignment-rationale.md",
+            "rationale_sha256": hashlib.sha256(lineage_rationale).hexdigest(),
+        }
+        lineage_basis = {key: lineage[key] for key in ("task_id", "source_assignments", "rationale_ref", "rationale_sha256")}
+        lineage["lineage_sha256"] = hash_value("MCE4D-ASSIGNMENT-LINEAGE-1", lineage_basis)
+        previous = {
+            "format_version": 1, "assignment_ref": source_assignments[0]["assignment_ref"], "task_id": "T003",
+            "task_revision": 1, "active_delivery_id": old_id, "supersedes_delivery_id": None,
+            "invalidation_refs": [], "reason_ref": "authority/assignment-r1.txt",
+            "updated_at_utc": "2026-10-15T19:24:54Z", "previous_selection_ref": None,
+            "allocated_at_utc": "2026-10-15T19:24:54Z",
+        }
+        invalidation_ref = "history/plan-invalidation.json"
+        current = {
+            "format_version": 1, "assignment_ref": source_assignments[1]["assignment_ref"], "task_id": "T003",
+            "task_revision": 2, "active_delivery_id": new_id, "supersedes_delivery_id": old_id,
+            "invalidation_refs": [invalidation_ref], "reason_ref": "history/selection-reason.json",
+            "updated_at_utc": "2026-10-15T20:01:00Z", "previous_selection_ref": "history/selection-r1.json",
+            "allocated_at_utc": "2026-10-15T20:01:00Z",
+        }
+        invalidation = {
+            "format_version": 1, "kind": "delivery_selection_invalidation", "task_id": "T003",
+            "previous_task_revision": 1, "task_revision": 2, "previous_delivery_id": old_id,
+            "active_delivery_id": new_id, "reason": "Frozen plan changed after the first allocation.",
+            "invalidated_refs": ["history/selection-r1.json", "history/plan-r1.json"],
+            "recorded_at_utc": "2026-10-15T20:00:00Z",
+        }
+        selection_reason = {
+            "format_version": 1, "kind": "task_selection_reason", "task_id": "T003",
+            "task_revision": 2, "delivery_id": new_id, "supersedes_delivery_id": old_id,
+            "invalidation_ref": invalidation_ref, "reason_ref": invalidation_ref,
+            "decision": "Preserve revision 1 and allocate revision 2 after the plan change.",
+            "selected_at_utc": current["updated_at_utc"],
+        }
+        objects = {
+            "history/selection-r1.json": {"kind": "GitTaskDeliverySelection", "value": previous},
+            "history/selection-r2.json": {"kind": "GitTaskDeliverySelection", "value": current},
+            "lineage/T003.json": {"kind": "GitTaskAssignmentLineage", "value": lineage},
+        }
+        raw_members = {
+            invalidation_ref: invalidation,
+            "history/selection-reason.json": selection_reason,
+            "history/plan-r1.json": {"check_plan_sha256": "1" * 64},
+        }
+        raw_member_bytes = {
+            source_assignments[0]["assignment_ref"]: old_assignment,
+            source_assignments[1]["assignment_ref"]: new_assignment,
+            lineage["rationale_ref"]: lineage_rationale,
+        }
+        return objects, raw_members, raw_member_bytes
+
+    def test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("UNKNOWN", result["verdict"])
+        self.assertEqual([], result["errors"])
+
+    def test_selection_history_rejects_unhashable_assignment_locator_without_crashing(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        objects["history/selection-r2.json"]["value"]["assignment_ref"] = ["authority/assignment-r2.txt"]
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("previous selection ph" in error for error in result["errors"]))
+
+    def test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        damaged_bytes = dict(raw_member_bytes)
+        damaged_bytes["authority/assignment-r2.txt"] = b"different bytes\\n"
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=damaged_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("assignment lineage source bytes" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_members["history/selection-reason.json"]["delivery_id"] = "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
+
     def test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed(self) -> None:
         attempt = {
             "delivery_id": "e740c5aa-cf6d-4dd4-9cae-d8dd7ed4ae33",
@@ -782,6 +875,30 @@ class GovernanceSemanticsTests(unittest.TestCase):
             "payload_mode=changes cần ordered payload commit",
             validate_semantics("GitDeliveryAttempt", attempt),
         )
+
+    def test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version(self) -> None:
+        for rationale_bytes in (b"", b"\xff"):
+            with self.subTest(rationale_bytes=rationale_bytes):
+                objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+                lineage = objects["lineage/T003.json"]["value"]
+                lineage["rationale_sha256"] = hashlib.sha256(rationale_bytes).hexdigest()
+                basis = {
+                    key: lineage[key]
+                    for key in ("task_id", "source_assignments", "rationale_ref", "rationale_sha256")
+                }
+                lineage["lineage_sha256"] = hash_value("MCE4D-ASSIGNMENT-LINEAGE-1", basis)
+                raw_member_bytes[lineage["rationale_ref"]] = rationale_bytes
+                result = validate_delivery_links(
+                    objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes,
+                )
+                self.assertEqual("REJECT", result["verdict"])
+                self.assertTrue(any("rationale bytes" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_members["history/selection-reason.json"]["format_version"] = True
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
 
     def _push_operation(self) -> dict[str, object]:
         lifecycle = "11111111-1111-4111-8111-111111111111"

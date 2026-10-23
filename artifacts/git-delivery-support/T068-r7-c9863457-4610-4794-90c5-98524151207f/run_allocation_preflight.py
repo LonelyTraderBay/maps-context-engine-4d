@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 root = Path.cwd().resolve()
 delivery = 'c9863457-4610-4794-90c5-98524151207f'
 sup = f'artifacts/git-delivery-support/T068-r7-{delivery}'
-out = root/sup/'local-checks/allocation/attempt-6'
+out = root/sup/'local-checks/allocation/attempt-7'
 records = out/'records'
 records.mkdir(parents=True, exist_ok=False)
 
@@ -29,7 +29,7 @@ def run(check_id, actual_argv, inline=None):
         proc=subprocess.run(actual_argv,cwd=root,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,check=False)
         code=proc.returncode; raw=proc.stdout; result='PASS' if code==0 else 'FAIL'
         stored_argv=['python',*actual_argv[1:]] if actual_argv and actual_argv[0]==sys.executable else actual_argv
-    end=utc(); relbase=f'{sup}/local-checks/allocation/attempt-6/records/{check_id}'
+    end=utc(); relbase=f'{sup}/local-checks/allocation/attempt-7/records/{check_id}'
     log_rel=relbase+'.log'; rec_rel=relbase+'.json'
     (root/log_rel).write_bytes(raw)
     rec={'argv':stored_argv,'cwd':'<repository-root>','delivery_id':delivery,'elapsed_seconds':round(time.monotonic()-begun,3),'ended_at_utc':end,'exit_code':code,'format_version':1,'kind':'local_check_execution','log_ref':log_rel,'log_sha256':sha_bytes(raw),'record_ref':rec_rel,'result':result,'started_at_utc':start,'task_id':'T068','task_revision':5,'check_id':check_id}
@@ -64,7 +64,7 @@ def allocation_assert():
     sel=docs[f'{sup}/selection.json']; mode=docs[f'{sup}/task-mode.json']; dep=docs[f'{sup}/dependency-review.json']; alloc=docs[f'{sup}/allocation-current.json']; reval=docs[f'{sup}/allocation-revalidation.json']; amendment=docs[f'{sup}/scope-amendment/scope-amendment-r7-evidence-byte-stability.json']; plan=docs[plan_rel]; fixture=docs['artifacts/preflight/T068/polyglot-acceptance-plan-r2.json']
     assert sel['task_id']==mode['task_id']==dep['task_id']==alloc['task_id']=='T068' and sel['task_revision']==mode['task_revision']==alloc['task_revision']==5
     assert sel['active_delivery_id']==mode['delivery_id']==dep['delivery_id']==alloc['delivery_id']==delivery
-    assert alloc['base_sha']==reval['observed_base_sha']=='347f1b748e6a9c8b8c643173fb3cc32d026dc27e'
+    assert alloc['base_sha']==reval['observed_base_sha']=='33bea81491f7571b9af4a55b0a963cd7e87fa65d'
     assert reval['allocation_sha256']==sha_bytes((root/f'{sup}/allocation-current.json').read_bytes())
     assert reval['scope_amendment_ref']==f'{sup}/scope-amendment/scope-amendment-r7-evidence-byte-stability.json'
     assert reval['scope_amendment_sha256']==sha_bytes((root/reval['scope_amendment_ref']).read_bytes())
@@ -73,7 +73,7 @@ def allocation_assert():
     assert len(plan['checks'])==6 and plan['canary_ref']==f'delivery:{delivery}:payload'
     assert sha_bytes((root/plan_rel).read_bytes())=='9a691623c9296addf9aff046a95acc849a07d36a0ad666afa27e8385725e0b83'
     assert fixture['task_id']=='T068' and fixture['task_revision']==2 and len(fixture['cases'])==15
-    assert amendment['added_scope_paths']==['.gitattributes'] and amendment['evidence']['attributes_sha256']==sha_bytes((root/'.gitattributes').read_bytes())
+    assert amendment['added_scope_paths']==['tools/ci/bootstrap_check.py','tools/ci/test_bootstrap_check.py'] and amendment['evidence']['attributes_sha256']==sha_bytes((root/'.gitattributes').read_bytes())
     assert amendment['evidence']['added_rules']==[f'{sup}/** -text',f'{sup}/**/*.log whitespace=cr-at-eol']
 checks.append(run('allocation-artifacts',['python','<inline allocation consistency assertions>'],allocation_assert))
 
@@ -95,12 +95,12 @@ def scope_assert():
 checks.append(run('scope-check',['python','<inline allocation scope assertions>'],scope_assert))
 
 failed=[x for x in checks if x['result']!='PASS']
-summary={'base_sha':'347f1b748e6a9c8b8c643173fb3cc32d026dc27e','check_refs':[{'record_ref':x['record_ref'],'sha256':x['sha256']} for x in checks],'check_sha256':[x['sha256'] for x in checks],'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'local_check_summary','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','task_id':'T068','task_revision':5}
-summary_rel=f'{sup}/local-checks/allocation/attempt-6/summary.json'; summary_sha=write_json(root/summary_rel,summary)
-check_doc={'base_sha':'347f1b748e6a9c8b8c643173fb3cc32d026dc27e','check_plan_ref':plan_rel,'check_plan_sha256':'9a691623c9296addf9aff046a95acc849a07d36a0ad666afa27e8385725e0b83','check_refs':[{'record_ref':x['record_ref'],'sha256':x['sha256']} for x in checks],'checked_at_utc':utc(),'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'allocation_check','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','summary_ref':summary_rel,'summary_sha256':summary_sha,'task_id':'T068','task_revision':5}
+summary={'base_sha':'33bea81491f7571b9af4a55b0a963cd7e87fa65d','check_refs':[{'record_ref':x['record_ref'],'sha256':x['sha256']} for x in checks],'check_sha256':[x['sha256'] for x in checks],'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'local_check_summary','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','task_id':'T068','task_revision':5}
+summary_rel=f'{sup}/local-checks/allocation/attempt-7/summary.json'; summary_sha=write_json(root/summary_rel,summary)
+check_doc={'base_sha':'33bea81491f7571b9af4a55b0a963cd7e87fa65d','check_plan_ref':plan_rel,'check_plan_sha256':'9a691623c9296addf9aff046a95acc849a07d36a0ad666afa27e8385725e0b83','check_refs':[{'record_ref':x['record_ref'],'sha256':x['sha256']} for x in checks],'checked_at_utc':utc(),'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'allocation_check','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','summary_ref':summary_rel,'summary_sha256':summary_sha,'task_id':'T068','task_revision':5}
 check_rel=f'{sup}/allocation-check.json'; check_sha=write_json(root/check_rel,check_doc)
 alloc=json.loads((root/f'{sup}/allocation-current.json').read_text(encoding='utf-8'))
-preflight={'allocation_check_ref':check_rel,'allocation_check_sha256':check_sha,'base_sha':'347f1b748e6a9c8b8c643173fb3cc32d026dc27e','check_plan_ref':plan_rel,'check_plan_sha256':'9a691623c9296addf9aff046a95acc849a07d36a0ad666afa27e8385725e0b83','checked_at_utc':utc(),'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'allocation_preflight','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','scope_paths':alloc['scope_paths'],'task_id':'T068','task_revision':5}
+preflight={'allocation_check_ref':check_rel,'allocation_check_sha256':check_sha,'base_sha':'33bea81491f7571b9af4a55b0a963cd7e87fa65d','check_plan_ref':plan_rel,'check_plan_sha256':'9a691623c9296addf9aff046a95acc849a07d36a0ad666afa27e8385725e0b83','checked_at_utc':utc(),'delivery_id':delivery,'failed_count':len(failed),'format_version':1,'kind':'allocation_preflight','passed_count':len(checks)-len(failed),'result':'FAIL' if failed else 'PASS','scope_paths':alloc['scope_paths'],'task_id':'T068','task_revision':5}
 pre_rel=f'{sup}/allocation-preflight.json'; pre_sha=write_json(root/pre_rel,preflight)
 print(json.dumps({'delivery_id':delivery,'result':check_doc['result'],'passed':check_doc['passed_count'],'failed':check_doc['failed_count'],'summary_ref':summary_rel,'summary_sha256':summary_sha,'allocation_check_ref':check_rel,'allocation_check_sha256':check_sha,'preflight_ref':pre_rel,'preflight_sha256':pre_sha,'checks':[{'id':x['check_id'],'result':x['result'],'exit':x['exit_code'],'output':x['output']} for x in checks]},ensure_ascii=True,indent=2))
 if failed: sys.exit(1)

@@ -1,0 +1,46 @@
+{
+  "format_version": 1,
+  "kind": "supplemental_local_checks",
+  "task_id": "T068",
+  "task_revision": 5,
+  "delivery_id": "c9863457-4610-4794-90c5-98524151207f",
+  "base_sha": "33bea81491f7571b9af4a55b0a963cd7e87fa65d",
+  "scope_amendment_sha256": "6baf1603e5863aa7267e7d5608081561de3a817e83e3d221476f4a7461a63fac",
+  "result": "PASS",
+  "checks": [
+    {
+      "check_id": "bootstrap-check",
+      "argv": [
+        "python",
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "cwd": "<repository-root>",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.047,
+      "started_at_utc": "2026-10-23T22:22:15.773306Z",
+      "ended_at_utc": "2026-10-23T22:22:15.827597Z",
+      "log_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/local-checks/allocation/attempt-7/bootstrap-check.log",
+      "log_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "output": "ĐẠT: SPEC v1.6.14; 3 nguồn chính sách đúng UTF-8 và SHA-256.\r\n"
+    },
+    {
+      "check_id": "bootstrap-fixtures",
+      "argv": [
+        "python",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "cwd": "<repository-root>",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.781,
+      "started_at_utc": "2026-10-23T22:22:15.828097Z",
+      "ended_at_utc": "2026-10-23T22:22:16.603911Z",
+      "log_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/local-checks/allocation/attempt-7/bootstrap-fixtures.log",
+      "log_sha256": "277e36369d89d6879f6d0b8efaac69a47a9cb54a150acd9bac6c154dc78f60bf",
+      "output": "test_changed_policy_source_fails (__main__.BootstrapValidatorTests.test_changed_policy_source_fails) ... ok\r\ntest_current_sources_pass (__main__.BootstrapValidatorTests.test_current_sources_pass) ... ok\r\ntest_invalid_utf8_fails (__main__.BootstrapValidatorTests.test_invalid_utf8_fails) ... ok\r\ntest_missing_markdown_heading_fails (__main__.BootstrapValidatorTests.test_missing_markdown_heading_fails) ... ok\r\ntest_missing_policy_source_fails (__main__.BootstrapValidatorTests.test_missing_policy_source_fails) ... ok\r\ntest_missing_push_trigger_fails (__main__.BootstrapValidatorTests.test_missing_push_trigger_fails) ... ok\r\ntest_wrong_spec_version_fails (__main__.BootstrapValidatorTests.test_wrong_spec_version_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.705s\r\n\r\nOK\r\n"
+    }
+  ]
+}

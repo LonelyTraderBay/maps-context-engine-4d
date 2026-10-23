@@ -1,20 +1,22 @@
 {
   "added_scope_paths": [
-    ".gitattributes"
+    "tools/ci/bootstrap_check.py",
+    "tools/ci/test_bootstrap_check.py"
   ],
-  "authority": "S53 AW-08 GIT-02 within the active T068 revision-5 assignment; only hash-stability metadata for r7 evidence is added.",
-  "decided_at_utc": "2026-10-23T22:13:01.074074Z",
+  "authority": "S53 AW-01 full 108-task assignment; T068 revision-5 scope extension limited to the bootstrap SPEC-version guard and its regression fixture, justified by exact-SHA CI evidence E776.",
+  "decided_at_utc": "2026-10-23T22:21:21.688351Z",
   "delivery_id": "c9863457-4610-4794-90c5-98524151207f",
   "evidence": {
     "added_rules": [
       "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/** -text",
       "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**/*.log whitespace=cr-at-eol"
     ],
-    "observed_attributes_before": "text=auto; eol unspecified for r7 JSON evidence",
-    "observed_core_autocrlf": "true (system configuration, verified with git config --system --get)",
-    "source_ref": ".gitattributes",
     "attributes_sha256": "14aae5c2514fec80146a52fe4b3f22827bef769623ee88db5a2ec122913585f1",
-    "verification": "git check-attr confirms text=unset and whitespace=cr-at-eol for captured logs; staged git diff --check passes; hash-bound JSON/log bytes are preserved."
+    "ci_failure_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/archive-view/ci/allocation/33bea81491f7571b9af4a55b0a963cd7e87fa65d/collection.json",
+    "ci_failure_sha256": "e92c6ad2513f9638142f204def250a28df51389a0901cc046f9e69c9d57c541e",
+    "observed_ci_failure": "Exact SHA 33bea81491f7571b9af4a55b0a963cd7e87fa65d: bootstrap requires SPEC 1.6.13; spec-contract requires 1.6.13 and 24 governance definitions; both refs fail 4/6.",
+    "source_ref": "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/archive-view/ci/allocation/33bea81491f7571b9af4a55b0a963cd7e87fa65d/collection.json",
+    "verification": "Updated only tools/ci/bootstrap_check.py and tools/ci/test_bootstrap_check.py; bootstrap checker and 7 regression fixtures pass; full T068 allocation/payload checks remain separate."
   },
   "format_version": 1,
   "kind": "task_scope_amendment",
@@ -25,9 +27,10 @@
     "tools/bench/**",
     "artifacts/preflight/T068/**",
     "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
-    "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**"
+    "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**",
+    ".gitattributes"
   ],
-  "reason": "The active system setting core.autocrlf=true with text=auto could rewrite hash-bound r7 evidence on Windows. A single r7-specific -text rule preserves bytes; captured Windows CRLF .log files use cr-at-eol for git diff --check. No global or repo-local Git configuration changes.",
+  "reason": "Allocation exact-SHA CI showed that SPEC v1.6.14 was committed before the version guard/test fixture were updated. Add only the two bootstrap guard files so the completed T068 payload can pass the frozen CI plan on one exact SHA.",
   "task_id": "T068",
   "task_revision": 5
 }
