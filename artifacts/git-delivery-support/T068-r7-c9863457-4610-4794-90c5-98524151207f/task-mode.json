@@ -1,0 +1,47 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "tools/spec_check/**",
+      "tests/acceptance/polyglot*",
+      "tools/bench/**",
+      "artifacts/preflight/T068/**",
+      "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
+      "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**",
+      ".gitattributes"
+    ],
+    "behavior": [
+      "Keep all C055-C069 acceptance thresholds, independent oracle, >=30 tasks, >=3 fixtures, three repeats, seed, and correctness gates unchanged.",
+      "Add a closed S21 governance record that proves assignment lineage only from retained source locator bytes and hashes; do not edit prior selector or assignment bytes.",
+      "Allow a task-selection rationale wrapper only when its task, revision, delivery identity, and nested direct invalidation reference exactly match the current selector and retained invalidation record.",
+      "Retain direct invalidation reason_ref as the canonical form for the new revision.",
+      "Reopen and verify T003 because its validator contract and regression suite change; preserve exact-SHA verification and archive/live gates.",
+      "Keep synthetic and real-repository acceptance distinct; token telemetry remains NOT_RUN without a host receipt.",
+      "Use task-specific -text for hash-bound r7 evidence and cr-at-eol for captured Windows CRLF logs; do not change global Git configuration."
+    ],
+    "exclusions": [
+      "No production/user repository, LLM/API, production database, target runtime, or arbitrary plugin execution.",
+      "No safety-boundary relaxation, no omission of prior evidence, and no mutation of sealed archives or previous selectors.",
+      "No benchmark or token-saving claim without actual measured evidence.",
+      "No fallback to r6 CI or local checks for the new changed validator/source."
+    ]
+  },
+  "delivery_id": "c9863457-4610-4794-90c5-98524151207f",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Reconcile the retained T068 selector-history rejection through a source-hash-bound assignment-lineage record and strict nested invalidation-rationale validation; preserve every prior selector and evidence object, reverify the validator owner T003, then complete T068.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19,S21,S22,S24,S28-S30,S43-S45,S47,S53",
+  "task_id": "T068",
+  "task_revision": 5,
+  "verification_plan": [
+    "Record exact validate_delivery_links rejection and preserve r6 P10/C checks, CI, selectors and invalidation sources unchanged.",
+    "Update S21/spec_check schema and semantic validator; add positive and negative tests for source-hashed assignment lineage and nested rationale identity.",
+    "Replay the exact retained T068 selector chain and run full spec_check regression tests; verify no earlier selection bytes change.",
+    "Reopen T003 and T068 as VERIFY; run T003 owner checks and all 13 T068 local checks on the new exact payload SHA.",
+    "Collect fresh six-context GitHub CI on approved origin/main and task branch for exact P and exact C; publish/read back the sealed archive and perform fresh live verification.",
+    "Keep real-repository benchmark and token usage NOT_RUN where no actual measurement/host receipt exists."
+  ]
+}

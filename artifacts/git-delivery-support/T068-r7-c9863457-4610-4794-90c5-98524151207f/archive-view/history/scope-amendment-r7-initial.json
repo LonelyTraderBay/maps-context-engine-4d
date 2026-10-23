@@ -1,0 +1,32 @@
+{
+  "added_scope_paths": [
+    ".gitattributes"
+  ],
+  "authority": "S53 AW-08 GIT-02 within the active T068 revision-5 assignment; only hash-stability metadata for r7 evidence is added.",
+  "decided_at_utc": "2026-10-23T22:04:48.404055Z",
+  "delivery_id": "c9863457-4610-4794-90c5-98524151207f",
+  "evidence": {
+    "added_rules": [
+      "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/** -text"
+    ],
+    "observed_attributes_before": "text=auto; eol unspecified for r7 JSON evidence",
+    "observed_core_autocrlf": "true (system configuration, verified with git config --system --get)",
+    "source_ref": ".gitattributes",
+    "attributes_sha256": "343ecec91ab4ba6add60a90dbf7df5fabb8dcb88b6d7b6438e646e25efc9d4b4",
+    "verification": "git check-attr after amendment; compare worktree and index blob SHA-256 after staging."
+  },
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "previous_scope_paths": [
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/spec_check/**",
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
+    "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**"
+  ],
+  "reason": "The active system setting core.autocrlf=true with text=auto could rewrite hash-bound r7 JSON records on a Windows checkout. A single r7-specific -text rule preserves exact evidence bytes; no global or repo-local Git configuration changes.",
+  "task_id": "T068",
+  "task_revision": 5
+}

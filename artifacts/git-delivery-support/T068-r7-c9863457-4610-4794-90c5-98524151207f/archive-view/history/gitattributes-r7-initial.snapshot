@@ -1,0 +1,19 @@
+* text=auto
+*.md text eol=lf
+*.txt text eol=lf
+*.py text eol=lf
+*.go text eol=lf
+*.sql text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Keep hash-bound T034 r4 evidence byte-identical across Windows checkouts.
+artifacts/git-delivery-support/T034-r4-bd1c82a0-cbbf-4487-880e-0e85a0672c8d/** -text
+artifacts/acceptance/T034/runs/windows-20261019-payload-6827429/** -text
+
+# Preserve byte hashes for T068 revision-2 evidence and preflight artifacts across Windows checkouts.
+artifacts/git-delivery-support/T068-r2-d6398163-6693-4073-88b3-bd0e54e01c6d/** -text
+artifacts/preflight/T068/** -text
+artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/** -text

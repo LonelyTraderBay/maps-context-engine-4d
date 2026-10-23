@@ -1,0 +1,33 @@
+{
+  "added_scope_paths": [
+    ".gitattributes"
+  ],
+  "authority": "S53 AW-08 GIT-02 within the active T068 revision-5 assignment; only hash-stability metadata for r7 evidence is added.",
+  "decided_at_utc": "2026-10-23T22:13:01.074074Z",
+  "delivery_id": "c9863457-4610-4794-90c5-98524151207f",
+  "evidence": {
+    "added_rules": [
+      "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/** -text",
+      "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**/*.log whitespace=cr-at-eol"
+    ],
+    "observed_attributes_before": "text=auto; eol unspecified for r7 JSON evidence",
+    "observed_core_autocrlf": "true (system configuration, verified with git config --system --get)",
+    "source_ref": ".gitattributes",
+    "attributes_sha256": "14aae5c2514fec80146a52fe4b3f22827bef769623ee88db5a2ec122913585f1",
+    "verification": "git check-attr confirms text=unset and whitespace=cr-at-eol for captured logs; staged git diff --check passes; hash-bound JSON/log bytes are preserved."
+  },
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "previous_scope_paths": [
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/spec_check/**",
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "artifacts/git-delivery-support/T068-r7-c9863457-4610-4794-90c5-98524151207f/**",
+    "artifacts/git-delivery-support/T068-r6-2bb50178-b1ec-46f2-9169-9065b6b144fb/**"
+  ],
+  "reason": "The active system setting core.autocrlf=true with text=auto could rewrite hash-bound r7 evidence on Windows. A single r7-specific -text rule preserves bytes; captured Windows CRLF .log files use cr-at-eol for git diff --check. No global or repo-local Git configuration changes.",
+  "task_id": "T068",
+  "task_revision": 5
+}
