@@ -1,0 +1,38 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "tests/acceptance/polyglot*",
+      "tools/bench/**",
+      "artifacts/preflight/T068/**",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/git-delivery-support/T068-r2-d6398163-6693-4073-88b3-bd0e54e01c6d/**"
+    ],
+    "behavior": [
+      "Cover C055-C069 while keeping each provider/domain capability distinguishable.",
+      "Use independently authored expectations; engine output is never its own ground truth.",
+      "Preserve the >=30 task, >=3 fixture, three-repeat and seed requirements.",
+      "Report successes, failures, critical omissions, false edits, recall numerator/denominator and context-proxy metrics.",
+      "Token usage absent without a host receipt and production real-repository acceptance remains NOT_RUN."
+    ],
+    "exclusions": [
+      "No user/production repository, LLM/API, production DB, target runtime, or plugin execution.",
+      "No safety-boundary relaxation to improve benchmark ratios.",
+      "No claim that synthetic fixtures prove every polyglot repository or real token savings."
+    ]
+  },
+  "delivery_id": "d6398163-6693-4073-88b3-bd0e54e01c6d",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Tie the C055-C069 polyglot acceptance plan to the active delivery revision; preserve independent oracle, synthetic cohort and reporting boundaries.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S18,S24,S28-S30,S32,S43-S45,S47,S53",
+  "task_id": "T068",
+  "task_revision": 2,
+  "verification_plan": [
+    "Bind the versioned T068 plan and C055-C069 acceptance identifiers to revision 2.",
+    "Run existing acceptance, corpus validation, gofmt, go test ./..., go vet ./..., go build ./..., SPEC and delivery-policy checks.",
+    "Preserve the baseline/full/incremental, synthetic/real and token NOT_RUN boundaries."
+  ]
+}

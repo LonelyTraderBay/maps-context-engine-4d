@@ -1,0 +1,30 @@
+{
+  "added_scope_paths": [
+    ".gitattributes"
+  ],
+  "authority": "S53 AW-08 GIT-02 within the active T068 revision-2 assignment; only hash-stability metadata is added.",
+  "decided_at_utc": "2026-10-23T13:01:11.641823Z",
+  "delivery_id": "d6398163-6693-4073-88b3-bd0e54e01c6d",
+  "evidence": {
+    "added_rules": [
+      "artifacts/git-delivery-support/T068-r2-d6398163-6693-4073-88b3-bd0e54e01c6d/** -text",
+      "artifacts/preflight/T068/polyglot-acceptance-plan-r2.json -text"
+    ],
+    "observed_attributes_before": "text=auto; eol unspecified for T068 JSON",
+    "observed_core_autocrlf": "true (system config)",
+    "source_ref": ".gitattributes",
+    "verification": "git check-attr on both paths after amendment; staged blob SHA must equal worktree SHA."
+  },
+  "format_version": 1,
+  "kind": "task_scope_amendment",
+  "previous_scope_paths": [
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/git-delivery-support/T068-r2-d6398163-6693-4073-88b3-bd0e54e01c6d/**"
+  ],
+  "reason": "Git system configuration has core.autocrlf=true and T068 revision-2 records bind exact file bytes, including captured CRLF logs. Under the existing text=auto attribute, a later Windows checkout could rewrite evidence bytes and invalidate recorded SHA-256 values. Add only two path-specific -text rules so the exact bytes stay stable; do not change global or repository-local Git configuration.",
+  "task_id": "T068",
+  "task_revision": 2
+}

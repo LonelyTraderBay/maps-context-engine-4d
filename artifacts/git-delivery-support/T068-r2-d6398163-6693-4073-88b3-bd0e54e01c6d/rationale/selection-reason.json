@@ -1,0 +1,24 @@
+{
+  "constraints": [
+    "Run C055-C069 regressions against independent expected facts and preserve domain-specific evidence gaps.",
+    "Compare baseline/full/incremental from identical fixture revisions; report failure and recall denominators.",
+    "Keep real and synthetic repository results separate; no real user repository is authorized.",
+    "No LLM/token-provider call or token-savings claim without a host-supplied usage receipt.",
+    "Correctness and safety failures cannot be traded for context-size savings.",
+    "Revision 1 files and failed attempts remain unchanged as historical evidence."
+  ],
+  "decision": "Continue the already selected T068 after revision 1 was found uncloseable because its final payload P push operation and destination receipts are not retained. Keep revision 1 intact; allocate a new UUID and revision 2, preserve the C055-C069 acceptance plan and do not reduce any check or cohort threshold.",
+  "delivery_id": "d6398163-6693-4073-88b3-bd0e54e01c6d",
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "scope_paths": [
+    "tests/acceptance/polyglot*",
+    "tools/bench/**",
+    "artifacts/preflight/T068/**",
+    "Maps-Context-Engine-4D_SPEC.md"
+  ],
+  "selected_at_utc": "2026-10-23T12:36:18.955853Z",
+  "sequence": "S47 P11; resume T068 after invalidating incomplete revision 1; T048 review follows effective T068 closure",
+  "task_id": "T068",
+  "task_revision": 2
+}
