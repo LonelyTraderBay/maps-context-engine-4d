@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "kind": "archive_candidate_precheck_rejection",
+  "task_id": "T068",
+  "task_revision": 6,
+  "delivery_id": "e26dd6b2-5fb4-43b2-a286-7fb211b7f541",
+  "result": "REJECT",
+  "validator": "tools.spec_check.semantics.validate_delivery_links",
+  "runner_sha256": "12c6e35525fcbba78c562420f9e7048d6586ff6f2c79f344481ff22b0ae76b35",
+  "captured_stdout_sha256": "9b2be42b88628259ab73e9342e6718f6b7fc65291a1dcc0483d9e9e8544c6eb8",
+  "captured_at_utc": "2026-10-24T00:59:43.716425Z",
+  "candidate_staged": false,
+  "archive_published": false,
+  "errors": [
+    "evidence/attempt.json: $.ordered_commits[0].body: chuỗi ngắn hơn minLength",
+    "evidence/attempt.json: local evidence artifacts/git-delivery-support/T068-r8-e26dd6b2-5fb4-43b2-a286-7fb211b7f541/local-checks/payload/exact-P6/records/delivery-plan.json command ngoài check plan",
+    "evidence/attempt.json: local evidence command set phải khớp mọi command duy nhất của plan",
+    "evidence/attempt.json.ordered_commits[0].git_evidence_ref: Git parents projection thiếu kind/fields hoặc có field lạ",
+    "evidence/attempt.json.ordered_commits[0]: commit message: Body cần đúng một heading Mục đích:",
+    "evidence/attempt.json.ordered_commits[0]: commit message: Body cần đúng một heading Thay đổi:",
+    "evidence/attempt.json.ordered_commits[0]: commit message: Body cần đúng một heading Kiểm tra:",
+    "evidence/attempt.json.payload: destination repository không khớp check plan",
+    "evidence/attempt.json.payload: push postflight repository không khớp check plan",
+    "evidence/attempt.json.payload: push command result phải SUCCEEDED/exit0/cleanup và trong deadline",
+    "manifest.json.closing: destination repository không khớp check plan",
+    "manifest.json.closing: push postflight repository không khớp check plan",
+    "manifest.json.closing: push command result phải SUCCEEDED/exit0/cleanup và trong deadline",
+    "manifest.json.closing: collection page pages/check-runs-page-1-51531f6e-1c8f-42a2-8e1f-7f0627b6f7c7.json nằm ngoài collection invocation",
+    "manifest.json.closing: collection page pages/commit-statuses-page-1-58b2c15f-e597-4484-a7b9-0d6d4d47ccf7.json nằm ngoài collection invocation",
+    "manifest.json.closing: collection page pages/workflow-runs-page-1-7c2694ac-c5a8-4299-8c31-394d8942ff7b.json nằm ngoài collection invocation",
+    "manifest.json.closing: collection page pages/jobs-40045128876-attempt-1-page-1-1d71dbba-cf7f-4872-ab1d-5fddd6ad4db6.json nằm ngoài collection invocation",
+    "manifest.json.closing: collection page pages/jobs-40044749939-attempt-1-page-1-7c5da5aa-f89e-4c45-8d85-f5c0da094df8.json nằm ngoài collection invocation",
+    "manifest.json.closing_commit.git_evidence_ref: Git parents projection thiếu kind/fields hoặc có field lạ",
+    "manifest.json.closing_commit: commit message: MCE4D trailers phải hợp lệ, duy nhất và nằm trong trailer block cuối",
+    "manifest.json.closing_commit: commit message: Closing cần đúng một Delivery-ID và một Delivery-Phase trailer",
+    "manifest.json.closing_commit: commit message: MCE4D-Delivery-ID phải là UUID hợp lệ"
+  ],
+  "unknowns": [
+    "Static evaluator không query GitHub và không tự xác minh byte readback của archive"
+  ],
+  "interpretation": "The immutable P2 payload commit has an empty body and cannot satisfy the required three headings. The remaining reported failures include stale plan/operation identity and collection timing; projection normalization errors are builder defects. Preserve revision 6 and create a fresh revision with corrected task evidence."
+}

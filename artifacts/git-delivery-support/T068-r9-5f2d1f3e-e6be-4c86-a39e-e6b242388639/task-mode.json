@@ -1,0 +1,41 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "tests/acceptance/polyglot_benchmark_test.go",
+      "artifacts/git-delivery-support/T068-r9-5f2d1f3e-e6be-4c86-a39e-e6b242388639/**",
+      ".gitattributes"
+    ],
+    "behavior": [
+      "Keep all C055-C069 thresholds, independent oracle, >=30 tasks, >=3 synthetic repositories, three repeats, seed 68055 and correctness gates unchanged.",
+      "Require each canonical case ID C055-C069 to retain its intended domain even if the acceptance plan and corpus drift together.",
+      "Preserve revision-6 sources and exact failed archive-validation record; do not edit old selectors, assignments or archives.",
+      "Keep synthetic and real-repository evidence distinct; real repository and token telemetry stay NOT_RUN without authorization and host receipts.",
+      "Use task-specific -text and cr-at-eol rules for retained evidence; never change global Git configuration."
+    ],
+    "exclusions": [
+      "No production or user-repository benchmark, LLM/API, production database, target runtime, or arbitrary plugin execution.",
+      "No safety-boundary relaxation, no omission of prior evidence, and no mutation of sealed archives or previous selectors.",
+      "No benchmark or token-saving claim without actual measured evidence.",
+      "No force push, branch deletion, or rewriting any published commit."
+    ]
+  },
+  "delivery_id": "5f2d1f3e-e6be-4c86-a39e-e6b242388639",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Bind each T068 case ID C055-C069 to its canonical domain in the acceptance test, then complete T068 exact-P/C delivery, archive readback and fresh live verification.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19,S21,S22,S24,S28-S30,S43-S45,S47,S53",
+  "task_id": "T068",
+  "task_revision": 7,
+  "verification_plan": [
+    "Run allocation preflight against the freshly confirmed C base and preserve every revision-6 failure source.",
+    "Run the focused acceptance and benchmark tests, then all 13 frozen local checks on exact P3 and exact C3.",
+    "Collect fresh GitHub CI source pages for the exact payload and closing SHAs on main and codex/t068-polyglot-matrix; require all six contexts on each ref.",
+    "Retain exact normal push preflight/postflight receipts whose repository authority matches the frozen plan and whose lifecycle includes postflight.",
+    "Validate the complete selector/source/evidence graph, publish and read back the sealed archive, and run fresh live verification.",
+    "Keep real-repository benchmark and token usage NOT_RUN because the plan authorizes synthetic fixtures only and no host usage receipt exists."
+  ]
+}
