@@ -900,6 +900,82 @@ class GovernanceSemanticsTests(unittest.TestCase):
         self.assertEqual("REJECT", result["verdict"])
         self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
 
+    def test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        objects["lineage/T003.json"]["value"]["lineage_sha256"] = "0" * 64
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("canonical digest mismatch" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        objects["lineage/T003-duplicate.json"] = copy.deepcopy(objects["lineage/T003.json"])
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("lineage không duy nhất" in error for error in result["errors"]))
+
+    def test_selection_history_rejects_missing_retained_lineage_or_invalidation_member(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_member_bytes.pop("authority/assignment-r2.txt")
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("source bytes missing or SHA-256 mismatch" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_members.pop("history/plan-invalidation.json")
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("invalidation reason thiếu retained object" in error for error in result["errors"]))
+
+    def test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch(self) -> None:
+        identity_mutations = (
+            ("task_id", "T004"),
+            ("task_revision", 3),
+            ("delivery_id", "cccccccc-cccc-4ccc-8ccc-cccccccccccc"),
+            ("supersedes_delivery_id", "dddddddd-dddd-4ddd-8ddd-dddddddddddd"),
+        )
+        for field, invalid_value in identity_mutations:
+            with self.subTest(field=field):
+                objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+                raw_members["history/selection-reason.json"][field] = invalid_value
+                result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+                self.assertEqual("REJECT", result["verdict"])
+                self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_members["history/selection-reason.json"]["invalidation_ref"] = "history/other-invalidation.json"
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        other_ref = "history/other-invalidation.json"
+        raw_members[other_ref] = copy.deepcopy(raw_members["history/plan-invalidation.json"])
+        wrapper = raw_members["history/selection-reason.json"]
+        wrapper["invalidation_ref"] = other_ref
+        wrapper["reason_ref"] = other_ref
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
+
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        raw_members["history/selection-reason.json"]["selected_at_utc"] = "2026-10-15T20:01:01Z"
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+        self.assertEqual("REJECT", result["verdict"])
+        self.assertTrue(any("reason_ref phải là một invalidation reason" in error for error in result["errors"]))
+
+    def test_selection_reason_accepts_equal_instants_without_mutating_inputs(self) -> None:
+        objects, raw_members, raw_member_bytes = self._assignment_lineage_bundle()
+        selection = objects["history/selection-r2.json"]["value"]
+        selection["updated_at_utc"] = "2026-10-15T22:01:00.123456+02:00"
+        raw_members["history/selection-reason.json"]["selected_at_utc"] = "2026-10-15T20:01:00.123456Z"
+        original = (copy.deepcopy(objects), copy.deepcopy(raw_members), copy.deepcopy(raw_member_bytes))
+
+        result = validate_delivery_links(objects, raw_members=raw_members, raw_member_bytes=raw_member_bytes)
+
+        self.assertEqual("UNKNOWN", result["verdict"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual(original, (objects, raw_members, raw_member_bytes))
+
     def _push_operation(self) -> dict[str, object]:
         lifecycle = "11111111-1111-4111-8111-111111111111"
         repo = {"host": "github.com", "repository_id": 42, "owner": "owner", "name": "repo"}
