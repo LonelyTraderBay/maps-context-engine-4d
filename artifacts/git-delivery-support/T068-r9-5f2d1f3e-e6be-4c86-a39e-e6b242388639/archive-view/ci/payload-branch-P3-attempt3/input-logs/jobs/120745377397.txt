@@ -1,0 +1,259 @@
+﻿2026-10-24T01:51:02.6065233Z Current runner version: '2.338.0'
+2026-10-24T01:51:02.6080672Z ##[group]Runner Image Provisioner
+2026-10-24T01:51:02.6081205Z Hosted Compute Agent
+2026-10-24T01:51:02.6081562Z Version: 20261012.601
+2026-10-24T01:51:02.6081979Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-24T01:51:02.6082440Z Build Date: 2026-10-12T17:48:21Z
+2026-10-24T01:51:02.6082905Z Worker ID: {d6164f87-3fda-4a93-b57d-37e986f6bc6a}
+2026-10-24T01:51:02.6083337Z Region: westus3
+2026-10-24T01:51:02.6083669Z Cloud: Azure
+2026-10-24T01:51:02.6084032Z ##[endgroup]
+2026-10-24T01:51:02.6084734Z ##[group]Operating System
+2026-10-24T01:51:02.6085116Z Ubuntu
+2026-10-24T01:51:02.6085477Z 24.04.5
+2026-10-24T01:51:02.6085789Z LTS
+2026-10-24T01:51:02.6086130Z ##[endgroup]
+2026-10-24T01:51:02.6086627Z ##[group]Runner Image
+2026-10-24T01:51:02.6087002Z Image: ubuntu-24.04
+2026-10-24T01:51:02.6087394Z Version: 20261012.334.1
+2026-10-24T01:51:02.6088125Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-24T01:51:02.6089065Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-24T01:51:02.6089606Z ##[endgroup]
+2026-10-24T01:51:02.6090294Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T01:51:02.6091370Z Contents: read
+2026-10-24T01:51:02.6092084Z Metadata: read
+2026-10-24T01:51:02.6092454Z ##[endgroup]
+2026-10-24T01:51:02.6093734Z Secret source: Actions
+2026-10-24T01:51:02.6094302Z Cache mode: write
+2026-10-24T01:51:02.6094729Z Prepare workflow directory
+2026-10-24T01:51:02.6322779Z Prepare all required actions
+2026-10-24T01:51:02.6353187Z Getting action download info
+2026-10-24T01:51:02.9070823Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-24T01:51:03.1134996Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-10-24T01:51:04.1421273Z Complete job name: explorer-contract (ubuntu-latest)
+2026-10-24T01:51:04.1993511Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-10-24T01:51:04.1994484Z with:
+2026-10-24T01:51:04.1995006Z   persist-credentials: false
+2026-10-24T01:51:04.1995720Z   repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-24T01:51:04.2000904Z   token: ***
+2026-10-24T01:51:04.2001398Z   ssh-strict: true
+2026-10-24T01:51:04.2001908Z   ssh-user: git
+2026-10-24T01:51:04.2002398Z   clean: true
+2026-10-24T01:51:04.2002920Z   sparse-checkout-cone-mode: true
+2026-10-24T01:51:04.2003540Z   fetch-depth: 1
+2026-10-24T01:51:04.2004045Z   fetch-tags: false
+2026-10-24T01:51:04.2004558Z   show-progress: true
+2026-10-24T01:51:04.2005073Z   lfs: false
+2026-10-24T01:51:04.2005564Z   submodules: false
+2026-10-24T01:51:04.2006098Z   set-safe-directory: true
+2026-10-24T01:51:04.2006820Z   allow-unsafe-pr-checkout: false
+2026-10-24T01:51:04.2007605Z env:
+2026-10-24T01:51:04.2008069Z   GIT_CONFIG_COUNT: 1
+2026-10-24T01:51:04.2008633Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T01:51:04.2009286Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T01:51:04.2009846Z ##[endgroup]
+2026-10-24T01:51:04.3084909Z Syncing repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-24T01:51:04.3087472Z ##[group]Getting Git version info
+2026-10-24T01:51:04.3088961Z Working directory is '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+2026-10-24T01:51:04.3091002Z [command]/usr/bin/git version
+2026-10-24T01:51:04.3131841Z git version 2.55.0
+2026-10-24T01:51:04.3151356Z ##[endgroup]
+2026-10-24T01:51:04.3156749Z Temporarily overriding HOME='/home/runner/work/_temp/c2564899-ed63-493f-8d9a-ddd206a65c61' before making global git config changes
+2026-10-24T01:51:04.3159020Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T01:51:04.3161120Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T01:51:04.3715558Z Deleting the contents of '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+2026-10-24T01:51:04.3717951Z ##[group]Determining repository object format
+2026-10-24T01:51:04.3719285Z ##[endgroup]
+2026-10-24T01:51:04.3720125Z ##[group]Initializing the repository
+2026-10-24T01:51:04.3722734Z [command]/usr/bin/git init /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T01:51:04.4701532Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T01:51:04.4703256Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T01:51:04.4704899Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T01:51:04.4705858Z hint: call:
+2026-10-24T01:51:04.4706366Z hint:
+2026-10-24T01:51:04.4707396Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T01:51:04.4708427Z hint:
+2026-10-24T01:51:04.4709399Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T01:51:04.4710918Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T01:51:04.4712165Z hint:
+2026-10-24T01:51:04.4712838Z hint: 	git branch -m <name>
+2026-10-24T01:51:04.4713390Z hint:
+2026-10-24T01:51:04.4723664Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T01:51:04.4725887Z Initialized empty Git repository in /home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/
+2026-10-24T01:51:04.4753972Z [command]/usr/bin/git remote add origin https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-24T01:51:04.4892807Z ##[endgroup]
+2026-10-24T01:51:04.4894054Z ##[group]Disabling automatic garbage collection
+2026-10-24T01:51:04.4894993Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T01:51:04.5414005Z ##[endgroup]
+2026-10-24T01:51:04.5414998Z ##[group]Setting up auth
+2026-10-24T01:51:04.5415597Z Removing SSH command configuration
+2026-10-24T01:51:04.5418045Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T01:51:04.5446374Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T01:51:04.6043585Z Removing HTTP extra header
+2026-10-24T01:51:04.6047421Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T01:51:04.6074015Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T01:51:04.6235893Z Removing includeIf entries pointing to credentials config files
+2026-10-24T01:51:04.6238838Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T01:51:04.6266250Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T01:51:04.6438831Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T01:51:04.6612878Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path /home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:04.7205270Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:04.8116611Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:04.8513641Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:04.8541661Z ##[endgroup]
+2026-10-24T01:51:04.8542506Z ##[group]Fetching the repository
+2026-10-24T01:51:04.8548160Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +18191d974ebe671555ef6d088f4a85aec7b3c7fd:refs/remotes/origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.4611685Z From https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-24T01:51:06.4612953Z  * [new ref]         18191d974ebe671555ef6d088f4a85aec7b3c7fd -> origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.4619668Z [command]/usr/bin/git branch --list --remote origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.4643479Z   origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.4648734Z [command]/usr/bin/git rev-parse refs/remotes/origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.4669071Z 18191d974ebe671555ef6d088f4a85aec7b3c7fd
+2026-10-24T01:51:06.4672173Z ##[endgroup]
+2026-10-24T01:51:06.4672681Z ##[group]Determining the checkout info
+2026-10-24T01:51:06.4675864Z ##[endgroup]
+2026-10-24T01:51:06.4676247Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T01:51:06.4716659Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T01:51:06.4742023Z ##[group]Checking out the ref
+2026-10-24T01:51:06.4744390Z [command]/usr/bin/git checkout --progress --force -B codex/t068-polyglot-matrix refs/remotes/origin/codex/t068-polyglot-matrix
+2026-10-24T01:51:06.6077567Z Switched to a new branch 'codex/t068-polyglot-matrix'
+2026-10-24T01:51:06.6089860Z branch 'codex/t068-polyglot-matrix' set up to track 'origin/codex/t068-polyglot-matrix'.
+2026-10-24T01:51:06.6139443Z ##[endgroup]
+2026-10-24T01:51:06.6141794Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T01:51:06.6164638Z 18191d974ebe671555ef6d088f4a85aec7b3c7fd
+2026-10-24T01:51:06.6171242Z ##[group]Removing auth
+2026-10-24T01:51:06.6171554Z Removing SSH command configuration
+2026-10-24T01:51:06.6173758Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T01:51:06.6199351Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T01:51:06.6366377Z Removing HTTP extra header
+2026-10-24T01:51:06.6368376Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T01:51:06.6393295Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T01:51:06.6556990Z Removing includeIf entries pointing to credentials config files
+2026-10-24T01:51:06.6561897Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T01:51:06.6586194Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-24T01:51:06.6586915Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-24T01:51:06.6587440Z includeif.gitdir:/github/workspace/.git.path
+2026-10-24T01:51:06.6587832Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-24T01:51:06.6597592Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-24T01:51:06.6612726Z /home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:06.6619119Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-36d0e653\-64b3\-4fc4\-affd\-3a718c010f1f\.config
+2026-10-24T01:51:06.6648139Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-24T01:51:06.6669363Z /home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:06.6674904Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-36d0e653\-64b3\-4fc4\-affd\-3a718c010f1f\.config
+2026-10-24T01:51:06.6703031Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-24T01:51:06.6723642Z /github/runner_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:06.6728814Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-36d0e653\-64b3\-4fc4\-affd\-3a718c010f1f\.config
+2026-10-24T01:51:06.6758031Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-24T01:51:06.6778575Z /github/runner_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config
+2026-10-24T01:51:06.6783638Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-36d0e653\-64b3\-4fc4\-affd\-3a718c010f1f\.config
+2026-10-24T01:51:06.6811033Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T01:51:06.6977406Z Removing credentials config '/home/runner/work/_temp/git-credentials-36d0e653-64b3-4fc4-affd-3a718c010f1f.config'
+2026-10-24T01:51:06.6983057Z ##[endgroup]
+2026-10-24T01:51:06.7155112Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-10-24T01:51:06.7155367Z with:
+2026-10-24T01:51:06.7155508Z   node-version: 24.22.0
+2026-10-24T01:51:06.7155665Z   check-latest: false
+2026-10-24T01:51:06.7157255Z   token: ***
+2026-10-24T01:51:06.7157407Z   package-manager-cache: true
+2026-10-24T01:51:06.7157569Z env:
+2026-10-24T01:51:06.7157711Z   GIT_CONFIG_COUNT: 1
+2026-10-24T01:51:06.7157863Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T01:51:06.7158032Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T01:51:06.7158184Z ##[endgroup]
+2026-10-24T01:51:06.7921986Z Attempting to download 24.22.0...
+2026-10-24T01:51:07.7621294Z Acquiring 24.22.0 - x64 from https://github.com/actions/node-versions/releases/download/24.22.0-38668177966/node-24.22.0-linux-x64.tar.gz
+2026-10-24T01:51:08.3083000Z Extracting ...
+2026-10-24T01:51:08.3160944Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/84688e5c-0ed6-4c7f-aafd-0ac38ce48afe -f /home/runner/work/_temp/7b6d8448-db81-4272-aa55-e266705b4381
+2026-10-24T01:51:09.1982047Z Adding to the cache ...
+2026-10-24T01:51:10.9635363Z ##[group]Environment details
+2026-10-24T01:51:11.1030508Z node: v24.22.0
+2026-10-24T01:51:11.1030742Z npm: 11.19.1
+2026-10-24T01:51:11.1030890Z yarn: 1.22.22
+2026-10-24T01:51:11.1031281Z ##[endgroup]
+2026-10-24T01:51:11.1035827Z Detected npm as the package manager from package.json's packageManager field. Auto caching has been enabled for npm. If you want to disable it, set package-manager-cache input to false
+2026-10-24T01:51:11.1043457Z [command]/opt/hostedtoolcache/node/24.22.0/x64/bin/npm config get cache
+2026-10-24T01:51:11.1606325Z /home/runner/.npm
+2026-10-24T01:51:11.5371195Z Cache hit for: node-cache-Linux-x64-npm-1ce20fd59dd2124dda9e7fce493890f587a95e4cd131cf8017002e3b8d22e21a
+2026-10-24T01:51:12.7321449Z Received 36556854 of 36556854 (100.0%), 36.2 MBs/sec
+2026-10-24T01:51:12.7321765Z Cache Size: ~35 MB (36556854 B)
+2026-10-24T01:51:12.7340054Z [command]/usr/bin/tar -xf /home/runner/work/_temp/2cda6c62-5ca8-4794-9b22-22e155040165/cache.tzst -P -C /home/runner/work/maps-context-engine-4d/maps-context-engine-4d --use-compress-program unzstd
+2026-10-24T01:51:12.7860820Z Cache restored successfully
+2026-10-24T01:51:12.7881155Z Cache restored from key: node-cache-Linux-x64-npm-1ce20fd59dd2124dda9e7fce493890f587a95e4cd131cf8017002e3b8d22e21a
+2026-10-24T01:51:12.8041621Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund
+2026-10-24T01:51:12.8041891Z [36;1mnpm ci --ignore-scripts --no-audit --no-fund[0m
+2026-10-24T01:51:12.8228228Z shell: /usr/bin/bash -e {0}
+2026-10-24T01:51:12.8228376Z env:
+2026-10-24T01:51:12.8228494Z   GIT_CONFIG_COUNT: 1
+2026-10-24T01:51:12.8228625Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T01:51:12.8228772Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T01:51:12.8228895Z ##[endgroup]
+2026-10-24T01:51:14.0402099Z 
+2026-10-24T01:51:14.0407954Z added 122 packages in 1s
+2026-10-24T01:51:14.0844646Z ##[group]Run npm run test:contract:ui
+2026-10-24T01:51:14.0844831Z [36;1mnpm run test:contract:ui[0m
+2026-10-24T01:51:14.0894345Z shell: /usr/bin/bash -e {0}
+2026-10-24T01:51:14.0894479Z env:
+2026-10-24T01:51:14.0894581Z   GIT_CONFIG_COUNT: 1
+2026-10-24T01:51:14.0894704Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T01:51:14.0894839Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T01:51:14.0894962Z ##[endgroup]
+2026-10-24T01:51:14.1492566Z 
+2026-10-24T01:51:14.1493036Z > maps-context-engine-4d-workspace@0.0.0 test:contract:ui
+2026-10-24T01:51:14.1493515Z > node --test tests/contract/ui/toolchain-and-contract.test.mjs
+2026-10-24T01:51:14.1493754Z 
+2026-10-24T01:51:14.7750358Z ✔ Node and npm match the sealed workspace runtime (0.565694ms)
+2026-10-24T01:51:14.7773481Z ✔ workspace manifests keep every direct dependency exact (4.348908ms)
+2026-10-24T01:51:14.7785425Z ✔ toolchain seal binds package lock, six CI contexts, and browser revision (1.379259ms)
+2026-10-24T01:51:14.7792442Z ✔ TypeScript bootstrap keeps strict nullable and indexed access checks (0.50159ms)
+2026-10-24T01:51:14.8221203Z ✔ Explorer API and bridge reuse the closed S43 contracts (1.68407ms)
+2026-10-24T01:51:14.8237491Z ✔ pinned React and graph tools expose the intended public APIs (4.730342ms)
+2026-10-24T01:51:14.8238259Z ✔ pinned compiler, component test, and browser tools expose expected entry points (37.418514ms)
+2026-10-24T01:51:15.0819510Z [36mvite v8.3.4 [32mbuilding client environment for production...[36m[39m
+2026-10-24T01:51:15.0879894Z transforming...
+2026-10-24T01:51:15.1446188Z ✓ 177 modules transformed.
+2026-10-24T01:51:15.1672499Z rendering chunks...
+2026-10-24T01:51:15.2109820Z computing gzip size...
+2026-10-24T01:51:15.2161644Z dist/index.html                   0.46 kB │ gzip:   0.30 kB
+2026-10-24T01:51:15.2162117Z dist/assets/index-BvXOEtEG.css   26.81 kB │ gzip:   5.64 kB
+2026-10-24T01:51:15.2162549Z dist/assets/index-BKneJcd2.js   470.47 kB │ gzip: 149.93 kB
+2026-10-24T01:51:15.2162829Z 
+2026-10-24T01:51:15.2171786Z [32m✓ built in 134ms[39m
+2026-10-24T01:51:15.4076972Z 
+2026-10-24T01:51:15.4078447Z [1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/web/explorer[39m
+2026-10-24T01:51:15.4078897Z 
+2026-10-24T01:51:15.9407030Z  [32m✓[39m src/api/explorerClient.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-24T01:51:16.2761629Z  [32m✓[39m src/AppShell.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 306[2mms[22m[39m
+2026-10-24T01:51:16.2830402Z 
+2026-10-24T01:51:16.2832189Z [2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+2026-10-24T01:51:16.2832999Z [2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+2026-10-24T01:51:16.2833411Z [2m   Start at [22m 01:51:15
+2026-10-24T01:51:16.2835883Z [2m   Duration [22m 871ms[2m (environment 53%, tests 25%, transform 9%, setup 8%, import 4%)[22m
+2026-10-24T01:51:16.2843481Z 
+2026-10-24T01:51:16.3172055Z ✔ fixture plan distinguishes design coverage from future browser acceptance (0.512579ms)
+2026-10-24T01:51:16.3195842Z ✔ Explorer AppShell typechecks, builds, and passes its component and API tests (1492.694928ms)
+2026-10-24T01:51:16.3716367Z ℹ tests 9
+2026-10-24T01:51:16.3719234Z ℹ suites 0
+2026-10-24T01:51:16.3719413Z ℹ pass 9
+2026-10-24T01:51:16.3719586Z ℹ fail 0
+2026-10-24T01:51:16.3719852Z ℹ cancelled 0
+2026-10-24T01:51:16.3720057Z ℹ skipped 0
+2026-10-24T01:51:16.3720522Z ℹ todo 0
+2026-10-24T01:51:16.3720666Z ℹ duration_ms 2200.618395
+2026-10-24T01:51:16.3862606Z Post job cleanup.
+2026-10-24T01:51:16.4527502Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-1ce20fd59dd2124dda9e7fce493890f587a95e4cd131cf8017002e3b8d22e21a, not saving cache.
+2026-10-24T01:51:16.4622920Z Post job cleanup.
+2026-10-24T01:51:16.5115767Z [command]/usr/bin/git version
+2026-10-24T01:51:16.5148798Z git version 2.55.0
+2026-10-24T01:51:16.5170307Z Temporarily overriding HOME='/home/runner/work/_temp/b86bdb40-8e72-40ca-890f-46f2b74aa0da' before making global git config changes
+2026-10-24T01:51:16.5171111Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T01:51:16.5173426Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T01:51:16.5197233Z Removing SSH command configuration
+2026-10-24T01:51:16.5201295Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T01:51:16.5230793Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T01:51:16.5412838Z Removing HTTP extra header
+2026-10-24T01:51:16.5417616Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T01:51:16.5445322Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T01:51:16.5636606Z Removing includeIf entries pointing to credentials config files
+2026-10-24T01:51:16.5642211Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T01:51:16.5673499Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T01:51:16.5959267Z Cleaning up orphan processes
