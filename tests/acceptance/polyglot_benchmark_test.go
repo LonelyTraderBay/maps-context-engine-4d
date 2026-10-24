@@ -51,10 +51,18 @@ func TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits(t *testing.T) {
 	if plan.FormatVersion != 1 || plan.TaskID != "T068" || plan.TaskRevision != 2 || plan.DeliveryID != "d6398163-6693-4073-88b3-bd0e54e01c6d" || len(plan.Cases) != 15 {
 		t.Fatalf("unexpected T068 plan identity/case count: version=%d task=%q revision=%d delivery=%q cases=%d", plan.FormatVersion, plan.TaskID, plan.TaskRevision, plan.DeliveryID, len(plan.Cases))
 	}
+	expectedDomains := []string{
+		"typescript", "frontend-backend", "python", "python-notebook", "sql",
+		"http-schema-proto", "events", "state-machine", "federation", "temporal-diff",
+		"trading", "commerce", "ai-lineage", "architecture", "benchmark",
+	}
 	for index, item := range plan.Cases {
 		expectedID := fmt.Sprintf("C%03d", 55+index)
 		if item.ID != expectedID {
 			t.Errorf("T068 plan case %d = %q, want %q", index, item.ID, expectedID)
+		}
+		if item.Domain != expectedDomains[index] {
+			t.Errorf("T068 plan case %s domain = %q, want %q", expectedID, item.Domain, expectedDomains[index])
 		}
 	}
 	if plan.Cohort.MinimumRepositories != 3 || plan.Cohort.MinimumTasks != 30 || plan.Cohort.Repeats != 3 || plan.Cohort.Seed != 68055 ||
