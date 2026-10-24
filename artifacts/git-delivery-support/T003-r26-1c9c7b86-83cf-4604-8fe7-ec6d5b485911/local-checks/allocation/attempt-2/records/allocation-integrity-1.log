@@ -1,0 +1,112 @@
+COMMAND: C:\Users\Joker-PC\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe -B C:\Users\Joker-PC\.codex\worktrees\mce4d-108-rollout\maps-context-engine-4d\work\run_t003_r26_preflight.py --integrity-only
+EXIT_CODE: 0
+
+--- STDOUT ---
+{
+  "result": "PASS",
+  "checked_at_utc": "2026-10-24T13:16:06.834547Z",
+  "head": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+  "branch": "codex/t003-r24-closing-validated",
+  "checks": {
+    "exact_base_and_clean_tracked_tree": {
+      "pass": true,
+      "detail": {
+        "head": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+        "branch": "codex/t003-r24-closing-validated",
+        "tracked_changes": []
+      }
+    },
+    "both_remote_refs_at_base": {
+      "pass": true,
+      "detail": {
+        "main": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+        "task_branch": "c21f3b30a678d332819ccceb9899cf2c5cae89fb"
+      }
+    },
+    "tracker_scope_dependencies_and_prior_effective_state": {
+      "pass": true,
+      "detail": {
+        "task_count": 108,
+        "T001": "DONE",
+        "T002": "DONE",
+        "T003": "VERIFY"
+      }
+    },
+    "allocation_plan_dependencies_and_selector": {
+      "pass": true,
+      "detail": {
+        "allocation_sha256": "f1ae356a0bfb16a6beb75fff5fd2d0b63247fa7faeffc1756185d6c927a87d01",
+        "allocation_matches_current": true,
+        "plan_sha256": "7bbd36a720803c54d3f96f99fa5c7a77d9a09eff29d02ef87398be3ce8ed23ed",
+        "dependency_result": "READY",
+        "selection_revision": 26
+      }
+    },
+    "immutable_r22_archive_readback": {
+      "pass": true,
+      "detail": {
+        "readback": "PASS",
+        "actual_hashes": {
+          "manifest.json": "3c54d9c9a77419c58b91633d0387c884f9e5781d6f540245603c332789280186",
+          "seal.json": "f9355e2dd5c463729028db7020f3f4bd73689438db67cc175d8bd83c01f2d12b"
+        },
+        "expected_hashes": {
+          "manifest.json": "3c54d9c9a77419c58b91633d0387c884f9e5781d6f540245603c332789280186",
+          "seal.json": "f9355e2dd5c463729028db7020f3f4bd73689438db67cc175d8bd83c01f2d12b"
+        }
+      }
+    },
+    "selector_chain_26_replay": {
+      "pass": true,
+      "detail": {
+        "selectors": 26,
+        "members": [
+          154,
+          154
+        ],
+        "verdict": "UNKNOWN",
+        "errors": []
+      }
+    },
+    "r25_closing_diff_rejection_reproduced": {
+      "pass": true,
+      "detail": {
+        "result": "REJECT_REPRODUCED",
+        "exit_code": 1,
+        "blockers": [
+          "S19 closing làm đổi metadata đã freeze: local",
+          "S19 closing cần local PASS hoặc PASS(N/N)",
+          "S19 closing làm đổi evidence đã freeze: phase",
+          "S19 closing làm đổi evidence đã freeze: local"
+        ],
+        "stderr_sha256": "f4366e7701a2a9a5350e21c94eaf25fb6a2b447d49a94d7703c101ff96b3cbb5"
+      }
+    },
+    "policy_source_hashes": {
+      "pass": true,
+      "detail": [
+        {
+          "path": "docs/AI_RULES.md",
+          "expected": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+          "actual": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+          "match": true
+        },
+        {
+          "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+          "expected": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+          "actual": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+          "match": true
+        },
+        {
+          "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+          "expected": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+          "actual": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+          "match": true
+        }
+      ]
+    }
+  },
+  "errors": []
+}
+
+--- STDERR ---

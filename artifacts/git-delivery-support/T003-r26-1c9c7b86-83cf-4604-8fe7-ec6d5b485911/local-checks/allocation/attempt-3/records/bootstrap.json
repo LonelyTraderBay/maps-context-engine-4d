@@ -1,0 +1,63 @@
+{
+  "format_version": 1,
+  "kind": "allocation_preflight_check",
+  "task_id": "T003",
+  "task_revision": 26,
+  "delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "check_id": "bootstrap",
+  "name": "bootstrap-and-checkpoint-regressions",
+  "result": "PASS",
+  "started_at_utc": "2026-10-24T13:16:49.651639Z",
+  "completed_at_utc": "2026-10-24T13:16:53.099674Z",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-24T13:16:49.651639Z",
+      "completed_at_utc": "2026-10-24T13:16:49.712139Z",
+      "duration_seconds": 0.0629999999946449,
+      "exit_code": 0,
+      "log": "local-checks/allocation/attempt-3/records/bootstrap-1.log",
+      "log_sha256": "0446b25b47918fd80c989132533a8d30400c981689e4c9dc59eb2395b8845f38",
+      "stdout_sha256": "366654372a736e818aff4384f4c0fe4b29e31598758137a79de422212d36ec35",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "environment_overrides": {}
+    },
+    {
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-24T13:16:49.712639Z",
+      "completed_at_utc": "2026-10-24T13:16:50.544748Z",
+      "duration_seconds": 0.8279999999940628,
+      "exit_code": 0,
+      "log": "local-checks/allocation/attempt-3/records/bootstrap-2.log",
+      "log_sha256": "be2beb5464feb2c30961d1119cf52273e7ee5b9278386fb2fa2dabdfc6bd1aca",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "dd38c426ad3b3fa36cb1379508b93b162c345f54661c014a8ea560700ef678d2",
+      "environment_overrides": {}
+    },
+    {
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "started_at_utc": "2026-10-24T13:16:50.545257Z",
+      "completed_at_utc": "2026-10-24T13:16:53.099175Z",
+      "duration_seconds": 2.562000000005355,
+      "exit_code": 0,
+      "log": "local-checks/allocation/attempt-3/records/bootstrap-3.log",
+      "log_sha256": "81b3fb78277075b5668a42f14b52b9ed98f3b9038ff64342f5c8467da4982178",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "48ce6fe57be83344b3902d5ba6765b7b454a71e1cd99eb314d0fcd80dc0cbb5d",
+      "environment_overrides": {}
+    }
+  ],
+  "detail": {}
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": 1,
+  "kind": "delivery_selection_invalidation",
+  "task_id": "T003",
+  "previous_task_revision": 25,
+  "task_revision": 26,
+  "previous_delivery_id": "f65b7ec7-805f-4684-a73b-6b357ab36e62",
+  "active_delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "reason": "Reopen T003 as revision 26 because the actual r25 closing candidate is rejected by CLOSE-DIFF-01: r25 payload froze phase=allocation-preflight and local=PENDING, while closing requires local PASS and forbids changing either field. Keep the classifier unchanged; record candidate-local PASS and phase=payload in the r26 payload checkpoint before creating payload P, then validate exact P and its direct-child closing. Preserve all r25 code, commit, local and CI evidence.",
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/selection.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/invalidation/reopen-revision-25.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/task-mode.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/local-checks/payload/exact-P/summary.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/local-checks/payload/exact-P/typed-evidence-summary.json",
+    "artifacts/git-delivery-support/T003-r25-f65b7ec7-805f-4684-a73b-6b357ab36e62/local-checks/payload/exact-P/exact-p-manifest.json",
+    "artifacts/ci/T003-r25-payload-attempt-1/p25-attempt-1/payload-ci-evidence.json",
+    "artifacts/ci/T003-r25-payload-attempt-1/p25-attempt-1/manifest.json",
+    "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/reopen-trigger/r25-closing-frozen-local-rejection.json"
+  ],
+  "recorded_at_utc": "2026-10-24T13:13:46.271305Z"
+}

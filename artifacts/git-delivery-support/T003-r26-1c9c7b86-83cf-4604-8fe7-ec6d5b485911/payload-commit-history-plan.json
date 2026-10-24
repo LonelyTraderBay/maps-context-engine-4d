@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "kind": "t003_payload_commit_history_plan",
+  "task_id": "T003",
+  "task_revision": 26,
+  "delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "base_sha": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+  "reopen_trigger_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/reopen-trigger/r25-closing-frozen-local-rejection.json",
+  "reopen_trigger_sha256": "8265ea4eaab84589936ad0523d2def876b0a12788ff40f5bfff6c39d277e4a00",
+  "rejected_cases": [
+    "empty commit body",
+    "missing Vietnamese headings",
+    "wrong task or priority",
+    "merge commit",
+    "non-ancestor base",
+    "empty commit range"
+  ],
+  "accepted_case": "non-empty ordered linear payload history whose actual commit messages all pass the existing policy",
+  "prepublication_command": "python -B tools/ci/delivery_policy.py payload-commits --repo . --base <base-sha> --payload <payload-sha> --task T003 --priority P0",
+  "result": "PLAN_ONLY_PENDING_R26_PAYLOAD_AND_EXACT_SHA_CHECKS"
+}

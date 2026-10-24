@@ -1,0 +1,234 @@
+{
+  "format_version": 1,
+  "kind": "local_check_summary",
+  "task_id": "T003",
+  "task_revision": 26,
+  "delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "subject_sha": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+  "phase": "allocation-preflight",
+  "passed_count": 7,
+  "failed_count": 0,
+  "executed_checks": 7,
+  "command_count": 9,
+  "result": "PASS",
+  "started_at_utc": "2026-10-24T13:22:48.764085Z",
+  "completed_at_utc": "2026-10-24T13:23:25.299758Z",
+  "checks": [
+    {
+      "check_id": "plan",
+      "name": "frozen-check-plan",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/plan.json",
+      "record_sha256": "18f19611ad928a4c49816300c01a0d9090161857cb286facae7392216f529bc6",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/ci/delivery_policy.py",
+            "check-plan",
+            "--plan",
+            "C:\\Users\\Joker-PC\\.codex\\worktrees\\mce4d-108-rollout\\maps-context-engine-4d\\artifacts\\git-delivery-support\\T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911\\check-plan-canonical.json",
+            "--sha256",
+            "7bbd36a720803c54d3f96f99fa5c7a77d9a09eff29d02ef87398be3ce8ed23ed"
+          ],
+          "started_at_utc": "2026-10-24T13:22:48.764085Z",
+          "completed_at_utc": "2026-10-24T13:22:48.847585Z",
+          "duration_seconds": 0.09399999999732245,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/plan-1.log",
+          "log_sha256": "61c335db3495a65468cc5fc71dafd8aa8b4527465a408a9b1e327783db7a5235",
+          "stdout_sha256": "c04d645a57bbff32e010923c5f1dbf6da9132775d1be128c439ec66d3e32e605",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "spec",
+      "name": "spec-static-validator",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/spec.json",
+      "record_sha256": "999516e3afc5b590382e5826562a857646879184cf36853c0e0da4ebf3132d2f",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/spec_check/check.py"
+          ],
+          "started_at_utc": "2026-10-24T13:22:48.853586Z",
+          "completed_at_utc": "2026-10-24T13:22:49.283085Z",
+          "duration_seconds": 0.4220000000059372,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/spec-1.log",
+          "log_sha256": "7c8dc032b63c64d73db9a5336846ce916ba78d0c85e0be7707b1729b1dc379c1",
+          "stdout_sha256": "44fe43fc4234dec988399363602349bcaa873601e53b40bccee7b1d0db9656f8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "spec-fixtures",
+      "name": "spec-regression-suite",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/spec-fixtures.json",
+      "record_sha256": "5ff89e7cf3416f5404bdc730197adc6a8a1a520e103218742d10ac1daa175b83",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/spec_check/test_spec_check.py"
+          ],
+          "started_at_utc": "2026-10-24T13:22:49.288585Z",
+          "completed_at_utc": "2026-10-24T13:23:09.912500Z",
+          "duration_seconds": 20.625,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/spec-fixtures-1.log",
+          "log_sha256": "3daadd250f870752eb214a2f127e8b8a5d43dd6aa582caab764ac8878952c661",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "608059ba072b956748c1d99701edf13578803dc9708b8e890a6b3197da91ab04",
+          "environment_overrides": {
+            "PYTHONPATH": "C:\\Users\\Joker-PC\\.codex\\worktrees\\mce4d-108-rollout\\maps-context-engine-4d\\work\\t003-r22-python-compat",
+            "sitecustomize_sha256": "1a09dd7a18168a281578a94eab9a61ae5c3ba5aa67b6bfe643a770516a3a33ed"
+          }
+        }
+      ]
+    },
+    {
+      "check_id": "delivery-policy",
+      "name": "delivery-policy-regressions",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/delivery-policy.json",
+      "record_sha256": "15f4e34bad0cbd942fa1d9ae7acfaea0394faa04cf040f5a5c3844728bd1eb4f",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/ci/test_delivery_policy.py"
+          ],
+          "started_at_utc": "2026-10-24T13:23:09.919508Z",
+          "completed_at_utc": "2026-10-24T13:23:16.595449Z",
+          "duration_seconds": 6.672000000005937,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/delivery-policy-1.log",
+          "log_sha256": "162019608358530966a079f394645b5cecf6c3a6497f6159ac0bfc1924bbe40c",
+          "stdout_sha256": "f43b44e0bc455e1b98e31101a75d98af38aff6b2bf09663f273aecb416de6b39",
+          "stderr_sha256": "4d9966d7e91781ace275490f99bb4b547435f4f503becc9b6110dc02fb5773a3",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "bootstrap",
+      "name": "bootstrap-and-checkpoint-regressions",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/bootstrap.json",
+      "record_sha256": "c63cb2b387415a650ead71fa75fa252e10c173bdc608cdaefa31e280b4f0736e",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/ci/bootstrap_check.py"
+          ],
+          "started_at_utc": "2026-10-24T13:23:16.600947Z",
+          "completed_at_utc": "2026-10-24T13:23:16.662439Z",
+          "duration_seconds": 0.0629999999946449,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/bootstrap-1.log",
+          "log_sha256": "0446b25b47918fd80c989132533a8d30400c981689e4c9dc59eb2395b8845f38",
+          "stdout_sha256": "366654372a736e818aff4384f4c0fe4b29e31598758137a79de422212d36ec35",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "environment_overrides": {}
+        },
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/ci/test_bootstrap_check.py"
+          ],
+          "started_at_utc": "2026-10-24T13:23:16.662939Z",
+          "completed_at_utc": "2026-10-24T13:23:17.818748Z",
+          "duration_seconds": 1.1560000000026776,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/bootstrap-2.log",
+          "log_sha256": "0afa7f2939a090d3d2facca8af0389c7e642c764842a2743673b8f601e7e1589",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "436873b9c3aa4a4c66fcf2ca986c7e4fa6655699ea3bfb18889ff2a3b3e31e8f",
+          "environment_overrides": {}
+        },
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "tools/ci/test_checkpoint_digest.py"
+          ],
+          "started_at_utc": "2026-10-24T13:23:17.819248Z",
+          "completed_at_utc": "2026-10-24T13:23:20.451138Z",
+          "duration_seconds": 2.625,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/bootstrap-3.log",
+          "log_sha256": "ea60b4bdda083a95ad630f388130add664edfdcae4e838a33774c5c8652a7425",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "64fa528e63bba76150aa12c3d32cb3381d436cddd3dedcc5d57acff9b4701b6f",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "selector-replay",
+      "name": "26-revision-selector-replay",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/selector-replay.json",
+      "record_sha256": "703df3ae0c133fd3b2d73b271bbde0c140f164bd8483ae21aa65dbb901f9519c",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "work/check_t003_r26_replay_existing.py"
+          ],
+          "started_at_utc": "2026-10-24T13:23:20.458148Z",
+          "completed_at_utc": "2026-10-24T13:23:22.784100Z",
+          "duration_seconds": 2.312000000005355,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/selector-replay-1.log",
+          "log_sha256": "bea638ed6426caf381a9e564fd4267992067d24c0a2da9ea6ea25bfc15484cf3",
+          "stdout_sha256": "b765f51b1c452bbb03d4e178c6f436a3d482793c8bdc74a0c00f4c06294ae36b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "allocation-integrity",
+      "name": "allocation-dependencies-hashes-and-remotes",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/local-checks/allocation/attempt-5/records/allocation-integrity.json",
+      "record_sha256": "9e97f1a7775860dd3a24ee31b4c1dd4bd4f439122929dbffc90f00111bbf16c9",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "C:\\Users\\Joker-PC\\.codex\\worktrees\\mce4d-108-rollout\\maps-context-engine-4d\\work\\run_t003_r26_preflight.py",
+            "--integrity-only"
+          ],
+          "started_at_utc": "2026-10-24T13:23:22.791608Z",
+          "completed_at_utc": "2026-10-24T13:23:25.292757Z",
+          "duration_seconds": 2.5,
+          "exit_code": 0,
+          "log": "local-checks/allocation/attempt-5/records/allocation-integrity-1.log",
+          "log_sha256": "763f7b89c0250387365a3dc2073f1744488ed6a5b21c0df8a8f5dbc92f29c767",
+          "stdout_sha256": "376b8e81924037f6f3c763c556930c6d91ea87c2d37007218c74700aa48c151c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "environment_overrides": {}
+        }
+      ]
+    }
+  ]
+}

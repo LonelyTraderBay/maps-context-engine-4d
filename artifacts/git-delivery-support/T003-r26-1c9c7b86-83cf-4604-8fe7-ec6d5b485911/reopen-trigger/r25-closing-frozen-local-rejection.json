@@ -1,0 +1,22 @@
+{
+  "format_version": 1,
+  "kind": "closing_diff_rejection_reproduction",
+  "task_id": "T003",
+  "prior_task_revision": 25,
+  "prior_delivery_id": "f65b7ec7-805f-4684-a73b-6b357ab36e62",
+  "payload_sha": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+  "command": "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe -B work/prepare_t003_r25_closing_candidate.py",
+  "exit_code": 1,
+  "runner_ref": "work/prepare_t003_r25_closing_candidate.py",
+  "runner_sha256": "8e174eb4b97355f117b4ca05a94a6f62774a54354adc8f5d4a57ff74a78013d6",
+  "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\Joker-PC\\.codex\\worktrees\\mce4d-108-rollout\\maps-context-engine-4d\\work\\prepare_t003_r25_closing_candidate.py\", line 215, in <module>\n    raise RuntimeError(\"CLOSE-DIFF-01 candidate rejected: \" + \"; \".join(errors))\nRuntimeError: CLOSE-DIFF-01 candidate rejected: S19 closing l�m \\u0111\\u1ed5i metadata \\u0111� freeze: local; S19 closing c\\u1ea7n local PASS ho\\u1eb7c PASS(N/N); S19 closing l�m \\u0111\\u1ed5i evidence \\u0111� freeze: phase; S19 closing l�m \\u0111\\u1ed5i evidence \\u0111� freeze: local\n",
+  "stderr_sha256": "f4366e7701a2a9a5350e21c94eaf25fb6a2b447d49a94d7703c101ff96b3cbb5",
+  "blocking_errors": [
+    "S19 closing làm đổi metadata đã freeze: local",
+    "S19 closing cần local PASS hoặc PASS(N/N)",
+    "S19 closing làm đổi evidence đã freeze: phase",
+    "S19 closing làm đổi evidence đã freeze: local"
+  ],
+  "result": "REJECT_REPRODUCED",
+  "recorded_at_utc": "2026-10-24T13:13:46.271305Z"
+}

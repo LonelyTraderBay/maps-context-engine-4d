@@ -1,0 +1,13 @@
+COMMAND: C:\Users\Joker-PC\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe -B work/check_t003_r26_replay_existing.py
+EXIT_CODE: 1
+
+--- STDOUT ---
+
+--- STDERR ---
+Traceback (most recent call last):
+  File "C:\Users\Joker-PC\.codex\worktrees\mce4d-108-rollout\maps-context-engine-4d\work\check_t003_r26_replay_existing.py", line 147, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\Joker-PC\.codex\worktrees\mce4d-108-rollout\maps-context-engine-4d\work\check_t003_r26_replay_existing.py", line 139, in main
+    raise RuntimeError(f"fresh replay does not match retained replay: {result}")
+RuntimeError: fresh replay does not match retained replay: {'format_version': 1, 'kind': 'selection_chain_replay', 'task_id': 'T003', 'task_revision': 26, 'delivery_id': '1c9c7b86-83cf-4604-8fe7-ec6d5b485911', 'prior_delivery_id': 'f65b7ec7-805f-4684-a73b-6b357ab36e62', 'selector_count': 26, 'prior_selector_count': 25, 'required_member_count': 154, 'hashed_member_count': 154, 'verdict': 'UNKNOWN', 'semantic_errors': [], 'scope_note': 'Reference replay only; UNKNOWN is not archive graph PASS, cold readback, GitHub CI, live verification, or product correctness.', 'result': 'PASS'}

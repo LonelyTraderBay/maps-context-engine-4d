@@ -1,0 +1,91 @@
+{
+  "checked_at_utc": "2026-10-24T13:13:48.271305Z",
+  "contracts_reviewed": [
+    "S47 P00 foundation order",
+    "S21 D089/GIT-DATA-14",
+    "S53 AW-08"
+  ],
+  "delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "dependencies": [
+    {
+      "closing_sha": "344c8b2a7493d391c44e87f8a8a11a47ad14828b",
+      "delivery_id": "34f45d36-60c0-45e2-ab0e-f6522349c6e8",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "S19:T001:E001,E002,E003"
+      ],
+      "task_id": "T001",
+      "task_revision": "1"
+    }
+  ],
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "limitations": [
+    "T003 r20 full archive verification rejects an archived payload parent_sha mismatch; historical bytes remain unchanged.",
+    "The selector replay validates only the retained T003 selection-reference semantics and cannot substitute for publication, live verification, or product proof."
+  ],
+  "result": "READY",
+  "sequence": {
+    "closing_sha": "020a367dc2aa6920f4ef36038e2f04c625fdb5bc",
+    "delivery_id": "f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1",
+    "effective_status": "DONE",
+    "evidence_refs": [
+      "S19:T002:E004,E005,E006"
+    ],
+    "task_id": "T002",
+    "task_revision": "1"
+  },
+  "source_review": {
+    "assignment_source_hashes": [
+      {
+        "actual_sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+        "expected_sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+        "match": true,
+        "path": "docs/AI_RULES.md",
+        "policy_id": "POL-SRC-01",
+        "prior_status": "VERIFIED_HASH_AND_SCOPE_READ",
+        "version": "3.1"
+      },
+      {
+        "actual_sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+        "expected_sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+        "match": true,
+        "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+        "policy_id": "POL-SRC-02",
+        "prior_status": "VERIFIED_HASH_AND_SCOPE_READ",
+        "version": "1.0.0"
+      },
+      {
+        "actual_sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+        "expected_sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+        "match": true,
+        "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+        "policy_id": "POL-SRC-03",
+        "prior_status": "VERIFIED_HASH_NOT_ACTIVATED",
+        "version": "3.1"
+      }
+    ],
+    "historical_archive_error": "evidence graph bị reject: archive-view/delivery-attempt-closing-C.json.payload: parent_sha không khớp phase parent đã chọn",
+    "historical_archive_status": "REJECT",
+    "s19_task_count": 108,
+    "selector_replay_errors": 0,
+    "selector_replay_verdict": "UNKNOWN",
+    "t001_effective": "DONE",
+    "t002_effective": "DONE",
+    "prior_live_verification_result": "UNKNOWN",
+    "prior_live_blocker_ref": "work/live-mce4d-main-verify/artifacts/git-live/9461b805-7d28-4748-8d0a-eb4b7e89cff4/169d1eac-4b37-443b-9461-8af9edc193bc/blocker.json",
+    "prior_live_mismatch": "GitHub REST body 382 chars; retained snapshot body 383 chars; terminal LF only"
+  },
+  "task_id": "T003",
+  "task_mode_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/task-mode.json",
+  "task_revision": 26,
+  "reopen_note": {
+    "prior_payload_P_sha": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+    "prior_payload_exact_local": "PASS(13/13)",
+    "prior_payload_two_ref_CI": "PASS(6/6 per ref)",
+    "prior_closing_candidate": "REJECTED_BY_CLOSE-DIFF-01",
+    "rejection_ref": "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/reopen-trigger/r25-closing-frozen-local-rejection.json",
+    "cause": "r25 payload froze phase=allocation-preflight and local=PENDING; closing requires local PASS and forbids changing either field.",
+    "resolution": "Record phase=payload and local=PASS(13/13) in the r26 payload checkpoint before P; leave the closing classifier unchanged."
+  }
+}

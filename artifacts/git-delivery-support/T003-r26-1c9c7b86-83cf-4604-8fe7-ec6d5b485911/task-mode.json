@@ -1,0 +1,78 @@
+{
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "base_sha": "c21f3b30a678d332819ccceb9899cf2c5cae89fb",
+  "change_budget": {
+    "behavior": [
+      "Keep CLOSE-DIFF-01 unchanged and make the payload itself own the frozen local PASS and payload phase.",
+      "Use a reviewed candidate receipt, then rerun all 13 checks after the tracker/evidence update and on exact P.",
+      "Require a direct-child closing C that preserves payload local/phase metadata and carries archive/live proof only after observed.",
+      "Preserve r25 P1 code, checks, CI logs, and the reproduced rejected closing candidate as immutable evidence.",
+      "Keep committed hash-bound allocation evidence byte-stable on Windows by disabling Git text conversion for this delivery's support tree."
+    ],
+    "contracts": [
+      "SPEC-v1.6.14:T003",
+      "GIT-DATA-01/02",
+      "CLOSE-DIFF-01",
+      "S53:AW-08"
+    ],
+    "exclusions": [
+      "No weakening of closing-diff policy.",
+      "No force push, history rewrite, or mutation of r25/r22 evidence."
+    ]
+  },
+  "check_plan_sha256": "7bbd36a720803c54d3f96f99fa5c7a77d9a09eff29d02ef87398be3ce8ed23ed",
+  "command_record_refs": [],
+  "delivery_id": "1c9c7b86-83cf-4604-8fe7-ec6d5b485911",
+  "exclusions": [
+    "Không nới CLOSE-DIFF-01 hoặc validator.",
+    "Không force push, rewrite lịch sử, hoặc sửa evidence r25/r22."
+  ],
+  "format_version": 1,
+  "objective": "Reopen the T003 delivery after CLOSE-DIFF-01 rejected the r25 closing because the payload froze local=PENDING and phase=allocation-preflight. Run the frozen 13 local checks on the r26 payload candidate, record local=PASS(13/13) and phase=payload in the payload checkpoint before committing P, then rerun all checks on exact P and preserve the existing commit-history policy.",
+  "paths": [
+    ".gitattributes",
+    "tools/ci/delivery_policy.py",
+    "tools/ci/test_delivery_policy.py",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/**"
+  ],
+  "policy_source_refs": [
+    {
+      "path": "docs/AI_RULES.md",
+      "policy_id": "POL-SRC-01",
+      "scope": "HỢP ĐỒNG DÙNG CHUNG; KHỞI ĐỘNG; LỘ TRÌNH ĐỌC",
+      "sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "3.1"
+    },
+    {
+      "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+      "policy_id": "POL-SRC-02",
+      "scope": "Toàn văn; trước check có output",
+      "sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "1.0.0"
+    },
+    {
+      "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+      "policy_id": "POL-SRC-03",
+      "scope": "Hash xác minh; docs-only prompt không kích hoạt",
+      "sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+      "status": "VERIFIED_HASH_NOT_ACTIVATED",
+      "version": "3.1"
+    }
+  ],
+  "previous_closure_ref": "artifacts/git-delivery-support/T003-r22-9461b805-7d28-4748-8d0a-eb4b7e89cff4/archive-view/sequence-predecessor/T002/task-closure-E006.json",
+  "priority": "P0",
+  "spec_revision": "1.6.14",
+  "task_id": "T003",
+  "task_mode": "implement",
+  "task_revision": 26,
+  "verification_plan": [
+    "Replay all 26 retained selector revisions; require UNKNOWN with zero semantic errors and exact source-byte closure.",
+    "Run the frozen 13 local checks on the proposed payload candidate before recording local PASS.",
+    "Rerun all 13 checks on the tracker/evidence-complete candidate and exact payload P.",
+    "Run payload-commits against exact A26..P26 before push; collect fresh exact-SHA CI on both refs.",
+    "Validate direct-child closing diff, exact-C checks/CI, archive/readback, then fresh live verification."
+  ]
+}
