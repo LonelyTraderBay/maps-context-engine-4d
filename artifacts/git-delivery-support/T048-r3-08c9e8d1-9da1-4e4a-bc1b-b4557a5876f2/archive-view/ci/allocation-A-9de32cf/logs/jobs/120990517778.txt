@@ -1,0 +1,617 @@
+﻿2026-10-24T21:18:55.1640625Z Current runner version: '2.338.0'
+2026-10-24T21:18:55.1668878Z ##[group]Runner Image Provisioner
+2026-10-24T21:18:55.1670004Z Hosted Compute Agent
+2026-10-24T21:18:55.1670695Z Version: 20261012.601
+2026-10-24T21:18:55.1671494Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-24T21:18:55.1672376Z Build Date: 2026-10-12T17:48:21Z
+2026-10-24T21:18:55.1673293Z Worker ID: {85fbb1dc-f930-49eb-af62-22d6376fcf45}
+2026-10-24T21:18:55.1674194Z Region: eastus
+2026-10-24T21:18:55.1674832Z Cloud: Azure
+2026-10-24T21:18:55.1675514Z ##[endgroup]
+2026-10-24T21:18:55.1677166Z ##[group]Operating System
+2026-10-24T21:18:55.1678660Z Ubuntu
+2026-10-24T21:18:55.1679325Z 24.04.5
+2026-10-24T21:18:55.1679907Z LTS
+2026-10-24T21:18:55.1680590Z ##[endgroup]
+2026-10-24T21:18:55.1681246Z ##[group]Runner Image
+2026-10-24T21:18:55.1682027Z Image: ubuntu-24.04
+2026-10-24T21:18:55.1682721Z Version: 20261012.334.1
+2026-10-24T21:18:55.1684304Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-24T21:18:55.1686237Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-24T21:18:55.1687542Z ##[endgroup]
+2026-10-24T21:18:55.1689055Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T21:18:55.1691371Z Contents: read
+2026-10-24T21:18:55.1692062Z Metadata: read
+2026-10-24T21:18:55.1692851Z ##[endgroup]
+2026-10-24T21:18:55.1695360Z Secret source: Actions
+2026-10-24T21:18:55.1696480Z Cache mode: write
+2026-10-24T21:18:55.1697538Z Prepare workflow directory
+2026-10-24T21:18:55.2284755Z Prepare all required actions
+2026-10-24T21:18:55.2322922Z Getting action download info
+2026-10-24T21:18:55.3687819Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-24T21:18:55.8846683Z Download action repository 'actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e' (SHA:b7ad1dad31e06c5925ef5d2fc7ad053ef454303e)
+2026-10-24T21:18:56.4971866Z Complete job name: spec-contract (ubuntu-latest)
+2026-10-24T21:18:56.6837461Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-10-24T21:18:56.6839179Z with:
+2026-10-24T21:18:56.6839902Z   persist-credentials: false
+2026-10-24T21:18:56.6840887Z   repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-24T21:18:56.6847700Z   token: ***
+2026-10-24T21:18:56.6848608Z   ssh-strict: true
+2026-10-24T21:18:56.6849329Z   ssh-user: git
+2026-10-24T21:18:56.6850030Z   clean: true
+2026-10-24T21:18:56.6850806Z   sparse-checkout-cone-mode: true
+2026-10-24T21:18:56.6851702Z   fetch-depth: 1
+2026-10-24T21:18:56.6852435Z   fetch-tags: false
+2026-10-24T21:18:56.6853191Z   show-progress: true
+2026-10-24T21:18:56.6853972Z   lfs: false
+2026-10-24T21:18:56.6854695Z   submodules: false
+2026-10-24T21:18:56.6855455Z   set-safe-directory: true
+2026-10-24T21:18:56.6856316Z   allow-unsafe-pr-checkout: false
+2026-10-24T21:18:56.6857425Z env:
+2026-10-24T21:18:56.6858280Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:18:56.6859073Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:18:56.6860043Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:18:56.6860827Z ##[endgroup]
+2026-10-24T21:18:56.7685757Z Syncing repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-24T21:18:56.7691255Z ##[group]Getting Git version info
+2026-10-24T21:18:56.7693222Z Working directory is '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+2026-10-24T21:18:56.7696002Z [command]/usr/bin/git version
+2026-10-24T21:18:56.7801011Z git version 2.55.0
+2026-10-24T21:18:56.7819304Z ##[endgroup]
+2026-10-24T21:18:56.7828593Z Temporarily overriding HOME='/home/runner/work/_temp/dc53c3f2-dba5-4dd3-af57-6b65f22ec884' before making global git config changes
+2026-10-24T21:18:56.7832155Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T21:18:56.7835512Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T21:18:56.7905218Z Deleting the contents of '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+2026-10-24T21:18:56.7919956Z ##[group]Determining repository object format
+2026-10-24T21:18:56.7925546Z ##[endgroup]
+2026-10-24T21:18:56.7927030Z ##[group]Initializing the repository
+2026-10-24T21:18:56.7928781Z [command]/usr/bin/git init /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T21:18:56.8516478Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T21:18:56.8518725Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T21:18:56.8520923Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T21:18:56.8522311Z hint: call:
+2026-10-24T21:18:56.8523445Z hint:
+2026-10-24T21:18:56.8524729Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T21:18:56.8526219Z hint:
+2026-10-24T21:18:56.8527617Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T21:18:56.8530140Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T21:18:56.8531384Z hint:
+2026-10-24T21:18:56.8532080Z hint: 	git branch -m <name>
+2026-10-24T21:18:56.8532896Z hint:
+2026-10-24T21:18:56.8533911Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T21:18:56.8535760Z Initialized empty Git repository in /home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/
+2026-10-24T21:18:56.8539821Z [command]/usr/bin/git remote add origin https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-24T21:18:56.8805379Z ##[endgroup]
+2026-10-24T21:18:56.8807170Z ##[group]Disabling automatic garbage collection
+2026-10-24T21:18:56.8808899Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T21:18:56.8902292Z ##[endgroup]
+2026-10-24T21:18:56.8903837Z ##[group]Setting up auth
+2026-10-24T21:18:56.8904873Z Removing SSH command configuration
+2026-10-24T21:18:56.8906370Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T21:18:56.8939385Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T21:18:56.9243012Z Removing HTTP extra header
+2026-10-24T21:18:56.9248171Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T21:18:56.9279854Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T21:18:56.9472324Z Removing includeIf entries pointing to credentials config files
+2026-10-24T21:18:56.9475513Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T21:18:56.9508429Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T21:18:56.9707248Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T21:18:56.9805082Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path /home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:56.9898610Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:57.0003240Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:57.0112431Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:57.0199241Z ##[endgroup]
+2026-10-24T21:18:57.0200951Z ##[group]Fetching the repository
+2026-10-24T21:18:57.0206149Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9de32cf17d00ab633fdecbb393964b3bc2393d2c:refs/remotes/origin/main
+2026-10-24T21:18:58.1150916Z From https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-24T21:18:58.1151496Z  * [new ref]         9de32cf17d00ab633fdecbb393964b3bc2393d2c -> origin/main
+2026-10-24T21:18:58.1159520Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-24T21:18:58.1186214Z   origin/main
+2026-10-24T21:18:58.1192303Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-10-24T21:18:58.1215046Z 9de32cf17d00ab633fdecbb393964b3bc2393d2c
+2026-10-24T21:18:58.1218241Z ##[endgroup]
+2026-10-24T21:18:58.1218832Z ##[group]Determining the checkout info
+2026-10-24T21:18:58.1219524Z ##[endgroup]
+2026-10-24T21:18:58.1223237Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T21:18:58.2259393Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T21:18:58.3444712Z ##[group]Checking out the ref
+2026-10-24T21:18:58.3448713Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-24T21:18:58.6920421Z Switched to a new branch 'main'
+2026-10-24T21:18:58.6925436Z branch 'main' set up to track 'origin/main'.
+2026-10-24T21:18:58.6941441Z ##[endgroup]
+2026-10-24T21:18:58.6987719Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T21:18:58.7014356Z 9de32cf17d00ab633fdecbb393964b3bc2393d2c
+2026-10-24T21:18:58.7025549Z ##[group]Removing auth
+2026-10-24T21:18:58.7025995Z Removing SSH command configuration
+2026-10-24T21:18:58.7026530Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T21:18:58.7057627Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T21:18:58.7254324Z Removing HTTP extra header
+2026-10-24T21:18:58.7256924Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T21:18:58.7285858Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T21:18:58.7478426Z Removing includeIf entries pointing to credentials config files
+2026-10-24T21:18:58.7483743Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T21:18:58.7511058Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-24T21:18:58.7512006Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-24T21:18:58.7512760Z includeif.gitdir:/github/workspace/.git.path
+2026-10-24T21:18:58.7513357Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-24T21:18:58.7519286Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-24T21:18:58.7542807Z /home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:58.7550773Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5634ef61\-a280\-4d86\-b2d7\-0f4450ed7a47\.config
+2026-10-24T21:18:58.7605275Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-24T21:18:58.7629716Z /home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:58.7636558Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5634ef61\-a280\-4d86\-b2d7\-0f4450ed7a47\.config
+2026-10-24T21:18:58.7666818Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-24T21:18:58.7690729Z /github/runner_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:58.7697497Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5634ef61\-a280\-4d86\-b2d7\-0f4450ed7a47\.config
+2026-10-24T21:18:58.7728933Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-24T21:18:58.7751025Z /github/runner_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config
+2026-10-24T21:18:58.7757614Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5634ef61\-a280\-4d86\-b2d7\-0f4450ed7a47\.config
+2026-10-24T21:18:58.7795934Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T21:18:58.7988419Z Removing credentials config '/home/runner/work/_temp/git-credentials-5634ef61-a280-4d86-b2d7-0f4450ed7a47.config'
+2026-10-24T21:18:58.7996002Z ##[endgroup]
+2026-10-24T21:18:58.8258350Z ##[group]Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+2026-10-24T21:18:58.8258704Z with:
+2026-10-24T21:18:58.8258904Z   go-version-file: go.mod
+2026-10-24T21:18:58.8259109Z   cache: false
+2026-10-24T21:18:58.8259289Z   check-latest: false
+2026-10-24T21:18:58.8261197Z   token: ***
+2026-10-24T21:18:58.8261377Z env:
+2026-10-24T21:18:58.8261542Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:18:58.8261738Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:18:58.8261954Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:18:58.8262148Z ##[endgroup]
+2026-10-24T21:18:58.9203654Z Setup go version spec 1.27.2
+2026-10-24T21:18:58.9209561Z Attempting to download 1.27.2...
+2026-10-24T21:18:59.4035108Z matching 1.27.2...
+2026-10-24T21:18:59.4050536Z Acquiring 1.27.2 from https://github.com/actions/go-versions/releases/download/1.27.2-37875086547/go-1.27.2-linux-x64.tar.gz
+2026-10-24T21:18:59.8133837Z Extracting Go...
+2026-10-24T21:18:59.8228777Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/5d5fa0af-d7d6-40ab-b046-e3933c9ea8f1 -f /home/runner/work/_temp/ceca9191-ec58-458e-8b96-8ef507142edf
+2026-10-24T21:19:01.2649148Z Successfully extracted go to /home/runner/work/_temp/5d5fa0af-d7d6-40ab-b046-e3933c9ea8f1
+2026-10-24T21:19:01.2649988Z Adding to the cache ...
+2026-10-24T21:19:06.4180149Z Successfully cached go to /opt/hostedtoolcache/go/1.27.2/x64
+2026-10-24T21:19:06.4182000Z Added go to the path
+2026-10-24T21:19:06.4183999Z Successfully set up Go version 1.27.2
+2026-10-24T21:19:06.4350684Z go version go1.27.2 linux/amd64
+2026-10-24T21:19:06.4350882Z 
+2026-10-24T21:19:06.4351172Z ##[group]go env
+2026-10-24T21:19:07.4687724Z AR='ar'
+2026-10-24T21:19:07.4688189Z CC='gcc'
+2026-10-24T21:19:07.4688475Z CGO_CFLAGS='-O2 -g'
+2026-10-24T21:19:07.4688764Z CGO_CPPFLAGS=''
+2026-10-24T21:19:07.4689051Z CGO_CXXFLAGS='-O2 -g'
+2026-10-24T21:19:07.4689343Z CGO_ENABLED='1'
+2026-10-24T21:19:07.4689602Z CGO_FFLAGS='-O2 -g'
+2026-10-24T21:19:07.4689882Z CGO_LDFLAGS='-O2 -g'
+2026-10-24T21:19:07.4690181Z CXX='g++'
+2026-10-24T21:19:07.4690422Z GCCGO='gccgo'
+2026-10-24T21:19:07.4690671Z GO111MODULE=''
+2026-10-24T21:19:07.4690918Z GOAMD64='v1'
+2026-10-24T21:19:07.4691165Z GOARCH='amd64'
+2026-10-24T21:19:07.4691413Z GOAUTH='netrc'
+2026-10-24T21:19:07.4691682Z GOBIN='/home/runner/go/bin'
+2026-10-24T21:19:07.4692016Z GOCACHE='/home/runner/.cache/go-build'
+2026-10-24T21:19:07.4692352Z GOCACHEPROG=''
+2026-10-24T21:19:07.4692617Z GODEBUG=''
+2026-10-24T21:19:07.4692880Z GOENV='/home/runner/.config/go/env'
+2026-10-24T21:19:07.4693098Z GOEXE=''
+2026-10-24T21:19:07.4693267Z GOEXPERIMENT=''
+2026-10-24T21:19:07.4693650Z GOFIPS140='off'
+2026-10-24T21:19:07.4693857Z GOFLAGS=''
+2026-10-24T21:19:07.4694395Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build694939829=/tmp/go-build -gno-record-gcc-switches'
+2026-10-24T21:19:07.4694897Z GOHOSTARCH='amd64'
+2026-10-24T21:19:07.4695079Z GOHOSTOS='linux'
+2026-10-24T21:19:07.4695268Z GOINSECURE=''
+2026-10-24T21:19:07.4695600Z GOMOD='/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/go.mod'
+2026-10-24T21:19:07.4695955Z GOMODCACHE='/home/runner/go/pkg/mod'
+2026-10-24T21:19:07.4696179Z GONOPROXY=''
+2026-10-24T21:19:07.4696368Z GONOSUMDB=''
+2026-10-24T21:19:07.4696526Z GOOS='linux'
+2026-10-24T21:19:07.4696694Z GOPACKAGESDRIVER=''
+2026-10-24T21:19:07.4696886Z GOPATH='/home/runner/go'
+2026-10-24T21:19:07.4697073Z GOPRIVATE=''
+2026-10-24T21:19:07.4697292Z GOPROXY='https://proxy.golang.org,direct'
+2026-10-24T21:19:07.4697556Z GOROOT='/opt/hostedtoolcache/go/1.27.2/x64'
+2026-10-24T21:19:07.4697793Z GOSUMDB='sum.golang.org'
+2026-10-24T21:19:07.4698235Z GOTELEMETRY='local'
+2026-10-24T21:19:07.4698578Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+2026-10-24T21:19:07.4698955Z GOTMPDIR=''
+2026-10-24T21:19:07.4699207Z GOTOOLCHAIN='local'
+2026-10-24T21:19:07.4699476Z GOTOOLDIR='/opt/hostedtoolcache/go/1.27.2/x64/pkg/tool/linux_amd64'
+2026-10-24T21:19:07.4699762Z GOVCS=''
+2026-10-24T21:19:07.4700107Z GOVERSION='go1.27.2'
+2026-10-24T21:19:07.4700289Z GOWORK=''
+2026-10-24T21:19:07.4700467Z PKG_CONFIG='pkg-config'
+2026-10-24T21:19:07.4700593Z 
+2026-10-24T21:19:07.4700949Z ##[endgroup]
+2026-10-24T21:19:07.4866225Z ##[group]Run python -B tools/ci/delivery_policy.py check-plan
+2026-10-24T21:19:07.4866762Z [36;1mpython -B tools/ci/delivery_policy.py check-plan[0m
+2026-10-24T21:19:07.5271376Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:07.5271614Z env:
+2026-10-24T21:19:07.5271786Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:07.5271989Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:07.5272214Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:07.5272430Z   GOTOOLCHAIN: local
+2026-10-24T21:19:07.5272611Z ##[endgroup]
+2026-10-24T21:19:07.6180949Z ĐẠT: GitCheckPlan schema+semantic+workflow; SHA-256 bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c; 6 check contexts.
+2026-10-24T21:19:07.6281612Z ##[group]Run python -B tools/spec_check/check.py
+2026-10-24T21:19:07.6281932Z [36;1mpython -B tools/spec_check/check.py[0m
+2026-10-24T21:19:07.6338512Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:07.6338730Z env:
+2026-10-24T21:19:07.6338906Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:07.6339110Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:07.6339339Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:07.6339564Z   GOTOOLCHAIN: local
+2026-10-24T21:19:07.6339793Z ##[endgroup]
+2026-10-24T21:19:08.1787515Z ĐẠT: SPEC v1.6.14; 108 task, DAG/schedule, traceability hai chiều, work cards và 25 governance definitions.
+2026-10-24T21:19:08.2677846Z ##[group]Run python -B tools/spec_check/test_spec_check.py
+2026-10-24T21:19:08.2678485Z [36;1mpython -B tools/spec_check/test_spec_check.py[0m
+2026-10-24T21:19:08.2735623Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:08.2735844Z env:
+2026-10-24T21:19:08.2736023Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:08.2736221Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:08.2736448Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:08.2736645Z   GOTOOLCHAIN: local
+2026-10-24T21:19:08.2736826Z ##[endgroup]
+2026-10-24T21:19:08.7679852Z test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes (__main__.ArchivePublicationTests.test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes) ... ok
+2026-10-24T21:19:08.9697139Z test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption (__main__.ArchivePublicationTests.test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption) ... ok
+2026-10-24T21:19:09.1670252Z test_archive_preserves_utf8_text_raw_members_through_cold_readback (__main__.ArchivePublicationTests.test_archive_preserves_utf8_text_raw_members_through_cold_readback) ... ok
+2026-10-24T21:19:09.1676998Z test_atomic_archive_rename_never_replaces_final_directory (__main__.ArchivePublicationTests.test_atomic_archive_rename_never_replaces_final_directory) ... ok
+2026-10-24T21:19:09.3443502Z test_cold_readback_rejects_tampered_member_bytes (__main__.ArchivePublicationTests.test_cold_readback_rejects_tampered_member_bytes) ... ok
+2026-10-24T21:19:09.5505083Z test_existing_archive_reuse_never_invents_original_publish_time (__main__.ArchivePublicationTests.test_existing_archive_reuse_never_invents_original_publish_time) ... ok
+2026-10-24T21:19:09.5512826Z test_live_observer_rejects_projection_outside_owned_operations_root (__main__.ArchivePublicationTests.test_live_observer_rejects_projection_outside_owned_operations_root) ... ok
+2026-10-24T21:19:09.5521409Z test_live_observer_rejects_symlinked_projection_ancestor (__main__.ArchivePublicationTests.test_live_observer_rejects_symlinked_projection_ancestor) ... ok
+2026-10-24T21:19:09.5540571Z test_member_read_supports_deep_windows_paths (__main__.ArchivePublicationTests.test_member_read_supports_deep_windows_paths) ... ok
+2026-10-24T21:19:09.5556009Z test_publication_projection_is_written_once_after_actual_readback (__main__.ArchivePublicationTests.test_publication_projection_is_written_once_after_actual_readback) ... ok
+2026-10-24T21:19:09.7862590Z test_publish_seal_readback_and_cold_verification (__main__.ArchivePublicationTests.test_publish_seal_readback_and_cold_verification) ... ok
+2026-10-24T21:19:09.9266386Z test_publisher_recovers_after_manifest_and_seal_were_flushed (__main__.ArchivePublicationTests.test_publisher_recovers_after_manifest_and_seal_were_flushed) ... ok
+2026-10-24T21:19:10.0682626Z test_publisher_recovers_fully_staged_members_before_manifest_seal (__main__.ArchivePublicationTests.test_publisher_recovers_fully_staged_members_before_manifest_seal) ... ok
+2026-10-24T21:19:10.0852141Z test_publisher_rejects_changed_manifest_after_staging_seal (__main__.ArchivePublicationTests.test_publisher_rejects_changed_manifest_after_staging_seal) ... ok
+2026-10-24T21:19:10.0853531Z test_bad_timestamp_rejects_instead_of_dropping_row (__main__.CIOrderingTests.test_bad_timestamp_rejects_instead_of_dropping_row) ... ok
+2026-10-24T21:19:10.0854592Z test_boolean_retry_attempt_is_unknown (__main__.CIOrderingTests.test_boolean_retry_attempt_is_unknown) ... ok
+2026-10-24T21:19:10.0855719Z test_latest_actions_generation_uses_instant_then_native_id (__main__.CIOrderingTests.test_latest_actions_generation_uses_instant_then_native_id) ... ok
+2026-10-24T21:19:10.0856887Z test_malformed_extra_precision_is_bounded (__main__.CIOrderingTests.test_malformed_extra_precision_is_bounded) ... ok
+2026-10-24T21:19:10.0858151Z test_newest_generation_with_no_required_job_is_unknown (__main__.CIOrderingTests.test_newest_generation_with_no_required_job_is_unknown) ... ok
+2026-10-24T21:19:10.0859698Z test_newest_native_failure_is_not_replaced_by_old_success (__main__.CIOrderingTests.test_newest_native_failure_is_not_replaced_by_old_success) ... ok
+2026-10-24T21:19:10.0860959Z test_offset_and_long_fraction_compare_as_exact_instants (__main__.CIOrderingTests.test_offset_and_long_fraction_compare_as_exact_instants) ... ok
+2026-10-24T21:19:10.0861859Z test_partial_rerun_selects_latest_attempt_per_job (__main__.CIOrderingTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+2026-10-24T21:19:10.0864816Z test_capture_manifest_json1_normalizes_files_and_dependency_digests (__main__.CanonicalCodecTests.test_capture_manifest_json1_normalizes_files_and_dependency_digests) ... ok
+2026-10-24T21:19:10.0866328Z test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays (__main__.CanonicalCodecTests.test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays) ... ok
+2026-10-24T21:19:10.0867608Z test_invalid_identity_lexemes_fail_closed (__main__.CanonicalCodecTests.test_invalid_identity_lexemes_fail_closed) ... ok
+2026-10-24T21:19:10.0868925Z test_manifest_json_full_and_unicode_bytes_match_reference (__main__.CanonicalCodecTests.test_manifest_json_full_and_unicode_bytes_match_reference) ... ok
+2026-10-24T21:19:10.0871059Z test_twenty_shared_c14n_and_raw_source_vectors (__main__.CanonicalCodecTests.test_twenty_shared_c14n_and_raw_source_vectors) ... ok
+2026-10-24T21:19:10.1196822Z test_committed_schema_and_registry_match_spec (__main__.ContractArtifactParityTests.test_committed_schema_and_registry_match_spec) ... ok
+2026-10-24T21:19:10.1373238Z test_duplicate_member_in_authority_block_is_rejected (__main__.ContractArtifactParityTests.test_duplicate_member_in_authority_block_is_rejected) ... ok
+2026-10-24T21:19:10.1969062Z test_generated_only_edit_is_detected (__main__.ContractArtifactParityTests.test_generated_only_edit_is_detected) ... ok
+2026-10-24T21:19:10.2083909Z test_object_definitions_must_reject_unknown_properties (__main__.ContractArtifactParityTests.test_object_definitions_must_reject_unknown_properties) ... ok
+2026-10-24T21:19:10.2217533Z test_private_journal_schema_cannot_be_registered_as_operation (__main__.ContractArtifactParityTests.test_private_journal_schema_cannot_be_registered_as_operation) ... ok
+2026-10-24T21:19:10.2219283Z test_surrogate_object_key_is_rejected_as_contract_error (__main__.ContractArtifactParityTests.test_surrogate_object_key_is_rejected_as_contract_error) ... ok
+2026-10-24T21:19:10.2487529Z test_actions_check_suite_identity_matches_workflow (__main__.DeliveryLinkTests.test_actions_check_suite_identity_matches_workflow) ... ok
+2026-10-24T21:19:10.2739987Z test_actions_job_check_run_url_binds_native_check_identity (__main__.DeliveryLinkTests.test_actions_job_check_run_url_binds_native_check_identity) ... ok
+2026-10-24T21:19:10.2992977Z test_actions_source_timestamp_uses_native_workflow_creation (__main__.DeliveryLinkTests.test_actions_source_timestamp_uses_native_workflow_creation) ... ok
+2026-10-24T21:19:10.3246516Z test_archive_must_retain_transitive_source_members (__main__.DeliveryLinkTests.test_archive_must_retain_transitive_source_members) ... ok
+2026-10-24T21:19:10.3503582Z test_closing_commit_trailers_bind_delivery (__main__.DeliveryLinkTests.test_closing_commit_trailers_bind_delivery) ... ok
+2026-10-24T21:19:10.3770902Z test_collection_must_cover_actions_attempt (__main__.DeliveryLinkTests.test_collection_must_cover_actions_attempt) ... ok
+2026-10-24T21:19:10.4027507Z test_command_execution_is_bound_to_subject_revision (__main__.DeliveryLinkTests.test_command_execution_is_bound_to_subject_revision) ... ok
+2026-10-24T21:19:10.4540457Z test_commit_snapshot_parent_and_scope_are_actual_git_bound (__main__.DeliveryLinkTests.test_commit_snapshot_parent_and_scope_are_actual_git_bound) ... ok
+2026-10-24T21:19:10.4818444Z test_common_command_lifecycle_must_match_phase_identity (__main__.DeliveryLinkTests.test_common_command_lifecycle_must_match_phase_identity) ... ok
+2026-10-24T21:19:10.5073872Z test_complete_static_link_graph_remains_external_unknown (__main__.DeliveryLinkTests.test_complete_static_link_graph_remains_external_unknown) ... ok
+2026-10-24T21:19:10.5351111Z test_delivery_graph_does_not_mutate_inputs (__main__.DeliveryLinkTests.test_delivery_graph_does_not_mutate_inputs) ... ok
+2026-10-24T21:19:10.5608384Z test_local_evidence_covers_each_unique_frozen_command_once (__main__.DeliveryLinkTests.test_local_evidence_covers_each_unique_frozen_command_once) ... ok
+2026-10-24T21:19:10.6853316Z test_malformed_nested_shapes_reject_without_crashing (__main__.DeliveryLinkTests.test_malformed_nested_shapes_reject_without_crashing) ... ok
+2026-10-24T21:19:10.7107552Z test_missing_required_check_rejects (__main__.DeliveryLinkTests.test_missing_required_check_rejects) ... ok
+2026-10-24T21:19:10.7364315Z test_native_source_is_bound_to_observed_check (__main__.DeliveryLinkTests.test_native_source_is_bound_to_observed_check) ... ok
+2026-10-24T21:19:10.7622038Z test_newer_failed_native_check_run_supersedes_old_green_check (__main__.DeliveryLinkTests.test_newer_failed_native_check_run_supersedes_old_green_check) ... ok
+2026-10-24T21:19:10.7879950Z test_newer_failed_workflow_generation_supersedes_old_green_run (__main__.DeliveryLinkTests.test_newer_failed_workflow_generation_supersedes_old_green_run) ... ok
+2026-10-24T21:19:10.7881842Z test_non_object_bundle_rejects_without_exception (__main__.DeliveryLinkTests.test_non_object_bundle_rejects_without_exception) ... ok
+2026-10-24T21:19:10.8138589Z test_partial_rerun_selects_latest_attempt_per_job (__main__.DeliveryLinkTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+2026-10-24T21:19:10.8139986Z test_payload_observation_parent_tracks_last_commit_parent (__main__.DeliveryLinkTests.test_payload_observation_parent_tracks_last_commit_parent) ... ok
+2026-10-24T21:19:10.8403326Z test_plan_digest_must_bind_attempt (__main__.DeliveryLinkTests.test_plan_digest_must_bind_attempt) ... ok
+2026-10-24T21:19:10.8919144Z test_push_command_rejects_force_and_wrong_refspec (__main__.DeliveryLinkTests.test_push_command_rejects_force_and_wrong_refspec) ... ok
+2026-10-24T21:19:10.9178200Z test_push_operation_id_is_bound_to_destination (__main__.DeliveryLinkTests.test_push_operation_id_is_bound_to_destination) ... ok
+2026-10-24T21:19:10.9434831Z test_raw_preflight_snapshot_must_match_projection (__main__.DeliveryLinkTests.test_raw_preflight_snapshot_must_match_projection) ... ok
+2026-10-24T21:19:10.9521890Z test_selection_history_accepts_retained_supersede_chain (__main__.DeliveryLinkTests.test_selection_history_accepts_retained_supersede_chain) ... ok
+2026-10-24T21:19:10.9607852Z test_selection_history_rejects_missing_invalidated_typed_or_raw_member (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_invalidated_typed_or_raw_member) ... ok
+2026-10-24T21:19:10.9785971Z test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid) ... ok
+2026-10-24T21:19:11.7509225Z test_six_retained_member_roles_reject_wrong_root_types (__main__.DeliveryLinkTests.test_six_retained_member_roles_reject_wrong_root_types) ... ok
+2026-10-24T21:19:11.7831222Z test_stale_selector_revision_rejects (__main__.DeliveryLinkTests.test_stale_selector_revision_rejects) ... ok
+2026-10-24T21:19:11.8093381Z test_swapped_payload_phase_rejects (__main__.DeliveryLinkTests.test_swapped_payload_phase_rejects) ... ok
+2026-10-24T21:19:11.8344227Z test_swapped_pointer_rejects (__main__.DeliveryLinkTests.test_swapped_pointer_rejects) ... ok
+2026-10-24T21:19:11.8852262Z test_verified_noop_has_typed_identity_bound_reason (__main__.DeliveryLinkTests.test_verified_noop_has_typed_identity_bound_reason) ... ok
+2026-10-24T21:19:11.9364957Z test_verified_noop_preserves_original_closing_payload (__main__.DeliveryLinkTests.test_verified_noop_preserves_original_closing_payload) ... ok
+2026-10-24T21:19:11.9374696Z test_archive_task_identity_is_read_from_the_verified_manifest (__main__.FoundationSealTests.test_archive_task_identity_is_read_from_the_verified_manifest) ... ok
+2026-10-24T21:19:11.9424980Z test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field (__main__.FoundationSealTests.test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field) ... ok
+2026-10-24T21:19:11.9435462Z test_api_process_output_is_capped_while_pipes_are_drained (__main__.GitHubObserverTests.test_api_process_output_is_capped_while_pipes_are_drained) ... ok
+2026-10-24T21:19:11.9436930Z test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body (__main__.GitHubObserverTests.test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body) ... ok
+2026-10-24T21:19:11.9439754Z test_closing_commit_snapshot_projects_git_body_without_subject (__main__.GitHubObserverTests.test_closing_commit_snapshot_projects_git_body_without_subject) ... ok
+2026-10-24T21:19:11.9442524Z test_current_tracker_reader_accepts_optional_trailing_pipe (__main__.GitHubObserverTests.test_current_tracker_reader_accepts_optional_trailing_pipe) ... ok
+2026-10-24T21:19:11.9575098Z test_current_tracker_reader_rejects_malformed_row_without_index_error (__main__.GitHubObserverTests.test_current_tracker_reader_rejects_malformed_row_without_index_error) ... ok
+2026-10-24T21:19:11.9576830Z test_duplicate_link_relations_are_rejected (__main__.GitHubObserverTests.test_duplicate_link_relations_are_rejected) ... ok
+2026-10-24T21:19:11.9610384Z test_pagination_follows_actual_link_and_retains_raw_body (__main__.GitHubObserverTests.test_pagination_follows_actual_link_and_retains_raw_body) ... ok
+2026-10-24T21:19:11.9613538Z test_pagination_rejects_changed_filter (__main__.GitHubObserverTests.test_pagination_rejects_changed_filter) ... ok
+2026-10-24T21:19:11.9614731Z test_runner_matrix_fails_closed_when_label_is_missing (__main__.GitHubObserverTests.test_runner_matrix_fails_closed_when_label_is_missing) ... ok
+2026-10-24T21:19:11.9883479Z test_static_graph_checks_api_page_against_exact_raw_body_bytes (__main__.GitHubObserverTests.test_static_graph_checks_api_page_against_exact_raw_body_bytes) ... ok
+2026-10-24T21:19:12.0152339Z test_static_graph_rejects_declared_api_body_hash_mismatch (__main__.GitHubObserverTests.test_static_graph_rejects_declared_api_body_hash_mismatch) ... ok
+2026-10-24T21:19:12.0419798Z test_static_graph_rejects_missing_api_body_evidence_reference (__main__.GitHubObserverTests.test_static_graph_rejects_missing_api_body_evidence_reference) ... ok
+2026-10-24T21:19:12.0465711Z test_boolean_is_not_integer (__main__.GovernanceSchemaTests.test_boolean_is_not_integer) ... ok
+2026-10-24T21:19:12.0467080Z test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate (__main__.GovernanceSchemaTests.test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate) ... ok
+2026-10-24T21:19:12.0468541Z test_closed_definition_rejects_unknown_field (__main__.GovernanceSchemaTests.test_closed_definition_rejects_unknown_field) ... ok
+2026-10-24T21:19:12.0469485Z test_duplicate_json_key_rejects (__main__.GovernanceSchemaTests.test_duplicate_json_key_rejects) ... ok
+2026-10-24T21:19:12.0470445Z test_enum_boolean_is_not_equal_to_integer (__main__.GovernanceSchemaTests.test_enum_boolean_is_not_equal_to_integer) ... ok
+2026-10-24T21:19:12.0527415Z test_external_schema_reference_rejects (__main__.GovernanceSchemaTests.test_external_schema_reference_rejects) ... ok
+2026-10-24T21:19:12.0531415Z test_live_verification_resolves_file_refs_from_root_schema (__main__.GovernanceSchemaTests.test_live_verification_resolves_file_refs_from_root_schema) ... ok
+2026-10-24T21:19:12.0532603Z test_non_finite_json_rejects (__main__.GovernanceSchemaTests.test_non_finite_json_rejects) ... ok
+2026-10-24T21:19:12.0533575Z test_schema_has_25_closed_definitions (__main__.GovernanceSchemaTests.test_schema_has_25_closed_definitions) ... ok
+2026-10-24T21:19:12.0534709Z test_selection_allocation_is_required_when_active (__main__.GovernanceSchemaTests.test_selection_allocation_is_required_when_active) ... ok
+2026-10-24T21:19:12.0536359Z test_valid_repository_identity_passes (__main__.GovernanceSchemaTests.test_valid_repository_identity_passes) ... ok
+2026-10-24T21:19:12.0537725Z test_delivery_pass_requires_exact_remote_and_executed_checks (__main__.GovernanceSemanticsTests.test_delivery_pass_requires_exact_remote_and_executed_checks) ... ok
+2026-10-24T21:19:12.0539388Z test_live_verification_must_follow_published_archive_readback (__main__.GovernanceSemanticsTests.test_live_verification_must_follow_published_archive_readback) ... ok
+2026-10-24T21:19:12.0540981Z test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed (__main__.GovernanceSemanticsTests.test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed) ... ok
+2026-10-24T21:19:12.0542390Z test_push_freshness_valid_equal_fractional_instants (__main__.GovernanceSemanticsTests.test_push_freshness_valid_equal_fractional_instants) ... ok
+2026-10-24T21:19:12.0543918Z test_push_rejects_bool_retry_and_query_identity_coercion (__main__.GovernanceSemanticsTests.test_push_rejects_bool_retry_and_query_identity_coercion) ... ok
+2026-10-24T21:19:12.0545411Z test_push_rejects_intervening_event_and_late_preflight (__main__.GovernanceSemanticsTests.test_push_rejects_intervening_event_and_late_preflight) ... ok
+2026-10-24T21:19:12.0636789Z test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper (__main__.GovernanceSemanticsTests.test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper) ... ok
+2026-10-24T21:19:12.0935913Z test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version (__main__.GovernanceSemanticsTests.test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version) ... ok
+2026-10-24T21:19:12.1126278Z test_selection_history_rejects_missing_retained_lineage_or_invalidation_member (__main__.GovernanceSemanticsTests.test_selection_history_rejects_missing_retained_lineage_or_invalidation_member) ... ok
+2026-10-24T21:19:12.1311709Z test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity) ... ok
+2026-10-24T21:19:12.1496665Z test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage) ... ok
+2026-10-24T21:19:12.1587471Z test_selection_history_rejects_unhashable_assignment_locator_without_crashing (__main__.GovernanceSemanticsTests.test_selection_history_rejects_unhashable_assignment_locator_without_crashing) ... ok
+2026-10-24T21:19:12.1679198Z test_selection_reason_accepts_equal_instants_without_mutating_inputs (__main__.GovernanceSemanticsTests.test_selection_reason_accepts_equal_instants_without_mutating_inputs) ... ok
+2026-10-24T21:19:12.2336199Z test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch (__main__.GovernanceSemanticsTests.test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch) ... ok
+2026-10-24T21:19:12.2585184Z test_current_portable_proof_manifest_members_pass (__main__.ManifestAndSourceBindingTests.test_current_portable_proof_manifest_members_pass) ... ok
+2026-10-24T21:19:12.2829152Z test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes (__main__.ManifestAndSourceBindingTests.test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes) ... ok
+2026-10-24T21:19:12.2835704Z test_hash_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_hash_mismatch_rejects) ... ok
+2026-10-24T21:19:12.2842353Z test_intact_manifest_passes (__main__.ManifestAndSourceBindingTests.test_intact_manifest_passes) ... ok
+2026-10-24T21:19:12.2860093Z test_manifest_execution_does_not_rewrite_source_or_manifest (__main__.ManifestAndSourceBindingTests.test_manifest_execution_does_not_rewrite_source_or_manifest) ... ok
+2026-10-24T21:19:12.2866109Z test_missing_member_rejects (__main__.ManifestAndSourceBindingTests.test_missing_member_rejects) ... ok
+2026-10-24T21:19:12.2882984Z test_optimized_entrypoint_executes_manifest_bound_root_only (__main__.ManifestAndSourceBindingTests.test_optimized_entrypoint_executes_manifest_bound_root_only) ... ok
+2026-10-24T21:19:12.2888486Z test_path_traversal_rejects (__main__.ManifestAndSourceBindingTests.test_path_traversal_rejects) ... ok
+2026-10-24T21:19:12.2897563Z test_root_source_hash_mismatch_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_root_source_hash_mismatch_rejects_before_entrypoint) ... ok
+2026-10-24T21:19:12.2903608Z test_size_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_size_mismatch_rejects) ... ok
+2026-10-24T21:19:12.2912921Z test_unlisted_helper_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_unlisted_helper_rejects_before_entrypoint) ... ok
+2026-10-24T21:19:12.7499401Z test_candidate_done_without_delivery_evidence_fails (__main__.SpecContractTests.test_candidate_done_without_delivery_evidence_fails) ... ok
+2026-10-24T21:19:13.1988636Z test_card_case_drift_fails (__main__.SpecContractTests.test_card_case_drift_fails) ... ok
+2026-10-24T21:19:14.1591879Z test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts (__main__.SpecContractTests.test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts) ... ok
+2026-10-24T21:19:14.6108165Z test_current_spec_passes (__main__.SpecContractTests.test_current_spec_passes) ... ok
+2026-10-24T21:19:15.0636076Z test_duplicate_task_fails (__main__.SpecContractTests.test_duplicate_task_fails) ... ok
+2026-10-24T21:19:15.5195487Z test_final_claim_requires_all_effective_tasks (__main__.SpecContractTests.test_final_claim_requires_all_effective_tasks) ... ok
+2026-10-24T21:19:15.5196933Z test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not (__main__.SpecContractTests.test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not) ... ok
+2026-10-24T21:19:15.9771504Z test_missing_case_reference_fails (__main__.SpecContractTests.test_missing_case_reference_fails) ... ok
+2026-10-24T21:19:16.4445714Z test_requirement_reverse_edge_fails (__main__.SpecContractTests.test_requirement_reverse_edge_fails) ... ok
+2026-10-24T21:19:16.9031324Z test_s22_active_task_must_wait_for_effective_prerequisites (__main__.SpecContractTests.test_s22_active_task_must_wait_for_effective_prerequisites) ... ok
+2026-10-24T21:19:17.3596607Z test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done (__main__.SpecContractTests.test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done) ... ok
+2026-10-24T21:19:17.8026479Z test_s22_completed_count_must_match_effective_s19_rows (__main__.SpecContractTests.test_s22_completed_count_must_match_effective_s19_rows) ... ok
+2026-10-24T21:19:18.2733871Z test_s22_delivery_identity_must_match_active_s19_assignment (__main__.SpecContractTests.test_s22_delivery_identity_must_match_active_s19_assignment) ... ok
+2026-10-24T21:19:18.7542306Z test_s22_next_task_must_match_active_task (__main__.SpecContractTests.test_s22_next_task_must_match_active_task) ... ok
+2026-10-24T21:19:19.2102399Z test_schedule_prerequisite_order_fails (__main__.SpecContractTests.test_schedule_prerequisite_order_fails) ... ok
+2026-10-24T21:19:19.6687022Z test_task_cycle_fails (__main__.SpecContractTests.test_task_cycle_fails) ... ok
+2026-10-24T21:19:20.1231194Z test_unbalanced_fence_fails (__main__.SpecContractTests.test_unbalanced_fence_fails) ... ok
+2026-10-24T21:19:20.5788146Z test_unknown_status_fails (__main__.SpecContractTests.test_unknown_status_fails) ... ok
+2026-10-24T21:19:20.5789754Z test_cancellation_and_crash_do_not_invent_exit_status (__main__.T107ContractFixtureTests.test_cancellation_and_crash_do_not_invent_exit_status) ... ok
+2026-10-24T21:19:20.5793319Z test_command_contract_checks_actual_argv_and_side_effect_metadata (__main__.T107ContractFixtureTests.test_command_contract_checks_actual_argv_and_side_effect_metadata) ... ok
+2026-10-24T21:19:20.5795087Z test_concurrency_is_limited_to_shared_outputs_not_a_global_lock (__main__.T107ContractFixtureTests.test_concurrency_is_limited_to_shared_outputs_not_a_global_lock) ... ok
+2026-10-24T21:19:20.5797112Z test_continuation_keeps_exact_vector_and_never_recomputes_expired_result (__main__.T107ContractFixtureTests.test_continuation_keeps_exact_vector_and_never_recomputes_expired_result) ... ok
+2026-10-24T21:19:20.5799032Z test_destinations_are_grouped_by_observed_volume_and_remaining_only (__main__.T107ContractFixtureTests.test_destinations_are_grouped_by_observed_volume_and_remaining_only) ... ok
+2026-10-24T21:19:20.5800565Z test_dry_run_is_report_only_and_does_not_allocate_or_run (__main__.T107ContractFixtureTests.test_dry_run_is_report_only_and_does_not_allocate_or_run) ... ok
+2026-10-24T21:19:20.5802045Z test_finalization_preserves_primary_command_error_and_cleanup_error (__main__.T107ContractFixtureTests.test_finalization_preserves_primary_command_error_and_cleanup_error) ... ok
+2026-10-24T21:19:20.5803621Z test_fresh_synthetic_cleanup_requires_every_ownership_gate (__main__.T107ContractFixtureTests.test_fresh_synthetic_cleanup_requires_every_ownership_gate) ... ok
+2026-10-24T21:19:20.5805124Z test_mcp_dual_payload_counts_repeated_text_and_structured_bytes (__main__.T107ContractFixtureTests.test_mcp_dual_payload_counts_repeated_text_and_structured_bytes) ... ok
+2026-10-24T21:19:20.5807034Z test_mcp_measurement_rejects_invalid_json_and_nonconvergence (__main__.T107ContractFixtureTests.test_mcp_measurement_rejects_invalid_json_and_nonconvergence) ... ok
+2026-10-24T21:19:20.5808702Z test_mcp_modes_require_verified_host_and_never_silently_shrink (__main__.T107ContractFixtureTests.test_mcp_modes_require_verified_host_and_never_silently_shrink) ... ok
+2026-10-24T21:19:20.5810309Z test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements (__main__.T107ContractFixtureTests.test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements) ... ok
+2026-10-24T21:19:20.5829406Z test_preview_ack_requires_current_identity_permission_and_liveness (__main__.T107ContractFixtureTests.test_preview_ack_requires_current_identity_permission_and_liveness) ... ok
+2026-10-24T21:19:20.5830505Z test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness (__main__.T107ContractFixtureTests.test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness) ... ok
+2026-10-24T21:19:20.5831519Z test_reused_evidence_requires_exact_subject_and_complete_fingerprints (__main__.T107ContractFixtureTests.test_reused_evidence_requires_exact_subject_and_complete_fingerprints) ... ok
+2026-10-24T21:19:20.5832497Z test_runtime_config_validation_and_cas_are_separate_whole_replace_steps (__main__.T107ContractFixtureTests.test_runtime_config_validation_and_cas_are_separate_whole_replace_steps) ... ok
+2026-10-24T21:19:20.5833004Z 
+2026-10-24T21:19:20.5833158Z ----------------------------------------------------------------------
+2026-10-24T21:19:20.5833479Z Ran 150 tests in 12.092s
+2026-10-24T21:19:20.5833608Z 
+2026-10-24T21:19:20.5833683Z OK
+2026-10-24T21:19:20.6029610Z ##[group]Run python -B tools/ci/test_delivery_policy.py
+2026-10-24T21:19:20.6030152Z [36;1mpython -B tools/ci/test_delivery_policy.py[0m
+2026-10-24T21:19:20.6107687Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:20.6108182Z env:
+2026-10-24T21:19:20.6108457Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:20.6108770Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:20.6109122Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:20.6109426Z   GOTOOLCHAIN: local
+2026-10-24T21:19:20.6109709Z ##[endgroup]
+2026-10-24T21:19:20.7265920Z test_command_moved_to_wrong_job_fails (__main__.CheckObservationTests.test_command_moved_to_wrong_job_fails) ... ok
+2026-10-24T21:19:20.7410608Z test_current_frozen_plan_maps_to_real_workflow (__main__.CheckObservationTests.test_current_frozen_plan_maps_to_real_workflow) ... ok
+2026-10-24T21:19:20.7411510Z test_duplicate_native_identity_fails (__main__.CheckObservationTests.test_duplicate_native_identity_fails) ... ok
+2026-10-24T21:19:20.7412283Z test_exact_success_passes (__main__.CheckObservationTests.test_exact_success_passes) ... ok
+2026-10-24T21:19:20.7506863Z test_matrix_context_not_declared_by_job_fails (__main__.CheckObservationTests.test_matrix_context_not_declared_by_job_fails) ... ok
+2026-10-24T21:19:20.7507552Z test_missing_check_fails (__main__.CheckObservationTests.test_missing_check_fails) ... ok
+2026-10-24T21:19:20.7508285Z test_skipped_check_fails (__main__.CheckObservationTests.test_skipped_check_fails) ... ok
+2026-10-24T21:19:20.7508752Z test_stale_sha_fails (__main__.CheckObservationTests.test_stale_sha_fails) ... ok
+2026-10-24T21:19:21.0959441Z [master (root-commit) ba93f61] feat(spec-check): [P0][T003] Tạo payload kiểm tra
+2026-10-24T21:19:21.0959857Z  1 file changed, 9367 insertions(+)
+2026-10-24T21:19:21.0960229Z  create mode 100644 Maps-Context-Engine-4D_SPEC.md
+2026-10-24T21:19:21.1821021Z [master c95226d] docs(progress): [P0][T003] Đề xuất đóng kiểm tra
+2026-10-24T21:19:21.1821540Z  1 file changed, 2 insertions(+), 1 deletion(-)
+2026-10-24T21:19:21.3197163Z test_actual_git_parent_and_non_spec_path_guard (__main__.ClosingDiffTests.test_actual_git_parent_and_non_spec_path_guard) ... ok
+2026-10-24T21:19:21.3610013Z test_another_task_status_change_fails (__main__.ClosingDiffTests.test_another_task_status_change_fails) ... ok
+2026-10-24T21:19:21.3977222Z test_candidate_closing_accepts_semicolon_separated_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_accepts_semicolon_separated_evidence_ids) ... ok
+2026-10-24T21:19:21.4343194Z test_candidate_closing_accepts_split_archive_live_pending_fields (__main__.ClosingDiffTests.test_candidate_closing_accepts_split_archive_live_pending_fields) ... ok
+2026-10-24T21:19:21.4703265Z test_candidate_closing_leaf_passes (__main__.ClosingDiffTests.test_candidate_closing_leaf_passes) ... ok
+2026-10-24T21:19:21.5060923Z test_candidate_closing_rejects_duplicate_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_rejects_duplicate_evidence_ids) ... ok
+2026-10-24T21:19:21.5435297Z test_candidate_closing_rejects_partial_local_pass_ratio (__main__.ClosingDiffTests.test_candidate_closing_rejects_partial_local_pass_ratio) ... ok
+2026-10-24T21:19:21.5797574Z test_candidate_verify_cannot_transition_to_another_value (__main__.ClosingDiffTests.test_candidate_verify_cannot_transition_to_another_value) ... ok
+2026-10-24T21:19:21.6165472Z test_candidate_verify_to_done_transition_passes (__main__.ClosingDiffTests.test_candidate_verify_to_done_transition_passes) ... ok
+2026-10-24T21:19:21.6539704Z test_design_section_change_fails (__main__.ClosingDiffTests.test_design_section_change_fails) ... ok
+2026-10-24T21:19:21.6901511Z test_gate_scope_change_fails (__main__.ClosingDiffTests.test_gate_scope_change_fails) ... ok
+2026-10-24T21:19:21.6902685Z test_s22_allows_derived_execution_checkpoint_leaves (__main__.ClosingDiffTests.test_s22_allows_derived_execution_checkpoint_leaves) ... ok
+2026-10-24T21:19:21.6904652Z test_s22_rejects_execution_checkpoint_identity_change (__main__.ClosingDiffTests.test_s22_rejects_execution_checkpoint_identity_change) ... ok
+2026-10-24T21:19:21.6906015Z test_section_map_preserves_unicode_line_separator_content (__main__.ClosingDiffTests.test_section_map_preserves_unicode_line_separator_content) ... ok
+2026-10-24T21:19:21.7395878Z test_unrelated_evidence_insert_fails (__main__.ClosingDiffTests.test_unrelated_evidence_insert_fails) ... ok
+2026-10-24T21:19:21.7397062Z test_breaking_marker_requires_explanation (__main__.CommitPolicyTests.test_breaking_marker_requires_explanation) ... ok
+2026-10-24T21:19:21.7398239Z test_closing_trailers_pass (__main__.CommitPolicyTests.test_closing_trailers_pass) ... ok
+2026-10-24T21:19:21.7399166Z test_duplicate_closing_trailer_fails (__main__.CommitPolicyTests.test_duplicate_closing_trailer_fails) ... ok
+2026-10-24T21:19:21.7400391Z test_duplicate_delivery_trailer_outside_final_block_fails (__main__.CommitPolicyTests.test_duplicate_delivery_trailer_outside_final_block_fails) ... ok
+2026-10-24T21:19:21.7401470Z test_english_note_fails (__main__.CommitPolicyTests.test_english_note_fails) ... ok
+2026-10-24T21:19:21.7402347Z test_literal_backslash_n_commit_sections_fail (__main__.CommitPolicyTests.test_literal_backslash_n_commit_sections_fail) ... ok
+2026-10-24T21:19:21.7403151Z test_p3_revert_commit_passes (__main__.CommitPolicyTests.test_p3_revert_commit_passes) ... ok
+2026-10-24T21:19:21.7403997Z test_payload_cannot_claim_closing_trailers (__main__.CommitPolicyTests.test_payload_cannot_claim_closing_trailers) ... ok
+2026-10-24T21:19:21.7405027Z test_payload_commit_with_vietnamese_note_passes (__main__.CommitPolicyTests.test_payload_commit_with_vietnamese_note_passes) ... ok
+2026-10-24T21:19:21.7405754Z test_skip_ci_fails (__main__.CommitPolicyTests.test_skip_ci_fails) ... ok
+2026-10-24T21:19:21.7406160Z test_wrong_task_fails (__main__.CommitPolicyTests.test_wrong_task_fails) ... ok
+2026-10-24T21:19:21.7694468Z test_empty_commit_body_is_rejected (__main__.PayloadCommitHistoryTests.test_empty_commit_body_is_rejected) ... ok
+2026-10-24T21:19:21.7862332Z test_empty_range_and_abbreviated_sha_are_rejected (__main__.PayloadCommitHistoryTests.test_empty_range_and_abbreviated_sha_are_rejected) ... ok
+2026-10-24T21:19:21.8787855Z test_linear_history_and_cli_pass (__main__.PayloadCommitHistoryTests.test_linear_history_and_cli_pass) ... ok
+2026-10-24T21:19:21.9381418Z test_merge_commit_is_rejected (__main__.PayloadCommitHistoryTests.test_merge_commit_is_rejected) ... ok
+2026-10-24T21:19:22.0234627Z test_missing_headings_and_wrong_task_or_priority_are_rejected (__main__.PayloadCommitHistoryTests.test_missing_headings_and_wrong_task_or_priority_are_rejected) ... ok
+2026-10-24T21:19:22.0673875Z test_non_ancestor_base_is_rejected (__main__.PayloadCommitHistoryTests.test_non_ancestor_base_is_rejected) ... ok
+2026-10-24T21:19:22.0674301Z 
+2026-10-24T21:19:22.0674461Z ----------------------------------------------------------------------
+2026-10-24T21:19:22.0674756Z Ran 40 tests in 1.377s
+2026-10-24T21:19:22.0674895Z 
+2026-10-24T21:19:22.0674972Z OK
+2026-10-24T21:19:22.0831850Z ##[group]Run python -B tools/ci/test_checkpoint_digest.py
+2026-10-24T21:19:22.0832219Z [36;1mpython -B tools/ci/test_checkpoint_digest.py[0m
+2026-10-24T21:19:22.0887142Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:22.0887353Z env:
+2026-10-24T21:19:22.0887523Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:22.0887736Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:22.0888061Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:22.0888263Z   GOTOOLCHAIN: local
+2026-10-24T21:19:22.0888441Z ##[endgroup]
+2026-10-24T21:19:22.1402808Z test_checkpoint_projection_ignores_only_the_nested_s22_mapping (__main__.CheckpointDigestTests.test_checkpoint_projection_ignores_only_the_nested_s22_mapping) ... ok
+2026-10-24T21:19:22.1404408Z test_projection_rejects_missing_or_duplicate_checkpoint_key (__main__.CheckpointDigestTests.test_projection_rejects_missing_or_duplicate_checkpoint_key) ... ok
+2026-10-24T21:19:22.1405932Z test_scope_comes_from_single_s47_card_and_pins_spec_projection (__main__.CheckpointDigestTests.test_scope_comes_from_single_s47_card_and_pins_spec_projection) ... ok
+2026-10-24T21:19:22.1412725Z test_symlink_parent_is_rejected_without_traversal (__main__.CheckpointDigestTests.test_symlink_parent_is_rejected_without_traversal) ... ok
+2026-10-24T21:19:22.2658863Z test_worktree_and_index_digests_track_only_scoped_inputs (__main__.CheckpointDigestTests.test_worktree_and_index_digests_track_only_scoped_inputs) ... ok
+2026-10-24T21:19:22.2659693Z 
+2026-10-24T21:19:22.2659921Z ----------------------------------------------------------------------
+2026-10-24T21:19:22.2660355Z Ran 5 tests in 0.126s
+2026-10-24T21:19:22.2660524Z 
+2026-10-24T21:19:22.2660632Z OK
+2026-10-24T21:19:22.2785871Z ##[group]Run python -B tools/ci/check_gofmt.py
+2026-10-24T21:19:22.2786188Z [36;1mpython -B tools/ci/check_gofmt.py[0m
+2026-10-24T21:19:22.2842461Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:22.2842675Z env:
+2026-10-24T21:19:22.2842853Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:22.2843056Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:22.2843270Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:22.2843463Z   GOTOOLCHAIN: local
+2026-10-24T21:19:22.2843646Z ##[endgroup]
+2026-10-24T21:19:22.4177480Z ĐẠT: gofmt kiểm 230 Go source trong implementation.
+2026-10-24T21:19:22.4251000Z ##[group]Run go test ./...
+2026-10-24T21:19:22.4251273Z [36;1mgo test ./...[0m
+2026-10-24T21:19:22.4307107Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:19:22.4307325Z env:
+2026-10-24T21:19:22.4307492Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:19:22.4307693Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:19:22.4308071Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:19:22.4308309Z   GOTOOLCHAIN: local
+2026-10-24T21:19:22.4308490Z ##[endgroup]
+2026-10-24T21:19:22.5538067Z go: downloading github.com/modelcontextprotocol/go-sdk v1.8.0
+2026-10-24T21:19:22.5575247Z go: downloading golang.org/x/tools v0.52.0
+2026-10-24T21:19:22.5593682Z go: downloading modernc.org/sqlite v1.60.1
+2026-10-24T21:19:22.5619703Z go: downloading github.com/google/jsonschema-go v0.4.3
+2026-10-24T21:19:22.6689203Z go: downloading golang.org/x/mod v0.42.0
+2026-10-24T21:19:22.7173695Z go: downloading golang.org/x/sys v0.49.0
+2026-10-24T21:19:22.7827239Z go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+2026-10-24T21:19:22.7942419Z go: downloading golang.org/x/oauth2 v0.35.0
+2026-10-24T21:19:22.8271322Z go: downloading golang.org/x/sync v0.24.0
+2026-10-24T21:19:22.8382509Z go: downloading golang.org/x/time v0.15.0
+2026-10-24T21:19:22.8892294Z go: downloading github.com/segmentio/encoding v0.5.4
+2026-10-24T21:19:23.0322437Z go: downloading github.com/segmentio/asm v1.1.3
+2026-10-24T21:19:23.9163685Z go: downloading modernc.org/libc v1.77.1
+2026-10-24T21:19:24.9492499Z go: downloading modernc.org/memory v1.12.1
+2026-10-24T21:19:24.9493040Z go: downloading github.com/google/uuid v1.6.0
+2026-10-24T21:19:24.9493572Z go: downloading modernc.org/mathutil v1.7.1
+2026-10-24T21:19:24.9493915Z go: downloading github.com/dustin/go-humanize v1.0.1
+2026-10-24T21:19:24.9699653Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+2026-10-24T21:19:25.1006546Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/loader-fixture	[no test files]
+2026-10-24T21:19:57.0169523Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/smoke	[no test files]
+2026-10-24T21:19:57.0199323Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T043/profile-hash-check	[no test files]
+2026-10-24T21:19:57.5057737Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/cmd/mce4d	[no test files]
+2026-10-24T21:19:58.0113853Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/contracts	0.500s
+2026-10-24T21:19:58.2005799Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/golang	0.590s
+2026-10-24T21:19:58.3866677Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/providers	0.685s
+2026-10-24T21:19:58.5621490Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config	0.520s
+2026-10-24T21:19:58.5622571Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer	0.026s
+2026-10-24T21:19:58.5623642Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/groups	0.003s
+2026-10-24T21:19:58.5625531Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records	0.007s
+2026-10-24T21:19:58.5629136Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/registration	0.248s
+2026-10-24T21:19:59.1069199Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/rename	0.799s
+2026-10-24T21:19:59.1070187Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/response	0.533s
+2026-10-24T21:19:59.1076421Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/store	[no test files]
+2026-10-24T21:19:59.5583557Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/validate	1.144s
+2026-10-24T21:19:59.5589987Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/catalog	0.055s
+2026-10-24T21:20:04.3402080Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cli	5.558s
+2026-10-24T21:20:04.3403226Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contextpack	0.010s
+2026-10-24T21:20:04.3436824Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts	0.012s
+2026-10-24T21:20:04.3437741Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/events	0.006s
+2026-10-24T21:20:04.3438666Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/federation	0.004s
+2026-10-24T21:20:04.3439455Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http	0.003s
+2026-10-24T21:20:04.3440226Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema	0.027s
+2026-10-24T21:20:04.3441004Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/sql	0.156s
+2026-10-24T21:20:04.3441719Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cursor	0.013s
+2026-10-24T21:20:04.3442409Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/ai	0.011s
+2026-10-24T21:20:04.3443107Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/architecture	0.003s
+2026-10-24T21:20:04.3443874Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/profiles	0.002s
+2026-10-24T21:20:04.3449415Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/explorer	1.518s
+2026-10-24T21:20:04.3450464Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/history	0.010s
+2026-10-24T21:20:04.3451260Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer	0.275s
+2026-10-24T21:20:04.3452212Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/inventory	3.456s
+2026-10-24T21:20:04.3452946Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/lsp	4.072s
+2026-10-24T21:20:04.3453597Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/mcp	0.225s
+2026-10-24T21:20:04.3454291Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/model	0.002s
+2026-10-24T21:20:04.3454961Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/overview	0.011s
+2026-10-24T21:20:04.3455710Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths	[no test files]
+2026-10-24T21:20:04.3456338Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/policy	[no test files]
+2026-10-24T21:20:04.3456804Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/ports	[no test files]
+2026-10-24T21:20:04.3457243Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime	0.519s
+2026-10-24T21:20:04.3457709Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config	0.230s
+2026-10-24T21:20:04.3458455Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/exec	0.292s
+2026-10-24T21:20:04.3458999Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/maintenance	0.045s
+2026-10-24T21:20:04.3459498Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/search	0.067s
+2026-10-24T21:20:04.3460063Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot	0.003s
+2026-10-24T21:20:07.0710565Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/store/sqlite	3.910s
+2026-10-24T21:20:07.0711130Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/telemetry	[no test files]
+2026-10-24T21:20:09.0164042Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/acceptance	5.280s
+2026-10-24T21:20:09.0164573Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/contract	1.814s
+2026-10-24T21:20:09.0165119Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration	0.243s
+2026-10-24T21:20:09.0165581Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration/platform	0.017s
+2026-10-24T21:20:09.0166086Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare	0.222s
+2026-10-24T21:20:09.0166838Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare/cmd	0.018s
+2026-10-24T21:20:09.0167484Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale	0.007s
+2026-10-24T21:20:09.0168583Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale/cmd	[no test files]
+2026-10-24T21:20:09.0169384Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/selfindex	0.004s [no tests to run]
+2026-10-24T21:20:09.0170105Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/t039	0.004s
+2026-10-24T21:20:09.3277034Z ##[group]Run go vet ./...
+2026-10-24T21:20:09.3277292Z [36;1mgo vet ./...[0m
+2026-10-24T21:20:09.3334516Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:20:09.3334746Z env:
+2026-10-24T21:20:09.3334920Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:20:09.3335121Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:20:09.3335340Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:20:09.3335541Z   GOTOOLCHAIN: local
+2026-10-24T21:20:09.3335732Z ##[endgroup]
+2026-10-24T21:20:15.8236160Z ##[group]Run go build ./...
+2026-10-24T21:20:15.8236425Z [36;1mgo build ./...[0m
+2026-10-24T21:20:15.8292082Z shell: /usr/bin/bash -e {0}
+2026-10-24T21:20:15.8292300Z env:
+2026-10-24T21:20:15.8292470Z   GIT_CONFIG_COUNT: 1
+2026-10-24T21:20:15.8292672Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-24T21:20:15.8292900Z   GIT_CONFIG_VALUE_0: true
+2026-10-24T21:20:15.8293261Z   GOTOOLCHAIN: local
+2026-10-24T21:20:15.8293447Z ##[endgroup]
+2026-10-24T21:20:17.4320842Z Post job cleanup.
+2026-10-24T21:20:17.5362553Z Post job cleanup.
+2026-10-24T21:20:17.6063219Z [command]/usr/bin/git version
+2026-10-24T21:20:17.6106424Z git version 2.55.0
+2026-10-24T21:20:17.6134516Z Temporarily overriding HOME='/home/runner/work/_temp/610395b6-5a59-462b-b272-10ce0c094a52' before making global git config changes
+2026-10-24T21:20:17.6135614Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T21:20:17.6138958Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+2026-10-24T21:20:17.6166748Z Removing SSH command configuration
+2026-10-24T21:20:17.6172203Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T21:20:17.6202092Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T21:20:17.6411177Z Removing HTTP extra header
+2026-10-24T21:20:17.6416158Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T21:20:17.6445689Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T21:20:17.6668550Z Removing includeIf entries pointing to credentials config files
+2026-10-24T21:20:17.6676053Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-24T21:20:17.6706543Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-24T21:20:17.7057869Z Cleaning up orphan processes

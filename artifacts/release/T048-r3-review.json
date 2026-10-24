@@ -7,7 +7,7 @@
   "continued_from_delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
   "continuation_of_review_ref": "artifacts/release/T048-r2-review.json",
   "continuation_of_review_sha256": "82b3b444e980c7c7710f4b7160f9c3782ee6d85cd583cf3a7da33f29437e9123",
-  "reviewed_at_utc": "2026-10-24T20:47:13.103108Z",
+  "reviewed_at_utc": "2026-10-24T21:43:46Z",
   "spec_revision": "1.6.14",
   "review_result": "PASS_WITH_OPEN_RELEASE_GAPS",
   "source_binding": {
@@ -370,7 +370,7 @@
   "release_disposition": {
     "gate": "G6",
     "status": "NOT_RUN",
-    "reason": "No real repository/model benchmark or production process-runner evidence, so G6 remains NOT_RUN. Revision 3 allocation preflight and local candidate checks are PASS; allocation commit CI, payload, closing, archive/readback and fresh live verification remain pending."
+    "reason": "No real repository/model benchmark or production process-runner evidence, so G6 remains NOT_RUN. Allocation commit 9de32cf17d00ab633fdecbb393964b3bc2393d2c is on both authorized refs with exact-SHA CI PASS (12/12); exact-A local checks PASS (13/13, 39/39 hashes) and Windows byte-stability verification PASS (504/504). Payload, closing, archive/readback, and fresh live verification remain pending."
   },
   "progress_at_revision_start": {
     "completed_scope_tasks": 74,
@@ -389,16 +389,90 @@
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-1/summary.json",
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-1/verification.json",
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-2/summary.json",
-    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-2/verification.json"
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-2/verification.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-4/summary.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-4/verification.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol-r3.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/allocation-ci-evidence.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/manifest.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/collection.json"
   ],
   "artifact_checkout_integrity": {
     "r2_local_allocation": "PASS(13/13)",
-    "windows_git_checkout_probe": "FAIL",
-    "probe_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol.json",
-    "probe_sha256": "aba21db9b6477532ab37de02666101b64c5f941826f4b12ffa86b243f4287827",
-    "measured_source_sha256": "6ab58900529377d6e16f7b0cacac6b2e9ce09bdaf559245c3f5a2428dd0c72f1",
-    "measured_checkout_sha256": "f4f3b16427e8c7e294f41ceedd9391f14832cac1d9b79be66d2856e3e8fb0cae7",
+    "historical_windows_git_checkout_probe": {
+      "status": "FAIL",
+      "ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol.json",
+      "sha256": "aba21db9b6477532ab37de02666101b64c5f941826f4b12ffa86b243f4287827",
+      "measured_source_sha256": "6ab58900529377d6e16f7b0cacac6b2e9ce09bdaf559245c3f5a2428dd0c72f1",
+      "measured_checkout_sha256": "f4f3b16427e8c7e294f41ceedd9391f14832cac1d9b79be66d2856e3e8fb0cae7"
+    },
+    "windows_git_checkout_probe": "PASS(504/504; exact allocation A; 0 mismatches)",
+    "probe_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol-r3.json",
+    "probe_sha256": "0a7c9e983a5f213987b43dee2279eada2a256071ac1e20d235498e13651a0eca",
+    "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "checked_count": 504,
+    "passed_count": 504,
+    "failed_count": 0,
+    "paths_over_240_chars": 418,
+    "checkout_environment": {
+      "os": "Windows",
+      "git_core_autocrlf": "true",
+      "git_core_longpaths": "true",
+      "clone_status": "clean"
+    },
     "selected_fix": "Narrowly scoped -text attributes for T048 hash-bound reports and evidence; actual indexed checkout verification remains required before commit."
   },
-  "revision3_delivery_status": "ALLOCATION_LOCAL_PASS_COMMIT_PENDING"
+  "revision3_delivery_status": "PAYLOAD_LOCAL_PASS_CANDIDATE_CI_PENDING",
+  "allocation_local_verification": {
+    "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "base_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
+    "result": "PASS",
+    "passed_count": 13,
+    "failed_count": 0,
+    "tracked_diff_clean": true,
+    "worktree_diff_sha256": "851254ae24ad402c5116485078f3dfa157b59c6ee41d9d11bb366d45a123a890",
+    "summary_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-4/summary.json",
+    "summary_sha256": "2cf2db36f8ee5957b2affbd271389cf6a7f4d4584eace53fc76cb46027e12ecd",
+    "verification_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/allocation/candidate-attempt-4/verification.json",
+    "verification_sha256": "da129ae66e44e91c8a45d6f40c428e811c35d3b28f175c7846661b7b9fdb9e6b",
+    "hash_bindings_verified": 39,
+    "canonical_copy_result": "PASS_BYTE_IDENTICAL"
+  },
+  "allocation_commit_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+  "allocation_ci": {
+    "result": "PASS",
+    "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "run_count": 2,
+    "contexts_per_ref": 6,
+    "passed_contexts": 12,
+    "main_run_id": "40133661477",
+    "task_branch_run_id": "40133661473",
+    "remote_refs_pre_and_post": {
+      "refs/heads/main": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+      "refs/heads/codex/t003-d089-regressions": "9de32cf17d00ab633fdecbb393964b3bc2393d2c"
+    },
+    "evidence_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/allocation-ci-evidence.json",
+    "evidence_sha256": "2af297836d9471b36eae74505c9887f9108c3a2bc85674d127afb7afcc4988fb",
+    "manifest_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/manifest.json",
+    "manifest_sha256": "34bd04325fe76ee9286f68c8b42efe09a68732b247e36a108eda92f5fdc3e7c1",
+    "collection_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/collection.json",
+    "collection_sha256": "894cde94137e7309692dafa946493b840e5d42fc01910eff62471f19655394f8"
+  },
+  "payload_local_verification": {
+    "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "subject_binding": "T048 payload candidate working tree based on allocation SHA; not payload commit or closing verification",
+    "base_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
+    "result": "PASS",
+    "passed_count": 13,
+    "failed_count": 0,
+    "worktree_diff_sha256": "72267de096bc2d8b20128b06435ac98b35465ae90ba69d70a38bd806f590ad8c",
+    "check_plan_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/check-plan-canonical.json",
+    "check_plan_sha256": "1b4ef48dacfaea2d0902b80594ad61964e215fbf7b5644c37691936f5501941f",
+    "summary_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/payload/candidate-attempt-4/summary.json",
+    "summary_sha256": "5f8f59c68952dfde752bc1464617a01e9623398bcdd0c41ee2f3daa138e9c72c",
+    "verification_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/payload/candidate-attempt-4/verification.json",
+    "verification_sha256": "ef3d01a609e84a8e4c974452e85dcf767d28babc3e65f8c6056b5568dd4b8c32",
+    "hash_bindings_verified": 39,
+    "canonical_copy_result": "PASS_BYTE_IDENTICAL"
+  }
 }
