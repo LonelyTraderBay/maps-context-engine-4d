@@ -1,0 +1,142 @@
+{
+  "format_version": 1,
+  "kind": "t048_r2_release_review",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "spec_revision": "1.6.14",
+  "reviewed_at_utc": "2026-10-24T19:05:36Z",
+  "source_binding": {
+    "base_commit": "5293c93ffe014f8f81f2b827d5a409927705f263",
+    "allocation_worktree_diff_sha256": "41c8c534b8494b9c84b00d0be165d75b7e3ad9f55144ff8aea34208567ca55a3",
+    "allocation_scope": "base HEAD plus the recorded dirty working tree; allocation checks are not payload or closing proof",
+    "provider_source_commit": "5293c93ffe014f8f81f2b827d5a409927705f263"
+  },
+  "review_result": "PASS_WITH_OPEN_RELEASE_GAPS",
+  "release_disposition": {
+    "gate": "G6",
+    "status": "NOT_RUN",
+    "reason": "This review records fixture and source evidence but does not establish exact-payload CI, an in-repository production TS/Python process runner, or an executed real/model benchmark."
+  },
+  "effective_state_at_review": {
+    "completed_scope_tasks": 74,
+    "required_scope_tasks": 108,
+    "completion_percent": 68.52,
+    "active_task": "T048",
+    "t048_effective_status": "IN_PROGRESS",
+    "t057_status": "BLOCKED",
+    "progress_basis": "S22 effective-DONE count; task count is not a product acceptance or release-readiness measure"
+  },
+  "measured_verification": {
+    "allocation_local": {
+      "result": "PASS",
+      "passed": 13,
+      "failed": 0,
+      "subject_sha": "5293c93ffe014f8f81f2b827d5a409927705f263",
+      "worktree_diff_sha256": "41c8c534b8494b9c84b00d0be165d75b7e3ad9f55144ff8aea34208567ca55a3",
+      "summary_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/attempt-1/summary.json",
+      "summary_sha256": "1f7f0024bd513bc40a011b4149f990ce6ebe1e6a2a37e0281b36d0c5c84ac9cf",
+      "checks": ["bootstrap", "bootstrap-fixtures", "delivery-plan", "spec-check", "spec-check-fixtures", "delivery-policy-fixtures", "checkpoint-digest-fixtures", "go-format", "go-test", "go-vet", "go-build", "explorer-install", "explorer-contract"],
+      "go_test_observation": "48 packages reported ok; 10 packages had no test files; command exit 0"
+    },
+    "allocation_preflight": {
+      "result": "PASS",
+      "passed": 2,
+      "failed": 0,
+      "summary_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/preflight/attempt-1/summary.json",
+      "summary_sha256": "039704eb2240a6173729351645d893a33bb22e39ee7e2c346f1307c5a3d94b04",
+      "checks": ["selected-plan", "selector-schema"]
+    },
+    "supplemental_provider_tests": {
+      "result": "PASS",
+      "tested_source_commit": "5293c93ffe014f8f81f2b827d5a409927705f263",
+      "source_working_tree_delta": "none for packages/python-provider and packages/ts-provider",
+      "python": {
+        "command": "python -B -m unittest discover -s packages/python-provider/test -v",
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0,
+        "log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/python-provider-tests.log",
+        "log_sha256": "1f139920a6e260bb42a60a0659e1f4d91a7cac2dc16e041e9521f49a5089ca21"
+      },
+      "typescript": {
+        "install_command": "npm ci --ignore-scripts --no-audit --no-fund",
+        "command": "npm test -- --test-reporter=spec",
+        "passed": 29,
+        "failed": 0,
+        "skipped": 0,
+        "install_log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/ts-provider-install.log",
+        "install_log_sha256": "4e0639e357b3b74baadc107fde262405f1cddbe7437223428babe195698aa771",
+        "log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/ts-provider-tests.log",
+        "log_sha256": "06ec87a0153f7b4c9c71229747ce9c8af4c0e571aedb269a7b0653382fa2fa18"
+      },
+      "evidence_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/provider-test-evidence.json",
+      "evidence_sha256": "8a02a6485b65539f955d89b2e2d27000edf42346eaf0c7bab5eab586682ac435",
+      "ci_boundary": "These two provider suites are supplemental local review evidence and are absent from the frozen six GitHub contexts."
+    },
+    "toolchain": {
+      "evidence_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/toolchain-provenance.json",
+      "sha256": "c100e3fd4565a8da18d1862498ad815b12880bba1bb19d3d03105f48e8682295",
+      "versions": {"go": "go1.27.2 windows/amd64", "node": "v24.22.0", "npm": "11.19.1", "python": "3.12.14"},
+      "global_path_changed": false
+    },
+    "frozen_github_ci": {
+      "result": "NOT_RUN",
+      "required_contexts": 6,
+      "reason": "No T048 allocation commit or payload SHA exists yet; exact-SHA checks remain pending. The six frozen contexts cover bootstrap, Go/spec-contract, and Explorer contract on Ubuntu/Windows."
+    }
+  },
+  "case_matrix": [
+    {"case": "C055", "area": "TypeScript/JavaScript", "implementation": "packages/ts-provider/src/analyze.mjs:analyzeProviderRequest; captured-root.mjs:createCapturedCompilerHost", "tests": "packages/ts-provider/test/analyze.test.mjs: path aliases, same-name identities, re-exports, project references, dynamic imports, any, plugin rejection; 29/29 TypeScript provider tests passed", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Syntax/typed facts are bound to captured source and closed profile; unresolved dynamic imports and unsupported constructs remain gaps. No in-engine process registration observed."},
+    {"case": "C056", "area": "Frontend route/client mapping", "implementation": "packages/ts-provider/src/frontend.mjs:analyzeFrontendRequest", "tests": "packages/ts-provider/test/frontend.test.mjs: service namespace/source ranges, dynamic paths, unsupported frameworks, shadowed fetch", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Static React Router and fetch evidence is namespace/source bound; dynamic paths, generated clients and unsupported frameworks remain gaps."},
+    {"case": "C057", "area": "Python syntax/import/scope", "implementation": "packages/python-provider/src/mce4d_python_provider/analyze.py:analyze_provider_request; ast.parse", "tests": "packages/python-provider/test/test_provider.py: AST scope/import, dynamic/unknown, syntax bounds, inert annotations; 19/19 Python provider tests passed", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Target source is parsed, not imported or executed; dynamic runtime behavior and monkey-patching remain unknown."},
+    {"case": "C058", "area": "Notebook and environment metadata", "implementation": "packages/python-provider/src/mce4d_python_provider/metadata.py:extract_notebook_metadata; analyze.py notebook branch", "tests": "packages/python-provider/test/test_provider.py: notebook cells/environment metadata-only, duplicate keys, byte cap, startup hook non-execution", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Only allowlisted metadata is read; cells, outputs, virtual environments and startup hooks are not executed or inferred."},
+    {"case": "C059", "area": "MySQL static SQL lineage", "implementation": "internal/contracts/sql/analyzer.go:Analyze", "tests": "internal/contracts/sql/analyzer_test.go and contract_test.go: independent oracle, dynamic SQL, migration/engine identity, source-version boundaries, unsupported dialect gaps", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Static captured SQL only; no database connection or deployed schema observation. Unsupported dialect/options and dynamic SQL remain explicit gaps."},
+    {"case": "C060", "area": "OpenAPI, JSON Schema, Proto3", "implementation": "internal/contracts/http/openapi.go:Analyze; internal/contracts/schema/jsonschema.go:AnalyzeJSONSchema; proto3.go:AnalyzeProto3", "tests": "internal/contracts/http/openapi_test.go; internal/contracts/schema/contract_test.go: allowlisted local refs, cycles, remote/traversal, version mismatch, import/tag bounds", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Bounded local captured documents only; remote refs, unsafe paths, cycles and unsupported versions remain gaps. Declared contracts do not prove deployed handler behavior."},
+    {"case": "C061", "area": "AsyncAPI/events", "implementation": "internal/contracts/events/asyncapi.go:Analyze", "tests": "internal/contracts/events/asyncapi_test.go: direction/source links, namespace identity, unsupported format and payload reference cycles", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Strict supported AsyncAPI subset; no broker/runtime delivery proof and no exactly-once, retry or replay guarantee."},
+    {"case": "C062", "area": "State machine and approved records", "implementation": "internal/history/records_scxml.go:ParseSCXML; records_state_approval.go:EffectiveModelStatus", "tests": "internal/history/records_state_test.go: hierarchy, scope binding, malformed/unsupported constructs and bounds; record tests cover approval/provenance", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "SCXML facts are parsed statically; guards/actions are not executed. Effective approval requires current source-bound provenance; unsupported constructs stay gaps."},
+    {"case": "C063", "area": "Federated repositories", "implementation": "internal/contracts/federation/group_scope.go and flow_query.go", "tests": "group_scope_test.go and flow_query_test.go: pinned vectors, unavailable/denied members, explicit bridges, stale identity and scope changes", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Member snapshots are checked independently; no distributed atomic snapshot is claimed and denied identities are not exposed."},
+    {"case": "C064", "area": "Temporal semantic diff", "implementation": "internal/history/diff.go:CompareSemanticSnapshots", "tests": "internal/history/diff_test.go: partial coverage, source drift, endpoint certainty and decision source drift", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Compares supplied snapshots; does not itself acquire Git history. Missing/partial snapshots do not imply removals."},
+    {"case": "C065", "area": "Trading profile", "implementation": "internal/domain/profiles/profiles.go", "tests": "internal/domain/profiles/profiles_test.go: transactional/economic unknowns remain explicit", "assessment": "OBLIGATION_CONTRACT_TESTED", "limits": "Profile obligations only; no order, ledger, money precision, settlement or finality execution is performed."},
+    {"case": "C066", "area": "Commerce profile", "implementation": "internal/domain/profiles/profiles.go", "tests": "internal/domain/profiles/profiles_test.go: payment/order/stock separation and webhook obligations", "assessment": "OBLIGATION_CONTRACT_TESTED", "limits": "No payment processor or webhook execution; retries, duplicate delivery and refund completion are not asserted as runtime facts."},
+    {"case": "C067", "area": "AI metadata lineage", "implementation": "internal/domain/ai/lineage.go:Compare", "tests": "internal/domain/ai/lineage_test.go: prompt/tokenizer/index/dataset/evaluation drift, opaque references, partial scope and payload rejection", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Source-bound metadata comparison only; model weights, datasets and checkpoints are not loaded or deserialized and no LLM is called."},
+    {"case": "C068", "area": "Architecture constraints", "implementation": "internal/domain/architecture/architecture.go:Evaluate", "tests": "internal/domain/architecture/architecture_test.go: allowed/forbidden dependency witnesses, expiry, incomplete provider scope and unbound evidence", "assessment": "TESTED_WITH_DECLARED_GAPS", "limits": "Only declared complete source-bound scope can pass; missing providers cannot produce a system-wide PASS."},
+    {"case": "C069", "area": "Polyglot benchmark contract", "implementation": "tests/acceptance/polyglot_benchmark_test.go:TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits; tools/bench/compare", "tests": "Go contract tests validate 15-case mapping and synthetic corpus/report importer behavior; T068 r8 historical corpus validation reports 3 repositories, 30 tasks, 3 repeats", "assessment": "SYNTHETIC_CORPUS_VALIDATED; ENGINE_BENCHMARK_NOT_RUN", "limits": "The acceptance test checks plan/corpus/report contracts, not execution of the 30 tasks on the engine. Real repositories, model/agent runs, token telemetry and token savings remain NOT_RUN."}
+  ],
+  "findings": [
+    {
+      "id": "T048-F01",
+      "severity": "P1",
+      "status": "OPEN",
+      "title": "No concrete in-repository TS/Python process runner registration is present",
+      "evidence": ["internal/analysis/providers/process.go:NewProcessAdapter defines an adapter that accepts ports.LanguageProviderProcess", "internal/ports/language_provider_process.go:LanguageProviderProcess is an interface", "rg over internal Go sources found NewProcessAdapter callsites only in process_test.go; no production runner implementation or registration callsite was found"],
+      "impact": "The standalone TS/Python CLI packages and their passing local suites do not prove that the engine can invoke those providers in a normal runtime path.",
+      "recommendation": "Add an explicitly scoped integration task that supplies the approved host process runner, registers the providers, and verifies an end-to-end engine request/response against isolated fixtures before claiming runtime capability.",
+      "boundary": "This is an in-repository source finding; it does not rule out an external host integration that is not present in this checkout."
+    },
+    {
+      "id": "T048-F02",
+      "severity": "P2",
+      "status": "OPEN",
+      "title": "Frozen GitHub checks omit the Python and TypeScript provider package suites",
+      "evidence": ["check-plan-canonical.json contains six contexts: bootstrap, spec-contract and Explorer contract on Ubuntu/Windows", "the two spec-contract contexts run Go/spec checks; Explorer contexts run npm run test:contract:ui", "provider-test-evidence.json records supplemental local Python 19/19 and TypeScript 29/29 passes"],
+      "impact": "Future provider regressions can pass the current hosted required-context set unless the suites are added to CI or covered by an equivalent required check.",
+      "recommendation": "Add both package suites to the governed CI plan and required-context verification in an authorized follow-up."
+    }
+  ],
+  "benchmark_and_runtime_limits": {
+    "synthetic_corpus": {"repositories": 3, "tasks": 30, "repeats": 3, "modes": ["baseline", "full", "incremental"], "plan_test": "TestT068PolyglotCorpusBindsCasesModesAndSyntheticLimits"},
+    "engine_task_execution": "NOT_RUN",
+    "real_repository_result": "NOT_RUN",
+    "model_or_agent_execution": "NOT_RUN",
+    "token_telemetry": "NOT_RUN",
+    "token_savings_claim": "NOT_RUN",
+    "reason": "T048 authority excludes production user-repository benchmarking and LLM/API calls; no host usage receipt is recorded in the reviewed evidence."
+  },
+  "handover": {
+    "t003": "T003 r27 closing checkpoint E828 records closing SHA 5293c93ffe014f8f81f2b827d5a409927705f263, local 13/13, CI 12/12, sealed archive/readback PASS and fresh live PASS. This is predecessor closeout evidence; remote refs must be rechecked before the next publication.",
+    "t057": "E829 records revision 3 raw selector/allocation/check-plan/archive/live bytes absent from the inspected checkouts and marks the audit NOT_RUN; do not reconstruct or rewrite sealed evidence. Re-evaluate only through a supported authorized revision path.",
+    "next_work": ["Finish T048 allocation commit and exact-SHA CI on both authorized refs.", "Produce the review payload commit, rerun the frozen exact-SHA checks, then perform closeout CI, archive readback and fresh live verification.", "Keep G6 NOT_RUN unless all required release evidence is present and the provider-runtime and benchmark limits are explicitly dispositioned by an authorized task."],
+    "scope_exclusions_observed": ["No production repository benchmark", "No model/LLM/API calls", "No target source execution", "No merge or deployment"]
+  }
+}
