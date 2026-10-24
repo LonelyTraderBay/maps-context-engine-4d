@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "kind": "delivery_checkpoint_contract_review",
+  "task_id": "T068",
+  "task_revision": 7,
+  "delivery_id": "5f2d1f3e-e6be-4c86-a39e-e6b242388639",
+  "reviewed_at_utc": "2026-10-24T02:35:03.662Z",
+  "candidate": {
+    "task_row_effective_at_candidate": "VERIFY",
+    "parent_sha": "18191d974ebe671555ef6d088f4a85aec7b3c7fd",
+    "intended_phase": "payload-verification-checkpoint",
+    "actual_mce4d_trailers": [],
+    "sha": "324c423e0a4e10b0ae1c2e77b45a58671ea60418",
+    "task_row_status_at_candidate": "DONE",
+    "subject": "chore(delivery): [P2][T068] chốt payload evidence trước closing",
+    "task_row_candidate_at_candidate": "DONE"
+  },
+  "contract": {
+    "closing_requires_trailers": [
+      "MCE4D-Delivery-ID: 5f2d1f3e-e6be-4c86-a39e-e6b242388639",
+      "MCE4D-Delivery-Phase: closing"
+    ],
+    "closing_requires_one_new_S21_T068_row": true,
+    "closing_parent_must_equal_verified_payload_sha": true,
+    "closing_transition": "VERIFY -> DONE"
+  },
+  "decision": "Preserve C1 as an intermediate payload-history commit. Create C2 as the exact payload candidate and C3 as its direct-child closing commit, as required by revision-7 task-start.",
+  "evidence_refs": [
+    "artifacts/git-delivery-support/T068-r9-5f2d1f3e-e6be-4c86-a39e-e6b242388639/authority/task-start.txt",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/ci/delivery_policy.py",
+    "tools/spec_check/semantics.py"
+  ]
+}
