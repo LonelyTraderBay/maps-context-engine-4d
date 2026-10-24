@@ -1,0 +1,607 @@
+spec-contract (windows-latest)	Set up job	﻿2026-10-24T16:07:57.6978117Z Current runner version: '2.338.0'
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7238116Z ##[group]Runner Image Provisioner
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7238955Z Hosted Compute Agent
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7239519Z Version: 20261021.618
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7240155Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7240913Z Build Date: 2026-10-21T00:45:21Z
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7241591Z Worker ID: {709b45c3-bb72-4c42-8306-54ae53775d5d}
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7242326Z Region: southcentralus
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7242882Z Cloud: Azure
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7243403Z ##[endgroup]
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7244787Z ##[group]Operating System
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7245415Z Microsoft Windows Server 2025
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7246012Z 10.0.26100
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7246478Z Datacenter
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7246942Z ##[endgroup]
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7247474Z ##[group]Runner Image
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7247991Z Image: windows-2025-vs2026
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7248550Z Version: 20261021.278.1
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7249718Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261021.278/images/windows/Windows2025-VS2026-Readme.md
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7251617Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261021.278
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7252538Z ##[endgroup]
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7253657Z ##[group]GITHUB_TOKEN Permissions
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7255844Z Contents: read
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7256462Z Metadata: read
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7256960Z ##[endgroup]
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7258885Z Secret source: Actions
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7259770Z Cache mode: write
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.7260434Z Prepare workflow directory
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.8525214Z Prepare all required actions
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:57.8573678Z Getting action download info
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:58.1121620Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:58.3085358Z Download action repository 'actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e' (SHA:b7ad1dad31e06c5925ef5d2fc7ad053ef454303e)
+spec-contract (windows-latest)	Set up job	2026-10-24T16:07:59.2175861Z Complete job name: spec-contract (windows-latest)
+spec-contract (windows-latest)	Check out source	﻿2026-10-24T16:08:00.0334615Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0335934Z with:
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0336416Z   persist-credentials: false
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0337088Z   repository: LonelyTraderBay/maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0341837Z   token: ***
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0342237Z   ssh-strict: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0342634Z   ssh-user: git
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0343011Z   clean: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0343410Z   sparse-checkout-cone-mode: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0343898Z   fetch-depth: 1
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0344287Z   fetch-tags: false
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0344698Z   show-progress: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0345101Z   lfs: false
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0345471Z   submodules: false
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0345882Z   set-safe-directory: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0346353Z   allow-unsafe-pr-checkout: false
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0347105Z env:
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0347476Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0347915Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0348434Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.0348856Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.2290909Z Syncing repository: LonelyTraderBay/maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.2292732Z ##[group]Getting Git version info
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.2293495Z Working directory is 'D:\a\maps-context-engine-4d\maps-context-engine-4d'
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.3205339Z [command]"C:\Program Files\Git\bin\git.exe" version
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.6425223Z git version 2.56.0.windows.2
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.6482251Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.6535516Z Temporarily overriding HOME='D:\a\_temp\8da1a626-76a0-48e7-b1f1-730109341ea4' before making global git config changes
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.6538546Z Adding repository directory to the temporary git global config as a safe directory
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.6541022Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\maps-context-engine-4d\maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.7134081Z Deleting the contents of 'D:\a\maps-context-engine-4d\maps-context-engine-4d'
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.7139201Z ##[group]Determining repository object format
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.7141152Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.7142011Z ##[group]Initializing the repository
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.7149947Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\maps-context-engine-4d\maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.8153711Z Initialized empty Git repository in D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.8200289Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/LonelyTraderBay/maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.8865539Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.8866813Z ##[group]Disabling automatic garbage collection
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.8877640Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.9262931Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.9264451Z ##[group]Setting up auth
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.9265446Z Removing SSH command configuration
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.9274247Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:00.9639520Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.3364479Z Removing HTTP extra header
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.3374569Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.3744672Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.9337986Z Removing includeIf entries pointing to credentials config files
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.9349525Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:02.9720380Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.5173091Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.5549015Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.5911162Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.6321570Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.6755266Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.7151761Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.7152475Z ##[group]Fetching the repository
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:03.7163624Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +476d161f0bddf4f0c85ecaffa61427cb26d489ab:refs/remotes/origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.7041516Z From https://github.com/LonelyTraderBay/maps-context-engine-4d
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.7043012Z  * [new ref]         476d161f0bddf4f0c85ecaffa61427cb26d489ab -> origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.7094474Z [command]"C:\Program Files\Git\bin\git.exe" branch --list --remote origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.7597682Z   origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.7639962Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse refs/remotes/origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8026922Z 476d161f0bddf4f0c85ecaffa61427cb26d489ab
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8062536Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8062943Z ##[group]Determining the checkout info
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8064295Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8072332Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8595306Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8974001Z ##[group]Checking out the ref
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:06.8983234Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/t003-d089-regressions refs/remotes/origin/codex/t003-d089-regressions
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:07.9199052Z Switched to a new branch 'codex/t003-d089-regressions'
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:07.9224537Z branch 'codex/t003-d089-regressions' set up to track 'origin/codex/t003-d089-regressions'.
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:07.9292660Z ##[endgroup]
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:07.9788926Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.0143839Z 476d161f0bddf4f0c85ecaffa61427cb26d489ab
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.0185704Z ##[group]Removing auth
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.0186125Z Removing SSH command configuration
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.0194439Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.1012834Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.6862720Z Removing HTTP extra header
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.6871357Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:08.7243585Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.2685611Z Removing includeIf entries pointing to credentials config files
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.2694449Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3027362Z includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3028446Z includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3029588Z includeif.gitdir:/github/workspace/.git.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3030209Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3071637Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3411656Z D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3455976Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path D\:\\a\\_temp\\git\-credentials\-8d012615\-6324\-4774\-adf8\-e646c32b4f31\.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.3837168Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.4177929Z D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.4223008Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-8d012615\-6324\-4774\-adf8\-e646c32b4f31\.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.4597026Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.4918721Z /github/runner_temp/git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.4959319Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-8d012615\-6324\-4774\-adf8\-e646c32b4f31\.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.5322870Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.5638193Z /github/runner_temp/git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.5679112Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-8d012615\-6324\-4774\-adf8\-e646c32b4f31\.config
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:09.6039987Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:10.1270394Z Removing credentials config 'D:\a\_temp\git-credentials-8d012615-6324-4774-adf8-e646c32b4f31.config'
+spec-contract (windows-latest)	Check out source	2026-10-24T16:08:10.1283844Z ##[endgroup]
+spec-contract (windows-latest)	Set up pinned Go toolchain	﻿2026-10-24T16:08:10.1757387Z ##[group]Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1757920Z with:
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1758145Z   go-version-file: go.mod
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1758405Z   cache: false
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1758619Z   check-latest: false
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1761911Z   token: ***
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1762126Z env:
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1762317Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1762563Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1762851Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.1763088Z ##[endgroup]
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.3224849Z Setup go version spec 1.27.2
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:10.3235737Z Attempting to download 1.27.2...
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:11.2512948Z matching 1.27.2...
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:11.2526275Z Acquiring 1.27.2 from https://github.com/actions/go-versions/releases/download/1.27.2-37875086547/go-1.27.2-win32-x64.zip
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:11.9680105Z Extracting Go...
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:12.0797270Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\go-1.27.2-win32-x64.zip', 'D:\a\_temp\63c5222c-fba7-4f8c-a62a-a0d2eee5a8c9', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\go-1.27.2-win32-x64.zip' -DestinationPath 'D:\a\_temp\63c5222c-fba7-4f8c-a62a-a0d2eee5a8c9' -Force } else { throw $_ } } ;"
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:17.3123145Z Successfully extracted go to D:\a\_temp\63c5222c-fba7-4f8c-a62a-a0d2eee5a8c9
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:17.3123652Z Adding to the cache ...
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.3271401Z Created link C:\hostedtoolcache\windows\go\1.27.2\x64 => D:\hostedtoolcache\windows\go\1.27.2\x64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.3277447Z Created link C:\hostedtoolcache\windows\go\1.27.2\x64.complete => D:\hostedtoolcache\windows\go\1.27.2\x64.complete
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.3278326Z Successfully cached go to C:\hostedtoolcache\windows\go\1.27.2\x64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.3283740Z Added go to the path
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.3286101Z Successfully set up Go version 1.27.2
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.5912560Z go version go1.27.2 windows/amd64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.5912806Z 
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:29.5913097Z ##[group]go env
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4989408Z set AR=ar
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4990169Z set CC=gcc
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4990804Z set CGO_CFLAGS=-O2 -g
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4991125Z set CGO_CPPFLAGS=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4991422Z set CGO_CXXFLAGS=-O2 -g
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4991731Z set CGO_ENABLED=1
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4992015Z set CGO_FFLAGS=-O2 -g
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4992317Z set CGO_LDFLAGS=-O2 -g
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4992597Z set CXX=g++
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4992837Z set GCCGO=gccgo
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4993116Z set GO111MODULE=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4993380Z set GOAMD64=v1
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4993645Z set GOARCH=amd64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4993933Z set GOAUTH=netrc
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4994264Z set GOBIN=C:\Users\runneradmin\go\bin
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4994838Z set GOCACHE=C:\Users\runneradmin\AppData\Local\go-build
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4995323Z set GOCACHEPROG=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4995645Z set GODEBUG=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4996011Z set GOENV=C:\Users\runneradmin\AppData\Roaming\go\env
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4996511Z set GOEXE=.exe
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4996810Z set GOEXPERIMENT=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4997091Z set GOFIPS140=off
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4997390Z set GOFLAGS=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4998553Z set GOGCCFLAGS=-m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=C:\Users\RUNNER~1\AppData\Local\Temp\go-build2031811647=/tmp/go-build -gno-record-gcc-switches
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.4999924Z set GOHOSTARCH=amd64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5000251Z set GOHOSTOS=windows
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5000538Z set GOINSECURE=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5001003Z set GOMOD=D:\a\maps-context-engine-4d\maps-context-engine-4d\go.mod
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5003720Z set GOMODCACHE=C:\Users\runneradmin\go\pkg\mod
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5004112Z set GONOPROXY=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5004344Z set GONOSUMDB=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5004572Z set GOOS=windows
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5005137Z set GOPACKAGESDRIVER=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5005513Z set GOPATH=C:\Users\runneradmin\go
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5005970Z set GOPRIVATE=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5006351Z set GOPROXY=https://proxy.golang.org,direct
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5006885Z set GOROOT=C:\hostedtoolcache\windows\go\1.27.2\x64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5007387Z set GOSUMDB=sum.golang.org
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5007699Z set GOTELEMETRY=local
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5008169Z set GOTELEMETRYDIR=C:\Users\runneradmin\AppData\Roaming\go\telemetry
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5008700Z set GOTMPDIR=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5008966Z set GOTOOLCHAIN=local
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5009512Z set GOTOOLDIR=C:\hostedtoolcache\windows\go\1.27.2\x64\pkg\tool\windows_amd64
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5010115Z set GOVCS=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5010390Z set GOVERSION=go1.27.2
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5010691Z set GOWORK=
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5010981Z set PKG_CONFIG=pkg-config
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5011204Z 
+spec-contract (windows-latest)	Set up pinned Go toolchain	2026-10-24T16:08:32.5011646Z ##[endgroup]
+spec-contract (windows-latest)	Validate frozen delivery plan	﻿2026-10-24T16:08:32.5326981Z ##[group]Run python -B tools/ci/delivery_policy.py check-plan
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5327573Z ^[[36;1mpython -B tools/ci/delivery_policy.py check-plan^[[0m
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5788846Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5789403Z env:
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5789680Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5790002Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5790389Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5790714Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:32.5790998Z ##[endgroup]
+spec-contract (windows-latest)	Validate frozen delivery plan	2026-10-24T16:08:34.4149533Z ĐẠT: GitCheckPlan schema+semantic+workflow; SHA-256 bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c; 6 check contexts.
+spec-contract (windows-latest)	Validate SPEC contracts	﻿2026-10-24T16:08:34.5482840Z ##[group]Run python -B tools/spec_check/check.py
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5483289Z ^[[36;1mpython -B tools/spec_check/check.py^[[0m
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5553621Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5553968Z env:
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5554142Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5554352Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5554599Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5554808Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:34.5554995Z ##[endgroup]
+spec-contract (windows-latest)	Validate SPEC contracts	2026-10-24T16:08:35.8565277Z ĐẠT: SPEC v1.6.14; 108 task, DAG/schedule, traceability hai chiều, work cards và 25 governance definitions.
+spec-contract (windows-latest)	Run positive and failure fixtures	﻿2026-10-24T16:08:35.9827272Z ##[group]Run python -B tools/spec_check/test_spec_check.py
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9827794Z ^[[36;1mpython -B tools/spec_check/test_spec_check.py^[[0m
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9898240Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9898601Z env:
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9898774Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9898991Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9899240Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9899471Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:35.9899665Z ##[endgroup]
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:39.3119128Z test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes (__main__.ArchivePublicationTests.test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:41.4102284Z test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption (__main__.ArchivePublicationTests.test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:43.1834962Z test_archive_preserves_utf8_text_raw_members_through_cold_readback (__main__.ArchivePublicationTests.test_archive_preserves_utf8_text_raw_members_through_cold_readback) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:43.1912104Z test_atomic_archive_rename_never_replaces_final_directory (__main__.ArchivePublicationTests.test_atomic_archive_rename_never_replaces_final_directory) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:44.5638645Z test_cold_readback_rejects_tampered_member_bytes (__main__.ArchivePublicationTests.test_cold_readback_rejects_tampered_member_bytes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:46.2852509Z test_existing_archive_reuse_never_invents_original_publish_time (__main__.ArchivePublicationTests.test_existing_archive_reuse_never_invents_original_publish_time) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:46.2874205Z test_live_observer_rejects_projection_outside_owned_operations_root (__main__.ArchivePublicationTests.test_live_observer_rejects_projection_outside_owned_operations_root) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:46.2918161Z test_live_observer_rejects_symlinked_projection_ancestor (__main__.ArchivePublicationTests.test_live_observer_rejects_symlinked_projection_ancestor) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:46.3070683Z test_member_read_supports_deep_windows_paths (__main__.ArchivePublicationTests.test_member_read_supports_deep_windows_paths) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:46.3199596Z test_publication_projection_is_written_once_after_actual_readback (__main__.ArchivePublicationTests.test_publication_projection_is_written_once_after_actual_readback) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:48.0309372Z test_publish_seal_readback_and_cold_verification (__main__.ArchivePublicationTests.test_publish_seal_readback_and_cold_verification) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:49.2295995Z test_publisher_recovers_after_manifest_and_seal_were_flushed (__main__.ArchivePublicationTests.test_publisher_recovers_after_manifest_and_seal_were_flushed) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.4139877Z test_publisher_recovers_fully_staged_members_before_manifest_seal (__main__.ArchivePublicationTests.test_publisher_recovers_fully_staged_members_before_manifest_seal) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5487939Z test_publisher_rejects_changed_manifest_after_staging_seal (__main__.ArchivePublicationTests.test_publisher_rejects_changed_manifest_after_staging_seal) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5490125Z test_bad_timestamp_rejects_instead_of_dropping_row (__main__.CIOrderingTests.test_bad_timestamp_rejects_instead_of_dropping_row) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5491620Z test_boolean_retry_attempt_is_unknown (__main__.CIOrderingTests.test_boolean_retry_attempt_is_unknown) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5493160Z test_latest_actions_generation_uses_instant_then_native_id (__main__.CIOrderingTests.test_latest_actions_generation_uses_instant_then_native_id) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5494990Z test_malformed_extra_precision_is_bounded (__main__.CIOrderingTests.test_malformed_extra_precision_is_bounded) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5496653Z test_newest_generation_with_no_required_job_is_unknown (__main__.CIOrderingTests.test_newest_generation_with_no_required_job_is_unknown) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5500427Z test_newest_native_failure_is_not_replaced_by_old_success (__main__.CIOrderingTests.test_newest_native_failure_is_not_replaced_by_old_success) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5501483Z test_offset_and_long_fraction_compare_as_exact_instants (__main__.CIOrderingTests.test_offset_and_long_fraction_compare_as_exact_instants) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5502453Z test_partial_rerun_selects_latest_attempt_per_job (__main__.CIOrderingTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5509417Z test_capture_manifest_json1_normalizes_files_and_dependency_digests (__main__.CanonicalCodecTests.test_capture_manifest_json1_normalizes_files_and_dependency_digests) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5510938Z test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays (__main__.CanonicalCodecTests.test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5513895Z test_invalid_identity_lexemes_fail_closed (__main__.CanonicalCodecTests.test_invalid_identity_lexemes_fail_closed) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5516299Z test_manifest_json_full_and_unicode_bytes_match_reference (__main__.CanonicalCodecTests.test_manifest_json_full_and_unicode_bytes_match_reference) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.5520865Z test_twenty_shared_c14n_and_raw_source_vectors (__main__.CanonicalCodecTests.test_twenty_shared_c14n_and_raw_source_vectors) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.6005191Z test_committed_schema_and_registry_match_spec (__main__.ContractArtifactParityTests.test_committed_schema_and_registry_match_spec) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.6222890Z test_duplicate_member_in_authority_block_is_rejected (__main__.ContractArtifactParityTests.test_duplicate_member_in_authority_block_is_rejected) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.7180516Z test_generated_only_edit_is_detected (__main__.ContractArtifactParityTests.test_generated_only_edit_is_detected) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.7353968Z test_object_definitions_must_reject_unknown_properties (__main__.ContractArtifactParityTests.test_object_definitions_must_reject_unknown_properties) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.7584385Z test_private_journal_schema_cannot_be_registered_as_operation (__main__.ContractArtifactParityTests.test_private_journal_schema_cannot_be_registered_as_operation) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.7586910Z test_surrogate_object_key_is_rejected_as_contract_error (__main__.ContractArtifactParityTests.test_surrogate_object_key_is_rejected_as_contract_error) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.8081718Z test_actions_check_suite_identity_matches_workflow (__main__.DeliveryLinkTests.test_actions_check_suite_identity_matches_workflow) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.8522506Z test_actions_job_check_run_url_binds_native_check_identity (__main__.DeliveryLinkTests.test_actions_job_check_run_url_binds_native_check_identity) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.8994483Z test_actions_source_timestamp_uses_native_workflow_creation (__main__.DeliveryLinkTests.test_actions_source_timestamp_uses_native_workflow_creation) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.9433734Z test_archive_must_retain_transitive_source_members (__main__.DeliveryLinkTests.test_archive_must_retain_transitive_source_members) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:50.9863353Z test_closing_commit_trailers_bind_delivery (__main__.DeliveryLinkTests.test_closing_commit_trailers_bind_delivery) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.0293463Z test_collection_must_cover_actions_attempt (__main__.DeliveryLinkTests.test_collection_must_cover_actions_attempt) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.0732930Z test_command_execution_is_bound_to_subject_revision (__main__.DeliveryLinkTests.test_command_execution_is_bound_to_subject_revision) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.1626274Z test_commit_snapshot_parent_and_scope_are_actual_git_bound (__main__.DeliveryLinkTests.test_commit_snapshot_parent_and_scope_are_actual_git_bound) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.2052200Z test_common_command_lifecycle_must_match_phase_identity (__main__.DeliveryLinkTests.test_common_command_lifecycle_must_match_phase_identity) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.2481186Z test_complete_static_link_graph_remains_external_unknown (__main__.DeliveryLinkTests.test_complete_static_link_graph_remains_external_unknown) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.2938816Z test_delivery_graph_does_not_mutate_inputs (__main__.DeliveryLinkTests.test_delivery_graph_does_not_mutate_inputs) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.3369017Z test_local_evidence_covers_each_unique_frozen_command_once (__main__.DeliveryLinkTests.test_local_evidence_covers_each_unique_frozen_command_once) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.5452109Z test_malformed_nested_shapes_reject_without_crashing (__main__.DeliveryLinkTests.test_malformed_nested_shapes_reject_without_crashing) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.5870991Z test_missing_required_check_rejects (__main__.DeliveryLinkTests.test_missing_required_check_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.6309929Z test_native_source_is_bound_to_observed_check (__main__.DeliveryLinkTests.test_native_source_is_bound_to_observed_check) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.6747254Z test_newer_failed_native_check_run_supersedes_old_green_check (__main__.DeliveryLinkTests.test_newer_failed_native_check_run_supersedes_old_green_check) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.7177654Z test_newer_failed_workflow_generation_supersedes_old_green_run (__main__.DeliveryLinkTests.test_newer_failed_workflow_generation_supersedes_old_green_run) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.7179539Z test_non_object_bundle_rejects_without_exception (__main__.DeliveryLinkTests.test_non_object_bundle_rejects_without_exception) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.7612613Z test_partial_rerun_selects_latest_attempt_per_job (__main__.DeliveryLinkTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.7614554Z test_payload_observation_parent_tracks_last_commit_parent (__main__.DeliveryLinkTests.test_payload_observation_parent_tracks_last_commit_parent) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.8056134Z test_plan_digest_must_bind_attempt (__main__.DeliveryLinkTests.test_plan_digest_must_bind_attempt) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.8916731Z test_push_command_rejects_force_and_wrong_refspec (__main__.DeliveryLinkTests.test_push_command_rejects_force_and_wrong_refspec) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.9352486Z test_push_operation_id_is_bound_to_destination (__main__.DeliveryLinkTests.test_push_operation_id_is_bound_to_destination) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.9786568Z test_raw_preflight_snapshot_must_match_projection (__main__.DeliveryLinkTests.test_raw_preflight_snapshot_must_match_projection) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:51.9940953Z test_selection_history_accepts_retained_supersede_chain (__main__.DeliveryLinkTests.test_selection_history_accepts_retained_supersede_chain) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:52.0095141Z test_selection_history_rejects_missing_invalidated_typed_or_raw_member (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_invalidated_typed_or_raw_member) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:52.0404723Z test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.3516598Z test_six_retained_member_roles_reject_wrong_root_types (__main__.DeliveryLinkTests.test_six_retained_member_roles_reject_wrong_root_types) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.4001691Z test_stale_selector_revision_rejects (__main__.DeliveryLinkTests.test_stale_selector_revision_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.4430825Z test_swapped_payload_phase_rejects (__main__.DeliveryLinkTests.test_swapped_payload_phase_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.4839810Z test_swapped_pointer_rejects (__main__.DeliveryLinkTests.test_swapped_pointer_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.5692488Z test_verified_noop_has_typed_identity_bound_reason (__main__.DeliveryLinkTests.test_verified_noop_has_typed_identity_bound_reason) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6637748Z test_verified_noop_preserves_original_closing_payload (__main__.DeliveryLinkTests.test_verified_noop_preserves_original_closing_payload) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6675681Z test_archive_task_identity_is_read_from_the_verified_manifest (__main__.FoundationSealTests.test_archive_task_identity_is_read_from_the_verified_manifest) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6761927Z test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field (__main__.FoundationSealTests.test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6783660Z test_api_process_output_is_capped_while_pipes_are_drained (__main__.GitHubObserverTests.test_api_process_output_is_capped_while_pipes_are_drained) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6785987Z test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body (__main__.GitHubObserverTests.test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6788271Z test_closing_commit_snapshot_projects_git_body_without_subject (__main__.GitHubObserverTests.test_closing_commit_snapshot_projects_git_body_without_subject) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.6801959Z test_current_tracker_reader_accepts_optional_trailing_pipe (__main__.GitHubObserverTests.test_current_tracker_reader_accepts_optional_trailing_pipe) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7062754Z test_current_tracker_reader_rejects_malformed_row_without_index_error (__main__.GitHubObserverTests.test_current_tracker_reader_rejects_malformed_row_without_index_error) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7069496Z test_duplicate_link_relations_are_rejected (__main__.GitHubObserverTests.test_duplicate_link_relations_are_rejected) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7328122Z test_pagination_follows_actual_link_and_retains_raw_body (__main__.GitHubObserverTests.test_pagination_follows_actual_link_and_retains_raw_body) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7335653Z test_pagination_rejects_changed_filter (__main__.GitHubObserverTests.test_pagination_rejects_changed_filter) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7337536Z test_runner_matrix_fails_closed_when_label_is_missing (__main__.GitHubObserverTests.test_runner_matrix_fails_closed_when_label_is_missing) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.7788831Z test_static_graph_checks_api_page_against_exact_raw_body_bytes (__main__.GitHubObserverTests.test_static_graph_checks_api_page_against_exact_raw_body_bytes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8236915Z test_static_graph_rejects_declared_api_body_hash_mismatch (__main__.GitHubObserverTests.test_static_graph_rejects_declared_api_body_hash_mismatch) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8679977Z test_static_graph_rejects_missing_api_body_evidence_reference (__main__.GitHubObserverTests.test_static_graph_rejects_missing_api_body_evidence_reference) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8757290Z test_boolean_is_not_integer (__main__.GovernanceSchemaTests.test_boolean_is_not_integer) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8763821Z test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate (__main__.GovernanceSchemaTests.test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8766101Z test_closed_definition_rejects_unknown_field (__main__.GovernanceSchemaTests.test_closed_definition_rejects_unknown_field) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8767248Z test_duplicate_json_key_rejects (__main__.GovernanceSchemaTests.test_duplicate_json_key_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8768080Z test_enum_boolean_is_not_equal_to_integer (__main__.GovernanceSchemaTests.test_enum_boolean_is_not_equal_to_integer) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8868144Z test_external_schema_reference_rejects (__main__.GovernanceSchemaTests.test_external_schema_reference_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8874024Z test_live_verification_resolves_file_refs_from_root_schema (__main__.GovernanceSchemaTests.test_live_verification_resolves_file_refs_from_root_schema) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8875781Z test_non_finite_json_rejects (__main__.GovernanceSchemaTests.test_non_finite_json_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8877273Z test_schema_has_25_closed_definitions (__main__.GovernanceSchemaTests.test_schema_has_25_closed_definitions) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8879024Z test_selection_allocation_is_required_when_active (__main__.GovernanceSchemaTests.test_selection_allocation_is_required_when_active) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8882605Z test_valid_repository_identity_passes (__main__.GovernanceSchemaTests.test_valid_repository_identity_passes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8884828Z test_delivery_pass_requires_exact_remote_and_executed_checks (__main__.GovernanceSemanticsTests.test_delivery_pass_requires_exact_remote_and_executed_checks) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8887133Z test_live_verification_must_follow_published_archive_readback (__main__.GovernanceSemanticsTests.test_live_verification_must_follow_published_archive_readback) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8889553Z test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed (__main__.GovernanceSemanticsTests.test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8891784Z test_push_freshness_valid_equal_fractional_instants (__main__.GovernanceSemanticsTests.test_push_freshness_valid_equal_fractional_instants) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8893616Z test_push_rejects_bool_retry_and_query_identity_coercion (__main__.GovernanceSemanticsTests.test_push_rejects_bool_retry_and_query_identity_coercion) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.8895651Z test_push_rejects_intervening_event_and_late_preflight (__main__.GovernanceSemanticsTests.test_push_rejects_intervening_event_and_late_preflight) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.9046622Z test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper (__main__.GovernanceSemanticsTests.test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.9515108Z test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version (__main__.GovernanceSemanticsTests.test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:53.9819420Z test_selection_history_rejects_missing_retained_lineage_or_invalidation_member (__main__.GovernanceSemanticsTests.test_selection_history_rejects_missing_retained_lineage_or_invalidation_member) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.0125384Z test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.0438260Z test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.0589969Z test_selection_history_rejects_unhashable_assignment_locator_without_crashing (__main__.GovernanceSemanticsTests.test_selection_history_rejects_unhashable_assignment_locator_without_crashing) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.0742473Z test_selection_reason_accepts_equal_instants_without_mutating_inputs (__main__.GovernanceSemanticsTests.test_selection_reason_accepts_equal_instants_without_mutating_inputs) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.1957300Z test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch (__main__.GovernanceSemanticsTests.test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3511414Z test_current_portable_proof_manifest_members_pass (__main__.ManifestAndSourceBindingTests.test_current_portable_proof_manifest_members_pass) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3650089Z test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes (__main__.ManifestAndSourceBindingTests.test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3704626Z test_hash_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_hash_mismatch_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3758991Z test_intact_manifest_passes (__main__.ManifestAndSourceBindingTests.test_intact_manifest_passes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3877777Z test_manifest_execution_does_not_rewrite_source_or_manifest (__main__.ManifestAndSourceBindingTests.test_manifest_execution_does_not_rewrite_source_or_manifest) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.3980981Z test_missing_member_rejects (__main__.ManifestAndSourceBindingTests.test_missing_member_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.4100854Z test_optimized_entrypoint_executes_manifest_bound_root_only (__main__.ManifestAndSourceBindingTests.test_optimized_entrypoint_executes_manifest_bound_root_only) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.4153893Z test_path_traversal_rejects (__main__.ManifestAndSourceBindingTests.test_path_traversal_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.4214914Z test_root_source_hash_mismatch_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_root_source_hash_mismatch_rejects_before_entrypoint) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.4267640Z test_size_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_size_mismatch_rejects) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:54.4334995Z test_unlisted_helper_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_unlisted_helper_rejects_before_entrypoint) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:55.2818888Z test_candidate_done_without_delivery_evidence_fails (__main__.SpecContractTests.test_candidate_done_without_delivery_evidence_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:56.1083493Z test_card_case_drift_fails (__main__.SpecContractTests.test_card_case_drift_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:57.9604844Z test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts (__main__.SpecContractTests.test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:58.7842533Z test_current_spec_passes (__main__.SpecContractTests.test_current_spec_passes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:08:59.6208218Z test_duplicate_task_fails (__main__.SpecContractTests.test_duplicate_task_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:00.4753643Z test_final_claim_requires_all_effective_tasks (__main__.SpecContractTests.test_final_claim_requires_all_effective_tasks) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:00.4755637Z test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not (__main__.SpecContractTests.test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:01.3059006Z test_missing_case_reference_fails (__main__.SpecContractTests.test_missing_case_reference_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:02.1613077Z test_requirement_reverse_edge_fails (__main__.SpecContractTests.test_requirement_reverse_edge_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:03.0249052Z test_s22_active_task_must_wait_for_effective_prerequisites (__main__.SpecContractTests.test_s22_active_task_must_wait_for_effective_prerequisites) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:03.8604318Z test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done (__main__.SpecContractTests.test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:04.7138626Z test_s22_completed_count_must_match_effective_s19_rows (__main__.SpecContractTests.test_s22_completed_count_must_match_effective_s19_rows) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:05.5725698Z test_s22_delivery_identity_must_match_active_s19_assignment (__main__.SpecContractTests.test_s22_delivery_identity_must_match_active_s19_assignment) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:06.4369435Z test_s22_next_task_must_match_active_task (__main__.SpecContractTests.test_s22_next_task_must_match_active_task) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:07.2727412Z test_schedule_prerequisite_order_fails (__main__.SpecContractTests.test_schedule_prerequisite_order_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:08.1045830Z test_task_cycle_fails (__main__.SpecContractTests.test_task_cycle_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:08.9135881Z test_unbalanced_fence_fails (__main__.SpecContractTests.test_unbalanced_fence_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7339247Z test_unknown_status_fails (__main__.SpecContractTests.test_unknown_status_fails) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7343355Z test_cancellation_and_crash_do_not_invent_exit_status (__main__.T107ContractFixtureTests.test_cancellation_and_crash_do_not_invent_exit_status) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7348233Z test_command_contract_checks_actual_argv_and_side_effect_metadata (__main__.T107ContractFixtureTests.test_command_contract_checks_actual_argv_and_side_effect_metadata) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7351257Z test_concurrency_is_limited_to_shared_outputs_not_a_global_lock (__main__.T107ContractFixtureTests.test_concurrency_is_limited_to_shared_outputs_not_a_global_lock) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7354774Z test_continuation_keeps_exact_vector_and_never_recomputes_expired_result (__main__.T107ContractFixtureTests.test_continuation_keeps_exact_vector_and_never_recomputes_expired_result) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7357783Z test_destinations_are_grouped_by_observed_volume_and_remaining_only (__main__.T107ContractFixtureTests.test_destinations_are_grouped_by_observed_volume_and_remaining_only) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7360292Z test_dry_run_is_report_only_and_does_not_allocate_or_run (__main__.T107ContractFixtureTests.test_dry_run_is_report_only_and_does_not_allocate_or_run) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7362759Z test_finalization_preserves_primary_command_error_and_cleanup_error (__main__.T107ContractFixtureTests.test_finalization_preserves_primary_command_error_and_cleanup_error) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7365359Z test_fresh_synthetic_cleanup_requires_every_ownership_gate (__main__.T107ContractFixtureTests.test_fresh_synthetic_cleanup_requires_every_ownership_gate) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7369722Z test_mcp_dual_payload_counts_repeated_text_and_structured_bytes (__main__.T107ContractFixtureTests.test_mcp_dual_payload_counts_repeated_text_and_structured_bytes) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7372888Z test_mcp_measurement_rejects_invalid_json_and_nonconvergence (__main__.T107ContractFixtureTests.test_mcp_measurement_rejects_invalid_json_and_nonconvergence) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7375996Z test_mcp_modes_require_verified_host_and_never_silently_shrink (__main__.T107ContractFixtureTests.test_mcp_modes_require_verified_host_and_never_silently_shrink) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7380561Z test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements (__main__.T107ContractFixtureTests.test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7383237Z test_preview_ack_requires_current_identity_permission_and_liveness (__main__.T107ContractFixtureTests.test_preview_ack_requires_current_identity_permission_and_liveness) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7386034Z test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness (__main__.T107ContractFixtureTests.test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7388679Z test_reused_evidence_requires_exact_subject_and_complete_fingerprints (__main__.T107ContractFixtureTests.test_reused_evidence_requires_exact_subject_and_complete_fingerprints) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7391547Z test_runtime_config_validation_and_cas_are_separate_whole_replace_steps (__main__.T107ContractFixtureTests.test_runtime_config_validation_and_cas_are_separate_whole_replace_steps) ... ok
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7393039Z 
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7393310Z ----------------------------------------------------------------------
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7393882Z Ran 150 tests in 32.732s
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7394077Z 
+spec-contract (windows-latest)	Run positive and failure fixtures	2026-10-24T16:09:09.7394204Z OK
+spec-contract (windows-latest)	Run delivery policy fixtures	﻿2026-10-24T16:09:09.8659136Z ##[group]Run python -B tools/ci/test_delivery_policy.py
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8659636Z ^[[36;1mpython -B tools/ci/test_delivery_policy.py^[[0m
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8727824Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8728193Z env:
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8728368Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8728585Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8728830Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8729048Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:09.8729239Z ##[endgroup]
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.3888892Z test_command_moved_to_wrong_job_fails (__main__.CheckObservationTests.test_command_moved_to_wrong_job_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4147928Z test_current_frozen_plan_maps_to_real_workflow (__main__.CheckObservationTests.test_current_frozen_plan_maps_to_real_workflow) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4149919Z test_duplicate_native_identity_fails (__main__.CheckObservationTests.test_duplicate_native_identity_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4150992Z test_exact_success_passes (__main__.CheckObservationTests.test_exact_success_passes) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4315551Z test_matrix_context_not_declared_by_job_fails (__main__.CheckObservationTests.test_matrix_context_not_declared_by_job_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4317068Z test_missing_check_fails (__main__.CheckObservationTests.test_missing_check_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4318690Z test_skipped_check_fails (__main__.CheckObservationTests.test_skipped_check_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.4319537Z test_stale_sha_fails (__main__.CheckObservationTests.test_stale_sha_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.9079612Z [master (root-commit) 2f0b9bf] feat(spec-check): [P0][T003] Tạo payload kiểm tra
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.9080780Z  1 file changed, 9349 insertions(+)
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:10.9081502Z  create mode 100644 Maps-Context-Engine-4D_SPEC.md
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:11.2045149Z [master 1978e39] docs(progress): [P0][T003] Đề xuất đóng kiểm tra
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:11.2046271Z  1 file changed, 2 insertions(+), 1 deletion(-)
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:11.9861160Z test_actual_git_parent_and_non_spec_path_guard (__main__.ClosingDiffTests.test_actual_git_parent_and_non_spec_path_guard) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.0743174Z test_another_task_status_change_fails (__main__.ClosingDiffTests.test_another_task_status_change_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.1482994Z test_candidate_closing_accepts_semicolon_separated_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_accepts_semicolon_separated_evidence_ids) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.2202936Z test_candidate_closing_accepts_split_archive_live_pending_fields (__main__.ClosingDiffTests.test_candidate_closing_accepts_split_archive_live_pending_fields) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.2951870Z test_candidate_closing_leaf_passes (__main__.ClosingDiffTests.test_candidate_closing_leaf_passes) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.3718254Z test_candidate_closing_rejects_duplicate_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_rejects_duplicate_evidence_ids) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.4476941Z test_candidate_closing_rejects_partial_local_pass_ratio (__main__.ClosingDiffTests.test_candidate_closing_rejects_partial_local_pass_ratio) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.5249644Z test_candidate_verify_cannot_transition_to_another_value (__main__.ClosingDiffTests.test_candidate_verify_cannot_transition_to_another_value) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.6016727Z test_candidate_verify_to_done_transition_passes (__main__.ClosingDiffTests.test_candidate_verify_to_done_transition_passes) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.6804331Z test_design_section_change_fails (__main__.ClosingDiffTests.test_design_section_change_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.7602713Z test_gate_scope_change_fails (__main__.ClosingDiffTests.test_gate_scope_change_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.7605175Z test_s22_allows_derived_execution_checkpoint_leaves (__main__.ClosingDiffTests.test_s22_allows_derived_execution_checkpoint_leaves) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.7607476Z test_s22_rejects_execution_checkpoint_identity_change (__main__.ClosingDiffTests.test_s22_rejects_execution_checkpoint_identity_change) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.7611816Z test_section_map_preserves_unicode_line_separator_content (__main__.ClosingDiffTests.test_section_map_preserves_unicode_line_separator_content) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8651733Z test_unrelated_evidence_insert_fails (__main__.ClosingDiffTests.test_unrelated_evidence_insert_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8653875Z test_breaking_marker_requires_explanation (__main__.CommitPolicyTests.test_breaking_marker_requires_explanation) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8655731Z test_closing_trailers_pass (__main__.CommitPolicyTests.test_closing_trailers_pass) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8657327Z test_duplicate_closing_trailer_fails (__main__.CommitPolicyTests.test_duplicate_closing_trailer_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8659205Z test_duplicate_delivery_trailer_outside_final_block_fails (__main__.CommitPolicyTests.test_duplicate_delivery_trailer_outside_final_block_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8661319Z test_english_note_fails (__main__.CommitPolicyTests.test_english_note_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8662768Z test_literal_backslash_n_commit_sections_fail (__main__.CommitPolicyTests.test_literal_backslash_n_commit_sections_fail) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8664266Z test_p3_revert_commit_passes (__main__.CommitPolicyTests.test_p3_revert_commit_passes) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8665680Z test_payload_cannot_claim_closing_trailers (__main__.CommitPolicyTests.test_payload_cannot_claim_closing_trailers) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8667119Z test_payload_commit_with_vietnamese_note_passes (__main__.CommitPolicyTests.test_payload_commit_with_vietnamese_note_passes) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8667824Z test_skip_ci_fails (__main__.CommitPolicyTests.test_skip_ci_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:12.8668855Z test_wrong_task_fails (__main__.CommitPolicyTests.test_wrong_task_fails) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:13.5427888Z test_empty_commit_body_is_rejected (__main__.PayloadCommitHistoryTests.test_empty_commit_body_is_rejected) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:13.9356024Z test_empty_range_and_abbreviated_sha_are_rejected (__main__.PayloadCommitHistoryTests.test_empty_range_and_abbreviated_sha_are_rejected) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:15.0823524Z test_linear_history_and_cli_pass (__main__.PayloadCommitHistoryTests.test_linear_history_and_cli_pass) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:15.9798100Z test_merge_commit_is_rejected (__main__.PayloadCommitHistoryTests.test_merge_commit_is_rejected) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.0106097Z test_missing_headings_and_wrong_task_or_priority_are_rejected (__main__.PayloadCommitHistoryTests.test_missing_headings_and_wrong_task_or_priority_are_rejected) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6769769Z test_non_ancestor_base_is_rejected (__main__.PayloadCommitHistoryTests.test_non_ancestor_base_is_rejected) ... ok
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6770561Z 
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6770792Z ----------------------------------------------------------------------
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6771295Z Ran 40 tests in 8.371s
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6771476Z 
+spec-contract (windows-latest)	Run delivery policy fixtures	2026-10-24T16:09:18.6771590Z OK
+spec-contract (windows-latest)	Verify checkpoint digest recipe	﻿2026-10-24T16:09:18.8295680Z ##[group]Run python -B tools/ci/test_checkpoint_digest.py
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8296199Z ^[[36;1mpython -B tools/ci/test_checkpoint_digest.py^[[0m
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8363816Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8364158Z env:
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8364328Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8364547Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8364791Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8365006Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:18.8365201Z ##[endgroup]
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:19.2243119Z test_checkpoint_projection_ignores_only_the_nested_s22_mapping (__main__.CheckpointDigestTests.test_checkpoint_projection_ignores_only_the_nested_s22_mapping) ... ok
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:19.2245160Z test_projection_rejects_missing_or_duplicate_checkpoint_key (__main__.CheckpointDigestTests.test_projection_rejects_missing_or_duplicate_checkpoint_key) ... ok
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:19.2248508Z test_scope_comes_from_single_s47_card_and_pins_spec_projection (__main__.CheckpointDigestTests.test_scope_comes_from_single_s47_card_and_pins_spec_projection) ... ok
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:19.2298926Z test_symlink_parent_is_rejected_without_traversal (__main__.CheckpointDigestTests.test_symlink_parent_is_rejected_without_traversal) ... ok
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5239178Z test_worktree_and_index_digests_track_only_scoped_inputs (__main__.CheckpointDigestTests.test_worktree_and_index_digests_track_only_scoped_inputs) ... ok
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5240165Z 
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5240392Z ----------------------------------------------------------------------
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5240873Z Ran 5 tests in 3.300s
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5241052Z 
+spec-contract (windows-latest)	Verify checkpoint digest recipe	2026-10-24T16:09:22.5241148Z OK
+spec-contract (windows-latest)	Verify Go formatting	﻿2026-10-24T16:09:22.6510874Z ##[group]Run python -B tools/ci/check_gofmt.py
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6511597Z ^[[36;1mpython -B tools/ci/check_gofmt.py^[[0m
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6594236Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6594607Z env:
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6594785Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6595005Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6595254Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6595462Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:22.6595651Z ##[endgroup]
+spec-contract (windows-latest)	Verify Go formatting	2026-10-24T16:09:23.1836926Z ĐẠT: gofmt kiểm 230 Go source trong implementation.
+spec-contract (windows-latest)	Run Go contract tests	﻿2026-10-24T16:09:23.3058241Z ##[group]Run go test ./...
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3058866Z ^[[36;1mgo test ./...^[[0m
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3127688Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3128055Z env:
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3128231Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3128454Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3128704Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3128920Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:23.3129114Z ##[endgroup]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:24.4611167Z go: downloading github.com/modelcontextprotocol/go-sdk v1.8.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:24.4615511Z go: downloading golang.org/x/tools v0.52.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:24.4674425Z go: downloading modernc.org/sqlite v1.60.1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:24.5749017Z go: downloading github.com/google/jsonschema-go v0.4.3
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:24.9195121Z go: downloading golang.org/x/mod v0.42.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:25.2940748Z go: downloading golang.org/x/sys v0.49.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:25.7273083Z go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:25.8281997Z go: downloading golang.org/x/oauth2 v0.35.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:27.7047719Z go: downloading golang.org/x/sync v0.24.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:28.0495670Z go: downloading golang.org/x/time v0.15.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:29.2553326Z go: downloading github.com/segmentio/encoding v0.5.4
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:29.6659177Z go: downloading github.com/segmentio/asm v1.1.3
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:32.5905367Z go: downloading modernc.org/libc v1.77.1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.0837218Z go: downloading github.com/mattn/go-isatty v0.0.24
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.0838879Z go: downloading github.com/ncruces/go-strftime v1.0.0
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.0839603Z go: downloading github.com/dustin/go-humanize v1.0.1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.0840237Z go: downloading modernc.org/mathutil v1.7.1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.3311771Z go: downloading modernc.org/memory v1.12.1
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.3612355Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:09:37.9691533Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/loader-fixture	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:20.5814985Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/smoke	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:20.5816558Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T043/profile-hash-check	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:21.1236770Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/cmd/mce4d	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:22.3949685Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/contracts	1.085s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3352549Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/golang	2.516s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3356272Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/providers	0.675s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3359053Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config	0.700s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3378752Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer	0.188s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3381453Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/groups	0.019s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3382583Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records	0.034s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3384792Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/registration	0.329s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3385980Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/rename	1.441s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3387410Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/response	0.988s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:24.3388514Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/store	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:30.0096641Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/validate	6.022s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:30.0099423Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/catalog	0.137s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7420361Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cli	10.829s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7423767Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contextpack	0.032s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7424847Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts	0.043s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7425924Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/events	0.033s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7427089Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/federation	0.041s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7428288Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http	0.028s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7429711Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema	0.111s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7430848Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/sql	0.308s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7431916Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cursor	0.078s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7433247Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/ai	0.033s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7434372Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/architecture	0.039s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7435513Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/profiles	0.026s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7436599Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/explorer	3.165s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7437610Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/history	0.035s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:34.7438614Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer	1.218s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0274575Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/inventory	11.994s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0275983Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/lsp	4.320s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0277218Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/mcp	0.609s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0278320Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/model	0.025s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0279426Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/overview	0.041s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0280260Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0281123Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/policy	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0282272Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/ports	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0283351Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime	0.360s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0284256Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config	0.489s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0285216Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/exec	0.394s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0286154Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/maintenance	0.089s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0286829Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/search	0.240s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:10:46.0287475Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot	0.028s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:33.0152844Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/store/sqlite	52.060s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:33.0154363Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/telemetry	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6645877Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/acceptance	66.860s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6647121Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/contract	53.803s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6649157Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration	6.510s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6650410Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration/platform	1.539s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6651540Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare	0.275s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6652621Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare/cmd	0.132s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6654652Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale	0.066s
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6655743Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale/cmd	[no test files]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6656994Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/selfindex	0.029s [no tests to run]
+spec-contract (windows-latest)	Run Go contract tests	2026-10-24T16:11:48.6658137Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/t039	0.039s
+spec-contract (windows-latest)	Run Go static analysis	﻿2026-10-24T16:11:49.6153293Z ##[group]Run go vet ./...
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6153846Z ^[[36;1mgo vet ./...^[[0m
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6226212Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6226566Z env:
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6226745Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6227113Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6227484Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6227700Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Run Go static analysis	2026-10-24T16:11:49.6227897Z ##[endgroup]
+spec-contract (windows-latest)	Build Go packages	﻿2026-10-24T16:12:01.0639234Z ##[group]Run go build ./...
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0639671Z ^[[36;1mgo build ./...^[[0m
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0711174Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0711536Z env:
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0711711Z   GIT_CONFIG_COUNT: 1
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0711930Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0712459Z   GIT_CONFIG_VALUE_0: true
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0712690Z   GOTOOLCHAIN: local
+spec-contract (windows-latest)	Build Go packages	2026-10-24T16:12:01.0712884Z ##[endgroup]
+spec-contract (windows-latest)	Post Set up pinned Go toolchain	﻿2026-10-24T16:12:05.1416935Z Post job cleanup.
+spec-contract (windows-latest)	Post Check out source	﻿2026-10-24T16:12:05.3210532Z Post job cleanup.
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.5519477Z [command]"C:\Program Files\Git\bin\git.exe" version
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.5916170Z git version 2.56.0.windows.2
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.5997235Z Temporarily overriding HOME='D:\a\_temp\a1bb249f-8239-46c6-9821-8db667032b9e' before making global git config changes
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.5999080Z Adding repository directory to the temporary git global config as a safe directory
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.6009485Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\maps-context-engine-4d\maps-context-engine-4d
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.6387413Z Removing SSH command configuration
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.6397604Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:05.6808116Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.2706507Z Removing HTTP extra header
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.2717604Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.3080355Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.8272796Z Removing includeIf entries pointing to credentials config files
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.8284387Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (windows-latest)	Post Check out source	2026-10-24T16:12:06.8644862Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+spec-contract (windows-latest)	Complete job	﻿2026-10-24T16:12:07.4142728Z Cleaning up orphan processes
