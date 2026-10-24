@@ -7,7 +7,7 @@
   "continued_from_delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
   "continuation_of_review_ref": "artifacts/release/T048-r2-review.json",
   "continuation_of_review_sha256": "82b3b444e980c7c7710f4b7160f9c3782ee6d85cd583cf3a7da33f29437e9123",
-  "reviewed_at_utc": "2026-10-24T21:43:46Z",
+  "reviewed_at_utc": "2026-10-24T22:48:35Z",
   "spec_revision": "1.6.14",
   "review_result": "PASS_WITH_OPEN_RELEASE_GAPS",
   "source_binding": {
@@ -370,7 +370,7 @@
   "release_disposition": {
     "gate": "G6",
     "status": "NOT_RUN",
-    "reason": "No real repository/model benchmark or production process-runner evidence, so G6 remains NOT_RUN. Allocation commit 9de32cf17d00ab633fdecbb393964b3bc2393d2c is on both authorized refs with exact-SHA CI PASS (12/12); exact-A local checks PASS (13/13, 39/39 hashes) and Windows byte-stability verification PASS (504/504). Payload, closing, archive/readback, and fresh live verification remain pending."
+    "reason": "T048 exact committed payload candidate 46cd9289eadd8682f9981873ebea522d315f651c passed 13/13 local checks (39/39 bindings), both authorized refs passed exact-SHA GitHub Actions 6/6 (12/12 total), and all 74 aggregate CI manifest members hash/byte-match. A separate progress payload still must become the final P and receive fresh exact-SHA checks before closing C; closing CI, sealed archive/readback, and fresh live verification are pending. G6 remains NOT_RUN because no real repository/model benchmark was run."
   },
   "progress_at_revision_start": {
     "completed_scope_tasks": 74,
@@ -395,7 +395,24 @@
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol-r3.json",
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/allocation-ci-evidence.json",
     "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/manifest.json",
-    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/collection.json"
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/allocation-A-9de32cf/collection.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q/candidate-attempt-1/summary.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q/candidate-attempt-1/verification.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/payload-ci-evidence.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/collection.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/manifest.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/branch/payload-ci-evidence.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/branch/manifest.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/main/payload-ci-evidence.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/main/manifest.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/push-operation.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/destination-observation.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/preflight.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/postflight.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/push-operation.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/destination-observation.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/preflight.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/postflight.json"
   ],
   "artifact_checkout_integrity": {
     "r2_local_allocation": "PASS(13/13)",
@@ -422,7 +439,7 @@
     },
     "selected_fix": "Narrowly scoped -text attributes for T048 hash-bound reports and evidence; actual indexed checkout verification remains required before commit."
   },
-  "revision3_delivery_status": "PAYLOAD_LOCAL_PASS_CANDIDATE_CI_PENDING",
+  "revision3_delivery_status": "PAYLOAD_Q_EXACT_LOCAL_CI_PASS_CLOSING_PENDING",
   "allocation_local_verification": {
     "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
     "base_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
@@ -459,6 +476,24 @@
     "collection_sha256": "894cde94137e7309692dafa946493b840e5d42fc01910eff62471f19655394f8"
   },
   "payload_local_verification": {
+    "subject_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+    "subject_binding": "Exact committed payload Q; this candidate is not yet the final T048 payload P or closing C.",
+    "base_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "result": "PASS",
+    "passed_count": 13,
+    "failed_count": 0,
+    "worktree_diff_sha256": "851254ae24ad402c5116485078f3dfa157b59c6ee41d9d11bb366d45a123a890",
+    "check_plan_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/check-plan-canonical.json",
+    "check_plan_sha256": "1b4ef48dacfaea2d0902b80594ad61964e215fbf7b5644c37691936f5501941f",
+    "summary_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q/candidate-attempt-1/summary.json",
+    "summary_sha256": "d7acd3fdf819dfd1dc6b8cad24291faadef28cf0c49953c58f82b6270b34ed40",
+    "verification_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q/candidate-attempt-1/verification.json",
+    "verification_sha256": "3b121dc51d93478bcf2c9ff13afb59bdc62814aa4fadb4570d0f2b8991585351",
+    "hash_bindings_verified": 39,
+    "canonical_copy_result": "PASS_BYTE_IDENTICAL",
+    "execution_workspace_ref": "work/Q"
+  },
+  "superseded_payload_local_candidate_attempt4": {
     "subject_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
     "subject_binding": "T048 payload candidate working tree based on allocation SHA; not payload commit or closing verification",
     "base_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
@@ -474,5 +509,117 @@
     "verification_sha256": "ef3d01a609e84a8e4c974452e85dcf767d28babc3e65f8c6056b5568dd4b8c32",
     "hash_bindings_verified": 39,
     "canonical_copy_result": "PASS_BYTE_IDENTICAL"
+  },
+  "payload_candidate_commit": {
+    "sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+    "parent_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "tree_sha": "39cb85a4f8735f08f314df3d51ea5cd1dcb19e97",
+    "subject": "docs(progress): [P2][T048] Ghi nhận payload R3 theo bằng chứng",
+    "base_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+    "exact_local_check_result": "PASS",
+    "exact_ci_result": "PASS(12/12)",
+    "remote_refs": {
+      "refs/heads/main": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "refs/heads/codex/t003-d089-regressions": "46cd9289eadd8682f9981873ebea522d315f651c"
+    },
+    "final_payload_sha": "PENDING",
+    "candidate_status": "intermediate candidate; exact checks do not close T048",
+    "closing_parent_contract": "The final payload P must be the direct parent of closing C."
+  },
+  "payload_push_observations": {
+    "branch": {
+      "operation_id": "4d6f2b9b-f212-4822-8f9c-19016c7d0905",
+      "ref": "refs/heads/codex/t003-d089-regressions",
+      "operation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/push-operation.json",
+      "operation_sha256": "21b871cb76dd0f76796119637a5ccea253f5dfde348fb5c28a0d34e5962e14c7",
+      "destination_observation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/destination-observation.json",
+      "destination_observation_sha256": "88808a203e0189741c01357cbd8ff31c8f6709a8199403ec3de7a1a700744449",
+      "preflight_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/preflight.json",
+      "preflight_sha256": "51e289ab481b4447ddf21874fa4621d14db4ea6dbf808936cb6021804924d0d8",
+      "postflight_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/postflight.json",
+      "postflight_sha256": "81d782b610cc6d179fa9679e442792666f89f5bf5e42591af3addea23738b797",
+      "preflight_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+      "postflight_sha": "46cd9289eadd8682f9981873ebea522d315f651c"
+    },
+    "main": {
+      "operation_id": "ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5",
+      "ref": "refs/heads/main",
+      "operation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/push-operation.json",
+      "operation_sha256": "9f10fe5e1cd1bd82ad534450a287f4b2a56beed00d7831b7ee65772d80253559",
+      "destination_observation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/destination-observation.json",
+      "destination_observation_sha256": "59e6f93d8efe5db5ba1f7074472f03592a609195d43172b4e4d8ad892ead3fec",
+      "preflight_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/preflight.json",
+      "preflight_sha256": "d64d40a00883adc1f50842ec839177a9246d1e08faca94f5ab7d951ab75c21d5",
+      "postflight_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/postflight.json",
+      "postflight_sha256": "b725b07c80e054384aadb1fb2d890d1d2470ab95878dbac80a69e1a8e76d1003",
+      "preflight_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+      "postflight_sha": "46cd9289eadd8682f9981873ebea522d315f651c"
+    }
+  },
+  "payload_ci": {
+    "result": "PASS",
+    "subject_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+    "run_count": 2,
+    "contexts_per_ref": 6,
+    "passed_contexts": 12,
+    "check_plan_sha256": "1b4ef48dacfaea2d0902b80594ad61964e215fbf7b5644c37691936f5501941f",
+    "branch": {
+      "run_id": "40138427741",
+      "suite_id": "108794113751",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/branch/payload-ci-evidence.json",
+      "evidence_sha256": "35d36edca49ae81e6e603eddb8eb91eb9161e4f8d6ca55f1a3aed0158d8e9547",
+      "manifest_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/branch/manifest.json",
+      "manifest_sha256": "b2b3b89cabdb051c5fcab6926d019a8b3ada1d48f23b32da6f307ec390ff6185",
+      "manifest_files_verified": 35
+    },
+    "main": {
+      "run_id": "40138559436",
+      "suite_id": "108794452709",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/main/payload-ci-evidence.json",
+      "evidence_sha256": "9d55589f45b3105635220fbabe1995cc59a3a4ae6b939446677eecb1e23262bc",
+      "manifest_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/main/manifest.json",
+      "manifest_sha256": "5873a830a622c5d5b15d195b9a2bf4faeb6ed0deae83fb01baf7f921e6d8903e",
+      "manifest_files_verified": 35
+    },
+    "collection_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/collection.json",
+    "collection_sha256": "754fd320d8c9fbaad6967ba86d6ee574479fccf93ee8c4e036f4ba63bd7c4ea4",
+    "aggregate_evidence_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/payload-ci-evidence.json",
+    "aggregate_evidence_sha256": "6d8bb43e42715309f75d2504d702e7b610520a4759f3448b7a98c86f990abc91",
+    "aggregate_manifest_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/ci/payload-Q/manifest.json",
+    "aggregate_manifest_sha256": "cc4dfbe6182576998e65e0b8a7dc51cef975da6fb7b266bf4a4e8390e0aa22ec",
+    "aggregate_manifest_files_verified": 74,
+    "remote_refs_pre_and_post": {
+      "refs/heads/main": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "refs/heads/codex/t003-d089-regressions": "46cd9289eadd8682f9981873ebea522d315f651c"
+    }
+  },
+  "progress_at_latest_checkpoint": {
+    "effective_done": 74,
+    "required_scope_tasks": 108,
+    "completion_percent": 68.52,
+    "active_task": "T048",
+    "active_task_state": "VERIFY after this progress update; final payload/closing/archive/live remain pending",
+    "current_s19_status_counts": {
+      "DONE": 74,
+      "TODO": 31,
+      "VERIFY": 1,
+      "IN_PROGRESS": 1,
+      "BLOCKED": 1
+    },
+    "blocked_tasks": [
+      "T057"
+    ],
+    "gate_G6": "NOT_RUN"
+  },
+  "delivery_stage_state": {
+    "payload_candidate_Q": "PASS exact local 13/13 and GitHub Actions 12/12 on both authorized refs",
+    "progress_payload_Q2": "pending; must record this evidence and move S19 to VERIFY",
+    "final_payload_sha": "PENDING",
+    "closing_commit": "PENDING",
+    "closing_exact_ci": "PENDING",
+    "sealed_archive_readback": "PENDING",
+    "fresh_live_verification": "PENDING",
+    "effective_task_completion": "PENDING",
+    "gate_G6": "NOT_RUN; no measured real repository/model benchmark"
   }
 }

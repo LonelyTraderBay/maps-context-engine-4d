@@ -1,0 +1,584 @@
+{
+  "format_version": 1,
+  "kind": "payload_ci_evidence",
+  "result": "PASS",
+  "task_id": "T048",
+  "task_revision": 3,
+  "delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+  "phase": "payload",
+  "scope": "both_authorized_refs",
+  "base_sha": "9de32cf17d00ab633fdecbb393964b3bc2393d2c",
+  "candidate_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+  "check_plan_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/check-plan-canonical.json",
+  "check_plan_sha256": "1b4ef48dacfaea2d0902b80594ad61964e215fbf7b5644c37691936f5501941f",
+  "required_contexts_per_ref": 6,
+  "run_count": 2,
+  "check_count": 12,
+  "passed_count": 12,
+  "pre_collection_remote_refs": {
+    "refs/heads/main": "46cd9289eadd8682f9981873ebea522d315f651c",
+    "refs/heads/codex/t003-d089-regressions": "46cd9289eadd8682f9981873ebea522d315f651c"
+  },
+  "post_collection_remote_refs": {
+    "refs/heads/main": "46cd9289eadd8682f9981873ebea522d315f651c",
+    "refs/heads/codex/t003-d089-regressions": "46cd9289eadd8682f9981873ebea522d315f651c"
+  },
+  "collection_ref": "collection.json",
+  "observer_collection_refs": {
+    "branch": "branch/collection.json",
+    "main": "main/collection.json"
+  },
+  "observer_evidence_refs": {
+    "branch": "branch/payload-ci-evidence.json",
+    "main": "main/payload-ci-evidence.json"
+  },
+  "destination_observations": [
+    {
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions",
+      "workflow_run_id": "40138427741",
+      "check_suite_id": "108794113751",
+      "destination_observation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-branch-4d6f2b9b-f212-4822-8f9c-19016c7d0905/destination-observation.json",
+      "bytes": 1136,
+      "sha256": "88808a203e0189741c01357cbd8ff31c8f6709a8199403ec3de7a1a700744449",
+      "result": null
+    },
+    {
+      "scope": "main",
+      "ref": "refs/heads/main",
+      "workflow_run_id": "40138559436",
+      "check_suite_id": "108794452709",
+      "destination_observation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/archive-view/operations/payload-main-ef9f7591-ea0a-417b-b0b9-c6d11d8f0de5/destination-observation.json",
+      "bytes": 1089,
+      "sha256": "59e6f93d8efe5db5ba1f7074472f03592a609195d43172b4e4d8ad892ead3fec",
+      "result": null
+    }
+  ],
+  "ref_results": [
+    {
+      "ref": "refs/heads/codex/t003-d089-regressions",
+      "branch": "codex/t003-d089-regressions",
+      "event": "push",
+      "workflow_run_id": "40138427741",
+      "workflow_run_attempt": 1,
+      "check_suite_id": "108794113751",
+      "head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "created_at": "2026-10-24T22:24:32Z",
+      "updated_at": "2026-10-24T22:28:58Z",
+      "conclusion": "success",
+      "check_count": 6,
+      "passed_count": 6,
+      "collection_ref": "branch/collection.json",
+      "observation_ref": "branch/closing-observation.json",
+      "manifest_ref": "branch/manifest.json",
+      "payload_ci_evidence_ref": "branch/payload-ci-evidence.json",
+      "checks": [
+        {
+          "check_id": "actions/bootstrap/ubuntu",
+          "context": "bootstrap (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825672",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/bootstrap/ubuntu/source.json",
+            "branch/checks/actions/bootstrap/ubuntu/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825672.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        },
+        {
+          "check_id": "actions/bootstrap/windows",
+          "context": "bootstrap (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825583",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/bootstrap/windows/source.json",
+            "branch/checks/actions/bootstrap/windows/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825583.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        },
+        {
+          "check_id": "actions/explorer-contract/ubuntu",
+          "context": "explorer-contract (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825488",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/explorer-contract/ubuntu/source.json",
+            "branch/checks/actions/explorer-contract/ubuntu/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825488.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        },
+        {
+          "check_id": "actions/explorer-contract/windows",
+          "context": "explorer-contract (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825679",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/explorer-contract/windows/source.json",
+            "branch/checks/actions/explorer-contract/windows/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825679.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        },
+        {
+          "check_id": "actions/spec-contract/ubuntu",
+          "context": "spec-contract (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825588",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/spec-contract/ubuntu/source.json",
+            "branch/checks/actions/spec-contract/ubuntu/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825588.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        },
+        {
+          "check_id": "actions/spec-contract/windows",
+          "context": "spec-contract (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138427741",
+          "job_id": "121004825564",
+          "attempt": 1,
+          "evidence_refs": [
+            "branch/checks/actions/spec-contract/windows/source.json",
+            "branch/checks/actions/spec-contract/windows/execution.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+            "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+            "branch/logs/jobs/121004825564.txt"
+          ],
+          "scope": "branch",
+          "ref": "refs/heads/codex/t003-d089-regressions"
+        }
+      ]
+    },
+    {
+      "ref": "refs/heads/main",
+      "branch": "main",
+      "event": "push",
+      "workflow_run_id": "40138559436",
+      "workflow_run_attempt": 1,
+      "check_suite_id": "108794452709",
+      "head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "created_at": "2026-10-24T22:26:23Z",
+      "updated_at": "2026-10-24T22:30:49Z",
+      "conclusion": "success",
+      "check_count": 6,
+      "passed_count": 6,
+      "collection_ref": "main/collection.json",
+      "observation_ref": "main/closing-observation.json",
+      "manifest_ref": "main/manifest.json",
+      "payload_ci_evidence_ref": "main/payload-ci-evidence.json",
+      "checks": [
+        {
+          "check_id": "actions/bootstrap/ubuntu",
+          "context": "bootstrap (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216468",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/bootstrap/ubuntu/source.json",
+            "main/checks/actions/bootstrap/ubuntu/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216468.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        },
+        {
+          "check_id": "actions/bootstrap/windows",
+          "context": "bootstrap (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216403",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/bootstrap/windows/source.json",
+            "main/checks/actions/bootstrap/windows/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216403.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        },
+        {
+          "check_id": "actions/explorer-contract/ubuntu",
+          "context": "explorer-contract (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216237",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/explorer-contract/ubuntu/source.json",
+            "main/checks/actions/explorer-contract/ubuntu/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216237.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        },
+        {
+          "check_id": "actions/explorer-contract/windows",
+          "context": "explorer-contract (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216434",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/explorer-contract/windows/source.json",
+            "main/checks/actions/explorer-contract/windows/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216434.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        },
+        {
+          "check_id": "actions/spec-contract/ubuntu",
+          "context": "spec-contract (ubuntu-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216461",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/spec-contract/ubuntu/source.json",
+            "main/checks/actions/spec-contract/ubuntu/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216461.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        },
+        {
+          "check_id": "actions/spec-contract/windows",
+          "context": "spec-contract (windows-latest)",
+          "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": "40138559436",
+          "job_id": "121005216451",
+          "attempt": 1,
+          "evidence_refs": [
+            "main/checks/actions/spec-contract/windows/source.json",
+            "main/checks/actions/spec-contract/windows/execution.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+            "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+            "main/logs/jobs/121005216451.txt"
+          ],
+          "scope": "main",
+          "ref": "refs/heads/main"
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "actions/bootstrap/ubuntu",
+      "context": "bootstrap (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825672",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/bootstrap/ubuntu/source.json",
+        "branch/checks/actions/bootstrap/ubuntu/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825672.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/bootstrap/windows",
+      "context": "bootstrap (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825583",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/bootstrap/windows/source.json",
+        "branch/checks/actions/bootstrap/windows/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825583.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/explorer-contract/ubuntu",
+      "context": "explorer-contract (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825488",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/explorer-contract/ubuntu/source.json",
+        "branch/checks/actions/explorer-contract/ubuntu/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825488.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/explorer-contract/windows",
+      "context": "explorer-contract (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825679",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/explorer-contract/windows/source.json",
+        "branch/checks/actions/explorer-contract/windows/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825679.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/spec-contract/ubuntu",
+      "context": "spec-contract (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825588",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/spec-contract/ubuntu/source.json",
+        "branch/checks/actions/spec-contract/ubuntu/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825588.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/spec-contract/windows",
+      "context": "spec-contract (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138427741",
+      "job_id": "121004825564",
+      "attempt": 1,
+      "evidence_refs": [
+        "branch/checks/actions/spec-contract/windows/source.json",
+        "branch/checks/actions/spec-contract/windows/execution.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.json",
+        "branch/pages/check-runs-page-1-69b846fd-08c8-4a4b-a6f2-3360efeb5292.body.json",
+        "branch/logs/jobs/121004825564.txt"
+      ],
+      "scope": "branch",
+      "ref": "refs/heads/codex/t003-d089-regressions"
+    },
+    {
+      "check_id": "actions/bootstrap/ubuntu",
+      "context": "bootstrap (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216468",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/bootstrap/ubuntu/source.json",
+        "main/checks/actions/bootstrap/ubuntu/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216468.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    },
+    {
+      "check_id": "actions/bootstrap/windows",
+      "context": "bootstrap (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216403",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/bootstrap/windows/source.json",
+        "main/checks/actions/bootstrap/windows/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216403.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    },
+    {
+      "check_id": "actions/explorer-contract/ubuntu",
+      "context": "explorer-contract (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216237",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/explorer-contract/ubuntu/source.json",
+        "main/checks/actions/explorer-contract/ubuntu/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216237.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    },
+    {
+      "check_id": "actions/explorer-contract/windows",
+      "context": "explorer-contract (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216434",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/explorer-contract/windows/source.json",
+        "main/checks/actions/explorer-contract/windows/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216434.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    },
+    {
+      "check_id": "actions/spec-contract/ubuntu",
+      "context": "spec-contract (ubuntu-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216461",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/spec-contract/ubuntu/source.json",
+        "main/checks/actions/spec-contract/ubuntu/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216461.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    },
+    {
+      "check_id": "actions/spec-contract/windows",
+      "context": "spec-contract (windows-latest)",
+      "reported_head_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "tested_checkout_sha": "46cd9289eadd8682f9981873ebea522d315f651c",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": "40138559436",
+      "job_id": "121005216451",
+      "attempt": 1,
+      "evidence_refs": [
+        "main/checks/actions/spec-contract/windows/source.json",
+        "main/checks/actions/spec-contract/windows/execution.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.json",
+        "main/pages/check-runs-page-1-b8fafe0e-5153-4af2-b802-4a593caca996.body.json",
+        "main/logs/jobs/121005216451.txt"
+      ],
+      "scope": "main",
+      "ref": "refs/heads/main"
+    }
+  ],
+  "started_at_utc": "2026-10-24T22:35:34.050459Z",
+  "completed_at_utc": "2026-10-24T22:35:43.116746Z",
+  "collected_at_utc": "2026-10-24T22:38:24.854723Z"
+}
