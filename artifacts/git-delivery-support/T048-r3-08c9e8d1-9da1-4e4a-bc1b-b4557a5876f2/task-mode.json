@@ -1,0 +1,45 @@
+{
+  "format_version": 1,
+  "kind": "task_mode",
+  "task_id": "T048",
+  "task_revision": 3,
+  "delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+  "mode": "review",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6;AW-08/GIT-03",
+  "check_plan_sha256": "8e5eb83b44e17fa863ef0bcf6fabe39ae85b8368e2bb6f4693e26ec21c83f95a",
+  "objective": "Continue T048 after the measured Windows checkout normalization invalidated revision-2 byte-bound evidence; preserve prior review history and verify byte-stable allocation, payload, closing, archive/readback and live evidence.",
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      ".gitattributes",
+      "artifacts/release/T048-r1-review.json",
+      "artifacts/release/T048-r2-review.json",
+      "artifacts/release/T048-r3-review.json",
+      "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/**",
+      "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/payload/exact-B-attempt-1/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/ci/payload-B-attempt-1/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/operations/payload-main-259512c6-7daf-44cb-b117-c0cd3e7a85a0/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/operations/payload-branch-7b7d7501-4113-428b-986b-30e32a34a1ff/**"
+    ],
+    "behavior": [
+      "Preserve all prior T048 review findings and selected r1/r2 evidence without rewriting historical bytes.",
+      "Add narrowly scoped Git attributes so T048 byte-hashed reports and delivery evidence survive Windows checkout.",
+      "Complete the frozen T048 local, exact-SHA GitHub, payload, closing, archive/readback and fresh live checks; keep G6 NOT_RUN without real benchmark evidence."
+    ],
+    "exclusions": [
+      "No product source/test/runtime changes.",
+      "No production repositories, databases, LLM/API or target runtime.",
+      "No safety-boundary relaxation, force/rewrite of published history, or changes to sealed historical evidence bytes."
+    ]
+  },
+  "verification_plan": [
+    "Replay r1-r2-r3 selectors and verify invalidation, scope and frozen plan identity.",
+    "Verify Git attributes and actual checkout-index byte equality for every hash-bound T048 source before commit.",
+    "Run the frozen 13 local checks on allocation, payload and exact published SHAs.",
+    "Normal-push allocation, payload and closing commits only to approved refs; verify exact-SHA GitHub runs.",
+    "Publish/read back sealed archive and run fresh live verification; keep G6 NOT_RUN absent real benchmark/runner evidence."
+  ]
+}

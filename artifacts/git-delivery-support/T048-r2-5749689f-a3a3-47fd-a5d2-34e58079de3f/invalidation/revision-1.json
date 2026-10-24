@@ -1,0 +1,17 @@
+{
+  "format_version": 1,
+  "kind": "delivery_selection_invalidation",
+  "task_id": "T048",
+  "previous_task_revision": 1,
+  "task_revision": 2,
+  "previous_delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "active_delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
+  "reason": "The published r1 payload B passes local/CI execution but the repository payload-commits validator rejects its commit message because payload commits may not carry MCE4D closing trailers (tools/ci/delivery_policy.py lines 273-275). The r1 history is immutable and cannot be repaired by amend/force/rewrite; preserve its evidence and continue the same T048 review under revision 2 from current B with a fresh selector and check-plan identity.",
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/selection.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/payload/exact-B-attempt-1/summary.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/ci/payload-B-attempt-1/payload-ci-evidence.json"
+  ],
+  "recorded_at_utc": "2026-10-24T20:23:59.991151Z"
+}

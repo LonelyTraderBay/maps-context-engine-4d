@@ -1,0 +1,36 @@
+{
+  "format_version": 1,
+  "kind": "delivery_policy_rejection_evidence",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "subject_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
+  "command": [
+    "python.exe",
+    "-B",
+    "tools/ci/delivery_policy.py",
+    "payload-commits",
+    "--repo",
+    ".",
+    "--base",
+    "5293c93ffe014f8f81f2b827d5a409927705f263",
+    "--payload",
+    "4ae35e98d49fb0997aa62db0163520fd57831036",
+    "--task",
+    "T048",
+    "--priority",
+    "P2"
+  ],
+  "exit_code": 1,
+  "result": "FAIL",
+  "captured_at_utc": "2026-10-24T20:23:59.991151Z",
+  "stdout_stderr": "ERROR: commit 4ae35e98d49f: Payload không được chứa delivery closing trailers",
+  "policy_source_ref": "tools/ci/delivery_policy.py",
+  "policy_source_lines": "273-275",
+  "preserved_r1_refs": [
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/selection.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/payload/exact-B-attempt-1/summary.json",
+    "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/ci/payload-B-attempt-1/payload-ci-evidence.json"
+  ]
+}

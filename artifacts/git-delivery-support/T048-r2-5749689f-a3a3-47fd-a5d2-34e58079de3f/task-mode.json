@@ -1,0 +1,41 @@
+{
+  "format_version": 1,
+  "kind": "task_mode",
+  "task_id": "T048",
+  "task_revision": 2,
+  "delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
+  "mode": "review",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6",
+  "check_plan_sha256": "8e5eb83b44e17fa863ef0bcf6fabe39ae85b8368e2bb6f4693e26ec21c83f95a",
+  "objective": "Continue the R2 release review after r1 payload-history rejection; preserve source findings, bind a new exact-SHA delivery, and complete archive/readback plus fresh live verification.",
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/release/T048-r2-review.json",
+      "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/payload/exact-B-attempt-1/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/ci/payload-B-attempt-1/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/operations/payload-main-259512c6-7daf-44cb-b117-c0cd3e7a85a0/**",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/archive-view/operations/payload-branch-7b7d7501-4113-428b-986b-30e32a34a1ff/**"
+    ],
+    "behavior": [
+      "Compare acceptance cases against actual code/tests.",
+      "Keep synthetic vs real and measured vs NOT_RUN distinct.",
+      "Record T003 closure and T057 blocker."
+    ],
+    "exclusions": [
+      "No product source changes.",
+      "No production repositories, databases, LLM/API or target runtime.",
+      "No safety-boundary relaxation or sealed historical evidence changes."
+    ]
+  },
+  "verification_plan": [
+    "Validate retained r1 and revision-2 selector history, invalidation and check-plan identity.",
+    "Run the frozen 13 local checks on allocation and payload candidates and exact published SHAs.",
+    "Normal-push allocation, payload and closing commits only to approved refs; verify exact-SHA GitHub runs.",
+    "Publish and read back the sealed archive, then run a fresh live observer on closing SHA.",
+    "Carry forward source findings only after verifying no product/test source changed since r1 review; keep G6 NOT_RUN until real benchmark and production-runner evidence exists."
+  ]
+}

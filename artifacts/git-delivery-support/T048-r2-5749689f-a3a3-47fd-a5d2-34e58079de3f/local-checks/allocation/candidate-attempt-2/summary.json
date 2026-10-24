@@ -1,0 +1,171 @@
+{
+  "format_version": 1,
+  "kind": "allocation_baseline_summary",
+  "task_id": "T048",
+  "task_revision": 2,
+  "delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
+  "subject_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
+  "subject_binding": "base HEAD plus current dirty working tree; not a payload or closing verification",
+  "worktree_diff_sha256": "62510d3c78d9b8845acdc181d974c2b7449e8981e569a653f3259ecaf64618d8",
+  "check_plan_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/check-plan-canonical.json",
+  "check_plan_sha256": "2afa173dcc6c22b6fbe0e981535b7909df6ccb95d153a60a3ef087b68e88bc1e",
+  "passed_count": 12,
+  "failed_count": 1,
+  "result": "FAIL",
+  "runtime": {
+    "python": "Python 3.12.14",
+    "go": "go version go1.27.2 windows/amd64",
+    "node": "v24.22.0",
+    "npm": "11.19.1"
+  },
+  "npm_source_manifest_ref": "work/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/npm-source-manifest-attempt-2.json",
+  "npm_source_manifest_sha256": "99f70e442411de8adea85f8d70dda8730310b5d72bc7c53c13b1b47d213c29f0",
+  "npm_sandbox": "work/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/npm-sandbox-attempt-2",
+  "temp_root": "work/t48btmp",
+  "python_fixture_cleanup_compat": "work/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/python-compat-attempt-2/sitecustomize.py",
+  "check_refs": [
+    {
+      "check_id": "bootstrap",
+      "command_ref": "python -B tools/ci/bootstrap_check.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/bootstrap.json",
+      "evidence_sha256": "3bf6a87d4194b0cac2ab8adec687078f9bd050a8986b29973f992253caa40ed3",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/bootstrap.execution.json",
+      "execution_sha256": "a06b7faf47fb516dbe0671cfefcedd60cb152c8f092cd36ab2a7369b10f532d9",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/bootstrap.log",
+      "log_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "exit_code": 0
+    },
+    {
+      "check_id": "bootstrap-fixtures",
+      "command_ref": "python -B tools/ci/test_bootstrap_check.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/bootstrap-fixtures.json",
+      "evidence_sha256": "b0852b74e942ab2f4754d3be371932e52b99172add938181e9624fe88a9b6fd0",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/bootstrap-fixtures.execution.json",
+      "execution_sha256": "8d5ddb2eca4cac407fd4358b776644b3c58f8c73d33a8c35f16ec4ecc0dc5273",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/bootstrap-fixtures.log",
+      "log_sha256": "34dbe14e21b6fe36c32ee9274ccf42b73724fd81f492747d17ead09e1901798d",
+      "exit_code": 0
+    },
+    {
+      "check_id": "delivery-plan",
+      "command_ref": "python -B tools/ci/delivery_policy.py check-plan",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/delivery-plan.json",
+      "evidence_sha256": "66b7bbb913de1f53c1344aff2064ab5cc107de6b5e1cf7483bcdc0d46570bf34",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/delivery-plan.execution.json",
+      "execution_sha256": "72b7396f40a0b0c148d8d3916813f06bdff7ce2e674791a87dce920b8f5507b1",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/delivery-plan.log",
+      "log_sha256": "317ad18e7a1d06560f03dc59c831b40ac0996d8c330f5e7d7b85abb0a9b50f8a",
+      "exit_code": 0
+    },
+    {
+      "check_id": "spec-check",
+      "command_ref": "python -B tools/spec_check/check.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/spec-check.json",
+      "evidence_sha256": "ef8ad6975f6274428eafc3615d3e374fedbf50be9ca91d6c8f68a88517216399",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/spec-check.execution.json",
+      "execution_sha256": "b5f254fdb77750064e8338cbf520256c3e064b36c32be16dd7c46286e06627c6",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/spec-check.log",
+      "log_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "exit_code": 0
+    },
+    {
+      "check_id": "spec-check-fixtures",
+      "command_ref": "python -B tools/spec_check/test_spec_check.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/spec-check-fixtures.json",
+      "evidence_sha256": "bec081f79172a19c568b0e4c07d5507df4b5ce7e6586c786c539ed59cbeb47c9",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/spec-check-fixtures.execution.json",
+      "execution_sha256": "5d4d1d2e6620bc36ce1676dd39e62a45fecb3ee8c6157de8180686c06ab87e0b",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/spec-check-fixtures.log",
+      "log_sha256": "2d1b0c49065a705591c3654cd8d8e631d70de113aa826e8b681de7467814212d",
+      "exit_code": 1
+    },
+    {
+      "check_id": "delivery-policy-fixtures",
+      "command_ref": "python -B tools/ci/test_delivery_policy.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/delivery-policy-fixtures.json",
+      "evidence_sha256": "cf4dea0fd7baafac30926fe71503fb8766f1ac90ee75a6c5287f1d99d799bf36",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/delivery-policy-fixtures.execution.json",
+      "execution_sha256": "fab1fc2ef5edbdc11a49d292d36b94d8bc4d123cafb7183a70f1f9cac76da578",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/delivery-policy-fixtures.log",
+      "log_sha256": "02ffd3f090426387cf4b100c3e48fdf917474cf1a3b128e66344aba637237eaa",
+      "exit_code": 0
+    },
+    {
+      "check_id": "checkpoint-digest-fixtures",
+      "command_ref": "python -B tools/ci/test_checkpoint_digest.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/checkpoint-digest-fixtures.json",
+      "evidence_sha256": "7180d0246f3868d5e3c8423cedeb09975ed78540757c11522a6cedae3301dad6",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/checkpoint-digest-fixtures.execution.json",
+      "execution_sha256": "2bae767b24d803c4f57fc9986a7fa644e951a8edb78b43261b6d99c47d765856",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/checkpoint-digest-fixtures.log",
+      "log_sha256": "940e81cc7b5389f3531253fb08d7eb7953452acd02f09b04345b16fac18ad549",
+      "exit_code": 0
+    },
+    {
+      "check_id": "go-format",
+      "command_ref": "python -B tools/ci/check_gofmt.py",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/go-format.json",
+      "evidence_sha256": "7d504cf88d8a3d74911c86c2dc6c736c6b4557eff50db2056ef62005fc7c2a9c",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-format.execution.json",
+      "execution_sha256": "e3e1850fdca7f140524de653674d7bff5603c94d3b2b7d5d3f6ac8c163e0aca0",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-format.log",
+      "log_sha256": "9558897c13e015767f86ac53cce930233603a38485109704a2ba315db55290a1",
+      "exit_code": 0
+    },
+    {
+      "check_id": "go-test",
+      "command_ref": "go test ./...",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/go-test.json",
+      "evidence_sha256": "ee40853f154e695bbbaf0fe0080ba82c5aa596ed74685be51c5b97ee8756e7e4",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-test.execution.json",
+      "execution_sha256": "e44750e08bc34ccf1b332953124b11801fb126f371ef19e60a7f2f4e65a31d0b",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-test.log",
+      "log_sha256": "a4be7e6582994442a81e55b87aec6aa08c715592bb9b50bcd8f8f2f8aaf4784c",
+      "exit_code": 0
+    },
+    {
+      "check_id": "go-vet",
+      "command_ref": "go vet ./...",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/go-vet.json",
+      "evidence_sha256": "5088dc6bb458d53ddbec57dae59ce60c7da2566fd09bcca940f96d9cdd2a241e",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-vet.execution.json",
+      "execution_sha256": "678ff252261d073a03850eccee2815390f93319961d518e2019ba9b37e328cb7",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-vet.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "check_id": "go-build",
+      "command_ref": "go build ./...",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/go-build.json",
+      "evidence_sha256": "d0d1a4926e36d39a1dc669fadbf0f8c6d40836e0346f87329ed4d3a78dd77c30",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-build.execution.json",
+      "execution_sha256": "666b7134ffd5b3e964122c87669cf4fffbf65574035c0fe3927a3d3730e4b71c",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/go-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "check_id": "explorer-install",
+      "command_ref": "npm ci --ignore-scripts --no-audit --no-fund",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/explorer-install.json",
+      "evidence_sha256": "f01f4dbbfacf71559cdef4ab77e60525477db847fb7c1b3cc3de6a3fe3ce8e06",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/explorer-install.execution.json",
+      "execution_sha256": "398434f17e419120acf7e4c4324691ad635314306f18ccb527bb5290ce63d1cf",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/explorer-install.log",
+      "log_sha256": "f2fd1ed67e9f6da5526b7bdd41e1ead8b0b530b6505148f39d5043b3a1f53468",
+      "exit_code": 0
+    },
+    {
+      "check_id": "explorer-contract",
+      "command_ref": "npm run test:contract:ui",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/evidence/explorer-contract.json",
+      "evidence_sha256": "db756c1fbb4f43b465aa9d75c81c2e3455d1dc0dd418789f2db620cf52e87293",
+      "execution_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/explorer-contract.execution.json",
+      "execution_sha256": "36b5ea2a0e4c0e4be0db2adfc2af7284e8d7801b257dc12b6b881c2790feefff",
+      "log_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/attempt-2/records/explorer-contract.log",
+      "log_sha256": "4e0633efa2a4e50b0e5d571fc88e8a8c79907424000f41c62c1f58294cda1d49",
+      "exit_code": 0
+    }
+  ]
+}

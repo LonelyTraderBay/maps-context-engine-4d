@@ -1,0 +1,31 @@
+{
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "task_id": "T048",
+  "task_revision": 3,
+  "delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+  "supersedes_delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
+  "reason_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/invalidation/revision-2.json",
+  "invalidation_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/invalidation/revision-2.json",
+  "decision": "Supersede T048 revision 2 before any commit because the measured Windows checkout mutated bytes used by the 13/13 local allocation evidence and hashed review reports. Expand this continuation only to .gitattributes plus byte-stable delivery artifacts, preserve r1/r2 evidence, then rerun allocation, exact-SHA CI, payload, closing, archive/readback and live verification.",
+  "basis": {
+    "dependencies": [
+      "T044",
+      "T046",
+      "T047",
+      "T068"
+    ],
+    "sequence_predecessor": "T068",
+    "gate": "G6",
+    "task_card": "S47 card 092",
+    "requirement": "R040",
+    "cases": "C055..C069",
+    "previous_task_revision": 2,
+    "previous_delivery_id": "5749689f-a3a3-47fd-a5d2-34e58079de3f",
+    "base_sha": "4ae35e98d49fb0997aa62db0163520fd57831036",
+    "r2_local_summary_ref": "artifacts/git-delivery-support/T048-r2-5749689f-a3a3-47fd-a5d2-34e58079de3f/local-checks/allocation/candidate-attempt-4/summary.json",
+    "r2_local_summary_sha256": "6ab58900529377d6e16f7b0cacac6b2e9ce09bdaf559245c3f5a2428dd0c72f1",
+    "checkout_probe_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/diagnostics/windows-checkout-eol.json"
+  },
+  "selected_at_utc": "2026-10-24T20:47:13.103108Z"
+}
