@@ -12,10 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SUPPORT = Path(__file__).resolve().parent
-OUT = SUPPORT / "local-checks" / "payload" / "exact-C2"
+OUT = SUPPORT / "local-checks" / "payload" / "exact-C2b"
 RECORDS = OUT / "records"
 TASK_TEMP = Path(r"C:\Users\Joker-PC\Documents\Codex\Work\maps-context-engine-4d\audit-20261023-01a16846\work\tmp\T068-r9-p3")
-SUBJECT_SHA = "18191d974ebe671555ef6d088f4a85aec7b3c7fd"
+SUBJECT_SHA = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
 DELIVERY_ID = "5f2d1f3e-e6be-4c86-a39e-e6b242388639"
 TASK_ID = "T068"
 TASK_REVISION = 7
@@ -91,8 +91,8 @@ def main() -> int:
     records: list[dict[str, object]] = []
     failed = 0
     for check_id, command_ref, argv, use_cmd_shell in checks:
-        record_ref = f"{SUPPORT.relative_to(ROOT).as_posix()}/local-checks/payload/exact-C2/records/{check_id}.json"
-        log_ref = f"{SUPPORT.relative_to(ROOT).as_posix()}/local-checks/payload/exact-C2/records/{check_id}.log"
+        record_ref = f"{SUPPORT.relative_to(ROOT).as_posix()}/local-checks/payload/exact-C2b/records/{check_id}.json"
+        log_ref = f"{SUPPORT.relative_to(ROOT).as_posix()}/local-checks/payload/exact-C2b/records/{check_id}.log"
         record_path = ROOT / Path(record_ref)
         log_path = ROOT / Path(log_ref)
         started = utc_now()
