@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "kind": "t003_payload_commit_history_plan",
+  "task_id": "T003",
+  "task_revision": 27,
+  "delivery_id": "5f71c161-6541-4416-8ea9-0b9b49a7a985",
+  "base_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "reopen_trigger_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/g0-seal-invalidation.json",
+  "reopen_trigger_sha256": "388712a02aef517532e4fae087bf450d8a3597e6eb8d028cde8dfe4788732c4c",
+  "rejected_cases": [
+    "empty commit body",
+    "missing Vietnamese headings",
+    "wrong task or priority",
+    "merge commit",
+    "non-ancestor base",
+    "empty commit range"
+  ],
+  "accepted_case": "non-empty ordered linear payload history whose actual commit messages pass the existing delivery policy",
+  "prepublication_command": "python -B tools/ci/delivery_policy.py payload-commits --repo . --base <base-sha> --payload <payload-sha> --task T003 --priority P0",
+  "result": "PLAN_ONLY_PENDING_R27_PAYLOAD_AND_EXACT_SHA_CHECKS"
+}

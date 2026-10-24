@@ -1,0 +1,291 @@
+{
+  "format_version": 1,
+  "kind": "g0_design_seal_audit",
+  "result": "PASS",
+  "review_mode": "AI_SELF_REVIEW",
+  "reviewer": "Codex",
+  "spec_version": "1.6.14",
+  "subject_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "gate": "G0",
+  "gate_criteria_source": "Maps-Context-Engine-4D_SPEC.md#S20/G0",
+  "gate_criteria": "Site survey, pinned materials, canonical contracts/DDL/flow proofs/import boundaries/order validation; T108 PASS trước feature; mode/nguồn quy tắc/command preflight S50–S51",
+  "initial_status_preserved": "NOT_RUN",
+  "scope_task_count": 108,
+  "effective_status_counts": {
+    "DONE": 74,
+    "TODO": 32,
+    "VERIFY": 1,
+    "IN_PROGRESS": 1
+  },
+  "foundation_tasks": [
+    {
+      "task_id": "T001",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E001",
+        "E002",
+        "E003"
+      ]
+    },
+    {
+      "task_id": "T002",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E004",
+        "E005",
+        "E006"
+      ]
+    },
+    {
+      "task_id": "T003",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E027",
+        "E030",
+        "E031",
+        "E032",
+        "E033",
+        "E034",
+        "E035",
+        "E037",
+        "E212",
+        "E213",
+        "E214",
+        "E215",
+        "E216",
+        "E217",
+        "E218",
+        "E219",
+        "E220",
+        "E221",
+        "E222",
+        "E223",
+        "E224",
+        "E225",
+        "E226",
+        "E227",
+        "E228",
+        "E229",
+        "E230",
+        "E231",
+        "E232",
+        "E233",
+        "E234",
+        "E235",
+        "E236",
+        "E797",
+        "E798",
+        "E799",
+        "E800",
+        "E801",
+        "E802",
+        "E803",
+        "E804",
+        "E805",
+        "E806",
+        "E807",
+        "E808",
+        "E809",
+        "E810",
+        "E812",
+        "E813",
+        "E814",
+        "E815",
+        "E816",
+        "E817"
+      ]
+    },
+    {
+      "task_id": "T105",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E040"
+      ]
+    },
+    {
+      "task_id": "T106",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E045",
+        "E046",
+        "E047",
+        "E048",
+        "E049"
+      ]
+    },
+    {
+      "task_id": "T107",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E050",
+        "E051",
+        "E052"
+      ]
+    },
+    {
+      "task_id": "T108",
+      "literal_status": "DONE",
+      "effective_status": "DONE",
+      "evidence_ids": [
+        "E053"
+      ]
+    }
+  ],
+  "active_task_readiness": {
+    "task_id": "T085",
+    "dependencies_and_predecessor": [
+      {
+        "task_id": "T084",
+        "effective_status": "DONE"
+      },
+      {
+        "task_id": "T044",
+        "effective_status": "DONE"
+      },
+      {
+        "task_id": "T056",
+        "effective_status": "DONE"
+      },
+      {
+        "task_id": "T047",
+        "effective_status": "DONE"
+      }
+    ]
+  },
+  "conditions": [
+    {
+      "name": "all G0 foundation tasks effectively DONE",
+      "result": "PASS",
+      "task_ids": [
+        "T001",
+        "T002",
+        "T003",
+        "T105",
+        "T106",
+        "T107",
+        "T108"
+      ]
+    },
+    {
+      "name": "T108 design-seal prerequisite effectively DONE",
+      "result": "PASS",
+      "task_id": "T108"
+    },
+    {
+      "name": "T085 dependencies and S47 predecessor effectively DONE",
+      "result": "PASS",
+      "tasks": [
+        {
+          "task_id": "T084",
+          "effective_status": "DONE"
+        },
+        {
+          "task_id": "T044",
+          "effective_status": "DONE"
+        },
+        {
+          "task_id": "T056",
+          "effective_status": "DONE"
+        },
+        {
+          "task_id": "T047",
+          "effective_status": "DONE"
+        }
+      ]
+    },
+    {
+      "name": "allocation preflight",
+      "result": "PASS",
+      "groups": "7/7",
+      "commands": "7/7",
+      "test_summary": {
+        "command": "python -B tools/spec_check/test_spec_check.py",
+        "attempt1": "FAIL: two Windows TemporaryDirectory cleanup errors, WinError 145; no assertion failure; local paths redacted in committed copy",
+        "attempt2": "PASS: Ran 150 tests, 1 skipped, zero failures/errors; TEMP/TMP was a verified 8.3 alias of the repo work/ directory"
+      },
+      "evidence_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/allocation-preflight.json",
+      "evidence_sha256": "7de428454114762795a1eb764fa456cf763954c7cd6d7769fbdb7a496fde2a54"
+    },
+    {
+      "name": "GitHub exact-SHA allocation CI on both authorized refs",
+      "result": "PASS",
+      "candidate_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+      "runs": [
+        {
+          "ref": "refs/heads/main",
+          "run_id": 40105646930,
+          "head_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+          "status": "completed",
+          "conclusion": "success",
+          "contexts_passed": 6
+        },
+        {
+          "ref": "refs/heads/codex/t003-d089-regressions",
+          "run_id": 40105646654,
+          "head_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+          "status": "completed",
+          "conclusion": "success",
+          "contexts_passed": 6
+        }
+      ],
+      "contexts": "12/12",
+      "commands": "52/52",
+      "evidence_ref": "artifacts/ci/T085-r1-allocation-attempt-1/a27-attempt-1/allocation-ci-evidence.json",
+      "evidence_sha256": "7bb073d6d19c550cf54393fd5387bdaddb6db0a46ae17584059213abb0a27bb9"
+    },
+    {
+      "name": "feature implementation has not started before the design seal",
+      "result": "PASS",
+      "changed_paths_in_scope": []
+    },
+    {
+      "name": "D090 scope gap resolved in T085 allocation",
+      "result": "PASS",
+      "decision_ref": "Maps-Context-Engine-4D_SPEC.md#S21/D090"
+    }
+  ],
+  "source_commit_changed_paths": [
+    ".gitattributes",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/allocation-check.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/allocation-preflight.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/allocation.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/dependency-review.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/allocation_integrity.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/allocation_integrity.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/check_plan.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/check_plan.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/checkpoint_fixtures.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/checkpoint_fixtures.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/delivery_policy_fixtures.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/delivery_policy_fixtures.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/diff_check.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/diff_check.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec_fixtures.stderr.sanitized.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec_fixtures.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/summary.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-2/records/spec_fixtures.stderr.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-2/records/spec_fixtures.stdout.txt",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-2/summary.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/selection-reason.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/selection.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/task-acceptance-plan.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/task-mode.json"
+  ],
+  "feature_source_changes_before_seal": [],
+  "supporting_ci_ref_matrix_ref": "artifacts/ci/T085-r1-allocation-attempt-1/a27-attempt-1/allocation-ref-ci-matrix.json",
+  "supporting_ci_manifest_ref": "artifacts/ci/T085-r1-allocation-attempt-1/a27-attempt-1/manifest.json",
+  "checked_at_utc": "2026-10-24T15:25:07.204398Z",
+  "publication_copy_of_sha256": "68ea1b169dc62f233d7318f887e7d6e206c16257c0f8ff9df683e5e187bccfe5",
+  "absolute_local_paths_redacted_from_failure_transcript": true
+}

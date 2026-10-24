@@ -1,0 +1,276 @@
+{
+  "format_version": 1,
+  "kind": "local_check_summary",
+  "task_id": "T003",
+  "task_revision": 27,
+  "delivery_id": "5f71c161-6541-4416-8ea9-0b9b49a7a985",
+  "subject_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "phase": "allocation-preflight",
+  "passed_count": 7,
+  "failed_count": 0,
+  "executed_checks": 7,
+  "command_count": 9,
+  "result": "PASS",
+  "started_at_utc": "2026-10-24T16:03:17.457752Z",
+  "completed_at_utc": "2026-10-24T16:03:55.495424Z",
+  "checks": [
+    {
+      "check_id": "plan",
+      "name": "frozen-check-plan",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/plan.json",
+      "record_sha256": "f62f6610d15f8ad809a6187a3733447c9dfba243628a37acee47daee6c1e55ce",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/ci/delivery_policy.py",
+            "check-plan",
+            "--plan",
+            "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/check-plan-canonical.json",
+            "--sha256",
+            "5c68d28b06683feddcc84c8d29fe77d8914b42108c21035a52ad464e93cc9c33"
+          ],
+          "actual_argv_sha256": "a95681c143a55f11a9eae4079178bdba88973249725a1ebccbc7832de837aa1a",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:17.457752Z",
+          "completed_at_utc": "2026-10-24T16:03:17.544420Z",
+          "duration_seconds": 0.078,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/plan-1.log",
+          "log_sha256": "e0153669d7b8c318eb2b4d8cd91f30efb302c49d4a6099240108c45a40499cd0",
+          "stdout_sha256": "4b729cba5bd1088e3ad27c00213c984ac970c01e69da1899f059617ca7d018f2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_log_sha256": "e0153669d7b8c318eb2b4d8cd91f30efb302c49d4a6099240108c45a40499cd0",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "spec",
+      "name": "spec-static-validator",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/spec.json",
+      "record_sha256": "fc831c568cee340013cb6d55685f1c509344be3d8ea6308bcda550318ecc5933",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/spec_check/check.py"
+          ],
+          "actual_argv_sha256": "b6d3311d6900b589cc56365a12737df77f7417830690cda9adf4b732c191583f",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:17.554426Z",
+          "completed_at_utc": "2026-10-24T16:03:17.980847Z",
+          "duration_seconds": 0.422,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/spec-1.log",
+          "log_sha256": "8288f2882dff9c1ec8d6fbe9c9c2c36088794da6970cceb8edda4a6a492139b5",
+          "stdout_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_log_sha256": "8288f2882dff9c1ec8d6fbe9c9c2c36088794da6970cceb8edda4a6a492139b5",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "spec-fixtures",
+      "name": "spec-regression-suite",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/spec-fixtures.json",
+      "record_sha256": "4b9f3e573bd8986372a933555cfed169f83f7ba98c33194f45f1462bcfd0e72b",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/spec_check/test_spec_check.py"
+          ],
+          "actual_argv_sha256": "2f160488ab0f752e92cf60414f30a83d78c625b77ebe1795b3795edbdc240226",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:17.991485Z",
+          "completed_at_utc": "2026-10-24T16:03:38.144189Z",
+          "duration_seconds": 20.156,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/spec-fixtures-1.log",
+          "log_sha256": "448630d90085b4f180cad3cc5e02e864e9b2223d78d572b833f8a8d209d82f00",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "44c5e0e0f759007a83a3ea5cebba1952a1b92d4a330a28e906b2993133f2fca6",
+          "public_log_sha256": "448630d90085b4f180cad3cc5e02e864e9b2223d78d572b833f8a8d209d82f00",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "delivery-policy",
+      "name": "delivery-policy-regressions",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/delivery-policy.json",
+      "record_sha256": "c26ff7ab71b0436271210dc928948f271b53785a17ce3507a4d74842f751bd04",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/ci/test_delivery_policy.py"
+          ],
+          "actual_argv_sha256": "779c89c8c28e73ed7f34e13c123e1c475f0f4cac3971a767a9e533e549901243",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:38.156941Z",
+          "completed_at_utc": "2026-10-24T16:03:44.259367Z",
+          "duration_seconds": 6.109,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/delivery-policy-1.log",
+          "log_sha256": "8bd9c8123aaf15caafd2d7859e6a893da24a479581cd538b56d00b94c25e064a",
+          "stdout_sha256": "045de8b365ba7d31a74df6c5972beefd9f41c12582ff322cd2b4a442abc30070",
+          "stderr_sha256": "d540496b8812d9356426b37a0491357a4204c4448d0d5b27c0deca1c0fecf92b",
+          "public_log_sha256": "8bd9c8123aaf15caafd2d7859e6a893da24a479581cd538b56d00b94c25e064a",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "bootstrap",
+      "name": "bootstrap-and-checkpoint-regressions",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/bootstrap.json",
+      "record_sha256": "efe17a7d1bcd45bd552ebdb2c368d85da72828f1b412aa37aeff9c3aec1061ad",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/ci/bootstrap_check.py"
+          ],
+          "actual_argv_sha256": "68ef035c94854da89deef0bbc9a2a427ebe733c6bb8aca65e7e03af4fc5c2fe0",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:44.270366Z",
+          "completed_at_utc": "2026-10-24T16:03:44.329365Z",
+          "duration_seconds": 0.047,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/bootstrap-1.log",
+          "log_sha256": "4aedda39b3a4ed13d6ecf70c9b4ff0f1ecf1b2b9ccf61faeb43cff0b76d7f312",
+          "stdout_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_log_sha256": "4aedda39b3a4ed13d6ecf70c9b4ff0f1ecf1b2b9ccf61faeb43cff0b76d7f312",
+          "environment_overrides": {}
+        },
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/ci/test_bootstrap_check.py"
+          ],
+          "actual_argv_sha256": "ddc59c63315d3880606136b919cdb68976f849f86be8c99eeceeb2e55cd2ef45",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:44.335184Z",
+          "completed_at_utc": "2026-10-24T16:03:45.209441Z",
+          "duration_seconds": 0.875,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/bootstrap-2.log",
+          "log_sha256": "d0b4f88cbf2faa232b78ca0d8e52bc64431f4415adc45689634bd238f485ac91",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "42b9a6c04bb06f6ca07300fffdc347118d4ee7238622a4ea6925157b791b53cf",
+          "public_log_sha256": "d0b4f88cbf2faa232b78ca0d8e52bc64431f4415adc45689634bd238f485ac91",
+          "environment_overrides": {}
+        },
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "tools/ci/test_checkpoint_digest.py"
+          ],
+          "actual_argv_sha256": "94a9a060d28eb77410f1993aba260df079e92fe2aeb51026c2a9644621df2cdb",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:45.214947Z",
+          "completed_at_utc": "2026-10-24T16:03:47.757222Z",
+          "duration_seconds": 2.546,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/bootstrap-3.log",
+          "log_sha256": "91927b07e46da744d46350a83bf0da4f43b270af625fe26c73d87dd940d4c1af",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "075631d3f22e75ff6eee749074faba8f3081d76328757a379051f7b24230c7ba",
+          "public_log_sha256": "91927b07e46da744d46350a83bf0da4f43b270af625fe26c73d87dd940d4c1af",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "selector-replay",
+      "name": "27-revision-selector-replay",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/selector-replay.json",
+      "record_sha256": "b2ac4411e997fbe01533e6a9603871b2ed19cf8b85fb9ca9cf25e1843a65b1a3",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "work/check_t003_r27_replay_existing.py"
+          ],
+          "actual_argv_sha256": "cb486afe788343eff0d70a6b44320204f4b50f752809149933765331fc583b7d",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:47.768729Z",
+          "completed_at_utc": "2026-10-24T16:03:50.468326Z",
+          "duration_seconds": 2.688,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/selector-replay-1.log",
+          "log_sha256": "dd6171b8ef0609721a4e5a830bcb7f9c0b7f178fb25e51b9a983ff69fd87de25",
+          "stdout_sha256": "00e2c2b6a89d65335fc04d1975bf5d784b7023b42f8b8f987cd16913c49a8187",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_log_sha256": "dd6171b8ef0609721a4e5a830bcb7f9c0b7f178fb25e51b9a983ff69fd87de25",
+          "environment_overrides": {}
+        }
+      ]
+    },
+    {
+      "check_id": "allocation-integrity",
+      "name": "allocation-dependencies-hashes-and-remotes",
+      "result": "PASS",
+      "record_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/allocation-integrity.json",
+      "record_sha256": "967fbd7e180e0505eec1953998bd3d9db9534a07ddcc60dc93cae8da2c8a45b5",
+      "commands": [
+        {
+          "argv": [
+            "python",
+            "-X",
+            "utf8",
+            "-B",
+            "work/run_t003_r27_preflight.py",
+            "--integrity-only"
+          ],
+          "actual_argv_sha256": "2156cf84c8ff10b6ee1f2e43ad134e992ee5bc43aa00a78a8ee134339ea21796",
+          "runtime": "Python 3.12.14",
+          "started_at_utc": "2026-10-24T16:03:50.479769Z",
+          "completed_at_utc": "2026-10-24T16:03:55.483510Z",
+          "duration_seconds": 5.0,
+          "exit_code": 0,
+          "log": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/local-checks/allocation/attempt-1/records/allocation-integrity-1.log",
+          "log_sha256": "5d1492f64f8cea8a99c759ddd8c1d43d3d61d1f88fad9fa708166ca72c5707c6",
+          "stdout_sha256": "74303b30ad883fe99b42d31272443f30ba304291a551a77ee81f37d34faa1bfb",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_log_sha256": "5d1492f64f8cea8a99c759ddd8c1d43d3d61d1f88fad9fa708166ca72c5707c6",
+          "environment_overrides": {}
+        }
+      ]
+    }
+  ]
+}

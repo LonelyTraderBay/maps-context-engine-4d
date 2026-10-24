@@ -1,0 +1,28 @@
+{
+  "format_version": 1,
+  "kind": "allocation_preparation_evidence_correction",
+  "task_id": "T003",
+  "task_revision": 27,
+  "delivery_id": "5f71c161-6541-4416-8ea9-0b9b49a7a985",
+  "reason": "The original uncommitted preparation record pointed directly at a local stderr transcript containing an absolute checkout path. Keep source bytes untouched in the local T085 workspace and replace publication pointers with a redacted excerpt and exact source hashes before allocation commit.",
+  "superseded_preparation_hashes": {
+    "g0_seal_invalidation_sha256": "22404f777af4f3c6a79aaa34896c7f0b69a2997d232a50ee46afba5afa4520a0",
+    "selector_invalidation_sha256": "1c0ddaff51e034eb0008a8f175f3c103ace4a193ddf07516cd3a42a416c7e50f",
+    "selection_sha256": "244814afe3c389f2afe689fd6aa2f28895212a4ac2c1f854d84aa9f74fad5e94",
+    "selector_replay_sha256": "7ae9d20f0aa117026201b533f62f449f276c992670eefca918ee64f4a6728195",
+    "allocation_sha256": "3361bc2801c914c3355838fcec8ca3beac10ff4d8f2cfe6832b0eda3d42834dd"
+  },
+  "source_evidence_hashes": {
+    "g0_audit_sha256": "68ea1b169dc62f233d7318f887e7d6e206c16257c0f8ff9df683e5e187bccfe5",
+    "failure_summary_sha256": "a50a3e69807c9a39b5993dcd38b537f04e03d929e18da3f6e3f8605320f01cdb",
+    "raw_failure_stderr_sha256": "38b6b6e15a769e66fd7f6e58b5df9555d0bf45492875206a9a7d96f3107f8880"
+  },
+  "published_replacements": {
+    "audit_snapshot_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/E822-g0-seal-audit.snapshot.json",
+    "sanitized_summary_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/g0-seal-test-failure.sanitized.json",
+    "sanitized_excerpt_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/g0-seal-test-failure.excerpt.txt"
+  },
+  "raw_source_retained": "unchanged in the existing T085 support tree; excluded from this public delivery",
+  "result": "CORRECTED_BEFORE_ALLOCATION_COMMIT",
+  "checked_at_utc": "2026-10-24T15:55:32.845700Z"
+}

@@ -1,0 +1,78 @@
+{
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "base_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "change_budget": {
+    "behavior": [
+      "Resolve the design_seal YAML line by key prefix rather than an exact current scalar.",
+      "Set the synthetic mutated fixture to PASS and assert the validator rejects an incomplete G0 member.",
+      "Keep the S20 design-seal validator, effective-status rules, T068 selectors and archived bytes unchanged.",
+      "Keep the live G0 seal IN_PROGRESS until T003 r27 is closed and a fresh G0 audit passes.",
+      "Record the retained T068 selector replay as UNKNOWN with zero semantic errors; keep D089 open until T068 fresh checks, exact P/C CI, archive/readback and live verification are re-collected."
+    ],
+    "contracts": [
+      "SPEC-v1.6.14:T003",
+      "S20 G0 design seal",
+      "S22 resume state",
+      "S53:AW-08"
+    ],
+    "exclusions": [
+      "No weakening of validator behavior.",
+      "No feature code change.",
+      "No force push or mutation of retained evidence."
+    ]
+  },
+  "check_plan_sha256": "5c68d28b06683feddcc84c8d29fe77d8914b42108c21035a52ad464e93cc9c33",
+  "command_record_refs": [],
+  "delivery_id": "5f71c161-6541-4416-8ea9-0b9b49a7a985",
+  "exclusions": [
+    "Không nới validator S20.",
+    "Không sửa evidence đã seal hoặc đổi lịch sử Git."
+  ],
+  "format_version": 1,
+  "objective": "Repair the T003 S22 negative fixture so it can run with either IN_PROGRESS or PASS baseline, then prove it still rejects a G0 foundation task whose effective state is not DONE. Preserve the S20 validator and prior T003 closure evidence.",
+  "paths": [
+    ".gitattributes",
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/spec_check/test_spec_check.py",
+    "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/**"
+  ],
+  "policy_source_refs": [
+    {
+      "path": "docs/AI_RULES.md",
+      "policy_id": "POL-SRC-01",
+      "scope": "HỢP ĐỒNG DÙNG CHUNG; KHỞI ĐỘNG; LỘ TRÌNH ĐỌC",
+      "sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "3.1"
+    },
+    {
+      "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+      "policy_id": "POL-SRC-02",
+      "scope": "Toàn văn; trước check có output",
+      "sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "1.0.0"
+    },
+    {
+      "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+      "policy_id": "POL-SRC-03",
+      "scope": "Hash xác minh; docs-only prompt không kích hoạt",
+      "sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+      "status": "VERIFIED_HASH_NOT_ACTIVATED",
+      "version": "3.1"
+    }
+  ],
+  "previous_closure_ref": "artifacts/git-delivery-support/T003-r22-9461b805-7d28-4748-8d0a-eb4b7e89cff4/archive-view/sequence-predecessor/T002/task-closure-E006.json",
+  "priority": "P0",
+  "spec_revision": "1.6.14",
+  "task_id": "T003",
+  "task_mode": "implement",
+  "task_revision": 27,
+  "verification_plan": [
+    "Replay all 27 retained T003 selector revisions with exact retained-byte closure; require UNKNOWN with zero semantic errors.",
+    "Replay the retained T068 selector/archive chain and preserve its bounded UNKNOWN verdict without claiming product/live proof.",
+    "Run the frozen 13 local checks on the reviewed candidate and exact payload P.",
+    "Run exact-SHA CI on main and the task branch for allocation A, payload P, and closing C.",
+    "Validate direct-child closing diff, seal/readback archive and fresh live verification before marking DONE."
+  ]
+}

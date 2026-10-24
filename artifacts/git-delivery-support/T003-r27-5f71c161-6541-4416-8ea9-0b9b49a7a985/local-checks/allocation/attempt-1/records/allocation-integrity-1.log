@@ -1,0 +1,112 @@
+COMMAND: python -X utf8 -B work/run_t003_r27_preflight.py --integrity-only
+EXIT_CODE: 0
+
+--- STDOUT ---
+{
+  "result": "PASS",
+  "checked_at_utc": "2026-10-24T16:03:55.471422Z",
+  "head": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "branch": "codex/t003-r24-closing-validated",
+  "checks": {
+    "exact_base_branch_and_staging": true,
+    "both_remote_refs_at_allocation_base": true,
+    "spec_and_effective_tracker_state": true,
+    "allocation_refs_hashes_and_plan": true,
+    "retained_archives_and_t068_bounded_replay": true,
+    "sanitized_g0_failure_provenance_and_public_paths": true
+  },
+  "details": {
+    "exact_base_branch_and_staging": {
+      "head": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+      "branch": "codex/t003-r24-closing-validated",
+      "tracked_changes": [
+        ".gitattributes",
+        "Maps-Context-Engine-4D_SPEC.md",
+        "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/allocation.json"
+      ],
+      "staged_paths": [],
+      "known_unscoped_t085_change_preserved": true
+    },
+    "both_remote_refs_at_allocation_base": {
+      "main": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+      "task_branch": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2"
+    },
+    "spec_and_effective_tracker_state": {
+      "spec_validation": "PASS",
+      "task_count": 108,
+      "effective_done": 73,
+      "T003_effective": "IN_PROGRESS",
+      "D089_open": true
+    },
+    "allocation_refs_hashes_and_plan": {
+      "allocation_matches_current": true,
+      "check_plan_sha256": "5c68d28b06683feddcc84c8d29fe77d8914b42108c21035a52ad464e93cc9c33",
+      "hash_bindings": [
+        {
+          "ref": "selector_ref",
+          "matches": true
+        },
+        {
+          "ref": "invalidation_ref",
+          "matches": true
+        },
+        {
+          "ref": "g0_seal_invalidation_ref",
+          "matches": true
+        },
+        {
+          "ref": "task_mode_ref",
+          "matches": true
+        },
+        {
+          "ref": "allocation_ref",
+          "matches": true
+        },
+        {
+          "ref": "allocation_current_ref",
+          "matches": true
+        },
+        {
+          "ref": "dependency_review_ref",
+          "matches": true
+        },
+        {
+          "ref": "check_plan_ref",
+          "matches": true
+        },
+        {
+          "ref": "authority_ref",
+          "matches": true
+        },
+        {
+          "ref": "selection_replay_ref",
+          "matches": true
+        },
+        {
+          "ref": "t068_selector_replay_ref",
+          "matches": true
+        },
+        {
+          "ref": "reopen_trigger_ref",
+          "matches": true
+        }
+      ]
+    },
+    "retained_archives_and_t068_bounded_replay": {
+      "t003_r26_archive_readback": true,
+      "t068_r8_archive_readback": true,
+      "t068_selectors": 8,
+      "t068_lineages": 3,
+      "t068_verdict": "UNKNOWN",
+      "t068_errors": []
+    },
+    "sanitized_g0_failure_provenance_and_public_paths": {
+      "source_hashes_match": true,
+      "published_path_leaks": [],
+      "raw_source_retained_outside_t003_publication": true
+    }
+  },
+  "errors": []
+}
+
+--- STDERR ---

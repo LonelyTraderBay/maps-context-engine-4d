@@ -1,0 +1,33 @@
+{
+  "format_version": 1,
+  "kind": "g0_seal_invalidation",
+  "gate": "G0",
+  "invalidated_evidence_id": "E822",
+  "historical_audit_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/E822-g0-seal-audit.snapshot.json",
+  "historical_audit_sha256": "68ea1b169dc62f233d7318f887e7d6e206c16257c0f8ff9df683e5e187bccfe5",
+  "base_sha": "9eb4fd56a45d7c17e4c982db5980d17b91dd85a2",
+  "observed_prior_seal": "PASS",
+  "current_seal": "IN_PROGRESS",
+  "failure": {
+    "task_id": "T003",
+    "test": "test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done",
+    "command": "python -X utf8 -B tools/spec_check/test_spec_check.py",
+    "checked_at_utc": "2026-10-24T15:29:30.352590Z",
+    "summary_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/g0-seal-test-failure.sanitized.json",
+    "summary_sha256": "e2e8da0acadbfb8fd520dd6f9184e9442d645e8e737e50c194fa6bb6f7effec5",
+    "stderr_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/invalidation/g0-seal-test-failure.excerpt.txt",
+    "stderr_sha256": "9cdd572d28fa190eb9ae91e28ded87b506d61e36a52ec3873a15f0a47d765ace",
+    "suite_total": "Ran 150 tests; FAIL; TEMP/TMP is a verified same-file short alias of repo work/",
+    "failure": "fixture requires the literal IN_PROGRESS line and aborts when the current valid baseline is PASS",
+    "source_summary_sha256": "a50a3e69807c9a39b5993dcd38b537f04e03d929e18da3f6e3f8605320f01cdb",
+    "source_stderr_sha256": "38b6b6e15a769e66fd7f6e58b5df9555d0bf45492875206a9a7d96f3107f8880",
+    "source_path_redacted": true
+  },
+  "action": "Reopen T003 revision 27, keep the G0 seal IN_PROGRESS, and make the negative fixture locate the design_seal key independent of its current value; do not weaken the S20 validator.",
+  "result": "FAIL",
+  "recorded_at_utc": "2026-10-24T15:50:44.759871Z",
+  "t068_selector_replay_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/archive-view/t068-retained-selector-replay.json",
+  "t068_selector_replay_sha256": "29bcf733177441056613f85db52d73d8211373eb1775968bb731283ea211cf50",
+  "sanitization_ref": "artifacts/git-delivery-support/T003-r27-5f71c161-6541-4416-8ea9-0b9b49a7a985/allocation-preparation-correction.json",
+  "sanitization_sha256": "f13b4fb081bdf5d70f543c446f9f46b54be0b9f1568a99b590b859df36195ba0"
+}
