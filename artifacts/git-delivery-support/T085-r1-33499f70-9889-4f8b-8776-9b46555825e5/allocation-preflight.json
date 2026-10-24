@@ -1,0 +1,176 @@
+{
+  "format_version": 1,
+  "kind": "task_allocation_preflight",
+  "task_id": "T085",
+  "task_revision": 1,
+  "delivery_id": "33499f70-9889-4f8b-8776-9b46555825e5",
+  "base_sha": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77",
+  "check_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/check-plan-canonical.json",
+  "check_plan_sha256": "769db352a8b361efb352ee9e394c8ef8e0a80398929fb3f232ad8c958e9f5eda",
+  "started_at_utc": "2026-10-24T14:59:14.214Z",
+  "completed_at_utc": "2026-10-24T15:02:14.521Z",
+  "result": "PASS",
+  "groups_total": 7,
+  "groups_passed": 7,
+  "commands_total": 7,
+  "commands_passed": 7,
+  "attempts_total": 8,
+  "attempts_passed": 7,
+  "attempts_failed": 1,
+  "test_summary": {
+    "command": "python -B tools/spec_check/test_spec_check.py",
+    "attempt1": "FAIL: two Windows TemporaryDirectory cleanup errors, WinError 145; no assertion failure; local paths redacted in committed copy",
+    "attempt2": "PASS: Ran 150 tests, 1 skipped, zero failures/errors; TEMP/TMP was a verified 8.3 alias of the repo work/ directory"
+  },
+  "records": [
+    {
+      "name": "check_plan",
+      "argv": [
+        "-X",
+        "utf8",
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan"
+      ],
+      "started_at_utc": "2026-10-24T14:59:14.214Z",
+      "completed_at_utc": "2026-10-24T14:59:14.299Z",
+      "duration_ms": 93,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/check_plan.stdout.txt",
+      "stdout_sha256": "317ad18e7a1d06560f03dc59c831b40ac0996d8c330f5e7d7b85abb0a9b50f8a",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/check_plan.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "spec",
+      "argv": [
+        "-X",
+        "utf8",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "started_at_utc": "2026-10-24T14:59:14.299Z",
+      "completed_at_utc": "2026-10-24T14:59:14.735Z",
+      "duration_ms": 422,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec.stdout.txt",
+      "stdout_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "spec_fixtures",
+      "argv": [
+        "python -B tools/spec_check/test_spec_check.py"
+      ],
+      "started_at_utc": "2026-10-24T15:01:54.136Z",
+      "completed_at_utc": "2026-10-24T15:02:14.521Z",
+      "duration_ms": 20391,
+      "exit_code": 0,
+      "temp_root_samefile_as_work": true,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-2/records/spec_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-2/records/spec_fixtures.stderr.txt",
+      "stderr_sha256": "50a32bbeaff96723696ffabcf2cd1b2b8215adc2114ebeb225dc1293f10b4022",
+      "temp_root_alias_description": "Windows 8.3 short-path alias, verified same-file as this repository work/ directory",
+      "temp_root_alias_redacted": true
+    },
+    {
+      "name": "delivery_policy_fixtures",
+      "argv": [
+        "-X",
+        "utf8",
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "started_at_utc": "2026-10-24T14:59:35.403Z",
+      "completed_at_utc": "2026-10-24T14:59:41.617Z",
+      "duration_ms": 6219,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/delivery_policy_fixtures.stdout.txt",
+      "stdout_sha256": "81ff78db2752f67e640df99c7f4bbfa1ae89494f3604fee7cc0272d5beff9dcb",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/delivery_policy_fixtures.stderr.txt",
+      "stderr_sha256": "ab73c300c3386efb16b6a13f3623c1c5afe0365519e20fd513d4d166f6a4ac6b"
+    },
+    {
+      "name": "checkpoint_fixtures",
+      "argv": [
+        "-X",
+        "utf8",
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "started_at_utc": "2026-10-24T14:59:41.617Z",
+      "completed_at_utc": "2026-10-24T14:59:44.214Z",
+      "duration_ms": 2594,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/checkpoint_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/checkpoint_fixtures.stderr.txt",
+      "stderr_sha256": "22469078f9d42d527c3d4b3eb1682e79bf044629f57376472f9af20ebf99be5d"
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at_utc": "2026-10-24T14:59:44.215Z",
+      "completed_at_utc": "2026-10-24T14:59:44.274Z",
+      "duration_ms": 62,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/diff_check.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/diff_check.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "allocation_integrity",
+      "argv": [
+        "task-local-integrity-and-readiness"
+      ],
+      "started_at_utc": "2026-10-24T14:59:44.274Z",
+      "completed_at_utc": "2026-10-24T14:59:45.183Z",
+      "duration_ms": 906,
+      "exit_code": 0,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/allocation_integrity.stdout.txt",
+      "stdout_sha256": "27e869bcd2c5e87bd05425e24bae10759d61c9d101b1851bc878fa61a13d9c13",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/allocation_integrity.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "retry_history": [
+    {
+      "name": "spec_fixtures",
+      "argv": [
+        "-X",
+        "utf8",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "started_at_utc": "2026-10-24T14:59:14.735Z",
+      "completed_at_utc": "2026-10-24T14:59:35.403Z",
+      "duration_ms": 20672,
+      "exit_code": 1,
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/allocation/attempt-1/records/spec_fixtures.stderr.sanitized.txt",
+      "stderr_sha256": "d688e82bcf941a9ce6aa33f246cbc27a46d003627e06f3677cf9ad72adeb290a",
+      "raw_stderr_sha256": "091982bbd3cf8c193d4666ec4f281d0342cb2870f311d5c2ce023ce2274d146d",
+      "stderr_redacted": true,
+      "redaction": "Replaced local worktree and bundled Python absolute prefixes; raw stderr retained locally and is not staged."
+    }
+  ],
+  "current_effective_task_counts": {
+    "total": 108,
+    "DONE": 74,
+    "VERIFY": 1,
+    "IN_PROGRESS": 1,
+    "TODO": 32
+  },
+  "allocation_base_remote_refs": {
+    "refs/heads/main": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77",
+    "refs/heads/codex/t003-d089-regressions": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77"
+  }
+}
