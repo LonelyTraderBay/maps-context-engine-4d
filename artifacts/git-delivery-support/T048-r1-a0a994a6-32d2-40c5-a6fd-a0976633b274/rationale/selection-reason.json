@@ -1,0 +1,27 @@
+{
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "supersedes_delivery_id": null,
+  "decision": "Select T048: its four S19 dependencies are effective DONE and S47 P11 immediate predecessor T068 is DONE. S20 permits independent same-gate work by dependency/ownership. T057 has a separate recovery blocker and is not a T048 dependency.",
+  "basis": {
+    "dependencies": [
+      "T044",
+      "T046",
+      "T047",
+      "T068"
+    ],
+    "sequence_predecessor": "T068",
+    "gate": "G6",
+    "task_card": "S47 card 092",
+    "requirement": "R040",
+    "cases": "C055..C069"
+  },
+  "limitations": [
+    "T044 archive/live reverified in the read-only primary checkout; T068 in active worktree. T046/T047 raw archive/live absent in both roots; readiness uses their current S19 status only.",
+    "T057 remains blocked pending exact r3 recovery."
+  ],
+  "selected_at_utc": "2026-10-24T18:24:00Z"
+}

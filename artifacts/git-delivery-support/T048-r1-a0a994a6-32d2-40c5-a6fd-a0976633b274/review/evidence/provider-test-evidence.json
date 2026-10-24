@@ -1,0 +1,45 @@
+{
+  "format_version": 1,
+  "kind": "T048_provider_review_test_evidence",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "tested_source_commit": "5293c93ffe014f8f81f2b827d5a409927705f263",
+  "source_working_tree_delta": "none for packages/python-provider and packages/ts-provider",
+  "source_tree_objects": {
+    "typescript_provider": "93c923520b79041321497a240b2bc1fc1d7d353c",
+    "python_provider": "55e6562817791da18229d744120873c2132a7287"
+  },
+  "runtime": {
+    "python_version": "Python 3.12.14",
+    "node_version": "v24.22.0",
+    "npm_version": "11.19.1"
+  },
+  "results": [
+    {
+      "suite": "Python provider",
+      "command": "python -B -m unittest discover -s packages/python-provider/test -v",
+      "exit_code": 0,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/python-provider-tests.log",
+      "log_sha256": "1f139920a6e260bb42a60a0659e1f4d91a7cac2dc16e041e9521f49a5089ca21"
+    },
+    {
+      "suite": "TypeScript provider",
+      "command": "npm test -- --test-reporter=spec",
+      "install_command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "exit_code": 0,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "install_log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/ts-provider-install.log",
+      "install_log_sha256": "4e0639e357b3b74baadc107fde262405f1cddbe7437223428babe195698aa771",
+      "log_ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/review/evidence/ts-provider-tests.log",
+      "log_sha256": "06ec87a0153f7b4c9c71229747ce9c8af4c0e571aedb269a7b0653382fa2fa18",
+      "sandbox": "work/T048-r1-a0a994a6-local-checks/review-attempt-1/ts-provider-sandbox"
+    }
+  ],
+  "ci_scope_note": "Supplemental local review suites; not part of the frozen six GitHub contexts. No production repository, model/LLM, networked target, or product runtime was exercised."
+}

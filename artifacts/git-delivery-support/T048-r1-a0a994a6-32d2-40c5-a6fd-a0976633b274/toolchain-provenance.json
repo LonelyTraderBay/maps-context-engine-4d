@@ -1,0 +1,46 @@
+{
+  "format_version": 1,
+  "kind": "task_local_toolchain_provenance",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "verified_at_utc": "2026-10-24T18:52:30.456560Z",
+  "global_path_changed": false,
+  "process_environment": "per-command PATH, TEMP, cache variables only",
+  "tools": [
+    {
+      "name": "Go",
+      "version": "go1.27.2 windows/amd64",
+      "source": "https://go.dev/dl/go1.27.2.windows-amd64.zip",
+      "archive_sha256": "1314008898bd40df77af4b014f777f08873dbdfbcd3d92308728ee03304fe04f",
+      "portable_path": "codex-task-work://maps-context-engine-4d/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/work/tooling/go1.27.2/go/bin/go.exe",
+      "reason_outside_repo": "go test ./... otherwise discovers the Go SDK's go/test source files under the module"
+    },
+    {
+      "name": "Node.js",
+      "version": "v24.22.0",
+      "source": "https://nodejs.org/dist/v24.22.0/node-v24.22.0-win-x64.zip",
+      "archive_sha256": "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3",
+      "portable_path": "work/tooling/node-v24.22.0/node-v24.22.0-win-x64/node.exe"
+    },
+    {
+      "name": "npm",
+      "version": "11.19.1",
+      "source": "bundled in Node.js v24.22.0 win-x64 archive",
+      "portable_path": "work/tooling/node-v24.22.0/node-v24.22.0-win-x64/npm.cmd"
+    },
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "Codex bundled workspace runtime",
+      "portable_path": "codex-runtime://python-3.12.14"
+    }
+  ],
+  "task_workspace_ref": "codex-task-work://maps-context-engine-4d/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/work",
+  "go_cache_paths": [
+    "tooling/go-cache",
+    "tooling/go-mod-cache",
+    "tooling/gopath"
+  ],
+  "npm_source_manifest_ref": "work/T048-r1-a0a994a6-local-checks/npm-source-manifest-attempt-3.json"
+}

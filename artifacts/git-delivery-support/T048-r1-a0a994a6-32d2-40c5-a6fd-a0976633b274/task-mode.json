@@ -1,0 +1,36 @@
+{
+  "format_version": 1,
+  "kind": "task_mode",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "mode": "review",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6",
+  "check_plan_sha256": "8e5eb83b44e17fa863ef0bcf6fabe39ae85b8368e2bb6f4693e26ec21c83f95a",
+  "objective": "Review actual R2 implementation and C055-C069 evidence; report coverage, regressions, measured limits and handover.",
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/release/T048-r1-review.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/**"
+    ],
+    "behavior": [
+      "Compare acceptance cases against actual code/tests.",
+      "Keep synthetic vs real and measured vs NOT_RUN distinct.",
+      "Record T003 closure and T057 blocker."
+    ],
+    "exclusions": [
+      "No product source changes.",
+      "No production repositories, databases, LLM/API or target runtime.",
+      "No safety-boundary relaxation or sealed historical evidence changes."
+    ]
+  },
+  "verification_plan": [
+    "Validate SPEC and typed selector/check plan.",
+    "Run frozen 13 allocation checks.",
+    "Inspect source/tests/bench fixtures and R1 report; run scoped TS/Python/Go regressions.",
+    "Write evidence-backed T048 review report."
+  ]
+}

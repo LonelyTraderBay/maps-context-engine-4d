@@ -1,0 +1,38 @@
+{
+  "format_version": 1,
+  "kind": "t048_repository_policy_observation",
+  "task_id": "T048",
+  "task_revision": 1,
+  "delivery_id": "a0a994a6-32d2-40c5-a6fd-a0976633b274",
+  "observed_at_utc": "2026-10-24T19:11:24Z",
+  "repository": {
+    "full_name": "LonelyTraderBay/maps-context-engine-4d",
+    "id": 1421031011,
+    "visibility": "public",
+    "archived": false,
+    "default_branch": "main",
+    "authenticated_permissions": {"admin": true, "maintain": true, "push": true}
+  },
+  "destination_policy": {
+    "main_classic_protection": "UNPROTECTED",
+    "main_active_rulesets": [],
+    "main_active_branch_rules": [],
+    "sources": [
+      "GitHub REST GET /repos/LonelyTraderBay/maps-context-engine-4d/branches/main/protection -> 404 Branch not protected, authenticated",
+      "GitHub REST GET /repos/LonelyTraderBay/maps-context-engine-4d/rulesets?includes_parents=true -> []",
+      "GitHub REST GET /repos/LonelyTraderBay/maps-context-engine-4d/rules/branches/main -> []"
+    ],
+    "credential_handling": "Git Credential Manager supplied a process-scoped GH_TOKEN to the read-only observation; token value was not stored or emitted."
+  },
+  "remote_refs_at_observation": {
+    "origin/main": "5293c93ffe014f8f81f2b827d5a409927705f263",
+    "origin/codex/t003-d089-regressions": "5293c93ffe014f8f81f2b827d5a409927705f263",
+    "command": "git ls-remote origin refs/heads/main refs/heads/codex/t003-d089-regressions"
+  },
+  "task_check_plan": {
+    "ref": "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/check-plan-canonical.json",
+    "sha256": "8e5eb83b44e17fa863ef0bcf6fabe39ae85b8368e2bb6f4693e26ec21c83f95a",
+    "required_context_count": 6
+  },
+  "result": "PASS_READ_ONLY_DESTINATION_PREFLIGHT"
+}
