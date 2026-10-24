@@ -1,0 +1,84 @@
+{
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "base_sha": "fc90b68fe5fef09abda6e365b943f1bed47a0212",
+  "change_budget": {
+    "behavior": [
+      "Preserve every T003 revision-1-to-20 selector, assignment locator, and archive source byte; replay the retained 20-revision chain.",
+      "Permit adjacent assignment locators only through one unique same-task lineage record with exact raw source and rationale SHA-256 plus canonical digest and retained-byte closure.",
+      "Accept a historical selection-reason wrapper only when task, revision, delivery, superseded delivery, nested invalidation membership, decision text, and precise UTC instant all match.",
+      "Add positive and negative regressions without weakening C055-C069 or mutating input selectors.",
+      "Keep reference replay UNKNOWN separate from full archive graph validation, archive readback, GitHub CI, and live verification."
+    ],
+    "contracts": [
+      "SPEC-v1.6.14:T003",
+      "S21:D089",
+      "S21:GIT-DATA-14",
+      "S53:AW-08"
+    ],
+    "exclusions": [
+      "Do not modify any historical selector, assignment, or published archive.",
+      "Do not relax C055-C069 or claim archive/live proof from reference replay.",
+      "Do not change workflow checks, S43/S44 schemas, runtime product features, or files outside the allocated scope.",
+      "No force push, branch deletion, or rewriting published commits."
+    ]
+  },
+  "check_plan_sha256": "f3fadd76dd261b91d92288f551c618265ca86a5b6498452792e9d26d035e7119",
+  "command_record_refs": [],
+  "delivery_id": "fa5aac55-8b0f-4846-b620-8e3b737ec40d",
+  "exclusions": [
+    "Không code core/product feature",
+    "Không sửa 3 policy source files gốc",
+    "Không đổi schema/runtime S43/S44/S45",
+    "Không thay workflow checks ngoài frozen plan",
+    "Không ghi target project, không thêm external credential",
+    "Không sửa commit C đã publish"
+  ],
+  "format_version": 1,
+  "objective": "Resolve S21 D089 with source-bound selector assignment-lineage and selection-reason wrapper regressions while preserving every T003 revision-1-to-20 source byte.",
+  "paths": [
+    "Maps-Context-Engine-4D_SPEC.md",
+    "tools/spec_check/semantics.py",
+    "tools/spec_check/test_spec_check.py",
+    "artifacts/git-delivery-support/T003-r21-fa5aac55-8b0f-4846-b620-8e3b737ec40d/**"
+  ],
+  "policy_source_refs": [
+    {
+      "path": "docs/AI_RULES.md",
+      "policy_id": "POL-SRC-01",
+      "scope": "HỢP ĐỒNG DÙNG CHUNG; KHỞI ĐỘNG; LỘ TRÌNH ĐỌC",
+      "sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "3.1"
+    },
+    {
+      "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+      "policy_id": "POL-SRC-02",
+      "scope": "Toàn văn; trước check có output",
+      "sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+      "status": "VERIFIED_HASH_AND_SCOPE_READ",
+      "version": "1.0.0"
+    },
+    {
+      "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+      "policy_id": "POL-SRC-03",
+      "scope": "Hash xác minh; docs-only prompt không kích hoạt",
+      "sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+      "status": "VERIFIED_HASH_NOT_ACTIVATED",
+      "version": "3.1"
+    }
+  ],
+  "previous_closure_ref": "artifacts/git-delivery-support/T003-r21-fa5aac55-8b0f-4846-b620-8e3b737ec40d/archive-view/sequence-predecessor/T002/task-closure-E006.json",
+  "priority": "P0",
+  "spec_revision": "1.6.14",
+  "task_id": "T003",
+  "task_mode": "implement",
+  "task_revision": 21,
+  "verification_plan": [
+    "Run the focused selection-chain replay on all 20 retained T003 revisions; require UNKNOWN with zero semantic errors and exact hash closure.",
+    "Run positive and negative assignment-lineage and selection-reason wrapper regressions, including canonical digest, duplicate lineage, raw bytes, full identity, nested invalidation, exact instant equality, and input immutability.",
+    "Run python -B tools/spec_check/check.py and python -B tools/spec_check/test_spec_check.py.",
+    "Run the frozen 13 local checks and require six exact-SHA contexts on both the approved main branch and codex/t003-d089-regressions.",
+    "Record normal payload and closing pushes, closing SHA, archive publish/readback, and fresh live verification as separate evidence.",
+    "Do not claim historical T003 r20 archive validation PASS; retain the observed parent-SHA rejection without changing its bytes."
+  ]
+}

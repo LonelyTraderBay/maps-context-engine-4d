@@ -1,0 +1,137 @@
+{
+  "format_version": 1,
+  "kind": "local_check_summary",
+  "task_id": "T003",
+  "task_revision": 21,
+  "delivery_id": "fa5aac55-8b0f-4846-b620-8e3b737ec40d",
+  "phase": "allocation-post-attestation",
+  "started_at_utc": "2026-10-24T06:57:01.849567Z",
+  "created_at_utc": "2026-10-24T06:57:27.455683Z",
+  "check_count": 8,
+  "executed_checks": 8,
+  "passed_checks": 8,
+  "failed_checks": 0,
+  "result": "PASS",
+  "base_sha": "fc90b68fe5fef09abda6e365b943f1bed47a0212",
+  "checks": [
+    {
+      "name": "spec-check",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:01.849567Z",
+      "completed_at_utc": "2026-10-24T06:57:02.275530Z",
+      "duration_seconds": 0.422,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/spec-check.log",
+      "log_sha256": "7c8dc032b63c64d73db9a5336846ce916ba78d0c85e0be7707b1729b1dc379c1"
+    },
+    {
+      "name": "spec-fixtures",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:02.276032Z",
+      "completed_at_utc": "2026-10-24T06:57:22.266194Z",
+      "duration_seconds": 19.984,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/spec-fixtures.log",
+      "log_sha256": "5e7dd68ea88108d8489027356ab7e89b83be17824a4532db1888f4d1417c0356"
+    },
+    {
+      "name": "delivery-policy-fixtures",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:22.267192Z",
+      "completed_at_utc": "2026-10-24T06:57:23.904353Z",
+      "duration_seconds": 1.641,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/delivery-policy-fixtures.log",
+      "log_sha256": "ba23d4cc30f9d11cc1cfb5ace97c7df752b6796ea275238d380b087344434b54"
+    },
+    {
+      "name": "bootstrap-check",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:23.906407Z",
+      "completed_at_utc": "2026-10-24T06:57:23.964725Z",
+      "duration_seconds": 0.063,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/bootstrap-check.log",
+      "log_sha256": "0446b25b47918fd80c989132533a8d30400c981689e4c9dc59eb2395b8845f38"
+    },
+    {
+      "name": "bootstrap-fixtures",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:23.965725Z",
+      "completed_at_utc": "2026-10-24T06:57:24.805227Z",
+      "duration_seconds": 0.843,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/bootstrap-fixtures.log",
+      "log_sha256": "335947258672ed79c1a8dc2535cfaeffaa72bd13017ff2c06e2adaa8d090a45e"
+    },
+    {
+      "name": "checkpoint-digest-fixtures",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "started_at_utc": "2026-10-24T06:57:24.805727Z",
+      "completed_at_utc": "2026-10-24T06:57:27.321504Z",
+      "duration_seconds": 2.516,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/checkpoint-digest-fixtures.log",
+      "log_sha256": "4e67aa3db5b002c7620dbe6bbef2df3644decac9654cd2ecb6d719726d1da4b8"
+    },
+    {
+      "name": "frozen-plan",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan",
+        "--plan",
+        "C:\\Users\\Joker-PC\\.codex\\worktrees\\mce4d-108-rollout\\maps-context-engine-4d\\artifacts\\git-delivery-support\\T003-r21-fa5aac55-8b0f-4846-b620-8e3b737ec40d\\check-plan-canonical.json",
+        "--sha256",
+        "f3fadd76dd261b91d92288f551c618265ca86a5b6498452792e9d26d035e7119"
+      ],
+      "started_at_utc": "2026-10-24T06:57:27.322505Z",
+      "completed_at_utc": "2026-10-24T06:57:27.404994Z",
+      "duration_seconds": 0.078,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/frozen-plan.log",
+      "log_sha256": "eb30adb944e4a51c104301137e53556d92b811a5481ed2abdb33d072b07b2814"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "Maps-Context-Engine-4D_SPEC.md"
+      ],
+      "started_at_utc": "2026-10-24T06:57:27.405495Z",
+      "completed_at_utc": "2026-10-24T06:57:27.455185Z",
+      "duration_seconds": 0.047,
+      "exit_code": 0,
+      "log": "local-checks/allocation/post-attestation-retry-3/records/diff-check.log",
+      "log_sha256": "ab39cfe486835548b05724f4c5147ae81210db43232cbaecc68a972a7407fed9"
+    }
+  ]
+}

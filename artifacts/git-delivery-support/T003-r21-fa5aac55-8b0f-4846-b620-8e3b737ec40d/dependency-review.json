@@ -1,0 +1,83 @@
+{
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "task_id": "T003",
+  "task_revision": 21,
+  "delivery_id": "fa5aac55-8b0f-4846-b620-8e3b737ec40d",
+  "contracts_reviewed": [
+    "S47 P00 foundation order",
+    "S21 D089/GIT-DATA-14",
+    "S53 AW-08"
+  ],
+  "dependencies": [
+    {
+      "task_id": "T001",
+      "task_revision": "1",
+      "delivery_id": "34f45d36-60c0-45e2-ab0e-f6522349c6e8",
+      "closing_sha": "344c8b2a7493d391c44e87f8a8a11a47ad14828b",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "S19:T001:E001,E002,E003"
+      ]
+    }
+  ],
+  "sequence": {
+    "task_id": "T002",
+    "task_revision": "1",
+    "delivery_id": "f6b9bc8a-3772-49a3-8623-2d1b7d75b8e1",
+    "closing_sha": "020a367dc2aa6920f4ef36038e2f04c625fdb5bc",
+    "effective_status": "DONE",
+    "evidence_refs": [
+      "S19:T002:E004,E005,E006"
+    ]
+  },
+  "result": "READY",
+  "source_review": {
+    "s19_task_count": 108,
+    "t001_effective": "DONE",
+    "t002_effective": "DONE",
+    "assignment_source_hashes": [
+      {
+        "path": "docs/AI_RULES.md",
+        "policy_id": "POL-SRC-01",
+        "version": "3.1",
+        "expected_sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+        "actual_sha256": "1662406d9ac9e63646130516ad6811934b2bd7f0a6b7d240403749200777f9e3",
+        "match": true,
+        "prior_status": "VERIFIED_HASH_AND_SCOPE_READ"
+      },
+      {
+        "path": "docs/AI_RULES_STORAGE_SUPPLEMENT.md",
+        "policy_id": "POL-SRC-02",
+        "version": "1.0.0",
+        "expected_sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+        "actual_sha256": "eea81c9ac63344efde5f1eccb30e43d06146875aabaf8396fec3b46e5e878dac",
+        "match": true,
+        "prior_status": "VERIFIED_HASH_AND_SCOPE_READ"
+      },
+      {
+        "path": "docs/PROJECT_BOOTSTRAP_PROMPT.txt",
+        "policy_id": "POL-SRC-03",
+        "version": "3.1",
+        "expected_sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+        "actual_sha256": "b1d692184f9b4bac87f6b55b25e1c49bab90af5d5eb1706a428a09d85212b686",
+        "match": true,
+        "prior_status": "VERIFIED_HASH_NOT_ACTIVATED"
+      }
+    ],
+    "selector_replay_verdict": "UNKNOWN",
+    "selector_replay_errors": 0,
+    "historical_archive_status": "REJECT",
+    "historical_archive_error": "evidence graph bị reject: archive-view/delivery-attempt-closing-C.json.payload: parent_sha không khớp phase parent đã chọn"
+  },
+  "limitations": [
+    "T003 r20 full archive verification rejects an archived payload parent_sha mismatch; historical bytes remain unchanged.",
+    "The selector replay validates only the retained T003 selection-reference semantics and cannot substitute for publication, live verification, or product proof."
+  ],
+  "normalization_note": {
+    "archived_bytes_modified": false,
+    "note": "r20 archive sources were read-only; selected r20 metadata copies below are byte-identical."
+  },
+  "task_mode_ref": "artifacts/git-delivery-support/T003-r21-fa5aac55-8b0f-4846-b620-8e3b737ec40d/task-mode.json",
+  "checked_at_utc": "2026-10-24T06:37:26.837866Z"
+}

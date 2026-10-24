@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "kind": "allocation_preflight_check",
+  "task_id": "T003",
+  "task_revision": 21,
+  "delivery_id": "fa5aac55-8b0f-4846-b620-8e3b737ec40d",
+  "check_id": "selector-replay",
+  "name": "21-revision-selector-replay",
+  "result": "PASS",
+  "started_at_utc": "2026-10-24T06:49:11.765143Z",
+  "completed_at_utc": "2026-10-24T06:49:22.005349Z",
+  "commands": [
+    {
+      "name": "selector-replay-1",
+      "argv": [
+        "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "work/replay_t003_r21_chain.py"
+      ],
+      "started_at_utc": "2026-10-24T06:49:11.765143Z",
+      "completed_at_utc": "2026-10-24T06:49:22.004352Z",
+      "duration_seconds": 10.25,
+      "exit_code": 0,
+      "log": "local-checks/allocation/attempt-1/records/selector-replay-1.log",
+      "log_sha256": "7a20357ac0a332195d955cb586c3ed577a937635d889e928dc5e2c108b04e825",
+      "stdout_sha256": "d53c250c1a8a033c93c3ed50656cae75771cdb0d1c9164c4c9376e14a6c3e0fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "detail": {
+    "report_ref": "artifacts/git-delivery-support/T003-r21-fa5aac55-8b0f-4846-b620-8e3b737ec40d/selection-chain-replay-r21.json",
+    "report_sha256": "f011f990177a167a30e85a48342cd993eccd1b6d6506ee335db29ef86156cf9c",
+    "selector_count": 21,
+    "required_member_count": 120,
+    "hashed_member_count": 120,
+    "verdict": "UNKNOWN",
+    "semantic_errors": [],
+    "prior_archive_validation": "REJECT",
+    "prior_archive_rejection": "evidence graph bị reject: archive-view/delivery-attempt-closing-C.json.payload: parent_sha không khớp phase parent đã chọn",
+    "assertions_pass": true
+  }
+}

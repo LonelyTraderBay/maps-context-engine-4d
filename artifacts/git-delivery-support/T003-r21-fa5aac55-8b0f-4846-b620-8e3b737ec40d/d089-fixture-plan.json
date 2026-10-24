@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "kind": "t003_d089_fixture_plan",
+  "task_id": "T003",
+  "task_revision": 21,
+  "delivery_id": "fa5aac55-8b0f-4846-b620-8e3b737ec40d",
+  "retained_source": {
+    "task_revision": 20,
+    "delivery_id": "76abd91a-be8b-4f84-86fb-0e807a424b50",
+    "selector_revisions": 20,
+    "assignment_refs": [
+      "S53/AW-01/AW-08:user-assignment-2026-10-15"
+    ],
+    "required_member_count": 116,
+    "retained_member_bytes": 116,
+    "reference_replay_verdict": "UNKNOWN",
+    "reference_replay_errors": 0,
+    "archive_validation": "REJECT",
+    "archive_validation_error": "evidence graph bị reject: archive-view/delivery-attempt-closing-C.json.payload: parent_sha không khớp phase parent đã chọn"
+  },
+  "positive_cases": [
+    "adjacent selector revisions with exactly one same-task source-hashed lineage",
+    "historical selection-reason wrapper with complete selector identity and nested retained invalidation",
+    "selected_at_utc equals updated_at_utc as the same precise UTC instant with timezone offset representation",
+    "valid selector replay leaves every input selector byte and object unchanged"
+  ],
+  "negative_cases": [
+    "lineage canonical digest tamper",
+    "duplicate or ambiguous lineage record for the same task and adjacent assignment refs",
+    "source assignment raw-byte hash mismatch",
+    "blank or invalid UTF-8 rationale bytes",
+    "wrapper format_version boolean",
+    "wrapper task id, task revision, delivery id, or superseded delivery mismatch",
+    "nested invalidation mismatch or nested ref absent from selector invalidation_refs",
+    "wrapper selected_at_utc is a different instant from selector updated_at_utc",
+    "invalid assignment reference type and missing retained archive member"
+  ],
+  "preserved_controls": [
+    "C055-C069 existing polyglot regression thresholds",
+    "historical T003 selectors r1-r20 byte-for-byte"
+  ],
+  "expected_interpretation": "selector reference replay is UNKNOWN with zero semantic errors; it is not archive, live, GitHub, or product proof"
+}
