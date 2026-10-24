@@ -442,9 +442,20 @@ def _change_allowed_s19(old: list[str], new: list[str], task_id: str) -> list[st
         errors.append("S19 closing cần SHA đầy đủ của payload P")
     if not isinstance(after_evidence.get("payload_CI"), str) or not after_evidence["payload_CI"].startswith("PASS("):
         errors.append("S19 closing cần exact payload CI success reference")
-    for key in ("closing_sha", "closing_CI", "archive/live"):
+    for key in ("closing_sha", "closing_CI"):
         if after_evidence.get(key) != "PENDING":
-            errors.append(f"Closing không được tự ghi kết quả chưa quan sát: {key}=PENDING")
+            errors.append(f"Closing không được tự ghi kết quả chưa quan sát: {key}={after_evidence.get(key)}")
+    if "archive/live" in after_evidence:
+        if "archive" in after_evidence or "live" in after_evidence:
+            errors.append("S19 closing không được trộn trường archive/live gộp và trường riêng")
+        if after_evidence.get("archive/live") != "PENDING":
+            errors.append(f"Closing không được tự ghi kết quả chưa quan sát: archive/live={after_evidence.get('archive/live')}")
+    else:
+        for key in ("archive", "live"):
+            if key not in after_evidence:
+                errors.append(f"S19 closing thiếu trường trạng thái {key}")
+            elif after_evidence[key] != "PENDING":
+                errors.append(f"Closing không được tự ghi kết quả chưa quan sát: {key}={after_evidence[key]}")
     if after_evidence.get("candidate") != "DONE":
         errors.append("S19 closing phải ghi rõ candidate=DONE; effective state vẫn VERIFY")
     return errors

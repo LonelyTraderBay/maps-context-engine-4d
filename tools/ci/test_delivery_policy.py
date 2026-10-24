@@ -275,6 +275,16 @@ class ClosingDiffTests(unittest.TestCase):
         closing = _append_evidence(closing)
         self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
 
+    def test_candidate_closing_accepts_split_archive_live_pending_fields(self) -> None:
+        payload_evidence = _delivery_evidence().replace("archive/live=PENDING", "archive=PENDING;live=PENDING")
+        payload = _with_task_row(SPEC_TEXT, "VERIFY", payload_evidence)
+        closing_evidence = _delivery_evidence(PAYLOAD_SHA, closing=True).replace(
+            "archive/live=PENDING", "archive=PENDING;live=PENDING"
+        )
+        closing = _with_task_row(payload, "DONE", closing_evidence)
+        closing = _append_evidence(closing)
+        self.assertEqual([], classify_closing_spec_diff(payload, closing, task_id="T003", owning_gate="G0"))
+
     def test_candidate_closing_rejects_duplicate_evidence_ids(self) -> None:
         evidence = _delivery_evidence().replace(CURRENT_EVIDENCE_ID, "E053;E053")
         payload = _with_task_row(SPEC_TEXT, "VERIFY", evidence)
