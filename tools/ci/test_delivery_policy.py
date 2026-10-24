@@ -21,6 +21,7 @@ from tools.ci.delivery_policy import (
     validate_check_plan,
     validate_commit_message,
     validate_git_closing_diff,
+    validate_git_payload_commits,
     validate_observed_checks,
 )
 from tools.spec_check.schema import strict_json_loads
@@ -174,6 +175,194 @@ class CommitPolicyTests(unittest.TestCase):
         message = "docs(progress): [P0][T003] Đề xuất đóng task\n\n" + COMMIT_BODY + "\n\nMCE4D-Delivery-ID: " + DELIVERY_ID + "\nMCE4D-Delivery-ID: " + DELIVERY_ID + "\nMCE4D-Delivery-Phase: closing"
         errors = validate_commit_message(message, phase="closing", task_id="T003", priority="P0")
         self.assertTrue(any("đúng một Delivery-ID" in error for error in errors))
+
+
+class PayloadCommitHistoryTests(unittest.TestCase):
+    def _git(self, repo: Path, *args: str) -> str:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        return result.stdout.strip()
+
+    def _repo(self) -> tuple[Path, str]:
+        temp = tempfile.TemporaryDirectory(prefix="mce4d-payload-history-")
+        self.addCleanup(temp.cleanup)
+        repo = Path(temp.name)
+        subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "core.autocrlf", "false"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=repo, check=True)
+        subprocess.run(
+            ["git", "config", "user.email", "fixture@example.invalid"],
+            cwd=repo,
+            check=True,
+        )
+        (repo / "base.txt").write_text("base\n", encoding="utf-8", newline="")
+        subprocess.run(["git", "add", "--", "base.txt"], cwd=repo, check=True)
+        subprocess.run(
+            ["git", "commit", "-m", "test: fixture base"],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+        )
+        return repo, self._git(repo, "rev-parse", "HEAD")
+
+    def _message(
+        self,
+        *,
+        task: str = "T003",
+        priority: str = "P0",
+        body: str = COMMIT_BODY,
+    ) -> str:
+        subject = (
+            f"feat(spec-check): [{priority}][{task}] "
+            "Ki\u1ec3m tra l\u1ecbch s\u1eed commit"
+        )
+        return f"{subject}\n\n{body}\n"
+
+    def _commit(self, repo: Path, name: str, message: str) -> str:
+        (repo / name).write_text(f"{name}\n", encoding="utf-8", newline="")
+        subprocess.run(["git", "add", "--", name], cwd=repo, check=True)
+        subprocess.run(
+            ["git", "commit", "--file", "-"],
+            cwd=repo,
+            input=message.encode("utf-8"),
+            check=True,
+            capture_output=True,
+        )
+        return self._git(repo, "rev-parse", "HEAD")
+
+    def _commit_tree(self, repo: Path, tree: str, parents: tuple[str, ...], message: str) -> str:
+        args = ["git", "commit-tree", tree]
+        for parent in parents:
+            args.extend(["-p", parent])
+        args.extend(["-F", "-"])
+        result = subprocess.run(
+            args,
+            cwd=repo,
+            input=message.encode("utf-8"),
+            check=True,
+            capture_output=True,
+        )
+        return result.stdout.decode("ascii", "strict").strip()
+
+    def test_linear_history_and_cli_pass(self) -> None:
+        repo, base = self._repo()
+        first = self._commit(repo, "payload-1.txt", self._message())
+        payload = self._commit(repo, "payload-2.txt", self._message())
+        self.assertNotEqual(first, payload)
+        self.assertEqual(
+            [],
+            validate_git_payload_commits(
+                repo, base, payload, task_id="T003", priority="P0"
+            ),
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                str(ROOT / "tools/ci/delivery_policy.py"),
+                "payload-commits",
+                "--repo",
+                str(repo),
+                "--base",
+                base,
+                "--payload",
+                payload,
+                "--task",
+                "T003",
+                "--priority",
+                "P0",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("PASS: payload history", result.stdout)
+
+    def test_empty_commit_body_is_rejected(self) -> None:
+        repo, base = self._repo()
+        subject = self._message().split("\n\n", 1)[0]
+        payload = self._commit(repo, "empty-body.txt", subject)
+        errors = validate_git_payload_commits(
+            repo, base, payload, task_id="T003", priority="P0"
+        )
+        self.assertTrue(any("Body" in error for error in errors))
+
+    def test_missing_headings_and_wrong_task_or_priority_are_rejected(self) -> None:
+        repo, base = self._repo()
+        bad_body = self._commit(
+            repo,
+            "bad-body.txt",
+            self._message(body="Message without the required headings."),
+        )
+        self.assertTrue(
+            validate_git_payload_commits(
+                repo, base, bad_body, task_id="T003", priority="P0"
+            )
+        )
+
+        repo, base = self._repo()
+        wrong_task = self._commit(
+            repo, "wrong-task.txt", self._message(task="T004")
+        )
+        self.assertTrue(
+            validate_git_payload_commits(
+                repo, base, wrong_task, task_id="T003", priority="P0"
+            )
+        )
+
+        repo, base = self._repo()
+        wrong_priority = self._commit(
+            repo, "wrong-priority.txt", self._message(priority="P1")
+        )
+        self.assertTrue(
+            validate_git_payload_commits(
+                repo, base, wrong_priority, task_id="T003", priority="P0"
+            )
+        )
+
+    def test_merge_commit_is_rejected(self) -> None:
+        repo, base = self._repo()
+        left = self._commit(repo, "left.txt", self._message())
+        self._git(repo, "checkout", "--detach", base)
+        right = self._commit(repo, "right.txt", self._message())
+        left_tree = self._git(repo, "rev-parse", f"{left}^{{tree}}")
+        merge = self._commit_tree(repo, left_tree, (left, right), self._message())
+        errors = validate_git_payload_commits(
+            repo, base, merge, task_id="T003", priority="P0"
+        )
+        self.assertTrue(any("merge" in error.lower() for error in errors))
+
+    def test_non_ancestor_base_is_rejected(self) -> None:
+        repo, base = self._repo()
+        payload = self._commit(repo, "payload.txt", self._message())
+        tree = self._git(repo, "rev-parse", f"{base}^{{tree}}")
+        unrelated_base = self._commit_tree(repo, tree, (), self._message())
+        errors = validate_git_payload_commits(
+            repo, unrelated_base, payload, task_id="T003", priority="P0"
+        )
+        self.assertTrue(any("ancestor" in error.lower() for error in errors))
+
+    def test_empty_range_and_abbreviated_sha_are_rejected(self) -> None:
+        repo, base = self._repo()
+        self.assertTrue(
+            validate_git_payload_commits(
+                repo, base, base, task_id="T003", priority="P0"
+            )
+        )
+        self.assertTrue(
+            validate_git_payload_commits(
+                repo, base[:12], base, task_id="T003", priority="P0"
+            )
+        )
 
 
 class CheckObservationTests(unittest.TestCase):

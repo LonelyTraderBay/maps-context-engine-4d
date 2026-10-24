@@ -294,6 +294,135 @@ def validate_commit_message(message: str, *, phase: str, task_id: str, priority:
     return errors
 
 
+def validate_git_payload_commits(
+    repo_root: Path,
+    base_sha: str,
+    payload_sha: str,
+    *,
+    task_id: str,
+    priority: str,
+) -> list[str]:
+    errors: list[str] = []
+    full_sha = re.compile(r"^(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$")
+    if not isinstance(base_sha, str) or full_sha.fullmatch(base_sha) is None:
+        errors.append("base SHA must be a full 40- or 64-character hexadecimal object ID")
+    if not isinstance(payload_sha, str) or full_sha.fullmatch(payload_sha) is None:
+        errors.append("payload SHA must be a full 40- or 64-character hexadecimal object ID")
+    if errors:
+        return errors
+    if len(base_sha) != len(payload_sha):
+        return ["base and payload object ID formats differ"]
+    if re.fullmatch(r"T[0-9]{3}", task_id) is None:
+        return ["task ID must match Tnnn"]
+    if priority not in {"P0", "P1", "P2", "P3"}:
+        return ["priority must be P0 through P3"]
+
+    try:
+        root = repo_root.resolve(strict=True)
+    except OSError as exc:
+        return [f"repository path cannot be resolved: {type(exc).__name__}"]
+    if not root.is_dir():
+        return ["repository path is not a directory"]
+
+    def git_bytes(*args: str) -> subprocess.CompletedProcess[bytes] | None:
+        try:
+            return subprocess.run(
+                ["git", *args],
+                cwd=root,
+                capture_output=True,
+                check=False,
+                timeout=30,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            errors.append(f"git {' '.join(args[:2])} could not complete: {type(exc).__name__}")
+            return None
+
+    def resolve_commit(value: str, label: str) -> str | None:
+        result = git_bytes("rev-parse", "--verify", f"{value.lower()}^{{commit}}")
+        if result is None:
+            return None
+        if result.returncode:
+            errors.append(f"{label} SHA does not resolve to a commit")
+            return None
+        try:
+            resolved = result.stdout.decode("ascii", "strict").strip()
+        except UnicodeDecodeError:
+            errors.append(f"{label} commit ID is not ASCII")
+            return None
+        if GIT_SHA.fullmatch(resolved) is None or resolved != value.lower():
+            errors.append(f"{label} must identify the commit object directly")
+            return None
+        return resolved
+
+    base = resolve_commit(base_sha, "base")
+    payload = resolve_commit(payload_sha, "payload")
+    if errors:
+        return errors
+    if base == payload:
+        return ["payload commit range is empty; base and payload are identical"]
+
+    ancestry = git_bytes("merge-base", "--is-ancestor", base, payload)
+    if ancestry is None:
+        return errors
+    if ancestry.returncode == 1:
+        return ["base SHA is not an ancestor of payload SHA"]
+    if ancestry.returncode != 0:
+        return ["git could not determine whether base is an ancestor of payload"]
+
+    history = git_bytes("rev-list", "--reverse", "--parents", f"{base}..{payload}")
+    if history is None:
+        return errors
+    if history.returncode:
+        return ["git could not enumerate the payload commit range"]
+    try:
+        rows = history.stdout.decode("ascii", "strict").splitlines()
+    except UnicodeDecodeError:
+        return ["git returned a non-ASCII commit ancestry row"]
+    if not rows:
+        return ["payload commit range is empty"]
+
+    expected_parent = base
+    commit_ids: list[str] = []
+    for row in rows:
+        fields = row.split()
+        if not fields or any(GIT_SHA.fullmatch(value) is None for value in fields):
+            errors.append("payload history contains a malformed commit ancestry row")
+            continue
+        commit = fields[0]
+        parents = fields[1:]
+        if len(parents) != 1:
+            errors.append(f"payload history rejects merge or parentless commit {commit[:12]}")
+            continue
+        if parents[0] != expected_parent:
+            errors.append(f"payload history is not a linear parent chain at {commit[:12]}")
+            continue
+        commit_ids.append(commit)
+        expected_parent = commit
+
+    if errors:
+        return errors
+    if expected_parent != payload:
+        return ["payload history does not terminate at the supplied payload SHA"]
+
+    for commit in commit_ids:
+        message_result = git_bytes("show", "-s", "--format=%B", commit)
+        if message_result is None:
+            return errors
+        if message_result.returncode:
+            errors.append(f"git could not read the message for commit {commit[:12]}")
+            continue
+        try:
+            message = message_result.stdout.decode("utf-8", "strict")
+        except UnicodeDecodeError:
+            errors.append(f"commit {commit[:12]} message is not valid UTF-8")
+            continue
+        for policy_error in validate_commit_message(
+            message, phase="payload", task_id=task_id, priority=priority
+        ):
+            errors.append(f"commit {commit[:12]}: {policy_error}")
+    return errors
+
+
 def _trailers(lines: list[str]) -> list[tuple[str, str]]:
     collected: list[tuple[str, str]] = []
     for line in reversed(lines[1:]):
@@ -708,6 +837,25 @@ def _command_record(args: argparse.Namespace) -> int:
     return 0
 
 
+def _command_payload_commits(args: argparse.Namespace) -> int:
+    errors = validate_git_payload_commits(
+        Path(args.repo),
+        args.base,
+        args.payload,
+        task_id=args.task,
+        priority=args.priority,
+    )
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+    print(
+        f"PASS: payload history for {args.task} contains a non-empty linear "
+        f"range ending at {args.payload}."
+    )
+    return 0
+
+
 def _command_closing(args: argparse.Namespace) -> int:
     errors = validate_git_closing_diff(Path(args.repo).resolve(), args.payload, args.closing,
                                       task_id=args.task, owning_gate=args.gate)
@@ -735,6 +883,16 @@ def _main(argv: list[str] | None = None) -> int:
     record_parser.add_argument("--record", required=True)
     record_parser.add_argument("--kind", required=True)
     record_parser.set_defaults(handler=_command_record)
+    history_parser = subparsers.add_parser(
+        "payload-commits", help="validate actual linear payload commit history"
+    )
+    history_parser.add_argument("--repo", default=str(ROOT))
+    history_parser.add_argument("--base", required=True)
+    history_parser.add_argument("--payload", required=True)
+    history_parser.add_argument("--task", required=True)
+    history_parser.add_argument("--priority", required=True, choices=("P0", "P1", "P2", "P3"))
+    history_parser.set_defaults(handler=_command_payload_commits)
+
     diff_parser = subparsers.add_parser("closing-diff", help="kiểm leaf diff P→C theo CLOSE-DIFF-01")
     diff_parser.add_argument("--repo", default=str(ROOT))
     diff_parser.add_argument("--payload", required=True)
