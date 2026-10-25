@@ -1,0 +1,141 @@
+{
+  "cause": "The task-specific TMP/TEMP/TMPDIR/GOTMPDIR path was longer than Windows could create for nested fixture Git repositories and Go temporary repositories. The two logs contain WinError 206 / Filename too long; the failures did not report a test assertion mismatch.",
+  "check_plan_sha256": "75d1f5382ad4c5de969d63de30ce551c79f5298986c3c42ddb00b88c018adc86",
+  "classification": "RUNNER_ENVIRONMENT_PATH_LENGTH",
+  "delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "failed_count": 2,
+  "failing_checks": [
+    {
+      "check_id": "spec-check-fixtures",
+      "evidence_snippet": "WinError 206",
+      "exit_code": 1,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/spec-check-fixtures.log",
+      "log_sha256": "1ac66398f25eec339e969347fd5e423a38d7da31043491119e76db898ae4a737"
+    },
+    {
+      "check_id": "go-test",
+      "evidence_snippet": "Filename too long",
+      "exit_code": 1,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/go-test.log",
+      "log_sha256": "c9d128c347295e1f743be70a5856e1fddeb07baf6114ac5bec0de611bfe4812e"
+    }
+  ],
+  "format_version": 1,
+  "kind": "T048_allocation_local_check_failure_analysis",
+  "log_records": [
+    {
+      "check_id": "bootstrap",
+      "exit_code": 0,
+      "log_byte_length": 72,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/bootstrap.log",
+      "log_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "bootstrap-fixtures",
+      "exit_code": 0,
+      "log_byte_length": 977,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/bootstrap-fixtures.log",
+      "log_sha256": "cdcd6d5aca7cdb98acb48b5f13d3335c4bf5eb5945b6286ddd3ec10b11f7c1ee",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "delivery-plan",
+      "exit_code": 0,
+      "log_byte_length": 140,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/delivery-plan.log",
+      "log_sha256": "317ad18e7a1d06560f03dc59c831b40ac0996d8c330f5e7d7b85abb0a9b50f8a",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "spec-check",
+      "exit_code": 0,
+      "log_byte_length": 115,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/spec-check.log",
+      "log_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "spec-check-fixtures",
+      "exit_code": 1,
+      "log_byte_length": 46763,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/spec-check-fixtures.log",
+      "log_sha256": "1ac66398f25eec339e969347fd5e423a38d7da31043491119e76db898ae4a737",
+      "status": "FAILED"
+    },
+    {
+      "check_id": "delivery-policy-fixtures",
+      "exit_code": 0,
+      "log_byte_length": 5208,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/delivery-policy-fixtures.log",
+      "log_sha256": "cdc599a3b66ddc95e2f9171539da44edd6e6b0bceb2b28cf95b8088d3c906d65",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "checkpoint-digest-fixtures",
+      "exit_code": 0,
+      "log_byte_length": 983,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/checkpoint-digest-fixtures.log",
+      "log_sha256": "76da3c7cf7fca6fac0e81b54eb0ad7d4c475bb3a62a2499aef7b5af08baaa43b",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "go-format",
+      "exit_code": 0,
+      "log_byte_length": 58,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/go-format.log",
+      "log_sha256": "9558897c13e015767f86ac53cce930233603a38485109704a2ba315db55290a1",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "go-test",
+      "exit_code": 1,
+      "log_byte_length": 7911,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/go-test.log",
+      "log_sha256": "c9d128c347295e1f743be70a5856e1fddeb07baf6114ac5bec0de611bfe4812e",
+      "status": "FAILED"
+    },
+    {
+      "check_id": "go-vet",
+      "exit_code": 0,
+      "log_byte_length": 0,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/go-vet.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "go-build",
+      "exit_code": 0,
+      "log_byte_length": 0,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/go-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "explorer-install",
+      "exit_code": 0,
+      "log_byte_length": 235,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/explorer-install.log",
+      "log_sha256": "88a950cf53d50ab5ed326a0d67d5c25a5de764c57de4d0ebf4f38f99169a6dd4",
+      "status": "SUCCEEDED"
+    },
+    {
+      "check_id": "explorer-contract",
+      "exit_code": 0,
+      "log_byte_length": 1656,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/logs/explorer-contract.log",
+      "log_sha256": "e2bd7af22ab3fe63deefdb5050283967cf50d0031ab4afe7163ae6c904cda85f",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "passed_count": 11,
+  "raw_runner_summary_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-1-failed/raw-runner-summary.json",
+  "raw_runner_summary_sha256": "be83f4469ca9ea3d07d6273504f97939ef9e9eafdbabc3a44f013f70050b8a06",
+  "raw_source_summary_ref": "work/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/allocation-checks/summary.json",
+  "raw_source_summary_sha256": "be83f4469ca9ea3d07d6273504f97939ef9e9eafdbabc3a44f013f70050b8a06",
+  "recovery": "Reran the complete frozen 13-command set with TMP/TEMP/TMPDIR/GOTMPDIR at work/y (absolute path length 89); all 13 passed in attempt 2. No source code was changed.",
+  "result": "FAIL",
+  "subject_sha": "a2e62e6a31a1c7c6f42947b601573712a837c590",
+  "task_id": "T048",
+  "task_revision": 4
+}

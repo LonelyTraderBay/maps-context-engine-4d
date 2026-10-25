@@ -1,0 +1,268 @@
+{
+  "captured_at_utc": "2026-10-25T00:24:44.690912Z",
+  "check_plan_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/check-plan-canonical.json",
+  "check_plan_sha256": "75d1f5382ad4c5de969d63de30ce551c79f5298986c3c42ddb00b88c018adc86",
+  "check_results": [
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "command_ref": "python -B tools/ci/bootstrap_check.py",
+      "cwd": ".",
+      "duration_ms": 62,
+      "ended_at_utc": "2026-10-25T00:23:26.031537Z",
+      "exit_code": 0,
+      "id": "bootstrap",
+      "log_byte_length": 72,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/bootstrap.log",
+      "log_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "started_at_utc": "2026-10-25T00:23:25.970893Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "command_ref": "python -B tools/ci/test_bootstrap_check.py",
+      "cwd": ".",
+      "duration_ms": 860,
+      "ended_at_utc": "2026-10-25T00:23:26.923925Z",
+      "exit_code": 0,
+      "id": "bootstrap-fixtures",
+      "log_byte_length": 977,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/bootstrap-fixtures.log",
+      "log_sha256": "7e9d75dd37d3eaedf9d5f9d85730c016c73f4cbd456a0435f8089a4f5a948944",
+      "started_at_utc": "2026-10-25T00:23:26.062710Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan"
+      ],
+      "command_ref": "python -B tools/ci/delivery_policy.py check-plan",
+      "cwd": ".",
+      "duration_ms": 78,
+      "ended_at_utc": "2026-10-25T00:23:27.043989Z",
+      "exit_code": 0,
+      "id": "delivery-plan",
+      "log_byte_length": 140,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/delivery-plan.log",
+      "log_sha256": "317ad18e7a1d06560f03dc59c831b40ac0996d8c330f5e7d7b85abb0a9b50f8a",
+      "started_at_utc": "2026-10-25T00:23:26.956134Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "command_ref": "python -B tools/spec_check/check.py",
+      "cwd": ".",
+      "duration_ms": 437,
+      "ended_at_utc": "2026-10-25T00:23:27.515531Z",
+      "exit_code": 0,
+      "id": "spec-check",
+      "log_byte_length": 115,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/spec-check.log",
+      "log_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "started_at_utc": "2026-10-25T00:23:27.076939Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "command_ref": "python -B tools/spec_check/test_spec_check.py",
+      "cwd": ".",
+      "duration_ms": 20906,
+      "ended_at_utc": "2026-10-25T00:23:48.450907Z",
+      "exit_code": 0,
+      "id": "spec-check-fixtures",
+      "log_byte_length": 22722,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/spec-check-fixtures.log",
+      "log_sha256": "020a1f0aad62ae6df087efdd194ab7800dc626fd97ece44124276b0ef82a043a",
+      "started_at_utc": "2026-10-25T00:23:27.547111Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "command_ref": "python -B tools/ci/test_delivery_policy.py",
+      "cwd": ".",
+      "duration_ms": 6219,
+      "ended_at_utc": "2026-10-25T00:23:54.713206Z",
+      "exit_code": 0,
+      "id": "delivery-policy-fixtures",
+      "log_byte_length": 5208,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/delivery-policy-fixtures.log",
+      "log_sha256": "7644f5eb779a0a4656751a3ee2f6b6d4b4bd7433a752848efe3a97651ee2d51f",
+      "started_at_utc": "2026-10-25T00:23:48.487435Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "command_ref": "python -B tools/ci/test_checkpoint_digest.py",
+      "cwd": ".",
+      "duration_ms": 2578,
+      "ended_at_utc": "2026-10-25T00:23:57.326758Z",
+      "exit_code": 0,
+      "id": "checkpoint-digest-fixtures",
+      "log_byte_length": 983,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/checkpoint-digest-fixtures.log",
+      "log_sha256": "c5cdcc1e893ccd39e3080ff9340521d6240a7931d49bf9e539d64035d580fe47",
+      "started_at_utc": "2026-10-25T00:23:54.748230Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "python.exe",
+        "-B",
+        "tools/ci/check_gofmt.py"
+      ],
+      "command_ref": "python -B tools/ci/check_gofmt.py",
+      "cwd": ".",
+      "duration_ms": 110,
+      "ended_at_utc": "2026-10-25T00:23:57.469382Z",
+      "exit_code": 0,
+      "id": "go-format",
+      "log_byte_length": 58,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/go-format.log",
+      "log_sha256": "9558897c13e015767f86ac53cce930233603a38485109704a2ba315db55290a1",
+      "started_at_utc": "2026-10-25T00:23:57.359801Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "go.exe",
+        "test",
+        "./..."
+      ],
+      "command_ref": "go test ./...",
+      "cwd": ".",
+      "duration_ms": 25610,
+      "ended_at_utc": "2026-10-25T00:24:23.115210Z",
+      "exit_code": 0,
+      "id": "go-test",
+      "log_byte_length": 4968,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/go-test.log",
+      "log_sha256": "989412fcaa4342065a1cfcc2d0f981c3e5fb5264feeaab5cc731e2ae410b77a5",
+      "started_at_utc": "2026-10-25T00:23:57.502905Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "go.exe",
+        "vet",
+        "./..."
+      ],
+      "command_ref": "go vet ./...",
+      "cwd": ".",
+      "duration_ms": 6625,
+      "ended_at_utc": "2026-10-25T00:24:29.792137Z",
+      "exit_code": 0,
+      "id": "go-vet",
+      "log_byte_length": 0,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/go-vet.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_at_utc": "2026-10-25T00:24:23.159749Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "go.exe",
+        "build",
+        "./..."
+      ],
+      "command_ref": "go build ./...",
+      "cwd": ".",
+      "duration_ms": 7406,
+      "ended_at_utc": "2026-10-25T00:24:37.230667Z",
+      "exit_code": 0,
+      "id": "go-build",
+      "log_byte_length": 0,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/go-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_at_utc": "2026-10-25T00:24:29.820651Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "npm.cmd",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "command_ref": "npm ci --ignore-scripts --no-audit --no-fund",
+      "cwd": "work/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/npm-sandbox-attempt-2",
+      "duration_ms": 3297,
+      "ended_at_utc": "2026-10-25T00:24:40.550354Z",
+      "exit_code": 0,
+      "id": "explorer-install",
+      "log_byte_length": 26,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/explorer-install.log",
+      "log_sha256": "f2fd1ed67e9f6da5526b7bdd41e1ead8b0b530b6505148f39d5043b3a1f53468",
+      "started_at_utc": "2026-10-25T00:24:37.262190Z",
+      "status": "SUCCEEDED"
+    },
+    {
+      "argv": [
+        "npm.cmd",
+        "run",
+        "test:contract:ui"
+      ],
+      "command_ref": "npm run test:contract:ui",
+      "cwd": "work/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/npm-sandbox-attempt-2",
+      "duration_ms": 3671,
+      "ended_at_utc": "2026-10-25T00:24:44.253687Z",
+      "exit_code": 0,
+      "id": "explorer-contract",
+      "log_byte_length": 1662,
+      "log_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/logs/explorer-contract.log",
+      "log_sha256": "3d62457aae46f23467ec041d3f2217e8c93457fe44201658aa33707a44e3f8bb",
+      "started_at_utc": "2026-10-25T00:24:40.583421Z",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "execution_workspace_ref": "work/Q",
+  "failed_count": 0,
+  "format_version": 1,
+  "kind": "T048_allocation_local_check_summary",
+  "npm_source_manifest_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/allocation-attempt-2/npm-source-manifest.json",
+  "npm_source_manifest_sha256": "37e40df417d1a744da62244cecf5d8ff579cfe3a15ffcbb09182fc3f5f5d7440",
+  "passed_count": 13,
+  "phase": "allocation",
+  "raw_runner_summary_ref": "work/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/allocation-checks-attempt-2/summary.json",
+  "raw_runner_summary_sha256": "3a282f00d4ec241fa1ae6e6445e0fa635e5c4a4db8719f92fe361cdcd14114fa",
+  "result": "PASS",
+  "runtime": {
+    "go": "go version go1.27.2 windows/amd64",
+    "node": "v24.22.0",
+    "npm": "11.19.1",
+    "python": "Python 3.12.14"
+  },
+  "subject_binding": "allocation base Q2; frozen 13 local checks on clean tracked checkout",
+  "subject_sha": "a2e62e6a31a1c7c6f42947b601573712a837c590",
+  "task_id": "T048",
+  "task_revision": 4,
+  "tracked_tree_status_after": "CLEAN",
+  "worktree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

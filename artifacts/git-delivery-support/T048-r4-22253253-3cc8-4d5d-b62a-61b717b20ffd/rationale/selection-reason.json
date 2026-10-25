@@ -1,0 +1,41 @@
+{
+  "basis": {
+    "base_sha": "a2e62e6a31a1c7c6f42947b601573712a837c590",
+    "current_observation_link_result": "PASS on main Q2 with current plan; retained separately in work; does not cure missing local refs.",
+    "missing_local_check_count": 13,
+    "missing_local_check_refs": [
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/bootstrap.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/bootstrap-fixtures.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/delivery-plan.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/spec-check.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/spec-check-fixtures.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/delivery-policy-fixtures.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/checkpoint-digest-fixtures.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/go-format.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/go-test.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/go-vet.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/go-build.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/explorer-install.json",
+      "artifacts/git-delivery-support/T048-r1-a0a994a6-32d2-40c5-a6fd-a0976633b274/local-checks/allocation/evidence/explorer-contract.json"
+    ],
+    "previous_check_plan_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/check-plan-canonical.json",
+    "previous_check_plan_sha256": "1b4ef48dacfaea2d0902b80594ad61964e215fbf7b5644c37691936f5501941f",
+    "previous_delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+    "previous_task_revision": 3,
+    "r3_exact_q2_summary_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/history/revision-3/exact-q2-summary.json",
+    "r3_exact_q2_summary_sha256": "241e49800aa3b9588ac8455b6f913adfe88084d99040cc89266c76deacea80ab",
+    "r3_exact_q2_summary_source_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q2/candidate-attempt-13/summary.json"
+  },
+  "decision": "R3 is retained unchanged but cannot close under its own frozen plan: all 13 local_check_refs point to absent T048-R1 allocation files (0/13 exist in the current checkout). The measured R3 exact-Q2 run is 13/13 PASS, but its records live under R3 exact-Q2 and are kind exact_payload_commit_command; they do not resolve the frozen refs or provide GitLocalCheckEvidence objects. R3 task_mode also retains the R1 plan digest while its R3 allocation names another plan digest. Reopen as revision 4 with a new plan and local refs owned by this delivery; rerun affected checks.",
+  "delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "format_version": 1,
+  "invalidation_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/invalidation/revision-3.json",
+  "kind": "task_selection_reason",
+  "r3_exact_q2_summary_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/history/revision-3/exact-q2-summary.json",
+  "r3_exact_q2_summary_source_ref": "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/local-checks/exact-Q2/candidate-attempt-13/summary.json",
+  "reason_ref": "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/invalidation/revision-3.json",
+  "selected_at_utc": "2026-10-25T00:20:46.353108Z",
+  "supersedes_delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+  "task_id": "T048",
+  "task_revision": 4
+}

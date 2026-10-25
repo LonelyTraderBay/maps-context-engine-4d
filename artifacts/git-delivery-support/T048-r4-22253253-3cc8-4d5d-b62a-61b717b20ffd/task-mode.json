@@ -1,0 +1,36 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/**"
+    ],
+    "behavior": [
+      "Preserve all prior T048 R1-R3 review, selector, plan, operation and check evidence unchanged.",
+      "Freeze a new nonempty check plan with 13 local-evidence references owned by this delivery.",
+      "Rerun required local checks and exact-SHA delivery on approved main/task branch, then complete closing, archive/readback and fresh live verification.",
+      "Keep G6 NOT_RUN unless a real benchmark is measured."
+    ],
+    "exclusions": [
+      "No product source, test, workflow, dependency, runtime, production or database changes.",
+      "No force/rewrite, merge, deployment, production access or alteration of sealed historical evidence."
+    ]
+  },
+  "check_plan_sha256": "75d1f5382ad4c5de969d63de30ce551c79f5298986c3c42ddb00b88c018adc86",
+  "delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "review",
+  "objective": "Supersede T048 R3 because its frozen local check references resolve to no members and cannot bind the measured R3 exact-Q2 records. Preserve R1-R3 and complete the new revision delivery, archive/readback and fresh live verification.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6;AW-08/GIT-03",
+  "task_id": "T048",
+  "task_revision": 4,
+  "verification_plan": [
+    "Replay retained R1-R3 selector lineage and validate R4 invalidation before allocation.",
+    "Validate the R4 frozen check plan against the current repository and task mode.",
+    "Run the frozen 13 local checks on allocation and exact payload revisions; reconcile every execution/evidence/log hash.",
+    "Normal-push approved commits and verify exact-SHA GitHub checks on main and the approved task branch.",
+    "Complete closing-HEAD checks, sealed archive, independent byte readback, and a fresh live verification."
+  ]
+}

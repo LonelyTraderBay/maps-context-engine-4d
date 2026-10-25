@@ -1,0 +1,17 @@
+{
+  "active_delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "format_version": 1,
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/selection.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/task-mode.json",
+    "artifacts/git-delivery-support/T048-r3-08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/history/revision-3/exact-q2-summary.json"
+  ],
+  "kind": "delivery_selection_invalidation",
+  "previous_delivery_id": "08c9e8d1-9da1-4e4a-bc1b-b4557a5876f2",
+  "previous_task_revision": 3,
+  "reason": "R3 is retained unchanged but cannot close under its own frozen plan: all 13 local_check_refs point to absent T048-R1 allocation files (0/13 exist in the current checkout). The measured R3 exact-Q2 run is 13/13 PASS, but its records live under R3 exact-Q2 and are kind exact_payload_commit_command; they do not resolve the frozen refs or provide GitLocalCheckEvidence objects. R3 task_mode also retains the R1 plan digest while its R3 allocation names another plan digest. Reopen as revision 4 with a new plan and local refs owned by this delivery; rerun affected checks. The measured R3 summary is retained byte-identically at the R4 history path because the original scratch member is untracked.",
+  "recorded_at_utc": "2026-10-25T00:20:46.353108Z",
+  "task_id": "T048",
+  "task_revision": 4
+}
