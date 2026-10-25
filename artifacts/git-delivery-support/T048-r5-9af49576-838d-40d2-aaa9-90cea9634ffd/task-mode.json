@@ -1,0 +1,45 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/**",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/local-checks/payload-exact-q2/**",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/ci/payload-q2/**",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/operations/payload-q2-34743c7b/**",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/operations/allocation-main.json",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/operations/allocation-task-branch.json",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/operations/preflight-allocation-push.json",
+      "artifacts/git-delivery-support/T048-r4-22253253-3cc8-4d5d-b62a-61b717b20ffd/archive-view/operations/preflight-task-branch-push.json"
+    ],
+    "behavior": [
+      "Preserve all prior T048 R1-R4 selector, plan, operation, and check evidence unchanged.",
+      "Carry forward only the already-generated R4 exact-Q2 local/CI proof and four allocation receipts referenced by E854/E858, byte-identically; do not edit any R1-R4 artifact.",
+      "Use Q2 34743c7 as the verified base because the R4 chain fails the commit-body policy from its earlier base; do not rewrite published history.",
+      "Freeze a nonempty R5 check plan with 13 local-evidence references owned by this delivery.",
+      "Rerun required local checks and exact-SHA delivery on approved main/task branch, then complete closing, archive/readback, and fresh live verification.",
+      "Keep G6 NOT_RUN unless a real benchmark is measured."
+    ],
+    "exclusions": [
+      "No product source, test, workflow, dependency, runtime, production or database changes.",
+      "No force/rewrite, merge, deployment, production access or alteration of sealed historical evidence."
+    ]
+  },
+  "check_plan_sha256": "5381aac74a12faa584e1a5f19a4ee9846a41e4fc6f2d1a53e9242ad20148efc4",
+  "delivery_id": "9af49576-838d-40d2-aaa9-90cea9634ffd",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "review",
+  "objective": "Supersede T048 R4 after the exact-history guard rejected its payload chain: the R4 baseline a2e62e6 includes a prior commit missing the required Vietnamese body headings. Preserve R1-R4 and start revision 5 directly from the verified Q2 payload 34743c7; then repeat exact-SHA delivery, closing, archive/readback, and fresh live verification.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6;AW-08/GIT-03",
+  "task_id": "T048",
+  "task_revision": 5,
+  "verification_plan": [
+    "Replay retained R1-R5 selector lineage and validate the R5 invalidation before allocation.",
+    "Validate the R5 frozen check plan against the current repository and task mode.",
+    "Run all 13 frozen local checks on the allocation candidate and exact payload; reconcile each execution, evidence, and raw-log hash.",
+    "Normal-push authorized commits and verify exact-SHA GitHub checks on main and codex/t003-d089-regressions.",
+    "Complete closing-HEAD checks, sealed archive, independent byte readback, and a fresh live verification."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "candidate_payload_sha": "c0f26f01bf27351d065463e14748a43938077b64",
+  "conclusion": "R4 cannot be closed from its recorded historical base because commit 48d07c38617a lacks the three required body headings. Q2 is the exact verified current head and is also the base against which the candidate history validates. Revision 5 starts from Q2; no history is rewritten.",
+  "format_version": 1,
+  "historical_base_sha": "a2e62e6a31a1c7c6f42947b601573712a837c590",
+  "historical_guard_argv": [
+    "tools/ci/delivery_policy.py",
+    "payload-commits",
+    "--base",
+    "a2e62e6a31a1c7c6f42947b601573712a837c590",
+    "--payload",
+    "c0f26f01bf27351d065463e14748a43938077b64",
+    "--task",
+    "T048",
+    "--priority",
+    "P2"
+  ],
+  "historical_guard_exit_code": 1,
+  "historical_guard_output": "ERROR: commit 48d07c38617a: Body cần đúng một heading Mục đích:\nERROR: commit 48d07c38617a: Body cần đúng một heading Thay đổi:\nERROR: commit 48d07c38617a: Body cần đúng một heading Kiểm tra:\n",
+  "invalidated_delivery_id": "22253253-3cc8-4d5d-b62a-61b717b20ffd",
+  "invalidated_task_revision": 4,
+  "kind": "T048_payload_history_policy_failure",
+  "q2_base_sha": "34743c7b1a278d97894a167e90390e1f462e5dc7",
+  "q2_replay_argv": [
+    "tools/ci/delivery_policy.py",
+    "payload-commits",
+    "--base",
+    "34743c7b1a278d97894a167e90390e1f462e5dc7",
+    "--payload",
+    "c0f26f01bf27351d065463e14748a43938077b64",
+    "--task",
+    "T048",
+    "--priority",
+    "P2"
+  ],
+  "q2_replay_exit_code": 0,
+  "q2_replay_output": "PASS: payload history for T048 contains a non-empty linear range ending at c0f26f01bf27351d065463e14748a43938077b64.\n",
+  "recorded_at_utc": "2026-10-25T02:28:25.153267Z",
+  "task_id": "T048"
+}
