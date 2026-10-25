@@ -1,0 +1,351 @@
+{
+  "format_version": 1,
+  "kind": "T048_r6_code_review",
+  "task_id": "T048",
+  "task_revision": 6,
+  "delivery_id": "75eef7b9-9b10-4954-afdc-5de5570547c0",
+  "captured_at_utc": "2026-10-25T05:59:11Z",
+  "review_result": "PASS_WITH_OPEN_RELEASE_GAPS",
+  "result_meaning": "PASS records that this review and evidence reconciliation completed; it is not a product release PASS and does not set T048 effective DONE.",
+  "subject_sha": "37a00d6fa175ffcae9befca3741c081f9aa473c5",
+  "verified_base_sha": "b40807f22a5032292d2f782a247a4b3a24d5bba7",
+  "scope": "Read-only current-source review at allocation A3 for Go/TypeScript/Python provider wiring, C055-C069 benchmark execution claims, and R6 evidence. Product paths cmd/, internal/, packages/, tests/, and tools/bench/ have no diff from R5 payload P2 to A3; all nine R5 source evidence files still match their recorded hashes and byte counts.",
+  "prior_r5_review": {
+    "path": "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/code-review-r5.json",
+    "sha256": "1edfe4292626ccf58c954db612d340cce20fe23f1e7709980446f4d425307717",
+    "preserved_unchanged": true
+  },
+  "measured_evidence": [
+    {
+      "id": "allocation-local",
+      "result": "PASS",
+      "subject_sha": "37a00d6fa175ffcae9befca3741c081f9aa473c5",
+      "checks": "13/13",
+      "summary_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/local-checks/allocation-commit-exact-1/summary.json",
+      "summary_sha256": "53922c7a7485c22613b6dfe8f482d21e68bf182707578a7fbfb2f0ddaa7ee5ac",
+      "verification_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/local-checks/allocation-commit-exact-1/verification.json",
+      "verification_sha256": "8c86d087b48d4bd15401c19f2f8b6dd147b3f62b3f97c5c71b8dcc75c767f6ab"
+    },
+    {
+      "id": "allocation-ci",
+      "result": "PASS",
+      "subject_sha": "37a00d6fa175ffcae9befca3741c081f9aa473c5",
+      "required_check_runs": "12/12",
+      "main_run_id": "40166066924",
+      "task_branch_run_id": "40166075407",
+      "evidence_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/archive-view/ci/allocation-A3/allocation-ci-evidence.json",
+      "evidence_sha256": "75762f386a77d4511e6ff28088e1cfd968d0e1781b7c8878d4d19e74ff0ba9b9",
+      "verification_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/archive-view/ci/allocation-A3/verification.json",
+      "verification_sha256": "9bedab519544e47de0d42c9e7a745cb30870350a85263908cf2889317182b138"
+    },
+    {
+      "id": "python-provider-supplemental",
+      "result": "PASS",
+      "subject_sha": "37a00d6fa175ffcae9befca3741c081f9aa473c5",
+      "tests": "19/19",
+      "command": "C:\\Users\\Joker-PC\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe -B -m unittest discover -s packages/python-provider/test -v",
+      "python_version": "3.12.14",
+      "summary_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/local-checks/provider-python-r6/summary.json",
+      "summary_sha256": "5a8a4bb8ebd61b9055d3f2708784839eb1c41d1914f14403be8e36b0cf15fcd5",
+      "log_ref": "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/local-checks/provider-python-r6/provider-python-r6.log",
+      "log_sha256": "041266afe489215ddc99b17150fd072aade27a9133f24beede3c7c0643c04fe6"
+    },
+    {
+      "id": "typescript-provider-suite",
+      "result": "NOT_RUN",
+      "reason": "The frozen R6 plan has no TS provider test lane. The package lock binds @typescript/typescript6@6.0.2, but the dependency is absent from the package and existing isolated sandbox, and its tarball is not present in the task-scoped offline npm cache. No unplanned registry install was initiated; the TS suite was not run."
+    }
+  ],
+  "findings": [
+    {
+      "id": "T048-R6-F1",
+      "priority": "P1",
+      "status": "OPEN",
+      "topic": "Provider production registration",
+      "observed": "cmd/mce4d/main.go delegates to cli.Run. ProcessAdapter accepts an injected ports.LanguageProviderProcess, and the port documents a host-registered command. The current production-path search finds only the adapter/interface definitions and adapter runner use; no production NewProcessAdapter call or process implementation/registration. TypeScript and Python provider CLIs exist as package entry points, but no production composition reference was found.",
+      "impact": "Current evidence proves provider components and contracts, not that the production MCE4D CLI can launch either provider.",
+      "evidence": [
+        "cmd/mce4d/main.go:15-19",
+        "internal/analysis/providers/process.go:14-29,39-93",
+        "internal/ports/language_provider_process.go:10-27",
+        "packages/ts-provider/src/cli.mjs:1-8",
+        "packages/python-provider/src/mce4d_python_provider/cli.py:27-41"
+      ],
+      "search_matches": [
+        "internal\\ports\\language_provider_process.go:10:// LanguageProviderProcessRequest is a framed request to one host-registered",
+        "internal\\ports\\language_provider_process.go:14:type LanguageProviderProcessRequest struct {",
+        "internal\\ports\\language_provider_process.go:21:// LanguageProviderProcess runs one approved provider command. Implementations",
+        "internal\\ports\\language_provider_process.go:26:type LanguageProviderProcess interface {",
+        "internal\\ports\\language_provider_process.go:27:\tRun(ctx context.Context, request LanguageProviderProcessRequest) ([]byte, error)",
+        "internal\\analysis\\providers\\process.go:18:\trunner     ports.LanguageProviderProcess",
+        "internal\\analysis\\providers\\process.go:21:func NewProcessAdapter(descriptor Descriptor, commandID string, timeout time.Duration, runner ports.LanguageProviderProcess) (*ProcessAdapter, error) {",
+        "internal\\analysis\\providers\\process.go:60:\tresponseFrame, err := adapter.runner.Run(processContext, ports.LanguageProviderProcessRequest{"
+      ]
+    },
+    {
+      "id": "T048-R6-F2",
+      "priority": "P1",
+      "status": "OPEN_NOT_RUN",
+      "topic": "C055-C069 real execution and G6",
+      "observed": "The T068 acceptance test checks the 15-case plan, 30-task synthetic corpus floor, independent oracle facts, and report contract; it does not invoke the engine for the 30 benchmark tasks. The benchmark README states the harness validates the corpus and imports host-produced usage JSONL; it does not run task executions or call a model. R6 collects no real repository/model benchmark or host token receipt.",
+      "impact": "No real task success/recall, repository behavior, latency, actual token totals, or token savings can be claimed. Context proxy values are not model-token measurements.",
+      "evidence": [
+        "tests/acceptance/polyglot_benchmark_test.go:41-135",
+        "tools/bench/compare/README.md:1-5,15-21,46-53",
+        "Maps-Context-Engine-4D_SPEC.md:C055-C069"
+      ]
+    },
+    {
+      "id": "T048-R6-F3",
+      "priority": "P2",
+      "status": "OPEN_COVERAGE_LIMIT",
+      "topic": "TypeScript provider test lane",
+      "observed": "The frozen R6 plan contains bootstrap, spec-contract, and Explorer-contract contexts on Ubuntu and Windows, but no direct packages/ts-provider test command. The package declares test=node --test and its lockfile pins @typescript/typescript6@6.0.2. The pinned Node v24.22.0/npm 11.19.1 toolchain is available, but the dependency is absent from the package and existing isolated sandbox and its tarball is absent from the task-scoped offline npm cache; no unplanned registry install was initiated, so the TS suite was not run.",
+      "impact": "TypeScript provider unit behavior remains unverified in R6. CI coverage requires a future authorized check-plan update.",
+      "evidence": [
+        "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/check-plan-canonical.json",
+        "packages/ts-provider/package.json",
+        "packages/ts-provider/test/analyze.test.mjs",
+        "packages/ts-provider/test/discovery.test.mjs",
+        "packages/ts-provider/test/frontend.test.mjs",
+        "packages/ts-provider/package-lock.json"
+      ]
+    }
+  ],
+  "c055_c069_matrix": [
+    {
+      "case_id": "C055",
+      "domain": "typescript",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C056",
+      "domain": "frontend-backend",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C057",
+      "domain": "python",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C058",
+      "domain": "python-notebook",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C059",
+      "domain": "sql",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C060",
+      "domain": "http-schema-proto",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C061",
+      "domain": "events",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C062",
+      "domain": "state-machine",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C063",
+      "domain": "federation",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C064",
+      "domain": "temporal-diff",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C065",
+      "domain": "trading",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C066",
+      "domain": "commerce",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C067",
+      "domain": "ai-lineage",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C068",
+      "domain": "architecture",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    },
+    {
+      "case_id": "C069",
+      "domain": "benchmark",
+      "checked_here": "PLAN_AND_SYNTHETIC_CORPUS_CONTRACT",
+      "engine_task_execution": "NOT_RUN"
+    }
+  ],
+  "production_wiring_search": {
+    "command": "rg -n 'NewProcessAdapter|LanguageProviderProcess|processAdapter|TS_PROVIDER|PYTHON_PROVIDER' cmd internal packages --glob '!**/*_test.go' --glob '!**/*.test.mjs'",
+    "match_count": 8,
+    "matches": [
+      "internal\\ports\\language_provider_process.go:10:// LanguageProviderProcessRequest is a framed request to one host-registered",
+      "internal\\ports\\language_provider_process.go:14:type LanguageProviderProcessRequest struct {",
+      "internal\\ports\\language_provider_process.go:21:// LanguageProviderProcess runs one approved provider command. Implementations",
+      "internal\\ports\\language_provider_process.go:26:type LanguageProviderProcess interface {",
+      "internal\\ports\\language_provider_process.go:27:\tRun(ctx context.Context, request LanguageProviderProcessRequest) ([]byte, error)",
+      "internal\\analysis\\providers\\process.go:18:\trunner     ports.LanguageProviderProcess",
+      "internal\\analysis\\providers\\process.go:21:func NewProcessAdapter(descriptor Descriptor, commandID string, timeout time.Duration, runner ports.LanguageProviderProcess) (*ProcessAdapter, error) {",
+      "internal\\analysis\\providers\\process.go:60:\tresponseFrame, err := adapter.runner.Run(processContext, ports.LanguageProviderProcessRequest{"
+    ],
+    "interpretation": "No production adapter constructor call or host process implementation/registration found."
+  },
+  "source_evidence": [
+    {
+      "path": "cmd/mce4d/main.go",
+      "sha256": "f3923d619723da84a29be1dab16dd4d002df1a151adff15650e1af2fd6a8c961",
+      "bytes": 326,
+      "line_refs": "15-19"
+    },
+    {
+      "path": "internal/analysis/providers/process.go",
+      "sha256": "9683aa7b6750760f50bdd4148b8ac9454c98c6b25d296d74063888103269d9d0",
+      "bytes": 3618,
+      "line_refs": "14-29,39-93"
+    },
+    {
+      "path": "internal/ports/language_provider_process.go",
+      "sha256": "09e5bc5544a9a766a3181d6b9c47f541b42cbacba5cdf0c1f7e1828182d3ae15",
+      "bytes": 1148,
+      "line_refs": "10-27"
+    },
+    {
+      "path": "packages/ts-provider/src/cli.mjs",
+      "sha256": "4f03a1ab5821117ea79e75f53aa06d63cd77923489685691c6fd45b05a1dec5c",
+      "bytes": 197,
+      "line_refs": "1-8"
+    },
+    {
+      "path": "packages/ts-provider/package.json",
+      "sha256": "d9f955283e868ffcecc5d8928af01433f3442ebf8e9e89140e5166e1ef09a69b",
+      "bytes": 333,
+      "line_refs": "1-19"
+    },
+    {
+      "path": "internal/analysis/providers/python_profile_test.go",
+      "sha256": "6895c2b64b54f5da00d24a6172b2599775f5df03ec773e188d5c2ddc5e82c257",
+      "bytes": 4568,
+      "line_refs": "92-110"
+    },
+    {
+      "path": "tests/acceptance/polyglot_benchmark_test.go",
+      "sha256": "e9c424df7e7dfb448bc0122114007b93df5c185143e6ee0c4d1c4f0c51739d35",
+      "bytes": 6546,
+      "line_refs": "41-135"
+    },
+    {
+      "path": "tools/bench/compare/README.md",
+      "sha256": "8c08d92a999311bdb6bb6332fcc7a1a4aff8e4ddff11c81d703df88511c429fd",
+      "bytes": 5393,
+      "line_refs": "1-5,15-21,46-53"
+    },
+    {
+      "path": "tools/ci/check-plan.json",
+      "sha256": "bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c",
+      "bytes": 4636,
+      "line_refs": "entire frozen plan"
+    },
+    {
+      "path": "packages/python-provider/src/mce4d_python_provider/cli.py",
+      "sha256": "ae2ac487958718b2c1f2cec845cb96bb6bf5c06e0b560de92c59b2798be0fb42",
+      "bytes": 1152,
+      "line_refs": "1-41"
+    },
+    {
+      "path": "packages/python-provider/test/test_provider.py",
+      "sha256": "603dc6403959913f6108c20fef78aa18f4b9a4abe7c6de458504bbce799cd3d7",
+      "bytes": 19032,
+      "line_refs": "entire test module"
+    },
+    {
+      "path": "packages/python-provider/test/test_schema.py",
+      "sha256": "e650607d511a588f56956112df1bcc8365d13961ef25baf555fa5964dd4850f5",
+      "bytes": 1156,
+      "line_refs": "entire test module"
+    },
+    {
+      "path": "packages/ts-provider/test/analyze.test.mjs",
+      "sha256": "5fea05562164b228de17f4d5ccda90b060f5d1b58bb814a4f9ffbfcfbab47f21",
+      "bytes": 21819,
+      "line_refs": "entire test module"
+    },
+    {
+      "path": "packages/ts-provider/test/discovery.test.mjs",
+      "sha256": "dc57f228fce09dd3d842be499fbee25a66c43de0da857418c7a248b4c37fba8b",
+      "bytes": 3770,
+      "line_refs": "entire test module"
+    },
+    {
+      "path": "packages/ts-provider/test/frontend.test.mjs",
+      "sha256": "e705a28d54037dbddec82a9e86ef1ac426e541a0aae4d42201ba27fa4a291b2e",
+      "bytes": 7250,
+      "line_refs": "entire test module"
+    },
+    {
+      "path": "packages/ts-provider/package-lock.json",
+      "sha256": "86b05a3812eed0cabfede7f7e4eb278fc0dec901ba77d49496d1101510014ced",
+      "bytes": 1295,
+      "line_refs": "entire lockfile"
+    }
+  ],
+  "source_delta": {
+    "base_sha": "b40807f22a5032292d2f782a247a4b3a24d5bba7",
+    "subject_sha": "37a00d6fa175ffcae9befca3741c081f9aa473c5",
+    "paths": [
+      "cmd",
+      "internal",
+      "packages",
+      "tests",
+      "tools/bench"
+    ],
+    "changed_paths": []
+  },
+  "g6": {
+    "result": "NOT_RUN",
+    "reason": "No real repository/model benchmark or host token receipt was collected. R6 authority excludes target repositories, LLM/API calls, and production data. No proxy-to-token inference was made."
+  },
+  "typescript_environment": {
+    "default_path_npm_available": false,
+    "pinned_npm_available": true,
+    "pinned_npm_version": "11.19.1",
+    "dependency_installed": false,
+    "node_version": "v24.22.0",
+    "required_node_version": "24.22.0",
+    "frozen_plan_includes_ts_provider_test": false,
+    "test_executed": false,
+    "locked_package_dependency": "@typescript/typescript6@6.0.2",
+    "package_lock_present": true,
+    "offline_cache_entry_present": false
+  },
+  "delivery_state_at_review": "Allocation local and CI are PASS. The current code review is PASS_WITH_OPEN_RELEASE_GAPS. Payload, closing, sealed archive/readback, and fresh live verification remain pending; G6 remains NOT_RUN.",
+  "source_changes": "None in cmd/, internal/, packages/, tests/, or tools/bench/ between R5 payload P2 and R6 allocation A3."
+}

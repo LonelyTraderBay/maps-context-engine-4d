@@ -1,0 +1,213 @@
+﻿2026-10-25T05:35:11.1629038Z Current runner version: '2.338.0'
+2026-10-25T05:35:11.1657080Z ##[group]Runner Image Provisioner
+2026-10-25T05:35:11.1658013Z Hosted Compute Agent
+2026-10-25T05:35:11.1658858Z Version: 20261021.618
+2026-10-25T05:35:11.1659457Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T05:35:11.1660178Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T05:35:11.1660829Z Worker ID: {d0c058b3-8fbf-480e-875c-2332c8eb1cb6}
+2026-10-25T05:35:11.1661505Z Region: northcentralus
+2026-10-25T05:35:11.1662099Z Cloud: Azure
+2026-10-25T05:35:11.1662655Z ##[endgroup]
+2026-10-25T05:35:11.1664164Z ##[group]Operating System
+2026-10-25T05:35:11.1664789Z Microsoft Windows Server 2025
+2026-10-25T05:35:11.1665382Z 10.0.26100
+2026-10-25T05:35:11.1665925Z Datacenter
+2026-10-25T05:35:11.1666433Z ##[endgroup]
+2026-10-25T05:35:11.1666960Z ##[group]Runner Image
+2026-10-25T05:35:11.1667543Z Image: windows-2025-vs2026
+2026-10-25T05:35:11.1668095Z Version: 20261021.278.1
+2026-10-25T05:35:11.1669631Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261021.278/images/windows/Windows2025-VS2026-Readme.md
+2026-10-25T05:35:11.1671255Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261021.278
+2026-10-25T05:35:11.1672208Z ##[endgroup]
+2026-10-25T05:35:11.1673286Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T05:35:11.1675212Z Contents: read
+2026-10-25T05:35:11.1675768Z Metadata: read
+2026-10-25T05:35:11.1676340Z ##[endgroup]
+2026-10-25T05:35:11.1678999Z Secret source: Actions
+2026-10-25T05:35:11.1679972Z Cache mode: write
+2026-10-25T05:35:11.1680647Z Prepare workflow directory
+2026-10-25T05:35:11.2156027Z Prepare all required actions
+2026-10-25T05:35:11.2205256Z Getting action download info
+2026-10-25T05:35:11.3971450Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-25T05:35:11.6448979Z Complete job name: bootstrap (windows-latest)
+2026-10-25T05:35:11.8182404Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-10-25T05:35:11.8184418Z with:
+2026-10-25T05:35:11.8184959Z   persist-credentials: false
+2026-10-25T05:35:11.8185678Z   repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-25T05:35:11.8190822Z   token: ***
+2026-10-25T05:35:11.8191365Z   ssh-strict: true
+2026-10-25T05:35:11.8191887Z   ssh-user: git
+2026-10-25T05:35:11.8192351Z   clean: true
+2026-10-25T05:35:11.8192845Z   sparse-checkout-cone-mode: true
+2026-10-25T05:35:11.8193447Z   fetch-depth: 1
+2026-10-25T05:35:11.8193928Z   fetch-tags: false
+2026-10-25T05:35:11.8194421Z   show-progress: true
+2026-10-25T05:35:11.8194912Z   lfs: false
+2026-10-25T05:35:11.8195363Z   submodules: false
+2026-10-25T05:35:11.8195866Z   set-safe-directory: true
+2026-10-25T05:35:11.8196443Z   allow-unsafe-pr-checkout: false
+2026-10-25T05:35:11.8197243Z env:
+2026-10-25T05:35:11.8197678Z   GIT_CONFIG_COUNT: 1
+2026-10-25T05:35:11.8198258Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-25T05:35:11.8198864Z   GIT_CONFIG_VALUE_0: true
+2026-10-25T05:35:11.8199384Z ##[endgroup]
+2026-10-25T05:35:11.9746668Z Syncing repository: LonelyTraderBay/maps-context-engine-4d
+2026-10-25T05:35:11.9749171Z ##[group]Getting Git version info
+2026-10-25T05:35:11.9749991Z Working directory is 'D:\a\maps-context-engine-4d\maps-context-engine-4d'
+2026-10-25T05:35:12.0696834Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-25T05:35:12.4313944Z git version 2.56.0.windows.2
+2026-10-25T05:35:12.4367524Z ##[endgroup]
+2026-10-25T05:35:12.4384260Z Temporarily overriding HOME='D:\a\_temp\c9073aeb-c79b-4907-8251-cf1f31bd10dc' before making global git config changes
+2026-10-25T05:35:12.4385592Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:35:12.4394548Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\maps-context-engine-4d\maps-context-engine-4d
+2026-10-25T05:35:12.5080777Z Deleting the contents of 'D:\a\maps-context-engine-4d\maps-context-engine-4d'
+2026-10-25T05:35:12.5086436Z ##[group]Determining repository object format
+2026-10-25T05:35:12.5088599Z ##[endgroup]
+2026-10-25T05:35:12.5090033Z ##[group]Initializing the repository
+2026-10-25T05:35:12.5098273Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\maps-context-engine-4d\maps-context-engine-4d
+2026-10-25T05:35:12.6090023Z Initialized empty Git repository in D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/
+2026-10-25T05:35:12.6146430Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-25T05:35:12.6845162Z ##[endgroup]
+2026-10-25T05:35:12.6846003Z ##[group]Disabling automatic garbage collection
+2026-10-25T05:35:12.6853415Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-25T05:35:12.7239605Z ##[endgroup]
+2026-10-25T05:35:12.7240961Z ##[group]Setting up auth
+2026-10-25T05:35:12.7241914Z Removing SSH command configuration
+2026-10-25T05:35:12.7251954Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:35:12.7647804Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-25T05:35:14.2793618Z Removing HTTP extra header
+2026-10-25T05:35:14.2808391Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:35:14.3211200Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-25T05:35:14.9138054Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:35:14.9152606Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:35:14.9560929Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-25T05:35:15.8493487Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-25T05:35:15.8936906Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:15.9325864Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:16.0147806Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:16.0558939Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:16.1012299Z ##[endgroup]
+2026-10-25T05:35:16.1013809Z ##[group]Fetching the repository
+2026-10-25T05:35:16.1024842Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +37a00d6fa175ffcae9befca3741c081f9aa473c5:refs/remotes/origin/main
+2026-10-25T05:35:20.6826811Z From https://github.com/LonelyTraderBay/maps-context-engine-4d
+2026-10-25T05:35:20.6827684Z  * [new ref]         37a00d6fa175ffcae9befca3741c081f9aa473c5 -> origin/main
+2026-10-25T05:35:20.6870365Z [command]"C:\Program Files\Git\bin\git.exe" branch --list --remote origin/main
+2026-10-25T05:35:20.7315656Z   origin/main
+2026-10-25T05:35:20.7363182Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse refs/remotes/origin/main
+2026-10-25T05:35:20.7749077Z 37a00d6fa175ffcae9befca3741c081f9aa473c5
+2026-10-25T05:35:20.7782557Z ##[endgroup]
+2026-10-25T05:35:20.7782935Z ##[group]Determining the checkout info
+2026-10-25T05:35:20.7783552Z ##[endgroup]
+2026-10-25T05:35:20.7793133Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-25T05:35:20.8318712Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-25T05:35:20.8727878Z ##[group]Checking out the ref
+2026-10-25T05:35:20.8741752Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2026-10-25T05:35:21.9409741Z Updating files:  72% (3486/4796)
+2026-10-25T05:35:21.9544952Z Updating files:  73% (3502/4796)
+2026-10-25T05:35:21.9679349Z Updating files:  74% (3550/4796)
+2026-10-25T05:35:21.9800712Z Updating files:  75% (3597/4796)
+2026-10-25T05:35:21.9940884Z Updating files:  76% (3645/4796)
+2026-10-25T05:35:22.0086381Z Updating files:  77% (3693/4796)
+2026-10-25T05:35:22.0259609Z Updating files:  78% (3741/4796)
+2026-10-25T05:35:22.0435497Z Updating files:  79% (3789/4796)
+2026-10-25T05:35:22.0612572Z Updating files:  80% (3837/4796)
+2026-10-25T05:35:22.0789508Z Updating files:  81% (3885/4796)
+2026-10-25T05:35:22.0956220Z Updating files:  82% (3933/4796)
+2026-10-25T05:35:22.1088608Z Updating files:  83% (3981/4796)
+2026-10-25T05:35:22.1237711Z Updating files:  84% (4029/4796)
+2026-10-25T05:35:22.1352454Z Updating files:  85% (4077/4796)
+2026-10-25T05:35:22.1466018Z Updating files:  86% (4125/4796)
+2026-10-25T05:35:22.1595114Z Updating files:  87% (4173/4796)
+2026-10-25T05:35:22.1726123Z Updating files:  88% (4221/4796)
+2026-10-25T05:35:22.1925938Z Updating files:  89% (4269/4796)
+2026-10-25T05:35:22.2368780Z Updating files:  90% (4317/4796)
+2026-10-25T05:35:22.2537850Z Updating files:  91% (4365/4796)
+2026-10-25T05:35:22.2694894Z Updating files:  92% (4413/4796)
+2026-10-25T05:35:22.2855732Z Updating files:  93% (4461/4796)
+2026-10-25T05:35:22.2992489Z Updating files:  94% (4509/4796)
+2026-10-25T05:35:22.3149623Z Updating files:  95% (4557/4796)
+2026-10-25T05:35:22.3293656Z Updating files:  96% (4605/4796)
+2026-10-25T05:35:22.3435039Z Updating files:  97% (4653/4796)
+2026-10-25T05:35:22.3565311Z Updating files:  98% (4701/4796)
+2026-10-25T05:35:22.3710818Z Updating files:  99% (4749/4796)
+2026-10-25T05:35:22.3714237Z Updating files: 100% (4796/4796)
+2026-10-25T05:35:22.3714966Z Updating files: 100% (4796/4796), done.
+2026-10-25T05:35:22.3934565Z Switched to a new branch 'main'
+2026-10-25T05:35:22.3958392Z branch 'main' set up to track 'origin/main'.
+2026-10-25T05:35:22.4144407Z ##[endgroup]
+2026-10-25T05:35:22.5091451Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-25T05:35:22.5718053Z 37a00d6fa175ffcae9befca3741c081f9aa473c5
+2026-10-25T05:35:22.5774538Z ##[group]Removing auth
+2026-10-25T05:35:22.5774979Z Removing SSH command configuration
+2026-10-25T05:35:22.5823060Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:35:22.6325501Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-25T05:35:23.2123149Z Removing HTTP extra header
+2026-10-25T05:35:23.2132606Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:35:23.2545517Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-25T05:35:23.8196324Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:35:23.8205305Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:35:23.8649276Z includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-25T05:35:23.8650336Z includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-25T05:35:23.8651560Z includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:35:23.8652223Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:35:23.8703768Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path
+2026-10-25T05:35:23.9134370Z D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:23.9186420Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git.path D\:\\a\\_temp\\git\-credentials\-baca17f6\-5d53\-41ef\-9b59\-9ce9f935ec98\.config
+2026-10-25T05:35:23.9708731Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+2026-10-25T05:35:24.0111533Z D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:24.0168976Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-baca17f6\-5d53\-41ef\-9b59\-9ce9f935ec98\.config
+2026-10-25T05:35:24.0616586Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:35:24.0973582Z /github/runner_temp/git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:24.1021569Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-baca17f6\-5d53\-41ef\-9b59\-9ce9f935ec98\.config
+2026-10-25T05:35:24.1423885Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:35:24.1772062Z /github/runner_temp/git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config
+2026-10-25T05:35:24.1819992Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-baca17f6\-5d53\-41ef\-9b59\-9ce9f935ec98\.config
+2026-10-25T05:35:24.2221796Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-25T05:35:24.8100565Z Removing credentials config 'D:\a\_temp\git-credentials-baca17f6-5d53-41ef-9b59-9ce9f935ec98.config'
+2026-10-25T05:35:24.8114951Z ##[endgroup]
+2026-10-25T05:35:24.8485344Z ##[group]Run python -B tools/ci/bootstrap_check.py
+2026-10-25T05:35:24.8485859Z [36;1mpython -B tools/ci/bootstrap_check.py[0m
+2026-10-25T05:35:24.9180779Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-25T05:35:24.9181209Z env:
+2026-10-25T05:35:24.9181416Z   GIT_CONFIG_COUNT: 1
+2026-10-25T05:35:24.9181660Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-25T05:35:24.9181946Z   GIT_CONFIG_VALUE_0: true
+2026-10-25T05:35:24.9182185Z ##[endgroup]
+2026-10-25T05:35:30.5455920Z ĐẠT: SPEC v1.6.14; 3 nguồn chính sách đúng UTF-8 và SHA-256.
+2026-10-25T05:35:30.8425324Z ##[group]Run python -B tools/ci/test_bootstrap_check.py
+2026-10-25T05:35:30.8425824Z [36;1mpython -B tools/ci/test_bootstrap_check.py[0m
+2026-10-25T05:35:30.8534976Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-25T05:35:30.8535904Z env:
+2026-10-25T05:35:30.8536168Z   GIT_CONFIG_COUNT: 1
+2026-10-25T05:35:30.8536498Z   GIT_CONFIG_KEY_0: core.longpaths
+2026-10-25T05:35:30.8536896Z   GIT_CONFIG_VALUE_0: true
+2026-10-25T05:35:30.8537225Z ##[endgroup]
+2026-10-25T05:35:35.1909887Z test_changed_policy_source_fails (__main__.BootstrapValidatorTests.test_changed_policy_source_fails) ... ok
+2026-10-25T05:35:35.2299106Z test_current_sources_pass (__main__.BootstrapValidatorTests.test_current_sources_pass) ... ok
+2026-10-25T05:35:35.2691020Z test_invalid_utf8_fails (__main__.BootstrapValidatorTests.test_invalid_utf8_fails) ... ok
+2026-10-25T05:35:35.3099478Z test_missing_long_paths_checkout_environment_fails (__main__.BootstrapValidatorTests.test_missing_long_paths_checkout_environment_fails) ... ok
+2026-10-25T05:35:35.3497467Z test_missing_markdown_heading_fails (__main__.BootstrapValidatorTests.test_missing_markdown_heading_fails) ... ok
+2026-10-25T05:35:35.3894312Z test_missing_policy_source_fails (__main__.BootstrapValidatorTests.test_missing_policy_source_fails) ... ok
+2026-10-25T05:35:35.4330375Z test_missing_push_trigger_fails (__main__.BootstrapValidatorTests.test_missing_push_trigger_fails) ... ok
+2026-10-25T05:35:35.4898861Z test_wrong_spec_version_fails (__main__.BootstrapValidatorTests.test_wrong_spec_version_fails) ... ok
+2026-10-25T05:35:35.4899729Z 
+2026-10-25T05:35:35.4899948Z ----------------------------------------------------------------------
+2026-10-25T05:35:35.4900489Z Ran 8 tests in 0.848s
+2026-10-25T05:35:35.4900685Z 
+2026-10-25T05:35:35.4900785Z OK
+2026-10-25T05:35:35.6266701Z Post job cleanup.
+2026-10-25T05:35:35.8380841Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-25T05:35:35.8772108Z git version 2.56.0.windows.2
+2026-10-25T05:35:35.8852606Z Temporarily overriding HOME='D:\a\_temp\0884ddc9-35e3-4d96-b350-6c939f4d4cf8' before making global git config changes
+2026-10-25T05:35:35.8853837Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:35:35.8863530Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\maps-context-engine-4d\maps-context-engine-4d
+2026-10-25T05:35:35.9246511Z Removing SSH command configuration
+2026-10-25T05:35:35.9257504Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:35:35.9661043Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-25T05:35:36.5468410Z Removing HTTP extra header
+2026-10-25T05:35:36.5479548Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:35:36.5866637Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-25T05:35:37.1624877Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:35:37.1636283Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:35:37.2007347Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-25T05:35:37.7856542Z Cleaning up orphan processes
