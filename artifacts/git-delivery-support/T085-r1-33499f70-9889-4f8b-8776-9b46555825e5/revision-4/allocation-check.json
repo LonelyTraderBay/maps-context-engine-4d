@@ -1,0 +1,47 @@
+{
+  "allocation_CI": "PENDING",
+  "allocation_ci_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/ci/allocation/summary.json",
+  "allocation_ci_run_id": null,
+  "allocation_ci_sha256": "PENDING",
+  "allocation_commit_sha": "PENDING",
+  "allocation_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/allocation.json",
+  "allocation_sha256": "b03889e2e40e86ee8114f3f531a0a0b3e6e06c4fce488ea054743ba6cbfe83ea",
+  "base_sha": "499356345f1ff0d18769fdb0ce0b1a0ebcc2c862",
+  "check_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/check-plan-canonical.json",
+  "check_plan_sha256": "f2b9c8a6e6979bea3fa659e5f13075a33f2232663c672021191c42294135de62",
+  "delivery_id": "711606c8-9642-44fc-905a-7ebfd8cfd686",
+  "format_version": 1,
+  "kind": "task_allocation_check",
+  "local_check_summary_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/local-checks/allocation/attempt-1/summary.json",
+  "local_check_summary_sha256": "39e3e6225eb53113349a15c7065e587e6e42ac06a983842e13de731637a3be24",
+  "local_commands_passed": 15,
+  "local_commands_total": 15,
+  "limitations": [
+    "Allocation-local acceptance passed 15/15 on the frozen C2 base; allocation commit and its exact-SHA CI are pending.",
+    "Payload, closing, sealed archive/readback, and fresh live verification remain pending; this record does not close T085.",
+    "The user-approved storage_migrations_test.go scope extension was not applied: the focused migration guard and full Go suite passed with index/004.sql present.",
+    "The 13 generated allocation-phase GitLocalCheckEvidence records failed schema validation (phase enum is payload/closing); they were preserved under history and are not counted as task payload evidence. Frozen refs will be populated with valid payload-phase records bound to the verified payload SHA."
+  ],
+  "result": "PASS",
+  "scope_extension": "tests/contract/storage_migrations_test.go",
+  "scope_extension_authority": "active_user_approval",
+  "scope_extension_applied": false,
+  "scope_extension_sha256": "f1c1c4ef94cd16a895115bd392cfe5dda2114bbc11f54d9544c5d2d302d22779",
+  "task_id": "T085",
+  "task_revision": 4,
+  "toolchains": {
+    "go": "1.27.2",
+    "node": "24.22.0",
+    "npm": "11.19.1",
+    "python": "3.12.14"
+  },
+  "working_tree_diff_sha256": "28f5e52e1ad82f51288b4131f738e9fa3cae084d2bdc644fd0481852fbe9d4a3",
+  "typed_local_evidence_validation": {
+    "result": "FAIL",
+    "kind": "GitLocalCheckEvidence",
+    "reason": "allocation is not an allowed phase; allocation-local command PASS remains recorded separately",
+    "failure_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/history/allocation-local-records-attempt-1/validation-failure.json",
+    "failure_sha256": "f5f169505e1c7751fab74847be9d21670044a542956761975cd77d3f6a3fad33",
+    "preserved_record_count": 13
+  }
+}
