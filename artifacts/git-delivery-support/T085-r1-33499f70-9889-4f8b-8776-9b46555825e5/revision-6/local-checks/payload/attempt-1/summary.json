@@ -1,0 +1,452 @@
+{
+  "format_version": 1,
+  "kind": "task_payload_local_check",
+  "task_id": "T085",
+  "task_revision": 6,
+  "delivery_id": "45b04ee7-166b-477e-bcc4-80551d63843a",
+  "base_head_sha": "09b4aff710bee4d94d02f8205519149f1b361433",
+  "check_plan_sha256": "2894ca9a53ce026e91746bd63a3ceab7aa6f0b31d0a47402f0d909d1965012be",
+  "toolchains": {
+    "python": "3.12.14",
+    "node": "24.22.0",
+    "npm": "11.19.1",
+    "go": "1.27.2"
+  },
+  "go_root_location": "existing project Codex work area outside the repository module",
+  "go_root_copy": {
+    "file_count": 15658,
+    "aggregate_size_mib": 235.7,
+    "copy_validation": "source and destination file count and aggregate bytes matched"
+  },
+  "scope_extension_paths": [
+    "tools/spec_check/archive.py",
+    "tools/spec_check/test_spec_check.py",
+    "tools/spec_check/github_observer.py"
+  ],
+  "scope_extension_authority": "mixed_explicit_user_and_S53_task_reopen",
+  "scope_extension_authorities": {
+    "tools/spec_check/archive.py": "active_user_approval",
+    "tools/spec_check/test_spec_check.py": "active_user_approval",
+    "tools/spec_check/github_observer.py": "S53_autonomous_task_reopen_after_verified_gate_failure"
+  },
+  "scope_extension_files_sha256": {
+    "tools/spec_check/archive.py": "d1378743678010fb5df6af235fbf56cad2a3c4e90bee6d9c7ed36c4873f10b3d",
+    "tools/spec_check/test_spec_check.py": "ae152f27beff1e760ba13d1b01a2e65d30cfd65643c86dad720826aa2a4dcdbd",
+    "tools/spec_check/github_observer.py": "39a406c5787d852f574b7230cafea3578b316bec85696e2d3be4d97f74c9f567"
+  },
+  "scope_extension_file_sha256": "f1c1c4ef94cd16a895115bd392cfe5dda2114bbc11f54d9544c5d2d302d22779",
+  "excluded_diagnostics": [],
+  "raw_logs_local_root": "work/T085-r1-implementation/raw-payload-checks-revision6/attempt-1 (not committed)",
+  "temp_root_alias": "verified Windows short-path alias to repository work/; Go suite uses verified T085 task temp alias",
+  "result": "PASS",
+  "commands_total": 15,
+  "commands_passed": 15,
+  "records": [
+    {
+      "name": "bootstrap_check",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:06.452Z",
+      "completed_at_utc": "2026-10-25T19:07:06.509Z",
+      "duration_ms": 58,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/bootstrap_check.stdout.txt",
+      "stdout_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "stdout_raw_sha256": "6b1b927ac6d45fbeab4489b41e52692cce9ee8817700c8de64dae398dc0333a5",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/bootstrap_check.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "bootstrap_fixtures",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/test_bootstrap_check.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:06.510Z",
+      "completed_at_utc": "2026-10-25T19:07:07.389Z",
+      "duration_ms": 879,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/bootstrap_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/bootstrap_fixtures.stderr.txt",
+      "stderr_sha256": "a39e006cee55ab994377373e948aee9cbed1653698a89e4c9263087a6ff34371",
+      "stderr_raw_sha256": "a39e006cee55ab994377373e948aee9cbed1653698a89e4c9263087a6ff34371",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "task_delivery_plan",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan",
+        "--plan",
+        "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/check-plan-canonical.json",
+        "--sha256",
+        "2894ca9a53ce026e91746bd63a3ceab7aa6f0b31d0a47402f0d909d1965012be"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/delivery_policy.py",
+        "check-plan",
+        "--plan",
+        "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/check-plan-canonical.json",
+        "--sha256",
+        "2894ca9a53ce026e91746bd63a3ceab7aa6f0b31d0a47402f0d909d1965012be"
+      ],
+      "started_at_utc": "2026-10-25T19:07:07.398Z",
+      "completed_at_utc": "2026-10-25T19:07:07.483Z",
+      "duration_ms": 85,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/task_delivery_plan.stdout.txt",
+      "stdout_sha256": "b3958830071f8a6f6f50bcf6925dea792182bde72cbff7890ce6f447bca8d584",
+      "stdout_raw_sha256": "b3958830071f8a6f6f50bcf6925dea792182bde72cbff7890ce6f447bca8d584",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/task_delivery_plan.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "spec_check",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/spec_check/check.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:07.484Z",
+      "completed_at_utc": "2026-10-25T19:07:07.944Z",
+      "duration_ms": 460,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/spec_check.stdout.txt",
+      "stdout_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "stdout_raw_sha256": "5ac3bb565f6c58601bf13f22028f1e84960abe5c5b007baee79e1c0f314f7aec",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/spec_check.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "spec_fixtures",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/spec_check/test_spec_check.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:07.946Z",
+      "completed_at_utc": "2026-10-25T19:07:30.550Z",
+      "duration_ms": 22604,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/spec_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/spec_fixtures.stderr.txt",
+      "stderr_sha256": "bc8463698304f0963b762801a42b65a6aa5d7759fc175399904b08fdddab30cd",
+      "stderr_raw_sha256": "bc8463698304f0963b762801a42b65a6aa5d7759fc175399904b08fdddab30cd",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "delivery_policy_fixtures",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/test_delivery_policy.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:30.552Z",
+      "completed_at_utc": "2026-10-25T19:07:37.682Z",
+      "duration_ms": 7130,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/delivery_policy_fixtures.stdout.txt",
+      "stdout_sha256": "3503d9c7e17dcb0828e26235ccb6a2b1a6572b4192cfb135b9a10925cd0898dc",
+      "stdout_raw_sha256": "3503d9c7e17dcb0828e26235ccb6a2b1a6572b4192cfb135b9a10925cd0898dc",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/delivery_policy_fixtures.stderr.txt",
+      "stderr_sha256": "b8fc3cd82080dc5736c19c3f07a938ee665d5b370ed6ca21373fd0a6f2efd383",
+      "stderr_raw_sha256": "b8fc3cd82080dc5736c19c3f07a938ee665d5b370ed6ca21373fd0a6f2efd383",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "checkpoint_digest_fixtures",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/test_checkpoint_digest.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:37.684Z",
+      "completed_at_utc": "2026-10-25T19:07:40.611Z",
+      "duration_ms": 2927,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/checkpoint_digest_fixtures.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/checkpoint_digest_fixtures.stderr.txt",
+      "stderr_sha256": "1a5eb7b5293c9a01382dc3712f658def1e6a19428c5efe41c0fb84ab91035b0c",
+      "stderr_raw_sha256": "1a5eb7b5293c9a01382dc3712f658def1e6a19428c5efe41c0fb84ab91035b0c",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "gofmt",
+      "display_argv": [
+        "python",
+        "-B",
+        "tools/ci/check_gofmt.py"
+      ],
+      "actual_argv_program": "python.exe",
+      "argv": [
+        "-B",
+        "tools/ci/check_gofmt.py"
+      ],
+      "started_at_utc": "2026-10-25T19:07:40.614Z",
+      "completed_at_utc": "2026-10-25T19:07:40.716Z",
+      "duration_ms": 102,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to work/T085-r1-implementation/temp",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/gofmt.stdout.txt",
+      "stdout_sha256": "78a85988df4dae0a4a3c01b06bbc63b023bd01e0a20ce6acc6d4a612664f9076",
+      "stdout_raw_sha256": "78a85988df4dae0a4a3c01b06bbc63b023bd01e0a20ce6acc6d4a612664f9076",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/gofmt.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "go_test_all",
+      "display_argv": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "actual_argv_program": "go.exe",
+      "argv": [
+        "test",
+        "./..."
+      ],
+      "started_at_utc": "2026-10-25T19:07:40.718Z",
+      "completed_at_utc": "2026-10-25T19:08:22.568Z",
+      "duration_ms": 41850,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to work/T085-r1-implementation/temp",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_test_all.stdout.txt",
+      "stdout_sha256": "809c63e8dd5c2414d0d4cb5a9b0efaf3db5edfdf5dc9fe03a9bdf519567199f0",
+      "stdout_raw_sha256": "809c63e8dd5c2414d0d4cb5a9b0efaf3db5edfdf5dc9fe03a9bdf519567199f0",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_test_all.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "go_vet_all",
+      "display_argv": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "actual_argv_program": "go.exe",
+      "argv": [
+        "vet",
+        "./..."
+      ],
+      "started_at_utc": "2026-10-25T19:08:22.570Z",
+      "completed_at_utc": "2026-10-25T19:08:28.871Z",
+      "duration_ms": 6301,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to work/T085-r1-implementation/temp",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_vet_all.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_vet_all.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "go_build_all",
+      "display_argv": [
+        "go",
+        "build",
+        "./..."
+      ],
+      "actual_argv_program": "go.exe",
+      "argv": [
+        "build",
+        "./..."
+      ],
+      "started_at_utc": "2026-10-25T19:08:28.873Z",
+      "completed_at_utc": "2026-10-25T19:08:36.461Z",
+      "duration_ms": 7589,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to work/T085-r1-implementation/temp",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_build_all.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/go_build_all.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "npm_ci",
+      "display_argv": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "actual_argv_program": "cmd.exe",
+      "argv": [
+        "/d",
+        "/c",
+        "$NODE_ROOT\\npm.cmd",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "started_at_utc": "2026-10-25T19:08:36.463Z",
+      "completed_at_utc": "2026-10-25T19:08:42.665Z",
+      "duration_ms": 6202,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/npm_ci.stdout.txt",
+      "stdout_sha256": "4936fbbd82a62f07c39f8c4163926d41638d346eb1401dac28fb0c3c63c89dba",
+      "stdout_raw_sha256": "4936fbbd82a62f07c39f8c4163926d41638d346eb1401dac28fb0c3c63c89dba",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/npm_ci.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "ui_contract",
+      "display_argv": [
+        "npm",
+        "run",
+        "test:contract:ui"
+      ],
+      "actual_argv_program": "cmd.exe",
+      "argv": [
+        "/d",
+        "/c",
+        "$NODE_ROOT\\npm.cmd",
+        "run",
+        "test:contract:ui"
+      ],
+      "started_at_utc": "2026-10-25T19:08:42.667Z",
+      "completed_at_utc": "2026-10-25T19:08:46.767Z",
+      "duration_ms": 4100,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/ui_contract.stdout.txt",
+      "stdout_sha256": "b3472453355ed7bc122cfe944b7f74333a4d82255f5adacb33dd68dd71e195cf",
+      "stdout_raw_sha256": "74a3e6e783297486c9ac0d452ce92b6b363bf8b0a4f9a1bc1f9518437f46bfc1",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/ui_contract.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "explorer_build",
+      "display_argv": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@mce4d/explorer"
+      ],
+      "actual_argv_program": "cmd.exe",
+      "argv": [
+        "/d",
+        "/c",
+        "$NODE_ROOT\\npm.cmd",
+        "run",
+        "build",
+        "--workspace",
+        "@mce4d/explorer"
+      ],
+      "started_at_utc": "2026-10-25T19:08:46.769Z",
+      "completed_at_utc": "2026-10-25T19:08:47.549Z",
+      "duration_ms": 780,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/explorer_build.stdout.txt",
+      "stdout_sha256": "0d9e47eeac507e55b4be4f3ac745a78ad9dd14a0e18240bdde8c1e6295133780",
+      "stdout_raw_sha256": "0d9e47eeac507e55b4be4f3ac745a78ad9dd14a0e18240bdde8c1e6295133780",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/explorer_build.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    },
+    {
+      "name": "git_diff_check",
+      "display_argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "actual_argv_program": "git",
+      "argv": [
+        "diff",
+        "--check"
+      ],
+      "started_at_utc": "2026-10-25T19:08:47.551Z",
+      "completed_at_utc": "2026-10-25T19:08:47.596Z",
+      "duration_ms": 45,
+      "exit_code": 0,
+      "temp_root_alias_description": "verified Windows short path to repository work/",
+      "stdout_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/git_diff_check.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/local-checks/payload/attempt-1/records/git_diff_check.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path_redaction": "absolute repo, task-work, toolchain, and temp paths replaced with stable tokens"
+    }
+  ],
+  "tracked_state_stable": true,
+  "working_tree_diff_sha256": "e82ecd0affb868ad6d12a2076cab7062c6221ad22d07443580d660a61855dc7e",
+  "tracked_status_sha256": "50a1e035c6427e0ea9011331c38d2fc1e8cd5d8c20f94908962d0373a6dcb8c0",
+  "completed_at_utc": "2026-10-25T19:08:47.713Z"
+}

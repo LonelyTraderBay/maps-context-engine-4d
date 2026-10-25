@@ -46,6 +46,19 @@ class GitHubObserverError(RuntimeError):
     """The external live query is incomplete, ambiguous or unsafe to claim PASS."""
 
 
+def _merge_evidence_members(label: str, *sources: dict[str, Any]) -> dict[str, Any]:
+    """Merge retained member maps without allowing one source to replace another."""
+    merged: dict[str, Any] = {}
+    for source in sources:
+        collisions = sorted(merged.keys() & source.keys())
+        if collisions:
+            raise GitHubObserverError(
+                f"{label} evidence member collision: {collisions[:8]}"
+            )
+        merged.update(source)
+    return merged
+
+
 def _run_bounded_process(
     command: list[str], *, env: dict[str, str], timeout: int,
     stdout_limit: int, stderr_limit: int,
@@ -490,6 +503,7 @@ def collect_ci_source_graph(
     phase: str = "closing",
     destination_observation: dict[str, Any] | None = None,
     pull_request_binding_ref: str | None = None,
+    observation_ref: str = "closing-observation.json",
     gh: str = "gh",
 ) -> dict[str, Any]:
     """Collect every page and construct current required check/source/execution records."""
@@ -792,8 +806,8 @@ def collect_ci_source_graph(
     if not observation["required_set_verified"]:
         raise GitHubObserverError("native check mapping không phủ đúng frozen set")
     observation_bytes = _canonical_json(observation)
-    client._store("closing-observation.json", observation_bytes)
-    objects["closing-observation.json"] = {"kind": "GitDeliveryObservation", "value": observation}
+    client._store(observation_ref, observation_bytes)
+    objects[observation_ref] = {"kind": "GitDeliveryObservation", "value": observation}
     return {"collection": collection, "observation": observation, "objects": objects,
             "raw_members": raw, "member_bytes": client.member_bytes,
             "started_at_utc": started, "completed_collection_at_utc": completed_collection}
@@ -1000,7 +1014,7 @@ def verify_live_delivery(
             or any(actual_snapshot.get(key) != archived_git.get(key)
                    for key in ("sha", "parents", "subject", "body", "changed_paths"))):
         raise GitHubObserverError("fresh GitHub commit projection lệch retained closing Git evidence")
-    git_ref = "git/closing-commit-snapshot.json"
+    git_ref = "live/git/closing-commit-snapshot.json"
     git_bytes = _canonical_json(actual_snapshot)
     client._store(git_ref, git_bytes)
     client.raw_members[git_ref] = actual_snapshot
@@ -1017,10 +1031,11 @@ def verify_live_delivery(
     if prs:
         raise GitHubObserverError("current commit có PR binding; frozen plan hiện không cho PR flow")
 
+    live_observation_ref = "live/closing-observation.json"
     graph = collect_ci_source_graph(
         client, plan=plan, subject_sha=expected_sha, identity=attempt,
         phase="closing", destination_observation=objects.get(archive.get("closing_observation_ref"), {}).get("value", {}).get("destination_observation"),
-        pull_request_binding_ref=None, gh=gh,
+        pull_request_binding_ref=None, observation_ref=live_observation_ref, gh=gh,
     )
     # Read the branch again after all CI/log/API sources to detect movement during
     # collection. A changed or temporarily unreadable ref produces no PASS.
@@ -1043,7 +1058,7 @@ def verify_live_delivery(
         "check_plan_sha256": attempt["check_plan_sha256"], "subject_sha": expected_sha,
         "observed_remote_sha": final_sha, "started_at_utc": started,
         "completed_at_utc": live_completed,
-        "closing_observation_ref": "closing-observation.json",
+        "closing_observation_ref": live_observation_ref,
         "collection_evidence_ref": "collection.json", "git_evidence_ref": git_ref,
         "current_pr_ref": None, "files": live_files,
         "archive_publication": {
@@ -1061,15 +1076,15 @@ def verify_live_delivery(
     verification_errors = _validate_live_verification_record(verification, governance_schema)
     if verification_errors:
         raise GitHubObserverError("live verification record schema/semantics REJECT: " + "; ".join(verification_errors[:8]))
-    combined_objects = dict(objects)
-    combined_objects.update(graph["objects"])
+    combined_objects = _merge_evidence_members(
+        "typed", objects, graph["objects"],
+        {"live-verification.json": {"kind": "GitLiveVerification", "value": verification}},
+    )
     # The live Git snapshot is raw retained evidence, not a typed governance object.
-    combined_raw = dict(raw_members)
-    combined_raw.update(graph["raw_members"])
-    combined_raw[git_ref] = actual_snapshot
-    combined_objects["live-verification.json"] = {"kind": "GitLiveVerification", "value": verification}
-    combined_member_bytes = dict(archive_member_bytes)
-    combined_member_bytes.update(client.member_bytes)
+    combined_raw = _merge_evidence_members("raw", raw_members, graph["raw_members"])
+    combined_member_bytes = _merge_evidence_members(
+        "archive/live byte", archive_member_bytes, client.member_bytes,
+    )
     linked = validate_delivery_links(
         combined_objects, raw_members=combined_raw, raw_member_bytes=combined_member_bytes,
     )

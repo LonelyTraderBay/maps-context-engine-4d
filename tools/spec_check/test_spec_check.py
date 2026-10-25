@@ -41,7 +41,18 @@ from tools.spec_check.semantics import (
 from tools.spec_check.spec import _effective_status, validate_spec_text
 from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
-from tools.spec_check.github_observer import GitHubApiClient, GitHubObserverError, _closing_commit_snapshot, _current_tracker_identity, _matrix_matches, _parse_links, _run_bounded_process, _validate_live_verification_record, _verify_publication_projection
+from tools.spec_check.github_observer import (
+    GitHubApiClient,
+    GitHubObserverError,
+    _closing_commit_snapshot,
+    _current_tracker_identity,
+    _matrix_matches,
+    _merge_evidence_members,
+    _parse_links,
+    _run_bounded_process,
+    _validate_live_verification_record,
+    _verify_publication_projection,
+)
 from tools.spec_check.t107_contract_fixtures import (
     FixtureContractError,
     cleanup_disposition,
@@ -286,16 +297,16 @@ class FoundationSealTests(unittest.TestCase):
             "observed_remote_sha": subject_sha,
             "started_at_utc": "2026-10-16T07:32:00Z",
             "completed_at_utc": "2026-10-16T07:33:00Z",
-            "closing_observation_ref": "closing-observation.json",
+            "closing_observation_ref": "live/closing-observation.json",
             "collection_evidence_ref": "collection.json",
-            "git_evidence_ref": "git/closing-commit-snapshot.json",
+            "git_evidence_ref": "live/git/closing-commit-snapshot.json",
             "current_pr_ref": None,
             "files": [
                 {"path": path, "byte_length": 1, "sha256": "e" * 64}
                 for path in (
-                    "closing-observation.json",
+                    "live/closing-observation.json",
                     "collection.json",
-                    "git/closing-commit-snapshot.json",
+                    "live/git/closing-commit-snapshot.json",
                 )
             ],
             "archive_publication": {
@@ -2406,6 +2417,33 @@ class ArchivePublicationTests(unittest.TestCase):
 
 
 class GitHubObserverTests(unittest.TestCase):
+    def test_live_observation_namespace_preserves_archive_and_rejects_collisions(self) -> None:
+        archived = {
+            "closing-observation.json": {"source": "sealed archive"},
+            "git/closing-commit-snapshot.json": {"source": "sealed archive"},
+        }
+        live = {
+            "live/closing-observation.json": {"source": "fresh observation"},
+            "live/git/closing-commit-snapshot.json": {"source": "fresh observation"},
+        }
+
+        merged = _merge_evidence_members("typed", archived, live)
+
+        self.assertEqual(archived["closing-observation.json"], merged["closing-observation.json"])
+        self.assertEqual(live["live/closing-observation.json"], merged["live/closing-observation.json"])
+        self.assertEqual(
+            archived["git/closing-commit-snapshot.json"], merged["git/closing-commit-snapshot.json"]
+        )
+        self.assertEqual(
+            live["live/git/closing-commit-snapshot.json"],
+            merged["live/git/closing-commit-snapshot.json"],
+        )
+        with self.assertRaisesRegex(GitHubObserverError, "typed evidence member collision"):
+            _merge_evidence_members(
+                "typed", archived,
+                {"closing-observation.json": live["live/closing-observation.json"]},
+            )
+
     @staticmethod
     def _response(payload: object) -> tuple[dict[str, str], bytes, object, str, str]:
         body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
