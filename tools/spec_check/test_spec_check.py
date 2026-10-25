@@ -2104,7 +2104,7 @@ class DeliveryLinkTests(unittest.TestCase):
 
 class ArchivePublicationTests(unittest.TestCase):
     @staticmethod
-    def _seed_valid_archive(root: Path) -> dict[str, object]:
+    def _seed_valid_archive(root: Path, *, include_powershell: bool = False) -> dict[str, object]:
         objects, raw = _delivery_link_bundle()
         archive = copy.deepcopy(objects["archive"]["value"])
         typed = {ref: entry for ref, entry in objects.items() if ref != "archive"}
@@ -2112,12 +2112,14 @@ class ArchivePublicationTests(unittest.TestCase):
         raw["authority/task-start.txt"] = "Ủy quyền fixture cho task T003.".encode("utf-8")
         raw["history/invalidation-note.md"] = "Bằng chứng invalidation UTF-8 được giữ nguyên.\n"
         raw["history/invalidation-fixture.log"] = "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n"
+        if include_powershell:
+            raw["operations/retain.ps1"] = "Write-Output 'Bằng chứng giữ nguyên'\r\n"
         index = {
             "format_version": 1,
             "objects": {ref: entry["kind"] for ref, entry in sorted(typed.items())},
             "raw_members": sorted(
                 ref for ref, value in raw.items()
-                if isinstance(value, dict) or (Path(ref).suffix in {".md", ".txt", ".log"} and isinstance(value, str))
+                if isinstance(value, dict) or (Path(ref).suffix in {".md", ".txt", ".log", ".ps1"} and isinstance(value, str))
             ),
         }
         paths = {item["path"] for item in archive["files"]}
@@ -2181,6 +2183,19 @@ class ArchivePublicationTests(unittest.TestCase):
                 (final / "history/invalidation-fixture.log").read_bytes(),
                 "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n".encode("utf-8"),
             )
+            self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
+
+    def test_archive_preserves_utf8_powershell_script_as_raw_text_through_cold_readback(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-powershell-raw-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root, include_powershell=True)
+            expected = "Write-Output 'Bằng chứng giữ nguyên'\r\n".encode("utf-8")
+            published = publish_archive(root, archive, spec_path=SPEC_PATH)
+            cold = verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
+            final = root / published["planned_archive_path"]
+            index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
+            self.assertIn("operations/retain.ps1", index["raw_members"])
+            self.assertEqual((final / "operations" / "retain.ps1").read_bytes(), expected)
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
 
     def test_member_read_supports_deep_windows_paths(self) -> None:

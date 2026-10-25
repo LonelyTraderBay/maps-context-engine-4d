@@ -1,0 +1,67 @@
+
+> maps-context-engine-4d-workspace@0.0.0 test:contract:ui
+> node --test tests/contract/ui/toolchain-and-contract.test.mjs
+
+✔ Node and npm match the sealed workspace runtime (0.5208ms)
+✔ workspace manifests keep every direct dependency exact (4.6253ms)
+✔ toolchain seal binds package lock, six CI contexts, and browser revision (1.9587ms)
+✔ TypeScript bootstrap keeps strict nullable and indexed access checks (0.4202ms)
+✔ Explorer API and bridge reuse the closed S43 contracts (1.5291ms)
+✔ pinned React and graph tools expose the intended public APIs (4.005ms)
+✔ pinned compiler, component test, and browser tools expose expected entry points (34.1761ms)
+✔ fixture plan distinguishes design coverage from future browser acceptance (0.4688ms)
+✔ Node producer matches the shared C14N1, manifest JSON, and raw source vectors (1.2121ms)
+vite v8.3.4 building client environment for development...
+transforming...
+✓ 14 modules transformed.
+rendering chunks...
+computing gzip size...
+work/t085-vite-fixture-Z48wTz/dist-baseline/index.html                  0.09 kB │ gzip:   0.11 kB
+work/t085-vite-fixture-Z48wTz/dist-baseline/assets/index-C5DG_Y4E.js  979.17 kB │ gzip: 193.93 kB
+
+✓ built in 92ms
+vite v8.3.4 building client environment for development...
+transforming...
+✓ 14 modules transformed.
+rendering chunks...
+computing gzip size...
+work/t085-vite-fixture-Z48wTz/dist-inspector-opt-in/index.html                  0.09 kB │ gzip:   0.11 kB
+work/t085-vite-fixture-Z48wTz/dist-inspector-opt-in/assets/index-C5DG_Y4E.js  979.17 kB │ gzip: 193.93 kB
+
+✓ built in 81ms
+✔ Vite inspector is explicit dev-only, emits source-byte anchors, and is stripped from production (333.4099ms)
+✔ concurrent Vite transforms coalesce to a manifest containing every loaded module (39.2414ms)
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 179 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.48 kB │ gzip:   0.31 kB
+dist/assets/index-BvXOEtEG.css   26.81 kB │ gzip:   5.64 kB
+dist/assets/index-CxJ6x2vh.js   694.95 kB │ gzip: 215.24 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 192ms
+
+ RUN  v5.0.5 $REPO/web/explorer
+
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  20:10:45
+   Duration  972ms (environment 55%, tests 18%, setup 11%, import 9%, transform 7%)
+
+✔ Vite inspector rejects symlinked output parents before creating external directories (2.0981ms)
+✔ Explorer AppShell typechecks, builds, and passes its component and API tests (2428.0348ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3693.4044

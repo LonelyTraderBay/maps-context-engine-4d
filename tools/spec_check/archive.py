@@ -229,9 +229,9 @@ def _load_index(root: Path, archive: dict[str, Any]) -> tuple[dict[str, Any], di
         try:
             raw[rel] = json.loads(text)
         except json.JSONDecodeError as exc:
-            if Path(rel).suffix.casefold() not in {".md", ".txt", ".log"}:
+            if Path(rel).suffix.casefold() not in {".md", ".txt", ".log", ".ps1"}:
                 raise ArchiveError(f"raw JSON member lỗi tại {rel}: {exc}") from exc
-            # Selection invalidation may retain exact human-readable evidence.
+            # Selection invalidation and delivery retention may include UTF-8 text evidence/scripts.
             # Keep its decoded text for graph checks while member_bytes preserves
             # the original bytes and manifest hash without normalization.
             raw[rel] = text
