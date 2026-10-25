@@ -38,6 +38,9 @@ artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/** -
 # Keep revision 8 CRLF check output byte-identical and treat CR as a line ending in diff checks.
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/local-checks/** whitespace=cr-at-eol
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/local-checks/**/records/*.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
+# Preserve the captured Windows push-operation evidence bytes while diff checks treat CR as a line ending.
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/operations/** whitespace=cr-at-eol
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/operations/**/*.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
 # Keep native CRLF bytes in Windows command transcripts while diff checks recognize line endings.
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/** whitespace=cr-at-eol
 

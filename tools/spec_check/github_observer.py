@@ -233,6 +233,39 @@ def _closing_commit_snapshot(commit_body: dict[str, Any], *, expected_sha: str, 
     }
 
 
+def _payload_commit_parent(identity: dict[str, Any], *, subject_sha: str) -> str:
+    """Return the parent expected by a payload observation, failing closed on gaps."""
+    base_sha = identity.get("base_sha")
+    if not isinstance(base_sha, str) or re.fullmatch(r"[0-9a-f]{40}", base_sha) is None:
+        raise GitHubObserverError("payload identity thiếu base SHA hợp lệ")
+    if identity.get("verified_payload_sha") != subject_sha:
+        raise GitHubObserverError("payload identity không khớp subject SHA")
+
+    payload_mode = identity.get("payload_mode")
+    if payload_mode == "verified_noop":
+        if subject_sha != base_sha:
+            raise GitHubObserverError("verified no-op payload phải giữ subject tại base SHA")
+        return base_sha
+    if payload_mode != "changes":
+        raise GitHubObserverError("payload identity thiếu mode changes/verified_noop")
+
+    ordered_commits = identity.get("ordered_commits")
+    if not isinstance(ordered_commits, list) or not ordered_commits:
+        raise GitHubObserverError("payload identity thiếu ordered_commits")
+    last_commit = ordered_commits[-1]
+    if not isinstance(last_commit, dict) or last_commit.get("sha") != subject_sha:
+        raise GitHubObserverError("ordered_commits không kết thúc tại payload subject SHA")
+
+    if len(ordered_commits) == 1:
+        parent_sha = base_sha
+    else:
+        previous_commit = ordered_commits[-2]
+        parent_sha = previous_commit.get("sha") if isinstance(previous_commit, dict) else None
+    if not isinstance(parent_sha, str) or re.fullmatch(r"[0-9a-f]{40}", parent_sha) is None:
+        raise GitHubObserverError("ordered_commits thiếu direct parent SHA hợp lệ")
+    return parent_sha
+
+
 class GitHubApiClient:
     """Small bounded GitHub REST reader; never exposes its credential to evidence."""
 
@@ -789,7 +822,10 @@ def collect_ci_source_graph(
 
     if phase not in {"payload", "closing"}:
         raise GitHubObserverError(f"phase không được hỗ trợ: {phase}")
-    commit_parent = identity.get("base_sha") if phase == "payload" else identity.get("verified_payload_sha")
+    commit_parent = (
+        _payload_commit_parent(identity, subject_sha=subject_sha)
+        if phase == "payload" else identity.get("verified_payload_sha")
+    )
     if not isinstance(commit_parent, str):
         raise GitHubObserverError(f"identity thiếu parent SHA cho phase {phase}")
     observation = {

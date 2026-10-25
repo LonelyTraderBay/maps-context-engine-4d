@@ -49,6 +49,7 @@ from tools.spec_check.github_observer import (
     _matrix_matches,
     _merge_evidence_members,
     _parse_links,
+    _payload_commit_parent,
     _run_bounded_process,
     _validate_live_verification_record,
     _verify_publication_projection,
@@ -2115,7 +2116,12 @@ class DeliveryLinkTests(unittest.TestCase):
 
 class ArchivePublicationTests(unittest.TestCase):
     @staticmethod
-    def _seed_valid_archive(root: Path, *, include_powershell: bool = False) -> dict[str, object]:
+    def _seed_valid_archive(
+        root: Path,
+        *,
+        include_powershell: bool = False,
+        powershell_script_count: int = 0,
+    ) -> dict[str, object]:
         objects, raw = _delivery_link_bundle()
         archive = copy.deepcopy(objects["archive"]["value"])
         typed = {ref: entry for ref, entry in objects.items() if ref != "archive"}
@@ -2125,6 +2131,10 @@ class ArchivePublicationTests(unittest.TestCase):
         raw["history/invalidation-fixture.log"] = "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n"
         if include_powershell:
             raw["operations/retain.ps1"] = "Write-Output 'Bằng chứng giữ nguyên'\r\n"
+        for index in range(powershell_script_count):
+            raw[f"operations/retain-{index + 1}.ps1"] = (
+                f"Write-Output 'Bằng chứng {index + 1} giữ nguyên'\r\n"
+            )
         index = {
             "format_version": 1,
             "objects": {ref: entry["kind"] for ref, entry in sorted(typed.items())},
@@ -2207,6 +2217,26 @@ class ArchivePublicationTests(unittest.TestCase):
             index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
             self.assertIn("operations/retain.ps1", index["raw_members"])
             self.assertEqual((final / "operations" / "retain.ps1").read_bytes(), expected)
+            self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
+
+    def test_archive_preserves_seven_utf8_powershell_scripts_through_cold_readback(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mce4d-archive-seven-powershell-raw-") as temp:
+            root = Path(temp)
+            archive = self._seed_valid_archive(root, powershell_script_count=7)
+            expected = {
+                f"operations/retain-{index}.ps1": (
+                    f"Write-Output 'Bằng chứng {index} giữ nguyên'\r\n".encode("utf-8")
+                )
+                for index in range(1, 8)
+            }
+            published = publish_archive(root, archive, spec_path=SPEC_PATH)
+            cold = verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
+            final = root / published["planned_archive_path"]
+            index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
+
+            self.assertTrue(set(expected).issubset(index["raw_members"]))
+            for relative, contents in expected.items():
+                self.assertEqual((final.joinpath(*relative.split("/"))).read_bytes(), contents)
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
 
     def test_member_read_supports_deep_windows_paths(self) -> None:
@@ -2417,6 +2447,46 @@ class ArchivePublicationTests(unittest.TestCase):
 
 
 class GitHubObserverTests(unittest.TestCase):
+    def test_payload_observation_parent_uses_last_ordered_commit(self) -> None:
+        base_sha = "0" * 40
+        allocation_sha = "1" * 40
+        payload_p7_sha = "2" * 40
+        payload_p8_sha = "3" * 40
+        payload_p9_sha = "4" * 40
+        identity = {
+            "base_sha": base_sha,
+            "verified_payload_sha": payload_p9_sha,
+            "payload_mode": "changes",
+            "ordered_commits": [
+                {"sha": allocation_sha},
+                {"sha": payload_p7_sha},
+                {"sha": payload_p8_sha},
+                {"sha": payload_p9_sha},
+            ],
+        }
+
+        self.assertEqual(payload_p8_sha, _payload_commit_parent(identity, subject_sha=payload_p9_sha))
+        with self.assertRaisesRegex(GitHubObserverError, "ordered_commits"):
+            _payload_commit_parent(
+                {key: value for key, value in identity.items() if key != "ordered_commits"},
+                subject_sha=payload_p9_sha,
+            )
+
+    def test_verified_noop_payload_observation_uses_base_sha(self) -> None:
+        base_sha = "0" * 40
+        self.assertEqual(
+            base_sha,
+            _payload_commit_parent(
+                {
+                    "base_sha": base_sha,
+                    "verified_payload_sha": base_sha,
+                    "payload_mode": "verified_noop",
+                    "ordered_commits": [],
+                },
+                subject_sha=base_sha,
+            ),
+        )
+
     def test_live_observation_namespace_preserves_archive_and_rejects_collisions(self) -> None:
         archived = {
             "closing-observation.json": {"source": "sealed archive"},
