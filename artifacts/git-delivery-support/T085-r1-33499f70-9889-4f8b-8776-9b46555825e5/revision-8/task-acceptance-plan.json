@@ -1,0 +1,82 @@
+{
+  "cases": [
+    "C084",
+    "C085",
+    "C089",
+    "C095",
+    "C123",
+    "C152",
+    "C153",
+    "C174",
+    "C175",
+    "C176",
+    "C177",
+    "C178"
+  ],
+  "ci_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/check-plan-canonical.json",
+  "ci_plan_sha256": "015496ae0a2d6796e39506b8c382d2759f252cf2e1ace7d01adf06020243ca62",
+  "delivery_id": "813f96df-4b8b-4ea8-b6c0-1ac8273aabdd",
+  "format_version": 1,
+  "kind": "task_acceptance_plan",
+  "local_checks": [
+    "python -B tools/spec_check/check.py",
+    "python -B tools/spec_check/test_spec_check.py",
+    "python -B tools/ci/check_gofmt.py",
+    "go test ./...",
+    "go vet ./...",
+    "go build ./...",
+    "npm run test:contract:ui",
+    "npm run build --workspace @mce4d/explorer"
+  ],
+  "oracles": [
+    {
+      "cases": [
+        "C084",
+        "C085"
+      ],
+      "proof": "React JSX component/render-site/source ranges and native button semantics; click counter, submit and fetch stay unchanged because target source is not executed by the producer."
+    },
+    {
+      "cases": [
+        "C089",
+        "C123",
+        "C177",
+        "C178"
+      ],
+      "proof": "manifest is independent from generation; HMR/body changes alter map identity when source changes; partial/untrusted/oversize/path-invalid maps are rejected; producer backpressure/coalescing is bounded."
+    },
+    {
+      "cases": [
+        "C095"
+      ],
+      "proof": "real pinned Vite production build contains no inspector transform, SDK references, injected data attributes or BuildManifest."
+    },
+    {
+      "cases": [
+        "C152",
+        "C153"
+      ],
+      "proof": "distinct resolver digests produce distinct immutable bindings; exact reimport is idempotent; same natural key with changed content and invalid source ranges fail without changing existing rows."
+    },
+    {
+      "cases": [
+        "C174",
+        "C175",
+        "C176"
+      ],
+      "proof": "Go and Node canonical byte digests match checked-in vectors; capture identity remains independent of parse status; closed schemas, Unicode, portable path, range and overflow invalid cases reject."
+    }
+  ],
+  "requirements": [
+    "R068",
+    "R069",
+    "R071",
+    "R084",
+    "R095",
+    "R114",
+    "R121",
+    "R122"
+  ],
+  "task_id": "T085",
+  "task_revision": 8
+}

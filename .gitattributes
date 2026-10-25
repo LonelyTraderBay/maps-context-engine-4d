@@ -35,6 +35,9 @@ artifacts/git-delivery-support/T068-r9-5f2d1f3e-e6be-4c86-a39e-e6b242388639/**/*
 artifacts/git-delivery-support/T003-r26-1c9c7b86-83cf-4604-8fe7-ec6d5b485911/** -text
 # Preserve byte hashes for T085 r1 allocation evidence across Windows checkouts.
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/** -text
+# Keep revision 8 CRLF check output byte-identical and treat CR as a line ending in diff checks.
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/local-checks/** whitespace=cr-at-eol
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/local-checks/**/records/*.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
 # Keep native CRLF bytes in Windows command transcripts while diff checks recognize line endings.
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/** whitespace=cr-at-eol
 

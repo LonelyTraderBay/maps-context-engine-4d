@@ -1,0 +1,89 @@
+{
+  "acceptance_plan_sha256": "38881de129c5a3f81323968e58bc6577be15161b23b30d26e4a16b7fbb6477be",
+  "allocated_at_utc": "2026-10-25T22:49:23.473404Z",
+  "allocation_CI": "PENDING",
+  "allocation_ci_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/ci/allocation/summary.json",
+  "allocation_ci_run_id": null,
+  "allocation_ci_sha256": null,
+  "allocation_commit_sha": "PENDING",
+  "allocation_local": "PASS(15/15)",
+  "allocation_local_attempt": 1,
+  "allocation_local_summary_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/local-checks/allocation/attempt-1/summary.json",
+  "allocation_local_summary_sha256": "e05eafdce86e145c41a77e925675a7d3e48ea023f98ed52a03bed61bd719ba49",
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "base_sha": "3331f0d1911be137acd1ca063314e2068c27558e",
+  "check_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/check-plan-canonical.json",
+  "check_plan_sha256": "015496ae0a2d6796e39506b8c382d2759f252cf2e1ace7d01adf06020243ca62",
+  "delivery_id": "813f96df-4b8b-4ea8-b6c0-1ac8273aabdd",
+  "dependencies": [
+    "T084",
+    "T044",
+    "T056"
+  ],
+  "dependency_review_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/dependency-review.json",
+  "dependency_review_sha256": "049f00ca3bf3e80dce2adc04382bb34f65c442d76c747997262a7237a38b7c27",
+  "fixture_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/task-acceptance-plan.json",
+  "fixture_plan_sha256": "38881de129c5a3f81323968e58bc6577be15161b23b30d26e4a16b7fbb6477be",
+  "format_version": 1,
+  "kind": "git_task_allocation",
+  "limitations": [
+    "R7 P9 and C7 exact-SHA CI/local evidence remain immutable and are not credited to R8 source changes.",
+    "R7 observer raw output has parent_sha=allocation base while the exact P9 commit parent is P8; R8 must collect the direct parent at source.",
+    "R7 preview retains five current-operation .ps1 files while the stated requirement is seven; two sources remain unavailable, so archive/live closure stays pending."
+  ],
+  "mode": "implement",
+  "owner": "Codex",
+  "priority": "P0",
+  "scope_extension_authorities": {
+    "tests/contract/storage_migrations_test.go": "active_user_approval",
+    "tools/spec_check/archive.py": "active_user_approval",
+    "tools/spec_check/github_observer.py": "S53_autonomous_task_reopen_after_verified_gate_failure",
+    "tools/spec_check/test_spec_check.py": "active_user_approval"
+  },
+  "scope_extension_files_sha256": {
+    "tests/contract/storage_migrations_test.go": "f1c1c4ef94cd16a895115bd392cfe5dda2114bbc11f54d9544c5d2d302d22779",
+    "tools/spec_check/archive.py": "d1378743678010fb5df6af235fbf56cad2a3c4e90bee6d9c7ed36c4873f10b3d",
+    "tools/spec_check/github_observer.py": "986482914e5081060f842fb6fc95d3c099b1a6dd1e9d688fff3550174e634a1d",
+    "tools/spec_check/test_spec_check.py": "72139a924ff4273e07d23b7c41f21545922a9be473c16a7b8a69fb236648968f"
+  },
+  "scope_extension_paths": [
+    "tests/contract/storage_migrations_test.go",
+    "tools/spec_check/archive.py",
+    "tools/spec_check/test_spec_check.py",
+    "tools/spec_check/github_observer.py"
+  ],
+  "scope_paths": [
+    "Maps-Context-Engine-4D_SPEC.md",
+    ".gitattributes",
+    "packages/vite-inspector/",
+    "internal/uimap/import*",
+    "internal/store/sqlite/ui*",
+    "internal/store/sqlite/store.go",
+    "internal/store/sqlite/migrations/index/004.sql",
+    "web/explorer/vite.config.ts",
+    "tests/contract/ui/toolchain-and-contract.test.mjs",
+    "tests/contract/storage_migrations_test.go",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/**",
+    "tools/spec_check/archive.py",
+    "tools/spec_check/test_spec_check.py",
+    "tools/spec_check/github_observer.py"
+  ],
+  "selection_reason_sha256": "8b4fc9f1f1395fbe99223e028c4c12d72a80047885f1efaeda7cbe916c661a45",
+  "selection_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/selection.json",
+  "selection_sha256": "168caa961ea0593595ede9a67e72271acc4142c2e491cbd4797b0738a708f3d3",
+  "sequence_predecessor": {
+    "closing_sha": "ec1f36d2244df4e210b88b361fd7da727448fe6e",
+    "delivery_id": "a004e264-287b-4c6c-bacc-049b4cfa20f3",
+    "effective_status": "DONE",
+    "evidence_refs": [
+      "S19:T047:effective-DONE",
+      "artifacts/git-live/a004e264-287b-4c6c-bacc-049b4cfa20f3/fb4ccda8-4cf9-4608-96a3-7dac345b1b8d/live-verification.json"
+    ],
+    "task_id": "T047",
+    "task_revision": "7"
+  },
+  "task_id": "T085",
+  "task_mode_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-8/task-mode.json",
+  "task_mode_sha256": "a2dbfc96517728b6484742fdf084f193bf057a4443c4e4e93123203587a9b736",
+  "task_revision": 8
+}
