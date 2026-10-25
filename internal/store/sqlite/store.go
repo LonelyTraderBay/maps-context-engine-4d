@@ -34,6 +34,7 @@ var (
 	ErrInvalidStorePath      = errors.New("SQLite index path is not a regular owned file")
 	ErrManifestUnavailable   = errors.New("SQLite generation has no capture manifest reference")
 	ErrStoreRecoveryRequired = errors.New("worktree store recovery is required before opening SQLite")
+	ErrUIStoreRequired       = errors.New("operation requires an explicitly UI-enabled SQLite index")
 )
 
 //go:embed migrations/index/*.sql
@@ -62,6 +63,7 @@ type Store struct {
 	writer        *sql.DB
 	readers       *sql.DB
 	ownership     *storeOwnership
+	uiEnabled     bool
 	writeGate     sync.RWMutex
 	closed        bool
 }
@@ -71,8 +73,22 @@ type Store struct {
 // or migration can modify the file. The writer lease and admission reservation
 // cover every SQLite mutation performed while opening the index.
 func openIndex(ctx context.Context, options Options) (*Store, error) {
+	return openIndexMode(ctx, options, false)
+}
+
+// OpenIndexUI explicitly opts into UI metadata migrations through schema 4.
+// Core OpenIndex remains capped at schema/reader version 2.
+func OpenIndexUI(ctx context.Context, options Options) (*Store, error) {
+	return openIndexMode(ctx, options, true)
+}
+
+func openIndexMode(ctx context.Context, options Options, uiEnabled bool) (*Store, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("%w: nil context", ErrInvalidIndex)
+	}
+	schemaVersion, readerVersion := indexSchemaVersion, indexReaderVersion
+	if uiEnabled {
+		schemaVersion, readerVersion = 4, 4
 	}
 	path, timeout, err := normalizeOptions(&options)
 	if err != nil {
@@ -121,7 +137,7 @@ func openIndex(ctx context.Context, options Options) (*Store, error) {
 			return nil, fmt.Errorf("empty SQLite index requires explicit creation: %w", ErrInvalidIndex)
 		}
 		if !fresh {
-			if err := preflightIndex(ctx, path, timeout, options.WorktreeID); err != nil {
+			if err := preflightIndexVersions(ctx, path, timeout, options.WorktreeID, schemaVersion, readerVersion); err != nil {
 				return nil, err
 			}
 		}
@@ -159,7 +175,7 @@ func openIndex(ctx context.Context, options Options) (*Store, error) {
 		_ = conn.Close()
 		return nil, err
 	}
-	identity, err := migrateAndReadIdentity(ctx, conn, fresh, options.WorktreeID)
+	identity, err := migrateAndReadIdentityTo(ctx, conn, fresh, options.WorktreeID, schemaVersion, readerVersion)
 	if closeErr := conn.Close(); err == nil && closeErr != nil {
 		err = fmt.Errorf("release SQLite migration connection: %w", closeErr)
 	}
@@ -189,12 +205,21 @@ func openIndex(ctx context.Context, options Options) (*Store, error) {
 	closeWriter = false
 	keepOwnership = true
 	keepWriterLease = true
-	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, writer: writer, readers: readers, ownership: ownership}, nil
+	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, writer: writer, readers: readers, ownership: ownership, uiEnabled: uiEnabled}, nil
 }
 
 // OpenIndexReadOnly opens an existing store without running migrations or
 // changing journal mode. Its pool is explicitly SQLite read-only and query-only.
 func OpenIndexReadOnly(ctx context.Context, options Options) (*Store, error) {
+	return openIndexReadOnlyMode(ctx, options, false)
+}
+
+// OpenIndexUIReadOnly opens an existing schema-4 UI index without migration.
+func OpenIndexUIReadOnly(ctx context.Context, options Options) (*Store, error) {
+	return openIndexReadOnlyMode(ctx, options, true)
+}
+
+func openIndexReadOnlyMode(ctx context.Context, options Options, uiEnabled bool) (*Store, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("%w: nil context", ErrInvalidIndex)
 	}
@@ -215,7 +240,11 @@ func OpenIndexReadOnly(ctx context.Context, options Options) (*Store, error) {
 			_ = ownership.Close()
 		}
 	}()
-	if err := preflightIndex(ctx, path, timeout, options.WorktreeID); err != nil {
+	schemaVersion, readerVersion := indexSchemaVersion, indexReaderVersion
+	if uiEnabled {
+		schemaVersion, readerVersion = 4, 4
+	}
+	if err := preflightIndexVersions(ctx, path, timeout, options.WorktreeID, schemaVersion, readerVersion); err != nil {
 		return nil, err
 	}
 	readers, err := openPool(ctx, path, "ro", timeout, true, readerPoolSize)
@@ -232,7 +261,7 @@ func OpenIndexReadOnly(ctx context.Context, options Options) (*Store, error) {
 		return nil, err
 	}
 	keepOwnership = true
-	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, readers: readers, ownership: ownership}, nil
+	return &Store{path: path, worktree: identity.worktree, incarnation: identity.incarnation, busyTimeoutMS: timeout, readers: readers, ownership: ownership, uiEnabled: uiEnabled}, nil
 }
 
 // ReadDB returns the bounded read-only connection pool for internal store users.
@@ -308,6 +337,10 @@ type indexIdentity struct {
 }
 
 func preflightIndex(ctx context.Context, path string, timeout int64, expectedWorktree model.UUID) error {
+	return preflightIndexVersions(ctx, path, timeout, expectedWorktree, indexSchemaVersion, indexReaderVersion)
+}
+
+func preflightIndexVersions(ctx context.Context, path string, timeout int64, expectedWorktree model.UUID, schemaVersion, readerVersion int64) error {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return fmt.Errorf("inspect SQLite index: %w", err)
@@ -344,8 +377,8 @@ func preflightIndex(ctx context.Context, path string, timeout int64, expectedWor
 	if version < 1 || minReader < 1 || minReader > version {
 		return fmt.Errorf("invalid SQLite schema metadata version=%d min_reader=%d: %w", version, minReader, ErrInvalidIndex)
 	}
-	if version > indexSchemaVersion || minReader > indexReaderVersion {
-		return fmt.Errorf("found schema=%d min_reader=%d; supported schema=%d reader=%d: %w", version, minReader, indexSchemaVersion, indexReaderVersion, ErrSchemaTooNew)
+	if version > schemaVersion || minReader > readerVersion {
+		return fmt.Errorf("found schema=%d min_reader=%d; supported schema=%d reader=%d: %w", version, minReader, schemaVersion, readerVersion, ErrSchemaTooNew)
 	}
 	if expectedWorktree != "" {
 		want, err := model.ParseUUID(string(expectedWorktree))
@@ -479,6 +512,10 @@ func boolInt(value bool) int {
 }
 
 func migrateAndReadIdentity(ctx context.Context, conn *sql.Conn, fresh bool, expectedWorktree model.UUID) (indexIdentity, error) {
+	return migrateAndReadIdentityTo(ctx, conn, fresh, expectedWorktree, indexSchemaVersion, indexReaderVersion)
+}
+
+func migrateAndReadIdentityTo(ctx context.Context, conn *sql.Conn, fresh bool, expectedWorktree model.UUID, schemaVersion, readerVersion int64) (indexIdentity, error) {
 	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		return indexIdentity{}, fmt.Errorf("begin SQLite migration transaction: %w", err)
@@ -496,8 +533,8 @@ func migrateAndReadIdentity(ctx context.Context, conn *sql.Conn, fresh bool, exp
 			return indexIdentity{}, fmt.Errorf("read migration version: %w", err)
 		}
 	}
-	if version > indexSchemaVersion {
-		return indexIdentity{}, fmt.Errorf("schema=%d supported=%d: %w", version, indexSchemaVersion, ErrSchemaTooNew)
+	if version > schemaVersion {
+		return indexIdentity{}, fmt.Errorf("schema=%d supported=%d: %w", version, schemaVersion, ErrSchemaTooNew)
 	}
 	if fresh {
 		if err := applyMigration(ctx, tx, "migrations/index/001.sql"); err != nil {
@@ -511,11 +548,23 @@ func migrateAndReadIdentity(ctx context.Context, conn *sql.Conn, fresh bool, exp
 		}
 		version = 2
 	}
+	if schemaVersion >= 3 && version < 3 {
+		if err := applyMigration(ctx, tx, "migrations/index/003.sql"); err != nil {
+			return indexIdentity{}, err
+		}
+		version = 3
+	}
+	if schemaVersion >= 4 && version < 4 {
+		if err := applyMigration(ctx, tx, "migrations/index/004.sql"); err != nil {
+			return indexIdentity{}, err
+		}
+		version = 4
+	}
 	var minReader int64
 	if err := tx.QueryRowContext(ctx, `SELECT schema_version,min_reader_version FROM schema_meta WHERE singleton=1`).Scan(&version, &minReader); err != nil {
 		return indexIdentity{}, fmt.Errorf("verify migrated schema metadata: %w", err)
 	}
-	if version != indexSchemaVersion || minReader > indexReaderVersion || minReader < 1 || minReader > version {
+	if version != schemaVersion || minReader > readerVersion || minReader < 1 || minReader > version {
 		return indexIdentity{}, fmt.Errorf("post-migration schema=%d min_reader=%d is unsupported: %w", version, minReader, ErrSchemaTooNew)
 	}
 	if err := validateRequiredSchema(ctx, tx, version); err != nil {
@@ -581,6 +630,12 @@ func validateRequiredSchema(ctx context.Context, query schemaQuerier, version in
 	required := []string{"schema_meta", "store_identity", "generations", "active_generations", "content_blobs", "packages", "files", "symbols", "relations", "diagnostics", "capability_results", "search_documents", "search_fts"}
 	if version >= 2 {
 		required = append(required, "modules", "module_members")
+	}
+	if version >= 3 {
+		required = append(required, "domain_entities", "entity_links", "contract_fields", "state_transitions")
+	}
+	if version >= 4 {
+		required = append(required, "ui_build_maps", "ui_source_anchors", "ui_build_bindings", "ui_anchor_links")
 	}
 	for _, name := range required {
 		var count int

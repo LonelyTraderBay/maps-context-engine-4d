@@ -12,6 +12,7 @@ func TestCommittedStorageMigrationsMatchSpecDDL(t *testing.T) {
 		"index/001.sql":   "MCE4D_DDL_INDEX_001",
 		"index/002.sql":   "MCE4D_DDL_INDEX_002",
 		"index/003.sql":   "MCE4D_DDL_INDEX_003",
+		"index/004.sql":   "MCE4D_DDL_INDEX_004",
 		"records/001.sql": "MCE4D_DDL_RECORDS_001",
 	}
 	root := storageRepoRoot(t)
@@ -29,7 +30,6 @@ func TestCommittedStorageMigrationsMatchSpecDDL(t *testing.T) {
 	}
 
 	for _, futurePath := range []string{
-		"index/004.sql",
 		"records/002.sql",
 	} {
 		path := filepath.Join(root, "internal", "store", "sqlite", "migrations", filepath.FromSlash(futurePath))
