@@ -1,8 +1,11 @@
 {
-  "allocation_CI": "PENDING",
-  "allocation_commit_sha": "PENDING",
+  "allocation_CI": "PASS(6/6:40208314977)",
+  "allocation_ci_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/ci/allocation/attempt-1/summary.json",
+  "allocation_ci_run_id": 40208314977,
+  "allocation_ci_sha256": "4e544111d8d27da75d22829a6aca82a06f87bc28e068e13f5ab53d5c9634106a",
+  "allocation_commit_sha": "c04441ab75baac426492b8ad5be9167dcb1b0f3c",
   "allocation_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/allocation.json",
-  "allocation_sha256": "c17a100675c248d9648513d0e23d214c95162597935efe44c94cb822b0d1b598",
+  "allocation_sha256": "9726a9842ef125e9a243ce2ad8bf9a9d2e5e12d7bbcc4b6c4cda8c219490d7cf",
   "base_sha": "2c3754a4dc8c20eacabf790b48def7225da3bcad",
   "check_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/check-plan-canonical.json",
   "check_plan_sha256": "5bd588ba831c051b827b1ffe79e7001260ee29e68511aba2569dc59137794dd0",
@@ -10,7 +13,10 @@
   "format_version": 1,
   "kind": "task_allocation_check",
   "limitations": [
-    "The full 15-command local acceptance passed on the R5 allocation candidate rooted at C4. Allocation commit and exact-SHA CI remain pending. R4 sealed archive and live UNKNOWN history are retained unchanged."
+    "Allocation local acceptance passed 15/15 on base C4; allocation A5 is observed at both authorized refs and both exact-SHA GitHub Actions push runs passed all six frozen checks.",
+    "The first postflight branch API snapshot lagged the completed pushes; original responses are retained and later unique-nonce no-cache queries matched the candidate SHA and git ls-remote on both refs.",
+    "User-approved publisher-retention scope is exactly tools/spec_check/archive.py and tools/spec_check/test_spec_check.py; payload regression/local/CI, closing, sealed archive/readback, and fresh live proof remain pending.",
+    "The separate storage_migrations_test.go scope extension was not applied because the migration guard and full Go suite passed with index/004.sql present."
   ],
   "local_check_summary_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/local-checks/allocation/attempt-2/summary.json",
   "local_check_summary_sha256": "62b69ff4df21e8b9a6dd71679249295b5ff43766563e34c5504f7a440ead11cd",
