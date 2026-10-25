@@ -1,0 +1,97 @@
+{
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "base_sha": "9517bf6fedf69fd6b0ebee7db7f8b8bc958913f3",
+  "change_budget": {
+    "allowed_paths": [
+      ".gitattributes",
+      "C:/Users/Joker-PC/.codex/worktrees/t085-r1-implementation/maps-context-engine-4d/artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/**",
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/**",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/**",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-3/**",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/**",
+      "internal/store/sqlite/migrations/index/004.sql",
+      "internal/store/sqlite/store.go",
+      "internal/store/sqlite/ui*",
+      "internal/uimap/import*",
+      "packages/vite-inspector/",
+      "tests/contract/storage_migrations_test.go",
+      "tests/contract/ui/toolchain-and-contract.test.mjs",
+      "tools/spec_check/archive.py",
+      "tools/spec_check/test_spec_check.py",
+      "web/explorer/vite.config.ts",
+      "tools/spec_check/github_observer.py",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-6/**"
+    ],
+    "behavior": [
+      "Use only the existing pinned Node 24.22.0, npm 11.19.1, Vite 8.3.4 and TypeScript 7.0.2 workspace dependencies; do not add a registry dependency.",
+      "The inspector transform is explicitly opt-in and development/test only; preserve target semantics, never execute target source, mutate target files, start a target process, or emit source-map metadata in production.",
+      "BuildManifest contains source and anchor evidence only; it never contains an engine generation, runtime DOM instance, or resolver claim.",
+      "Parse and validate the complete manifest and source-generation binding before SQL writes; import map, anchors, binding and typed links atomically; exact repeat is idempotent and conflicting immutable content is rejected.",
+      "Apply index migrations 003 then 004 only on explicit UI-enabled open; keep the default core reader/writer at schema/reader v2 and reject v4 stores.",
+      "Keep C14N1 and MCE-MANIFEST-JSON1 exact-byte behavior aligned with the existing cross-language vectors; reject malformed Unicode, paths, ranges, duplicate IDs and overflows."
+    ],
+    "contracts": [
+      "S35 MAP-03",
+      "S37 target execution boundary",
+      "S38 UI store and immutable binding",
+      "S43 CT-04 MCE-C14N1",
+      "S44 DB-02/DB-03/DB-07",
+      "S45 AL-08",
+      "S53 AW-02/AW-03/AW-08"
+    ],
+    "exclusions": [
+      "No Inspector interaction, SDK DOM registry, preview permissions, target execution, production transform, network service, release, or package publication.",
+      "No global schema-version bump: UI-enabled capability is explicit; core default remains v2.",
+      "No changes to sealed/historical artifacts, Git remotes, branch protection, credentials, or unrelated dirty/untracked work."
+    ]
+  },
+  "check_plan_sha256": "2894ca9a53ce026e91746bd63a3ceab7aa6f0b31d0a47402f0d909d1965012be",
+  "delivery_id": "45b04ee7-166b-477e-bcc4-80551d63843a",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "implement",
+  "objective": "Implement the opt-in Vite development AST transform and generation-independent BuildManifest producer, validate and atomically import immutable UI maps/bindings into the SQLite index, and prove production stripping and cross-language canonicalization.",
+  "owner": "Codex",
+  "priority": "P0",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19,S21,S22,S34-S39,S43-S45,S47,S53",
+  "task_id": "T085",
+  "task_revision": 6,
+  "verification_plan": [
+    {
+      "commands": [
+        "python -B tools/spec_check/check.py",
+        "python -B tools/spec_check/test_spec_check.py"
+      ],
+      "id": "spec"
+    },
+    {
+      "commands": [
+        "python -B tools/ci/check_gofmt.py",
+        "go test ./...",
+        "go vet ./...",
+        "go build ./..."
+      ],
+      "id": "go"
+    },
+    {
+      "commands": [
+        "npm run test:contract:ui",
+        "npm run build --workspace @mce4d/explorer"
+      ],
+      "id": "ui"
+    },
+    {
+      "evidence": "Compare Go and Node full canonical bytes and SHA-256 against checked-in C14N1 and MANIFEST-JSON1 vectors, including rejection fixtures.",
+      "id": "c14n"
+    },
+    {
+      "evidence": "Build a Vite production fixture with opt-in set and prove the development transform, BuildManifest payload, inspector SDK references and injected attributes are absent from emitted output.",
+      "id": "prod-strip"
+    },
+    {
+      "evidence": "Normal push allocation, payload and closing commits; exact-SHA main and task-branch CI; sealed archive/readback and fresh live verification.",
+      "id": "delivery"
+    }
+  ]
+}
