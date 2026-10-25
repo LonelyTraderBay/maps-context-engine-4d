@@ -1,0 +1,28 @@
+{
+  "active_delivery_id": "75eef7b9-9b10-4954-afdc-5de5570547c0",
+  "format_version": 1,
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/selection.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/task-mode.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/dependency-review.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/check-plan-canonical.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/check-plan-task-branch.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/allocation.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/allocation-current.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/rationale/selection-reason.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/selector-history-evaluation-current.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/payload-main-a01ae69f-a4b2-4971-a4a7-f5aaaf3320ee/push-operation.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/payload-main-a01ae69f-a4b2-4971-a4a7-f5aaaf3320ee/command.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/payload-branch-084eb217-6edd-419c-a7a4-81233148cc17/push-operation.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/payload-branch-084eb217-6edd-419c-a7a4-81233148cc17/command.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/closing-main-44007f03-bf68-436d-9304-317994476344/push-operation.json",
+    "artifacts/git-delivery-support/T048-r5-9af49576-838d-40d2-aaa9-90cea9634ffd/archive-view/operations/closing-task-d14ee3ff-3869-43a5-90fb-712655be3b37/push-operation.json"
+  ],
+  "kind": "delivery_selection_invalidation",
+  "previous_delivery_id": "9af49576-838d-40d2-aaa9-90cea9634ffd",
+  "previous_task_revision": 5,
+  "reason": "Revision 5 remains immutable but cannot be archived as a complete delivery. Its actual P2 push (b40807f22a5032292d2f782a247a4b3a24d5bba7) has successful legacy command receipts on main and the task branch, but those retained receipts are T048_payload_push_receipt records without GitPushOperationEvidence lifecycle/deadline, typed per-query timestamps/IDs, raw GitHub API query snapshots, and remote-config digest. The retained R5 S19 row also omits E868 from its evidence-ID list although the E868 evidence row exists; R6 records that measured link gap and carries E868 into its current cumulative row. The C2 closing commit and its checks are preserved; fresh C2 normal-push lifecycles now show both approved refs at 357eca592cd980d8706ac090dc3ffb5dd09af0fe. The missing P2 history cannot be recovered exactly after the event. Revision 6 therefore starts from current C2, creates a new tracked P3 and records its push and CI with full lifecycle evidence. No R5 commit, receipt, or sealed history is rewritten.",
+  "recorded_at_utc": "2026-10-25T05:04:01.145910Z",
+  "task_id": "T048",
+  "task_revision": 6
+}

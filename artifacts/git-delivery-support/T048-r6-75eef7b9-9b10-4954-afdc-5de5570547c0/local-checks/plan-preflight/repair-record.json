@@ -1,0 +1,62 @@
+{
+  "base_sha": "357eca592cd980d8706ac090dc3ffb5dd09af0fe",
+  "canonical_plan_sha256_after_repair": {
+    "check-plan-canonical.json": "5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073",
+    "check-plan-task-branch.json": "be1eac115b4415872ef8e3d1a7acf426eb310adee87186fa4d390237161cc943"
+  },
+  "captured_at_utc": "2026-10-25T05:09:53.045459Z",
+  "delivery_id": "75eef7b9-9b10-4954-afdc-5de5570547c0",
+  "failed_attempt": {
+    "commands": [
+      "python -B tools/ci/delivery_policy.py check-plan --plan artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/check-plan-canonical.json --workflow .github/workflows/bootstrap.yml --sha256 93f0af09efd53a177084f6c41cb01ce39c52e78988db139af5bed0d3a2550ca9",
+      "python -B tools/ci/delivery_policy.py check-plan --plan artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/check-plan-task-branch.json --workflow .github/workflows/bootstrap.yml --sha256 96691541a1faaec941ebb3094023eaac714686e4ed87186fa4d390237161cc943"
+    ],
+    "diagnostics_by_plan": {
+      "check-plan-canonical.json": [
+        "Supplied raw-file digest differed from canonical digest.",
+        "File bytes differed from canonical MCE-MANIFEST-JSON1 bytes."
+      ],
+      "check-plan-task-branch.json": [
+        "Supplied digest differed from canonical digest.",
+        "File bytes differed from canonical MCE-MANIFEST-JSON1 bytes."
+      ]
+    },
+    "exit_code": "NOT_CAPTURED_BY_TOOL_ORCHESTRATION",
+    "observed_canonical_sha256": {
+      "check-plan-canonical.json": "5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073",
+      "check-plan-task-branch.json": "be1eac115b4415872ef8e3d1a7acf426eb310adee87186fa4d390237161cc943"
+    },
+    "raw_plan_sha256_before_repair": {
+      "check-plan-canonical.json": "93f0af09efd53a177084f6c41cb01ce39c52e78988db139af5bed0d3a2550ca9",
+      "check-plan-task-branch.json": "96691541a1faaec941ebb3094023eaac714686e4f06092f80c001aa1370f9003"
+    },
+    "reported_result": "FAIL",
+    "supplied_sha256_arguments": {
+      "check-plan-canonical.json": "93f0af09efd53a177084f6c41cb01ce39c52e78988db139af5bed0d3a2550ca9",
+      "check-plan-task-branch.json": "96691541a1faaec941ebb3094023eaac714686e4ed87186fa4d390237161cc94"
+    }
+  },
+  "format_version": 1,
+  "kind": "T048_check_plan_canonical_bytes_repair",
+  "recheck": {
+    "checked_at_utc": "2026-10-25T05:10:58.414392Z",
+    "commands": [
+      "python -B tools/ci/delivery_policy.py check-plan --plan artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/check-plan-canonical.json --workflow .github/workflows/bootstrap.yml --sha256 5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073",
+      "python -B tools/ci/delivery_policy.py check-plan --plan artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/check-plan-task-branch.json --workflow .github/workflows/bootstrap.yml --sha256 be1eac115b4415872ef8e3d1a7acf426eb310adee87186fa4d390237161cc943"
+    ],
+    "exit_codes": [
+      0,
+      0
+    ],
+    "result": "PASS",
+    "stdout_stderr": "ĐẠT: GitCheckPlan schema+semantic+workflow; SHA-256 5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073; 6 check contexts.\nĐẠT: GitCheckPlan schema+semantic+workflow; SHA-256 be1eac115b4415872ef8e3d1a7acf426eb310adee87186fa4d390237161cc943; 6 check contexts.\n"
+  },
+  "repair": "Re-serialized each unchanged plan value with the repository canonicalizer; no plan checks, repository refs, workflow, or task scope changed.",
+  "root_cause": "The preparation wrote pretty JSON, while check-plan requires canonical MCE-MANIFEST-JSON1 bytes. The initial check also passed raw-file digests as --sha256; the task-branch tracker field consequently held its raw digest instead of its canonical digest.",
+  "task_id": "T048",
+  "task_revision": 6,
+  "tracker_fields_to_correct": {
+    "check_plan_sha256": "5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073",
+    "task_branch_check_plan_sha256": "be1eac115b4415872ef8e3d1a7acf426eb310adee87186fa4d390237161cc943"
+  }
+}

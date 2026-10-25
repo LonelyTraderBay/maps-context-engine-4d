@@ -1,0 +1,40 @@
+{
+  "change_budget": {
+    "allowed_paths": [
+      "Maps-Context-Engine-4D_SPEC.md",
+      "artifacts/git-delivery-support/T048-r6-75eef7b9-9b10-4954-afdc-5de5570547c0/**"
+    ],
+    "behavior": [
+      "Preserve every R1-R5 selector, plan, receipt, operation, commit, and CI record byte-for-byte.",
+      "Do not reconstruct or relabel the missing R5 P2 API query/lifecycle fields; retain the original receipts as historical records.",
+      "Base R6 allocation commit A3 on the actual current C2; bind the selector/invalidation/reconciliation records before push; base payload P3 on the verified allocation SHA.",
+      "Use normal pushes only to the already authorized main and codex/t003-d089-regressions refs with fresh destination/query/lifecycle evidence.",
+      "Complete P3 and C3 local/CI evidence, archive seal/readback, and fresh live verification before auto-advancing.",
+      "Do not claim a real model benchmark or host token telemetry; keep G6 NOT_RUN."
+    ],
+    "exclusions": [
+      "No product source, test, workflow, dependency, runtime, production or database changes.",
+      "No force/rewrite, merge, deployment, production access or alteration of sealed historical evidence."
+    ]
+  },
+  "check_plan_sha256": "5d0ed6045898c51823e536a8ffe2c3a6815b2c3f2ffa3009deb6951a1c6bb073",
+  "delivery_id": "75eef7b9-9b10-4954-afdc-5de5570547c0",
+  "format_version": 1,
+  "kind": "task_mode",
+  "mode": "review",
+  "objective": "Complete the same T048 review under revision 6 after R5's payload push receipts were found insufficient for typed archive validation. Preserve R1-R5 unchanged, start at the freshly verified current C2, record and verify the R6 allocation commit A3, then record a tracked evidence/selector payload commit P3 and complete exact-SHA push/CI, closing C3, sealed archive/readback, and fresh live verification.",
+  "owner": "Codex",
+  "priority": "P2",
+  "spec_scope_ref": "Maps-Context-Engine-4D_SPEC.md#S19/T048;S47/card-092;S20/G6;AW-08/GIT-03",
+  "task_id": "T048",
+  "task_revision": 6,
+  "verification_plan": [
+    "Replay retained R1-R6 selector lineage and require zero semantic errors; keep static verdict UNKNOWN until external archive/live proof.",
+    "Validate frozen main and task-branch check plans and bind the R6 selector, task mode, dependency review, and allocation to C2.",
+    "Run all 13 frozen local checks on the R6 allocation candidate and exact allocation commit A3, then record fresh normal pushes and exact-SHA GitHub checks on both approved refs.",
+    "Run all 13 frozen local checks on exact R6 payload P3, reconcile every execution/evidence/log hash, then record fresh normal pushes and exact-SHA GitHub checks on both approved refs.",
+    "Create direct-child closing C3 with required Vietnamese message/trailers; run 13 exact closing checks and fresh exact-SHA CI on both approved refs.",
+    "Validate the retained graph, publish the sealed archive, independently read back every byte, then run and retain a fresh live verification.",
+    "Keep G6 NOT_RUN because R6 does not collect a real repository/model benchmark or host token receipt."
+  ]
+}
