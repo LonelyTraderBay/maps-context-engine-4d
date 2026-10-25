@@ -1,0 +1,86 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "c8c9cc98-d6bf-4d40-bed7-6b54fb20ab7e",
+  "lifecycle_id": "ff39ad1a-2d78-43e0-8e9f-39ae23ac5648",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 7,
+  "delivery_id": "ba04aaf7-e82d-4756-afb6-1881be86ba77",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r6-allocation-main-push",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:af428fe69f7612655f740373e7aeae9209eb616b",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "830bca848bf826b16e2680234e6dde8de383fde1:refs/heads/main"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "revision-7/operations/allocation-A-main-01/push-driver.ps1",
+    "input_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-7/check-plan-canonical.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-7/local-checks/allocation/attempt-1/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "677b00a25728fafc3f45330f6782c3a0c58268ff88e633fd5694ad0232aa5183",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4",
+      "command_source_sha256": "3d78e2fe38beea44eae03bb41a2a7a93c7769bdba38bcd116d1f2df3de007c8a"
+    },
+    "expected_writes": [
+      "revision-7/operations/allocation-A-main-01/github-tool-repo-observation-r7-allocation-main.json revision-7/operations/allocation-A-main-01/remote-config.json revision-7/operations/allocation-A-main-01/github-repository-preflight.json revision-7/operations/allocation-A-main-01/github-branch-preflight.json revision-7/operations/allocation-A-main-01/preflight.json revision-7/operations/allocation-A-main-01/push-output.txt revision-7/operations/allocation-A-main-01/github-repository-postflight.json revision-7/operations/allocation-A-main-01/github-branch-postflight.json revision-7/operations/allocation-A-main-01/postflight.json revision-7/operations/allocation-A-main-01/push-operation.json revision-7/operations/allocation-A-main-01/destination-observation.json revision-7/operations/allocation-A-main-01/command-lifecycle.json revision-7/operations/allocation-A-main-01/retention.json revision-7/operations/allocation-A-main-01/push-driver.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 830bca848bf826b16e2680234e6dde8de383fde1:refs/heads/main"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "revision-7/operations/allocation-A-main-01/retention.json",
+    "deadline_at_utc": "2026-10-25T20:47:23.6722392Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "bfd8ab61-9307-4030-b78b-3fd03c8b7ead",
+    "output_root": "revision-7/operations/allocation-A-main-01",
+    "cleanup_plan_ref": "revision-7/operations/allocation-A-main-01/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T20:37:25.5347692Z",
+    "completed_at_utc": "2026-10-25T20:37:30.1923871Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "revision-7/operations/allocation-A-main-01/push-output.txt"
+    ],
+    "artifact_refs": [
+      "revision-7/operations/allocation-A-main-01/github-tool-repo-observation-r7-allocation-main.json revision-7/operations/allocation-A-main-01/remote-config.json revision-7/operations/allocation-A-main-01/github-repository-preflight.json revision-7/operations/allocation-A-main-01/github-branch-preflight.json revision-7/operations/allocation-A-main-01/preflight.json revision-7/operations/allocation-A-main-01/push-output.txt revision-7/operations/allocation-A-main-01/github-repository-postflight.json revision-7/operations/allocation-A-main-01/github-branch-postflight.json revision-7/operations/allocation-A-main-01/postflight.json revision-7/operations/allocation-A-main-01/push-operation.json revision-7/operations/allocation-A-main-01/destination-observation.json revision-7/operations/allocation-A-main-01/command-lifecycle.json revision-7/operations/allocation-A-main-01/retention.json revision-7/operations/allocation-A-main-01/push-driver.ps1"
+    ]
+  }
+}
