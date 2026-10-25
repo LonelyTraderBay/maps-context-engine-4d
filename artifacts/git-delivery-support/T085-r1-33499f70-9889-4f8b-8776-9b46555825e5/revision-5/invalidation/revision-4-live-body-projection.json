@@ -1,0 +1,22 @@
+{
+  "active_delivery_id": "f2f6cdbc-13f0-493d-9f83-d2992aded582",
+  "format_version": 1,
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-live/api/closing-commit.body.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-live/api/closing-commit.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-live/attempt-failure.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-publication/publication.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/manifest.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/members/attempt.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/members/closing-commit.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/members/git/closing-commit-snapshot.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/seal.json"
+  ],
+  "kind": "delivery_selection_invalidation",
+  "previous_delivery_id": "711606c8-9642-44fc-905a-7ebfd8cfd686",
+  "previous_task_revision": 4,
+  "reason": "Revision 4 passed payload/closing checks and its archive was sealed and read back, but fresh live GitHub projection remained UNKNOWN because only the archived closing body differed from the API projection by one terminal LF. Preserve the exact sealed R4 archive and failed live API evidence. Revision 5 will create its closing Git commit object without a terminal LF so the actual Git body and fresh GitHub projection can be compared byte-for-byte.",
+  "recorded_at_utc": "2026-10-25T15:27:07.439132Z",
+  "task_id": "T085",
+  "task_revision": 5
+}

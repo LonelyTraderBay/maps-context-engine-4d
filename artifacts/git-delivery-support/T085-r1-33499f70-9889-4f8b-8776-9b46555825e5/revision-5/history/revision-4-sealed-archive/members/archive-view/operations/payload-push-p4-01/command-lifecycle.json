@@ -1,0 +1,86 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "08c8c7ad-e5d7-4a89-8d49-475c24a470ef",
+  "lifecycle_id": "b1f73479-7ddc-4602-98d3-6dd3e392533b",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 2,
+  "delivery_id": "322ba698-8262-4b1f-9678-87da2ed9e29a",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r2-payload-p4-push-attempt1",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:5de8ebbaa7a75be30659311135c66bc5a1169bc9",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "5ebe2dafbe8e0fc2c347c8f5d2a66dafd850890d:refs/heads/main"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "archive-view/operations/payload-push-p4-01/push-driver.ps1",
+    "input_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/check-plan-canonical.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/local-checks/payload/attempt-5/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "d9656c100a4466d735d17563ff1541c3d81c11b00735a7f884d7aedadcd257bf",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4",
+      "command_source_sha256": "774953f15da5de5c280a75d21c3d128d5b447922ae1d3cda52692323c63a1297"
+    },
+    "expected_writes": [
+      "archive-view/operations/payload-push-p4-01/github-tool-repo-observation.json archive-view/operations/payload-push-p4-01/remote-config.json archive-view/operations/payload-push-p4-01/github-repository-preflight.json archive-view/operations/payload-push-p4-01/github-branch-preflight.json archive-view/operations/payload-push-p4-01/preflight.json archive-view/operations/payload-push-p4-01/push-output.txt archive-view/operations/payload-push-p4-01/github-repository-postflight.json archive-view/operations/payload-push-p4-01/github-branch-postflight.json archive-view/operations/payload-push-p4-01/postflight.json archive-view/operations/payload-push-p4-01/push-operation.json archive-view/operations/payload-push-p4-01/destination-observation.json archive-view/operations/payload-push-p4-01/command-lifecycle.json archive-view/operations/payload-push-p4-01/retention.json archive-view/operations/payload-push-p4-01/push-driver.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 5ebe2dafbe8e0fc2c347c8f5d2a66dafd850890d:refs/heads/main"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "archive-view/operations/payload-push-p4-01/retention.json",
+    "deadline_at_utc": "2026-10-25T11:25:08.8121823Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "35b97b20-a7a3-4b3b-a83c-e646275b59a9",
+    "output_root": "archive-view/operations/payload-push-p4-01",
+    "cleanup_plan_ref": "archive-view/operations/payload-push-p4-01/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T11:15:10.7176812Z",
+    "completed_at_utc": "2026-10-25T11:15:14.7740681Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/payload-push-p4-01/push-output.txt"
+    ],
+    "artifact_refs": [
+      "archive-view/operations/payload-push-p4-01/github-tool-repo-observation.json archive-view/operations/payload-push-p4-01/remote-config.json archive-view/operations/payload-push-p4-01/github-repository-preflight.json archive-view/operations/payload-push-p4-01/github-branch-preflight.json archive-view/operations/payload-push-p4-01/preflight.json archive-view/operations/payload-push-p4-01/push-output.txt archive-view/operations/payload-push-p4-01/github-repository-postflight.json archive-view/operations/payload-push-p4-01/github-branch-postflight.json archive-view/operations/payload-push-p4-01/postflight.json archive-view/operations/payload-push-p4-01/push-operation.json archive-view/operations/payload-push-p4-01/destination-observation.json archive-view/operations/payload-push-p4-01/command-lifecycle.json archive-view/operations/payload-push-p4-01/retention.json archive-view/operations/payload-push-p4-01/push-driver.ps1"
+    ]
+  }
+}

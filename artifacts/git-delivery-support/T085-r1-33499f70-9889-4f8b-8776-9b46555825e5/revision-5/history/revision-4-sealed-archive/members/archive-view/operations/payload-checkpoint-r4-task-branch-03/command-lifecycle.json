@@ -1,0 +1,86 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "d5951d8e-4b2a-43bf-874b-39969505216a",
+  "lifecycle_id": "b62c08f8-edc9-4b8d-9a7b-b425b00c390a",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 4,
+  "delivery_id": "711606c8-9642-44fc-905a-7ebfd8cfd686",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r4-payload-checkpoint-q-push-task-branch-03",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:e45478b8b5a6ec4b6047f794c2b134acce03d486",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "e45478b8b5a6ec4b6047f794c2b134acce03d486:refs/heads/codex/t003-d089-regressions"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "archive-view/operations/payload-checkpoint-r4-task-branch-03/push-driver.ps1",
+    "input_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/check-plan-canonical.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/local-checks/payload/attempt-5/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "f2b9c8a6e6979bea3fa659e5f13075a33f2232663c672021191c42294135de62",
+      "remote_config_sha256": "6d4cf4a3ee42c3e36029f86ab1bfb6e541a998ddee302edd6b698a2afe2e9e89",
+      "command_source_sha256": "cb7d2c6c5265d19392aafa0167e8d4f7b28aa9ae417f7c501d2c22df7c0d7c63"
+    },
+    "expected_writes": [
+      "archive-view/operations/payload-checkpoint-r4-task-branch-03/github-tool-repo-observation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/remote-config.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-repository-preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-branch-preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-output.txt archive-view/operations/payload-checkpoint-r4-task-branch-03/github-repository-postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-branch-postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-operation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/destination-observation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/command-lifecycle.json archive-view/operations/payload-checkpoint-r4-task-branch-03/retention.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-driver.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin e45478b8b5a6ec4b6047f794c2b134acce03d486:refs/heads/codex/t003-d089-regressions"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "archive-view/operations/payload-checkpoint-r4-task-branch-03/retention.json",
+    "deadline_at_utc": "2026-10-25T14:11:01.0942009Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "43e80539-d41f-410f-8ca0-d1b05952d78e",
+    "output_root": "archive-view/operations/payload-checkpoint-r4-task-branch-03",
+    "cleanup_plan_ref": "archive-view/operations/payload-checkpoint-r4-task-branch-03/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T14:01:02.9590893Z",
+    "completed_at_utc": "2026-10-25T14:01:06.3342171Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/payload-checkpoint-r4-task-branch-03/push-output.txt"
+    ],
+    "artifact_refs": [
+      "archive-view/operations/payload-checkpoint-r4-task-branch-03/github-tool-repo-observation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/remote-config.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-repository-preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-branch-preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/preflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-output.txt archive-view/operations/payload-checkpoint-r4-task-branch-03/github-repository-postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/github-branch-postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/postflight.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-operation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/destination-observation.json archive-view/operations/payload-checkpoint-r4-task-branch-03/command-lifecycle.json archive-view/operations/payload-checkpoint-r4-task-branch-03/retention.json archive-view/operations/payload-checkpoint-r4-task-branch-03/push-driver.ps1"
+    ]
+  }
+}

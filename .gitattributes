@@ -63,3 +63,9 @@ artifacts/release/T048-r3-review.json -text
 # Preserve T085 revision-4 CRLF snapshots while diff checks treat CR as a line ending.
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/** whitespace=cr-at-eol
 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/local-checks/**/records/*.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
+
+# Keep the retained sealed T085 r4 archive byte-identical inside revision 5; it contains native CRLF and source trailing whitespace.
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/history/revision-4-sealed-archive/** whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
+# Preserve native CRLF in T085 revision 5 local command records without rewriting their captured bytes.
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/local-checks/** whitespace=cr-at-eol
+artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/local-checks/**/records/*.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol

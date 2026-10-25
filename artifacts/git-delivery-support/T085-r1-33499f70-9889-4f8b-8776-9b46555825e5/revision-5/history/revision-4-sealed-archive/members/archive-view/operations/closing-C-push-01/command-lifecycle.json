@@ -1,0 +1,135 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "992ef83c-9b50-40cf-91ef-c5926ff0cbe5",
+  "lifecycle_id": "37dadd96-52f4-4c77-a62d-f6f639a2274d",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 1,
+  "delivery_id": "33499f70-9889-4f8b-8776-9b46555825e5",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r1-closing-C-push",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:601409c74f02bb7edbe8c84afb1ac6a917ca5efb",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "d507f669e96ff2a1e7d73bba39854084aa95e01a:refs/heads/main"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "archive-view/operations/closing-C-push-01/push-driver.ps1",
+    "input_refs": [
+      "tools/ci/check-plan.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/payload/attempt-5/summary.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/ci/p2/collector-summary.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/archive-view/operations/payload-push-p2-01/push-operation.json",
+      "work/T085-r1-implementation/closing-spec-candidate-p2.md"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4",
+      "command_source_sha256": "f5440ea2927bb09074f01364ded8e9b73509f2fe98c8a34a25119219d9cb08f3"
+    },
+    "expected_writes": [
+      "archive-view/operations/closing-C-push-01/github-tool-repo-observation.json",
+      "archive-view/operations/closing-C-push-01/remote-config.json",
+      "archive-view/operations/closing-C-push-01/github-repository-preflight.json",
+      "archive-view/operations/closing-C-push-01/github-branch-preflight.json",
+      "archive-view/operations/closing-C-push-01/preflight.json",
+      "archive-view/operations/closing-C-push-01/push-output.txt",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-1-classification.json",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-2-classification.json",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight.json",
+      "archive-view/operations/closing-C-push-01/postflight.json",
+      "archive-view/operations/closing-C-push-01/postflight-query-metadata.json",
+      "archive-view/operations/closing-C-push-01/push-operation.json",
+      "archive-view/operations/closing-C-push-01/destination-observation.json",
+      "archive-view/operations/closing-C-push-01/command-lifecycle.json",
+      "archive-view/operations/closing-C-push-01/retention.json",
+      "archive-view/operations/closing-C-push-01/push-driver.ps1",
+      "archive-view/operations/closing-C-push-01/finalize-postflight-closing.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin d507f669e96ff2a1e7d73bba39854084aa95e01a:refs/heads/main"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "archive-view/operations/closing-C-push-01/retention.json",
+    "deadline_at_utc": "2026-10-25T09:20:53.6866885Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "edb27dff-9cc4-4bd9-9ff1-f1643592c4a5",
+    "output_root": "archive-view/operations/closing-C-push-01",
+    "cleanup_plan_ref": "archive-view/operations/closing-C-push-01/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T09:10:55.5431782Z",
+    "completed_at_utc": "2026-10-25T09:11:09.7137175Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/closing-C-push-01/push-output.txt"
+    ],
+    "artifact_refs": [
+      "archive-view/operations/closing-C-push-01/github-tool-repo-observation.json",
+      "archive-view/operations/closing-C-push-01/remote-config.json",
+      "archive-view/operations/closing-C-push-01/github-repository-preflight.json",
+      "archive-view/operations/closing-C-push-01/github-branch-preflight.json",
+      "archive-view/operations/closing-C-push-01/preflight.json",
+      "archive-view/operations/closing-C-push-01/push-output.txt",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-1-classification.json",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-C-push-01/postflight-attempt-2-classification.json",
+      "archive-view/operations/closing-C-push-01/github-repository-postflight.json",
+      "archive-view/operations/closing-C-push-01/github-branch-postflight.json",
+      "archive-view/operations/closing-C-push-01/postflight.json",
+      "archive-view/operations/closing-C-push-01/postflight-query-metadata.json",
+      "archive-view/operations/closing-C-push-01/push-operation.json",
+      "archive-view/operations/closing-C-push-01/destination-observation.json",
+      "archive-view/operations/closing-C-push-01/command-lifecycle.json",
+      "archive-view/operations/closing-C-push-01/retention.json",
+      "archive-view/operations/closing-C-push-01/push-driver.ps1",
+      "archive-view/operations/closing-C-push-01/finalize-postflight-closing.ps1"
+    ]
+  }
+}

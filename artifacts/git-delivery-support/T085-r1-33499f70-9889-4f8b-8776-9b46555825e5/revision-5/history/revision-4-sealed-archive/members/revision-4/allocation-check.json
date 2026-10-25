@@ -1,0 +1,49 @@
+{
+  "allocation_CI": "PASS(6/6:40194438538)",
+  "allocation_ci_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/ci/allocation/summary.json",
+  "allocation_ci_run_id": 40194438538,
+  "allocation_ci_sha256": "8ba31d0ac8c198ed85204764ac708ea75e85037215bbb12023d497faed5f0ebc",
+  "allocation_commit_sha": "5c5daf8d52dc8b838e678deff04d0a773e994ca5",
+  "allocation_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/allocation.json",
+  "allocation_sha256": "bf35eba8e9cb04bba9822e5dd8a7c9bcb5f8732ab9ed6490abdae35b4e7b22c1",
+  "base_sha": "499356345f1ff0d18769fdb0ce0b1a0ebcc2c862",
+  "check_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/check-plan-canonical.json",
+  "check_plan_sha256": "f2b9c8a6e6979bea3fa659e5f13075a33f2232663c672021191c42294135de62",
+  "delivery_id": "711606c8-9642-44fc-905a-7ebfd8cfd686",
+  "format_version": 1,
+  "kind": "task_allocation_check",
+  "limitations": [
+    "Allocation-local acceptance passed 15/15 on frozen C2; allocation commit A4 is on remote main and task branch, with exact-SHA GitHub Actions passing all six contexts on both push runs.",
+    "The user explicitly approved adding exactly tools/spec_check/archive.py and tools/spec_check/test_spec_check.py for UTF-8 .ps1 lifecycle-script retention; the archive regression and final payload-local acceptance passed 15/15 on the A4 candidate.",
+    "The first payload runner setup did not start checks; attempts 2 and 3 each failed only go test because GOROOT was inside the module. Attempt 4 reran with the existing external Go 1.27.2 toolchain and passed 15/15.",
+    "Payload commit P/exact-SHA CI, closing commit/CIs, sealed archive/readback, and fresh live verification remain pending; this record does not close T085.",
+    "The 13 generated allocation-phase GitLocalCheckEvidence records failed phase validation and remain preserved/excluded; valid payload records must bind phase=payload to the verified P SHA.",
+    "The separate storage_migrations_test.go scope extension was not applied because the focused migration guard and full Go suite passed with index/004.sql present."
+  ],
+  "local_check_summary_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/local-checks/allocation/attempt-1/summary.json",
+  "local_check_summary_sha256": "39e3e6225eb53113349a15c7065e587e6e42ac06a983842e13de731637a3be24",
+  "local_commands_passed": 15,
+  "local_commands_total": 15,
+  "result": "PASS",
+  "scope_extension": "tests/contract/storage_migrations_test.go",
+  "scope_extension_applied": false,
+  "scope_extension_authority": "active_user_approval",
+  "scope_extension_sha256": "f1c1c4ef94cd16a895115bd392cfe5dda2114bbc11f54d9544c5d2d302d22779",
+  "task_id": "T085",
+  "task_revision": 4,
+  "toolchains": {
+    "go": "1.27.2",
+    "node": "24.22.0",
+    "npm": "11.19.1",
+    "python": "3.12.14"
+  },
+  "typed_local_evidence_validation": {
+    "failure_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/history/allocation-local-records-attempt-1/validation-failure.json",
+    "failure_sha256": "f5f169505e1c7751fab74847be9d21670044a542956761975cd77d3f6a3fad33",
+    "kind": "GitLocalCheckEvidence",
+    "preserved_record_count": 13,
+    "reason": "allocation is not an allowed phase; allocation-local command PASS remains recorded separately",
+    "result": "FAIL"
+  },
+  "working_tree_diff_sha256": "28f5e52e1ad82f51288b4131f738e9fa3cae084d2bdc644fd0481852fbe9d4a3"
+}

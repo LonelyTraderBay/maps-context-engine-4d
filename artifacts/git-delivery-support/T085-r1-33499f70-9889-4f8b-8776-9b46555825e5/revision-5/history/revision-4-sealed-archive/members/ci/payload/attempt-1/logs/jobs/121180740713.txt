@@ -1,0 +1,618 @@
+spec-contract (ubuntu-latest)	Set up job	﻿2026-10-25T13:22:05.6370002Z Current runner version: '2.338.0'
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6409986Z ##[group]Runner Image Provisioner
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6412422Z Hosted Compute Agent
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6413478Z Version: 20261021.618
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6414556Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6415983Z Build Date: 2026-10-21T00:45:21Z
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6417174Z Worker ID: {866b0521-3ef2-4f43-9aea-44445332fec8}
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6418556Z Region: eastus2
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6419480Z Cloud: Azure
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6420768Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6423392Z ##[group]Operating System
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6424513Z Ubuntu
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6425612Z 24.04.5
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6426487Z LTS
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6427448Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6428369Z ##[group]Runner Image
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6429350Z Image: ubuntu-24.04
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6430822Z Version: 20261012.334.1
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6432817Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6436047Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6437919Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6439872Z ##[group]GITHUB_TOKEN Permissions
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6443237Z Contents: read
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6444240Z Metadata: read
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6445325Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6448412Z Secret source: Actions
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6450114Z Cache mode: write
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.6451929Z Prepare workflow directory
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.7055238Z Prepare all required actions
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.7130082Z Getting action download info
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.8814697Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:05.9785744Z Download action repository 'actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e' (SHA:b7ad1dad31e06c5925ef5d2fc7ad053ef454303e)
+spec-contract (ubuntu-latest)	Set up job	2026-10-25T13:22:06.3057277Z Complete job name: spec-contract (ubuntu-latest)
+spec-contract (ubuntu-latest)	Check out source	﻿2026-10-25T13:22:06.4055535Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4056636Z with:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4057093Z   persist-credentials: false
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4057702Z   repository: LonelyTraderBay/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4061994Z   token: ***
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4062446Z   ssh-strict: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4062890Z   ssh-user: git
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4063313Z   clean: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4063754Z   sparse-checkout-cone-mode: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4064300Z   fetch-depth: 1
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4064730Z   fetch-tags: false
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4065174Z   show-progress: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4065626Z   lfs: false
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4066076Z   submodules: false
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4066586Z   set-safe-directory: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4067107Z   allow-unsafe-pr-checkout: false
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4067929Z env:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4068349Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4068837Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4069420Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.4069927Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5114524Z Syncing repository: LonelyTraderBay/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5117697Z ##[group]Getting Git version info
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5119136Z Working directory is '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5121400Z [command]/usr/bin/git version
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5199077Z git version 2.55.0
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5225023Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5235119Z Temporarily overriding HOME='/home/runner/work/_temp/6277d830-e666-4587-be4a-eb2b0fc7b88c' before making global git config changes
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5237947Z Adding repository directory to the temporary git global config as a safe directory
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5241444Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5294491Z Deleting the contents of '/home/runner/work/maps-context-engine-4d/maps-context-engine-4d'
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5297850Z ##[group]Determining repository object format
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5299603Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5301182Z ##[group]Initializing the repository
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5304968Z [command]/usr/bin/git init /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5441404Z hint: Using 'master' as the name for the initial branch. This default branch name
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5445435Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5447013Z hint: to use in all of your new repositories, which will suppress this warning,
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5448284Z hint: call:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5448955Z hint:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5449805Z hint: 	git config --global init.defaultBranch <name>
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5451071Z hint:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5451993Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5453529Z hint: 'development'. The just-created branch can be renamed via this command:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5454819Z hint:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5455489Z hint: 	git branch -m <name>
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5456292Z hint:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5457295Z hint: Disable this message with "git config set advice.defaultBranchName false"
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5458665Z Initialized empty Git repository in /home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5462367Z [command]/usr/bin/git remote add origin https://github.com/LonelyTraderBay/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5536138Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5538345Z ##[group]Disabling automatic garbage collection
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5540660Z [command]/usr/bin/git config --local gc.auto 0
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5581194Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5582365Z ##[group]Setting up auth
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5583212Z Removing SSH command configuration
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5587064Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.5627126Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6121319Z Removing HTTP extra header
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6127642Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6164553Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6414065Z Removing includeIf entries pointing to credentials config files
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6422705Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6474487Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6742140Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6794628Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path /home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6854591Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6903019Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6944690Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6993880Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.6994769Z ##[group]Fetching the repository
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:06.7001583Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +acfdb8088516fac1cb4e190e2c6c1f5b3bddbba5:refs/remotes/origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5626730Z From https://github.com/LonelyTraderBay/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5628782Z  * [new ref]         acfdb8088516fac1cb4e190e2c6c1f5b3bddbba5 -> origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5638831Z [command]/usr/bin/git branch --list --remote origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5673144Z   origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5684093Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5715015Z acfdb8088516fac1cb4e190e2c6c1f5b3bddbba5
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5727319Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5728625Z ##[group]Determining the checkout info
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5730039Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5732938Z [command]/usr/bin/git sparse-checkout disable
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5794633Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5832873Z ##[group]Checking out the ref
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.5837878Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9299345Z Switched to a new branch 'main'
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9306430Z branch 'main' set up to track 'origin/main'.
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9328269Z ##[endgroup]
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9378951Z [command]/usr/bin/git log -1 --format=%H
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9409864Z acfdb8088516fac1cb4e190e2c6c1f5b3bddbba5
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9420409Z ##[group]Removing auth
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9421689Z Removing SSH command configuration
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9424992Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9461144Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9702909Z Removing HTTP extra header
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9706362Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9744637Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9987431Z Removing includeIf entries pointing to credentials config files
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:07.9989647Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0029641Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0034656Z includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0038055Z includeif.gitdir:/github/workspace/.git.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0040068Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0045727Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0068677Z /home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0081073Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-798425c6\-87d1\-4653\-91ee\-fc06c5d413b9\.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0143159Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0173467Z /home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0186349Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-798425c6\-87d1\-4653\-91ee\-fc06c5d413b9\.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0223416Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0252325Z /github/runner_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0263120Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-798425c6\-87d1\-4653\-91ee\-fc06c5d413b9\.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0300689Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0328699Z /github/runner_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0338024Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-798425c6\-87d1\-4653\-91ee\-fc06c5d413b9\.config
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0375526Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0611003Z Removing credentials config '/home/runner/work/_temp/git-credentials-798425c6-87d1-4653-91ee-fc06c5d413b9.config'
+spec-contract (ubuntu-latest)	Check out source	2026-10-25T13:22:08.0620273Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	﻿2026-10-25T13:22:08.1045134Z ##[group]Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1046847Z with:
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1047732Z   go-version-file: go.mod
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1048767Z   cache: false
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1049685Z   check-latest: false
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1059932Z   token: ***
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1060965Z env:
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1061805Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1062832Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1063994Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.1065029Z ##[endgroup]
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.2282330Z Setup go version spec 1.27.2
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.2292440Z Attempting to download 1.27.2...
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.7212067Z matching 1.27.2...
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:08.7227616Z Acquiring 1.27.2 from https://github.com/actions/go-versions/releases/download/1.27.2-37875086547/go-1.27.2-linux-x64.tar.gz
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:09.3012104Z Extracting Go...
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:09.3155597Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/c6afe67a-ac9e-4021-bcae-1826989f1e37 -f /home/runner/work/_temp/cab280eb-a344-42f4-993f-8df66fad9af4
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:11.0807409Z Successfully extracted go to /home/runner/work/_temp/c6afe67a-ac9e-4021-bcae-1826989f1e37
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:11.0808801Z Adding to the cache ...
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7654854Z Successfully cached go to /opt/hostedtoolcache/go/1.27.2/x64
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7657427Z Added go to the path
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7659782Z Successfully set up Go version 1.27.2
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7895362Z go version go1.27.2 linux/amd64
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7896162Z 
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.7896867Z ##[group]go env
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9335896Z AR='ar'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9336395Z CC='gcc'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9338363Z CGO_CFLAGS='-O2 -g'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9339191Z CGO_CPPFLAGS=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9339680Z CGO_CXXFLAGS='-O2 -g'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9340087Z CGO_ENABLED='1'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9340729Z CGO_FFLAGS='-O2 -g'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9341142Z CGO_LDFLAGS='-O2 -g'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9341560Z CXX='g++'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9342023Z GCCGO='gccgo'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9342368Z GO111MODULE=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9342753Z GOAMD64='v1'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9343107Z GOARCH='amd64'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9343362Z GOAUTH='netrc'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9343612Z GOBIN='/home/runner/go/bin'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9343894Z GOCACHE='/home/runner/.cache/go-build'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9344181Z GOCACHEPROG=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9344430Z GODEBUG=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9344672Z GOENV='/home/runner/.config/go/env'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9344985Z GOEXE=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9345181Z GOEXPERIMENT=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9345755Z GOFIPS140='off'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9345955Z GOFLAGS=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9346661Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build2232209744=/tmp/go-build -gno-record-gcc-switches'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9347341Z GOHOSTARCH='amd64'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9347557Z GOHOSTOS='linux'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9347763Z GOINSECURE=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9348159Z GOMOD='/home/runner/work/maps-context-engine-4d/maps-context-engine-4d/go.mod'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9348619Z GOMODCACHE='/home/runner/go/pkg/mod'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9348885Z GONOPROXY=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9349084Z GONOSUMDB=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9349275Z GOOS='linux'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9349475Z GOPACKAGESDRIVER=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9349707Z GOPATH='/home/runner/go'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9349936Z GOPRIVATE=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9350211Z GOPROXY='https://proxy.golang.org,direct'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9350854Z GOROOT='/opt/hostedtoolcache/go/1.27.2/x64'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9351224Z GOSUMDB='sum.golang.org'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9351467Z GOTELEMETRY='local'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9351748Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9352060Z GOTMPDIR=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9352263Z GOTOOLCHAIN='local'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9352589Z GOTOOLDIR='/opt/hostedtoolcache/go/1.27.2/x64/pkg/tool/linux_amd64'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9352947Z GOVCS=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9353146Z GOVERSION='go1.27.2'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9353669Z GOWORK=''
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9353937Z PKG_CONFIG='pkg-config'
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9354112Z 
+spec-contract (ubuntu-latest)	Set up pinned Go toolchain	2026-10-25T13:22:17.9354638Z ##[endgroup]
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	﻿2026-10-25T13:22:17.9535466Z ##[group]Run python -B tools/ci/delivery_policy.py check-plan
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9536030Z ^[[36;1mpython -B tools/ci/delivery_policy.py check-plan^[[0m
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9835156Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9835506Z env:
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9835717Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9835968Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9836245Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9836512Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:17.9836728Z ##[endgroup]
+spec-contract (ubuntu-latest)	Validate frozen delivery plan	2026-10-25T13:22:18.0987377Z ĐẠT: GitCheckPlan schema+semantic+workflow; SHA-256 bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c; 6 check contexts.
+spec-contract (ubuntu-latest)	Validate SPEC contracts	﻿2026-10-25T13:22:18.1114660Z ##[group]Run python -B tools/spec_check/check.py
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1115082Z ^[[36;1mpython -B tools/spec_check/check.py^[[0m
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1179308Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1179589Z env:
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1179788Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1180031Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1180303Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1180812Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.1181036Z ##[endgroup]
+spec-contract (ubuntu-latest)	Validate SPEC contracts	2026-10-25T13:22:18.8031823Z ĐẠT: SPEC v1.6.14; 108 task, DAG/schedule, traceability hai chiều, work cards và 25 governance definitions.
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	﻿2026-10-25T13:22:18.8162954Z ##[group]Run python -B tools/spec_check/test_spec_check.py
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8163426Z ^[[36;1mpython -B tools/spec_check/test_spec_check.py^[[0m
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8228342Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8228593Z env:
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8228779Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8229009Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8229271Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8229499Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:18.8229709Z ##[endgroup]
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:19.4799966Z test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes (__main__.ArchivePublicationTests.test_archive_cli_consumes_candidate_only_after_durable_manifest_and_publishes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:19.7634938Z test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption (__main__.ArchivePublicationTests.test_archive_cli_resumes_from_durable_manifest_after_candidate_consumption) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.0406224Z test_archive_preserves_utf8_powershell_script_as_raw_text_through_cold_readback (__main__.ArchivePublicationTests.test_archive_preserves_utf8_powershell_script_as_raw_text_through_cold_readback) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.3181439Z test_archive_preserves_utf8_text_raw_members_through_cold_readback (__main__.ArchivePublicationTests.test_archive_preserves_utf8_text_raw_members_through_cold_readback) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.3189513Z test_atomic_archive_rename_never_replaces_final_directory (__main__.ArchivePublicationTests.test_atomic_archive_rename_never_replaces_final_directory) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.5231703Z test_cold_readback_rejects_tampered_member_bytes (__main__.ArchivePublicationTests.test_cold_readback_rejects_tampered_member_bytes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.8141413Z test_existing_archive_reuse_never_invents_original_publish_time (__main__.ArchivePublicationTests.test_existing_archive_reuse_never_invents_original_publish_time) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.8151466Z test_live_observer_rejects_projection_outside_owned_operations_root (__main__.ArchivePublicationTests.test_live_observer_rejects_projection_outside_owned_operations_root) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.8162749Z test_live_observer_rejects_symlinked_projection_ancestor (__main__.ArchivePublicationTests.test_live_observer_rejects_symlinked_projection_ancestor) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.8189868Z test_member_read_supports_deep_windows_paths (__main__.ArchivePublicationTests.test_member_read_supports_deep_windows_paths) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:20.8206834Z test_publication_projection_is_written_once_after_actual_readback (__main__.ArchivePublicationTests.test_publication_projection_is_written_once_after_actual_readback) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.0979383Z test_publish_seal_readback_and_cold_verification (__main__.ArchivePublicationTests.test_publish_seal_readback_and_cold_verification) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.2948995Z test_publisher_recovers_after_manifest_and_seal_were_flushed (__main__.ArchivePublicationTests.test_publisher_recovers_after_manifest_and_seal_were_flushed) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.4959437Z test_publisher_recovers_fully_staged_members_before_manifest_seal (__main__.ArchivePublicationTests.test_publisher_recovers_fully_staged_members_before_manifest_seal) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5206311Z test_publisher_rejects_changed_manifest_after_staging_seal (__main__.ArchivePublicationTests.test_publisher_rejects_changed_manifest_after_staging_seal) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5208402Z test_bad_timestamp_rejects_instead_of_dropping_row (__main__.CIOrderingTests.test_bad_timestamp_rejects_instead_of_dropping_row) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5210099Z test_boolean_retry_attempt_is_unknown (__main__.CIOrderingTests.test_boolean_retry_attempt_is_unknown) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5212139Z test_latest_actions_generation_uses_instant_then_native_id (__main__.CIOrderingTests.test_latest_actions_generation_uses_instant_then_native_id) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5213967Z test_malformed_extra_precision_is_bounded (__main__.CIOrderingTests.test_malformed_extra_precision_is_bounded) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5216132Z test_newest_generation_with_no_required_job_is_unknown (__main__.CIOrderingTests.test_newest_generation_with_no_required_job_is_unknown) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5218141Z test_newest_native_failure_is_not_replaced_by_old_success (__main__.CIOrderingTests.test_newest_native_failure_is_not_replaced_by_old_success) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5220117Z test_offset_and_long_fraction_compare_as_exact_instants (__main__.CIOrderingTests.test_offset_and_long_fraction_compare_as_exact_instants) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5222294Z test_partial_rerun_selects_latest_attempt_per_job (__main__.CIOrderingTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5224425Z test_capture_manifest_json1_normalizes_files_and_dependency_digests (__main__.CanonicalCodecTests.test_capture_manifest_json1_normalizes_files_and_dependency_digests) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5226841Z test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays (__main__.CanonicalCodecTests.test_capture_manifest_json1_rejects_duplicate_paths_and_non_arrays) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5229241Z test_invalid_identity_lexemes_fail_closed (__main__.CanonicalCodecTests.test_invalid_identity_lexemes_fail_closed) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5231429Z test_manifest_json_full_and_unicode_bytes_match_reference (__main__.CanonicalCodecTests.test_manifest_json_full_and_unicode_bytes_match_reference) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5235523Z test_twenty_shared_c14n_and_raw_source_vectors (__main__.CanonicalCodecTests.test_twenty_shared_c14n_and_raw_source_vectors) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5655153Z test_committed_schema_and_registry_match_spec (__main__.ContractArtifactParityTests.test_committed_schema_and_registry_match_spec) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.5791851Z test_duplicate_member_in_authority_block_is_rejected (__main__.ContractArtifactParityTests.test_duplicate_member_in_authority_block_is_rejected) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.6539658Z test_generated_only_edit_is_detected (__main__.ContractArtifactParityTests.test_generated_only_edit_is_detected) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.6688535Z test_object_definitions_must_reject_unknown_properties (__main__.ContractArtifactParityTests.test_object_definitions_must_reject_unknown_properties) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.6869178Z test_private_journal_schema_cannot_be_registered_as_operation (__main__.ContractArtifactParityTests.test_private_journal_schema_cannot_be_registered_as_operation) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.6871643Z test_surrogate_object_key_is_rejected_as_contract_error (__main__.ContractArtifactParityTests.test_surrogate_object_key_is_rejected_as_contract_error) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.7229450Z test_actions_check_suite_identity_matches_workflow (__main__.DeliveryLinkTests.test_actions_check_suite_identity_matches_workflow) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.7577307Z test_actions_job_check_run_url_binds_native_check_identity (__main__.DeliveryLinkTests.test_actions_job_check_run_url_binds_native_check_identity) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.7925371Z test_actions_source_timestamp_uses_native_workflow_creation (__main__.DeliveryLinkTests.test_actions_source_timestamp_uses_native_workflow_creation) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.8273499Z test_archive_must_retain_transitive_source_members (__main__.DeliveryLinkTests.test_archive_must_retain_transitive_source_members) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.8624699Z test_closing_commit_trailers_bind_delivery (__main__.DeliveryLinkTests.test_closing_commit_trailers_bind_delivery) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.8976116Z test_collection_must_cover_actions_attempt (__main__.DeliveryLinkTests.test_collection_must_cover_actions_attempt) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:21.9329304Z test_command_execution_is_bound_to_subject_revision (__main__.DeliveryLinkTests.test_command_execution_is_bound_to_subject_revision) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.0022038Z test_commit_snapshot_parent_and_scope_are_actual_git_bound (__main__.DeliveryLinkTests.test_commit_snapshot_parent_and_scope_are_actual_git_bound) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.0369486Z test_common_command_lifecycle_must_match_phase_identity (__main__.DeliveryLinkTests.test_common_command_lifecycle_must_match_phase_identity) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.0717409Z test_complete_static_link_graph_remains_external_unknown (__main__.DeliveryLinkTests.test_complete_static_link_graph_remains_external_unknown) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.1097969Z test_delivery_graph_does_not_mutate_inputs (__main__.DeliveryLinkTests.test_delivery_graph_does_not_mutate_inputs) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.1449172Z test_local_evidence_covers_each_unique_frozen_command_once (__main__.DeliveryLinkTests.test_local_evidence_covers_each_unique_frozen_command_once) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.3227958Z test_malformed_nested_shapes_reject_without_crashing (__main__.DeliveryLinkTests.test_malformed_nested_shapes_reject_without_crashing) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.3581106Z test_missing_required_check_rejects (__main__.DeliveryLinkTests.test_missing_required_check_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.3931620Z test_native_source_is_bound_to_observed_check (__main__.DeliveryLinkTests.test_native_source_is_bound_to_observed_check) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.4280271Z test_newer_failed_native_check_run_supersedes_old_green_check (__main__.DeliveryLinkTests.test_newer_failed_native_check_run_supersedes_old_green_check) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.4629067Z test_newer_failed_workflow_generation_supersedes_old_green_run (__main__.DeliveryLinkTests.test_newer_failed_workflow_generation_supersedes_old_green_run) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.4631447Z test_non_object_bundle_rejects_without_exception (__main__.DeliveryLinkTests.test_non_object_bundle_rejects_without_exception) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.4979908Z test_partial_rerun_selects_latest_attempt_per_job (__main__.DeliveryLinkTests.test_partial_rerun_selects_latest_attempt_per_job) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.4982213Z test_payload_observation_parent_tracks_last_commit_parent (__main__.DeliveryLinkTests.test_payload_observation_parent_tracks_last_commit_parent) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.5327512Z test_plan_digest_must_bind_attempt (__main__.DeliveryLinkTests.test_plan_digest_must_bind_attempt) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.6029412Z test_push_command_rejects_force_and_wrong_refspec (__main__.DeliveryLinkTests.test_push_command_rejects_force_and_wrong_refspec) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.6374087Z test_push_operation_id_is_bound_to_destination (__main__.DeliveryLinkTests.test_push_operation_id_is_bound_to_destination) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.6720967Z test_raw_preflight_snapshot_must_match_projection (__main__.DeliveryLinkTests.test_raw_preflight_snapshot_must_match_projection) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.6823828Z test_selection_history_accepts_retained_supersede_chain (__main__.DeliveryLinkTests.test_selection_history_accepts_retained_supersede_chain) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.6927577Z test_selection_history_rejects_missing_invalidated_typed_or_raw_member (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_invalidated_typed_or_raw_member) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:22.7131515Z test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid (__main__.DeliveryLinkTests.test_selection_history_rejects_missing_reason_revision_jump_and_reused_uuid) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:23.7724871Z test_six_retained_member_roles_reject_wrong_root_types (__main__.DeliveryLinkTests.test_six_retained_member_roles_reject_wrong_root_types) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:23.8073488Z test_stale_selector_revision_rejects (__main__.DeliveryLinkTests.test_stale_selector_revision_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:23.8432493Z test_swapped_payload_phase_rejects (__main__.DeliveryLinkTests.test_swapped_payload_phase_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:23.8767293Z test_swapped_pointer_rejects (__main__.DeliveryLinkTests.test_swapped_pointer_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:23.9457422Z test_verified_noop_has_typed_identity_bound_reason (__main__.DeliveryLinkTests.test_verified_noop_has_typed_identity_bound_reason) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0145692Z test_verified_noop_preserves_original_closing_payload (__main__.DeliveryLinkTests.test_verified_noop_preserves_original_closing_payload) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0156430Z test_archive_task_identity_is_read_from_the_verified_manifest (__main__.FoundationSealTests.test_archive_task_identity_is_read_from_the_verified_manifest) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0229847Z test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field (__main__.FoundationSealTests.test_live_receipt_validation_uses_schema_semantics_without_inventing_result_field) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0241828Z test_api_process_output_is_capped_while_pipes_are_drained (__main__.GitHubObserverTests.test_api_process_output_is_capped_while_pipes_are_drained) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0243464Z test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body (__main__.GitHubObserverTests.test_closing_commit_snapshot_preserves_body_line_endings_and_empty_body) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0244828Z test_closing_commit_snapshot_projects_git_body_without_subject (__main__.GitHubObserverTests.test_closing_commit_snapshot_projects_git_body_without_subject) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0250103Z test_current_tracker_reader_accepts_optional_trailing_pipe (__main__.GitHubObserverTests.test_current_tracker_reader_accepts_optional_trailing_pipe) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0394986Z test_current_tracker_reader_rejects_malformed_row_without_index_error (__main__.GitHubObserverTests.test_current_tracker_reader_rejects_malformed_row_without_index_error) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0396994Z test_duplicate_link_relations_are_rejected (__main__.GitHubObserverTests.test_duplicate_link_relations_are_rejected) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0432679Z test_pagination_follows_actual_link_and_retains_raw_body (__main__.GitHubObserverTests.test_pagination_follows_actual_link_and_retains_raw_body) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0436558Z test_pagination_rejects_changed_filter (__main__.GitHubObserverTests.test_pagination_rejects_changed_filter) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0437745Z test_runner_matrix_fails_closed_when_label_is_missing (__main__.GitHubObserverTests.test_runner_matrix_fails_closed_when_label_is_missing) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.0797804Z test_static_graph_checks_api_page_against_exact_raw_body_bytes (__main__.GitHubObserverTests.test_static_graph_checks_api_page_against_exact_raw_body_bytes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1158074Z test_static_graph_rejects_declared_api_body_hash_mismatch (__main__.GitHubObserverTests.test_static_graph_rejects_declared_api_body_hash_mismatch) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1512927Z test_static_graph_rejects_missing_api_body_evidence_reference (__main__.GitHubObserverTests.test_static_graph_rejects_missing_api_body_evidence_reference) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1576023Z test_boolean_is_not_integer (__main__.GovernanceSchemaTests.test_boolean_is_not_integer) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1578072Z test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate (__main__.GovernanceSchemaTests.test_canonical_plan_rejects_fraction_safe_integer_overflow_and_surrogate) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1579995Z test_closed_definition_rejects_unknown_field (__main__.GovernanceSchemaTests.test_closed_definition_rejects_unknown_field) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1581654Z test_duplicate_json_key_rejects (__main__.GovernanceSchemaTests.test_duplicate_json_key_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1582984Z test_enum_boolean_is_not_equal_to_integer (__main__.GovernanceSchemaTests.test_enum_boolean_is_not_equal_to_integer) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1659308Z test_external_schema_reference_rejects (__main__.GovernanceSchemaTests.test_external_schema_reference_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1665390Z test_live_verification_resolves_file_refs_from_root_schema (__main__.GovernanceSchemaTests.test_live_verification_resolves_file_refs_from_root_schema) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1666984Z test_non_finite_json_rejects (__main__.GovernanceSchemaTests.test_non_finite_json_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1667768Z test_schema_has_25_closed_definitions (__main__.GovernanceSchemaTests.test_schema_has_25_closed_definitions) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1669278Z test_selection_allocation_is_required_when_active (__main__.GovernanceSchemaTests.test_selection_allocation_is_required_when_active) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1671721Z test_valid_repository_identity_passes (__main__.GovernanceSchemaTests.test_valid_repository_identity_passes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1673360Z test_delivery_pass_requires_exact_remote_and_executed_checks (__main__.GovernanceSemanticsTests.test_delivery_pass_requires_exact_remote_and_executed_checks) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1675329Z test_live_verification_must_follow_published_archive_readback (__main__.GovernanceSemanticsTests.test_live_verification_must_follow_published_archive_readback) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1677521Z test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed (__main__.GovernanceSemanticsTests.test_payload_pending_changes_may_have_no_commits_until_payload_is_proposed) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1678986Z test_push_freshness_valid_equal_fractional_instants (__main__.GovernanceSemanticsTests.test_push_freshness_valid_equal_fractional_instants) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1680049Z test_push_rejects_bool_retry_and_query_identity_coercion (__main__.GovernanceSemanticsTests.test_push_rejects_bool_retry_and_query_identity_coercion) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1681484Z test_push_rejects_intervening_event_and_late_preflight (__main__.GovernanceSemanticsTests.test_push_rejects_intervening_event_and_late_preflight) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.1785427Z test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper (__main__.GovernanceSemanticsTests.test_selection_history_accepts_source_hashed_assignment_lineage_and_reason_wrapper) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2111496Z test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version (__main__.GovernanceSemanticsTests.test_selection_history_rejects_invalid_lineage_rationale_and_boolean_reason_version) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2320726Z test_selection_history_rejects_missing_retained_lineage_or_invalidation_member (__main__.GovernanceSemanticsTests.test_selection_history_rejects_missing_retained_lineage_or_invalidation_member) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2532343Z test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_assignment_lineage_source_and_reason_identity) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2748202Z test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage (__main__.GovernanceSemanticsTests.test_selection_history_rejects_tampered_or_ambiguous_assignment_lineage) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2854357Z test_selection_history_rejects_unhashable_assignment_locator_without_crashing (__main__.GovernanceSemanticsTests.test_selection_history_rejects_unhashable_assignment_locator_without_crashing) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.2963679Z test_selection_reason_accepts_equal_instants_without_mutating_inputs (__main__.GovernanceSemanticsTests.test_selection_reason_accepts_equal_instants_without_mutating_inputs) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.3710768Z test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch (__main__.GovernanceSemanticsTests.test_selection_reason_wrapper_rejects_identity_nested_reference_and_instant_mismatch) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4092693Z test_current_portable_proof_manifest_members_pass (__main__.ManifestAndSourceBindingTests.test_current_portable_proof_manifest_members_pass) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4131479Z test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes (__main__.ManifestAndSourceBindingTests.test_entrypoint_runs_the_hashed_snapshot_after_source_path_changes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4140368Z test_hash_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_hash_mismatch_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4149747Z test_intact_manifest_passes (__main__.ManifestAndSourceBindingTests.test_intact_manifest_passes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4175468Z test_manifest_execution_does_not_rewrite_source_or_manifest (__main__.ManifestAndSourceBindingTests.test_manifest_execution_does_not_rewrite_source_or_manifest) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4184031Z test_missing_member_rejects (__main__.ManifestAndSourceBindingTests.test_missing_member_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4207885Z test_optimized_entrypoint_executes_manifest_bound_root_only (__main__.ManifestAndSourceBindingTests.test_optimized_entrypoint_executes_manifest_bound_root_only) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4215720Z test_path_traversal_rejects (__main__.ManifestAndSourceBindingTests.test_path_traversal_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4227642Z test_root_source_hash_mismatch_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_root_source_hash_mismatch_rejects_before_entrypoint) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4236093Z test_size_mismatch_rejects (__main__.ManifestAndSourceBindingTests.test_size_mismatch_rejects) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.4249528Z test_unlisted_helper_rejects_before_entrypoint (__main__.ManifestAndSourceBindingTests.test_unlisted_helper_rejects_before_entrypoint) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:24.9805810Z test_candidate_done_without_delivery_evidence_fails (__main__.SpecContractTests.test_candidate_done_without_delivery_evidence_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:25.5393390Z test_card_case_drift_fails (__main__.SpecContractTests.test_card_case_drift_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:26.7404806Z test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts (__main__.SpecContractTests.test_concurrent_tracker_updates_merge_without_lost_edits_or_reject_conflicts) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:27.2812284Z test_current_spec_passes (__main__.SpecContractTests.test_current_spec_passes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:27.8311830Z test_duplicate_task_fails (__main__.SpecContractTests.test_duplicate_task_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:28.4002185Z test_final_claim_requires_all_effective_tasks (__main__.SpecContractTests.test_final_claim_requires_all_effective_tasks) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:28.4004829Z test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not (__main__.SpecContractTests.test_live_receipt_pass_formats_remain_effective_and_malformed_forms_do_not) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:28.9459136Z test_missing_case_reference_fails (__main__.SpecContractTests.test_missing_case_reference_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:29.5199892Z test_requirement_reverse_edge_fails (__main__.SpecContractTests.test_requirement_reverse_edge_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:30.0872488Z test_s22_active_task_must_wait_for_effective_prerequisites (__main__.SpecContractTests.test_s22_active_task_must_wait_for_effective_prerequisites) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:30.6474086Z test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done (__main__.SpecContractTests.test_s22_cannot_mark_g0_design_sealed_before_all_members_are_effective_done) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:31.2306468Z test_s22_completed_count_must_match_effective_s19_rows (__main__.SpecContractTests.test_s22_completed_count_must_match_effective_s19_rows) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:31.8072199Z test_s22_delivery_identity_must_match_active_s19_assignment (__main__.SpecContractTests.test_s22_delivery_identity_must_match_active_s19_assignment) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:32.4029774Z test_s22_next_task_must_match_active_task (__main__.SpecContractTests.test_s22_next_task_must_match_active_task) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:32.9490783Z test_schedule_prerequisite_order_fails (__main__.SpecContractTests.test_schedule_prerequisite_order_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:33.5132106Z test_task_cycle_fails (__main__.SpecContractTests.test_task_cycle_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.0725827Z test_unbalanced_fence_fails (__main__.SpecContractTests.test_unbalanced_fence_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6347713Z test_unknown_status_fails (__main__.SpecContractTests.test_unknown_status_fails) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6350106Z test_cancellation_and_crash_do_not_invent_exit_status (__main__.T107ContractFixtureTests.test_cancellation_and_crash_do_not_invent_exit_status) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6355498Z test_command_contract_checks_actual_argv_and_side_effect_metadata (__main__.T107ContractFixtureTests.test_command_contract_checks_actual_argv_and_side_effect_metadata) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6358352Z test_concurrency_is_limited_to_shared_outputs_not_a_global_lock (__main__.T107ContractFixtureTests.test_concurrency_is_limited_to_shared_outputs_not_a_global_lock) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6361101Z test_continuation_keeps_exact_vector_and_never_recomputes_expired_result (__main__.T107ContractFixtureTests.test_continuation_keeps_exact_vector_and_never_recomputes_expired_result) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6363673Z test_destinations_are_grouped_by_observed_volume_and_remaining_only (__main__.T107ContractFixtureTests.test_destinations_are_grouped_by_observed_volume_and_remaining_only) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6365931Z test_dry_run_is_report_only_and_does_not_allocate_or_run (__main__.T107ContractFixtureTests.test_dry_run_is_report_only_and_does_not_allocate_or_run) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6368205Z test_finalization_preserves_primary_command_error_and_cleanup_error (__main__.T107ContractFixtureTests.test_finalization_preserves_primary_command_error_and_cleanup_error) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6370786Z test_fresh_synthetic_cleanup_requires_every_ownership_gate (__main__.T107ContractFixtureTests.test_fresh_synthetic_cleanup_requires_every_ownership_gate) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6373378Z test_mcp_dual_payload_counts_repeated_text_and_structured_bytes (__main__.T107ContractFixtureTests.test_mcp_dual_payload_counts_repeated_text_and_structured_bytes) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6375680Z test_mcp_measurement_rejects_invalid_json_and_nonconvergence (__main__.T107ContractFixtureTests.test_mcp_measurement_rejects_invalid_json_and_nonconvergence) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6377953Z test_mcp_modes_require_verified_host_and_never_silently_shrink (__main__.T107ContractFixtureTests.test_mcp_modes_require_verified_host_and_never_silently_shrink) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6380728Z test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements (__main__.T107ContractFixtureTests.test_preflight_blocks_below_boundary_and_fails_closed_on_bad_measurements) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6383382Z test_preview_ack_requires_current_identity_permission_and_liveness (__main__.T107ContractFixtureTests.test_preview_ack_requires_current_identity_permission_and_liveness) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6385734Z test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness (__main__.T107ContractFixtureTests.test_preview_status_is_read_only_and_server_liveness_is_not_sdk_liveness) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6388063Z test_reused_evidence_requires_exact_subject_and_complete_fingerprints (__main__.T107ContractFixtureTests.test_reused_evidence_requires_exact_subject_and_complete_fingerprints) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6390443Z test_runtime_config_validation_and_cas_are_separate_whole_replace_steps (__main__.T107ContractFixtureTests.test_runtime_config_validation_and_cas_are_separate_whole_replace_steps) ... ok
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6391966Z 
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6392247Z ----------------------------------------------------------------------
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6392785Z Ran 151 tests in 15.549s
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6393027Z 
+spec-contract (ubuntu-latest)	Run positive and failure fixtures	2026-10-25T13:22:34.6393140Z OK
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	﻿2026-10-25T13:22:34.6617111Z ##[group]Run python -B tools/ci/test_delivery_policy.py
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6617572Z ^[[36;1mpython -B tools/ci/test_delivery_policy.py^[[0m
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6681566Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6681823Z env:
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6682012Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6682256Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6682521Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6682750Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.6682964Z ##[endgroup]
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8089402Z test_command_moved_to_wrong_job_fails (__main__.CheckObservationTests.test_command_moved_to_wrong_job_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8263513Z test_current_frozen_plan_maps_to_real_workflow (__main__.CheckObservationTests.test_current_frozen_plan_maps_to_real_workflow) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8264692Z test_duplicate_native_identity_fails (__main__.CheckObservationTests.test_duplicate_native_identity_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8265581Z test_exact_success_passes (__main__.CheckObservationTests.test_exact_success_passes) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8381553Z test_matrix_context_not_declared_by_job_fails (__main__.CheckObservationTests.test_matrix_context_not_declared_by_job_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8382938Z test_missing_check_fails (__main__.CheckObservationTests.test_missing_check_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8383613Z test_skipped_check_fails (__main__.CheckObservationTests.test_skipped_check_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.8384243Z test_stale_sha_fails (__main__.CheckObservationTests.test_stale_sha_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.9477804Z [master (root-commit) aa9239b] feat(spec-check): [P0][T003] Tạo payload kiểm tra
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.9478676Z  1 file changed, 9414 insertions(+)
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:34.9479079Z  create mode 100644 Maps-Context-Engine-4D_SPEC.md
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.0445683Z [master db9eeef] docs(progress): [P0][T003] Đề xuất đóng kiểm tra
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.0446266Z  1 file changed, 2 insertions(+), 1 deletion(-)
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.1959076Z test_actual_git_parent_and_non_spec_path_guard (__main__.ClosingDiffTests.test_actual_git_parent_and_non_spec_path_guard) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.2473049Z test_another_task_status_change_fails (__main__.ClosingDiffTests.test_another_task_status_change_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.2934539Z test_candidate_closing_accepts_semicolon_separated_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_accepts_semicolon_separated_evidence_ids) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.3396551Z test_candidate_closing_accepts_split_archive_live_pending_fields (__main__.ClosingDiffTests.test_candidate_closing_accepts_split_archive_live_pending_fields) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.3856525Z test_candidate_closing_leaf_passes (__main__.ClosingDiffTests.test_candidate_closing_leaf_passes) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.4318091Z test_candidate_closing_rejects_duplicate_evidence_ids (__main__.ClosingDiffTests.test_candidate_closing_rejects_duplicate_evidence_ids) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.4785444Z test_candidate_closing_rejects_partial_local_pass_ratio (__main__.ClosingDiffTests.test_candidate_closing_rejects_partial_local_pass_ratio) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.5250264Z test_candidate_verify_cannot_transition_to_another_value (__main__.ClosingDiffTests.test_candidate_verify_cannot_transition_to_another_value) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.5709656Z test_candidate_verify_to_done_transition_passes (__main__.ClosingDiffTests.test_candidate_verify_to_done_transition_passes) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.6180982Z test_design_section_change_fails (__main__.ClosingDiffTests.test_design_section_change_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.6682434Z test_gate_scope_change_fails (__main__.ClosingDiffTests.test_gate_scope_change_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.6684702Z test_s22_allows_derived_execution_checkpoint_leaves (__main__.ClosingDiffTests.test_s22_allows_derived_execution_checkpoint_leaves) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.6686552Z test_s22_rejects_execution_checkpoint_identity_change (__main__.ClosingDiffTests.test_s22_rejects_execution_checkpoint_identity_change) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.6688862Z test_section_map_preserves_unicode_line_separator_content (__main__.ClosingDiffTests.test_section_map_preserves_unicode_line_separator_content) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7291330Z test_unrelated_evidence_insert_fails (__main__.ClosingDiffTests.test_unrelated_evidence_insert_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7293132Z test_breaking_marker_requires_explanation (__main__.CommitPolicyTests.test_breaking_marker_requires_explanation) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7294472Z test_closing_trailers_pass (__main__.CommitPolicyTests.test_closing_trailers_pass) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7295738Z test_duplicate_closing_trailer_fails (__main__.CommitPolicyTests.test_duplicate_closing_trailer_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7297443Z test_duplicate_delivery_trailer_outside_final_block_fails (__main__.CommitPolicyTests.test_duplicate_delivery_trailer_outside_final_block_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7298916Z test_english_note_fails (__main__.CommitPolicyTests.test_english_note_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7300291Z test_literal_backslash_n_commit_sections_fail (__main__.CommitPolicyTests.test_literal_backslash_n_commit_sections_fail) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7301889Z test_p3_revert_commit_passes (__main__.CommitPolicyTests.test_p3_revert_commit_passes) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7303259Z test_payload_cannot_claim_closing_trailers (__main__.CommitPolicyTests.test_payload_cannot_claim_closing_trailers) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7304712Z test_payload_commit_with_vietnamese_note_passes (__main__.CommitPolicyTests.test_payload_commit_with_vietnamese_note_passes) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7305529Z test_skip_ci_fails (__main__.CommitPolicyTests.test_skip_ci_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7306123Z test_wrong_task_fails (__main__.CommitPolicyTests.test_wrong_task_fails) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7646740Z test_empty_commit_body_is_rejected (__main__.PayloadCommitHistoryTests.test_empty_commit_body_is_rejected) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.7842856Z test_empty_range_and_abbreviated_sha_are_rejected (__main__.PayloadCommitHistoryTests.test_empty_range_and_abbreviated_sha_are_rejected) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.8911490Z test_linear_history_and_cli_pass (__main__.PayloadCommitHistoryTests.test_linear_history_and_cli_pass) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:35.9382187Z test_merge_commit_is_rejected (__main__.PayloadCommitHistoryTests.test_merge_commit_is_rejected) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0406506Z test_missing_headings_and_wrong_task_or_priority_are_rejected (__main__.PayloadCommitHistoryTests.test_missing_headings_and_wrong_task_or_priority_are_rejected) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0754216Z test_non_ancestor_base_is_rejected (__main__.PayloadCommitHistoryTests.test_non_ancestor_base_is_rejected) ... ok
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0754985Z 
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0755179Z ----------------------------------------------------------------------
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0755540Z Ran 40 tests in 1.312s
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0755679Z 
+spec-contract (ubuntu-latest)	Run delivery policy fixtures	2026-10-25T13:22:36.0755761Z OK
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	﻿2026-10-25T13:22:36.0945661Z ##[group]Run python -B tools/ci/test_checkpoint_digest.py
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.0946140Z ^[[36;1mpython -B tools/ci/test_checkpoint_digest.py^[[0m
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1008148Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1008407Z env:
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1008600Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1008836Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1009108Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1009356Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1009571Z ##[endgroup]
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1717493Z test_checkpoint_projection_ignores_only_the_nested_s22_mapping (__main__.CheckpointDigestTests.test_checkpoint_projection_ignores_only_the_nested_s22_mapping) ... ok
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1719796Z test_projection_rejects_missing_or_duplicate_checkpoint_key (__main__.CheckpointDigestTests.test_projection_rejects_missing_or_duplicate_checkpoint_key) ... ok
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1724260Z test_scope_comes_from_single_s47_card_and_pins_spec_projection (__main__.CheckpointDigestTests.test_scope_comes_from_single_s47_card_and_pins_spec_projection) ... ok
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.1732998Z test_symlink_parent_is_rejected_without_traversal (__main__.CheckpointDigestTests.test_symlink_parent_is_rejected_without_traversal) ... ok
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3481894Z test_worktree_and_index_digests_track_only_scoped_inputs (__main__.CheckpointDigestTests.test_worktree_and_index_digests_track_only_scoped_inputs) ... ok
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3483033Z 
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3483329Z ----------------------------------------------------------------------
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3483888Z Ran 5 tests in 0.177s
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3484088Z 
+spec-contract (ubuntu-latest)	Verify checkpoint digest recipe	2026-10-25T13:22:36.3484203Z OK
+spec-contract (ubuntu-latest)	Verify Go formatting	﻿2026-10-25T13:22:36.3622365Z ##[group]Run python -B tools/ci/check_gofmt.py
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3622756Z ^[[36;1mpython -B tools/ci/check_gofmt.py^[[0m
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3689080Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3689342Z env:
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3689531Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3689763Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3690028Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3690273Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.3690749Z ##[endgroup]
+spec-contract (ubuntu-latest)	Verify Go formatting	2026-10-25T13:22:36.5492555Z ĐẠT: gofmt kiểm 232 Go source trong implementation.
+spec-contract (ubuntu-latest)	Run Go contract tests	﻿2026-10-25T13:22:36.5597343Z ##[group]Run go test ./...
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5597643Z ^[[36;1mgo test ./...^[[0m
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5660293Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5660863Z env:
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5661076Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5661316Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5661580Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5661819Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.5662027Z ##[endgroup]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.7605662Z go: downloading github.com/modelcontextprotocol/go-sdk v1.8.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.7659810Z go: downloading golang.org/x/tools v0.52.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.7697755Z go: downloading modernc.org/sqlite v1.60.1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.7718395Z go: downloading github.com/google/jsonschema-go v0.4.3
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:36.9367800Z go: downloading golang.org/x/mod v0.42.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.0024719Z go: downloading golang.org/x/sys v0.49.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.0918561Z go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.1117400Z go: downloading golang.org/x/oauth2 v0.35.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.1741738Z go: downloading golang.org/x/sync v0.24.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.1983372Z go: downloading golang.org/x/time v0.15.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.2601689Z go: downloading github.com/segmentio/encoding v0.5.4
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:37.4070545Z go: downloading github.com/segmentio/asm v1.1.3
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:38.3550022Z go: downloading modernc.org/libc v1.77.1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.5911724Z go: downloading modernc.org/mathutil v1.7.1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.5913308Z go: downloading github.com/dustin/go-humanize v1.0.1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.5914619Z go: downloading github.com/google/uuid v1.6.0
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.5916273Z go: downloading modernc.org/memory v1.12.1
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.6213205Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:22:39.8182617Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/loader-fixture	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:21.8202086Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T002/smoke	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:21.8238269Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/artifacts/preflight/T043/profile-hash-check	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:22.2056259Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/cmd/mce4d	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:22.5993125Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/contracts	0.375s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:22.9092679Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/golang	0.540s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:22.9818474Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/analysis/providers	0.716s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:23.1753797Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/config	0.790s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:23.1769918Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/explorer	0.030s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:23.1771840Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/groups	0.003s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:23.1774192Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/records	0.009s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:23.1776497Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/registration	0.320s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:24.4949408Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/rename	1.522s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:24.4951003Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/response	1.043s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:24.4986569Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/store	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:24.5041575Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/app/validate	0.377s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:24.5051224Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/catalog	0.090s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8221897Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cli	4.446s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8251677Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contextpack	0.031s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8311572Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts	0.028s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8341497Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/events	0.011s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8401570Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/federation	0.008s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8431525Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/http	0.005s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8494800Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/schema	0.071s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8521513Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/contracts/sql	0.377s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8581424Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/cursor	0.012s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8611504Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/ai	0.006s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8641548Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/architecture	0.004s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8701591Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/domain/profiles	0.003s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8734409Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/explorer	2.933s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8751872Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/history	0.016s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8812437Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/indexer	0.097s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:27.8813552Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/inventory	0.621s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2246405Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/lsp	4.105s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2248349Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/mcp	0.485s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2249544Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/model	0.004s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2251118Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/overview	0.019s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2252408Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/paths	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2255003Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/policy	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2257081Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/ports	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2258494Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime	0.138s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2259747Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/config	0.489s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2261233Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/exec	0.324s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2262959Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/runtime/maintenance	0.046s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2264319Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/search	0.144s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:29.2266883Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/snapshot	0.004s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:33.8155180Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/internal/store/sqlite	3.729s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:33.8156500Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/internal/telemetry	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1125384Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/acceptance	6.563s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1126237Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/contract	1.895s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1126948Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration	0.367s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1127666Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tests/integration/platform	0.016s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1128407Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare	0.257s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1129149Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/compare/cmd	0.022s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1129855Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale	0.004s
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1130967Z ?   	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/scale/cmd	[no test files]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1132079Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/selfindex	0.005s [no tests to run]
+spec-contract (ubuntu-latest)	Run Go contract tests	2026-10-25T13:23:36.1132800Z ok  	github.com/LonelyTraderBay/maps-context-engine-4d/tools/bench/t039	0.007s
+spec-contract (ubuntu-latest)	Run Go static analysis	﻿2026-10-25T13:23:36.3197211Z ##[group]Run go vet ./...
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3197515Z ^[[36;1mgo vet ./...^[[0m
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3260819Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3261102Z env:
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3261298Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3261531Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3261799Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3262031Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Run Go static analysis	2026-10-25T13:23:36.3262240Z ##[endgroup]
+spec-contract (ubuntu-latest)	Build Go packages	﻿2026-10-25T13:23:44.1350165Z ##[group]Run go build ./...
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1350748Z ^[[36;1mgo build ./...^[[0m
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1413242Z shell: /usr/bin/bash -e {0}
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1413504Z env:
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1413700Z   GIT_CONFIG_COUNT: 1
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1413934Z   GIT_CONFIG_KEY_0: core.longpaths
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1414194Z   GIT_CONFIG_VALUE_0: true
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1414429Z   GOTOOLCHAIN: local
+spec-contract (ubuntu-latest)	Build Go packages	2026-10-25T13:23:44.1414652Z ##[endgroup]
+spec-contract (ubuntu-latest)	Post Set up pinned Go toolchain	﻿2026-10-25T13:23:46.2455974Z Post job cleanup.
+spec-contract (ubuntu-latest)	Post Check out source	﻿2026-10-25T13:23:46.3767209Z Post job cleanup.
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4702449Z [command]/usr/bin/git version
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4759653Z git version 2.55.0
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4805012Z Temporarily overriding HOME='/home/runner/work/_temp/d6146f48-4136-4cd6-a068-fdcd499fd303' before making global git config changes
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4806481Z Adding repository directory to the temporary git global config as a safe directory
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4811652Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/maps-context-engine-4d/maps-context-engine-4d
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4847869Z Removing SSH command configuration
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4855547Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.4909421Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5167413Z Removing HTTP extra header
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5174636Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5211292Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5525760Z Removing includeIf entries pointing to credentials config files
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5535456Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+spec-contract (ubuntu-latest)	Post Check out source	2026-10-25T13:23:46.5597492Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+spec-contract (ubuntu-latest)	Complete job	﻿2026-10-25T13:23:46.6127968Z Cleaning up orphan processes

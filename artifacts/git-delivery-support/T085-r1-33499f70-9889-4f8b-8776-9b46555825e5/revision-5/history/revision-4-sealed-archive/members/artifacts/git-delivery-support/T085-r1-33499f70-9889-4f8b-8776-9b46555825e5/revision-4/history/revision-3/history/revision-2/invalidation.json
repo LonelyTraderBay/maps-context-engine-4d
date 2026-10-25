@@ -1,0 +1,21 @@
+{
+  "active_delivery_id": "322ba698-8262-4b1f-9678-87da2ed9e29a",
+  "format_version": 1,
+  "invalidated_refs": [
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/selection.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/closing-commit-snapshot.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/archive-manifest.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/archive-seal.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/publication.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/live-blocker.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/github-commit-projection.json",
+    "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/history/revision-1/body-normalization-comparison.json"
+  ],
+  "kind": "delivery_selection_invalidation",
+  "previous_delivery_id": "33499f70-9889-4f8b-8776-9b46555825e5",
+  "previous_task_revision": 1,
+  "reason": "Revision 1 archive is sealed and remains immutable. Fresh GitHub REST projection for C1 matched SHA, parent, subject, and changed paths, while its commit body was exactly one terminal U+000A shorter than the retained local Git snapshot. Supersede with a new delivery revision whose archive builder removes exactly that Git object terminator before sealing.",
+  "recorded_at_utc": "2026-10-25T09:54:42.873783Z",
+  "task_id": "T085",
+  "task_revision": 2
+}

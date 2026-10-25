@@ -1,0 +1,196 @@
+{
+  "canary_ref": "delivery:871030cf-7d3c-443d-8ac3-09a7ed1116fe:payload",
+  "checks": [
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "python -B tools/ci/bootstrap_check.py",
+        "python -B tools/ci/test_bootstrap_check.py"
+      ],
+      "context": "bootstrap (ubuntu-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/bootstrap/ubuntu",
+      "job_name": "bootstrap",
+      "kind": "check_run",
+      "matrix": {
+        "os": "ubuntu-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    },
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "python -B tools/ci/bootstrap_check.py",
+        "python -B tools/ci/test_bootstrap_check.py"
+      ],
+      "context": "bootstrap (windows-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/bootstrap/windows",
+      "job_name": "bootstrap",
+      "kind": "check_run",
+      "matrix": {
+        "os": "windows-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    },
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "python -B tools/ci/delivery_policy.py check-plan",
+        "python -B tools/spec_check/check.py",
+        "python -B tools/spec_check/test_spec_check.py",
+        "python -B tools/ci/test_delivery_policy.py",
+        "python -B tools/ci/test_checkpoint_digest.py",
+        "python -B tools/ci/check_gofmt.py",
+        "go test ./...",
+        "go vet ./...",
+        "go build ./..."
+      ],
+      "context": "spec-contract (ubuntu-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/spec-contract/ubuntu",
+      "job_name": "spec-contract",
+      "kind": "check_run",
+      "matrix": {
+        "os": "ubuntu-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    },
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "python -B tools/ci/delivery_policy.py check-plan",
+        "python -B tools/spec_check/check.py",
+        "python -B tools/spec_check/test_spec_check.py",
+        "python -B tools/ci/test_delivery_policy.py",
+        "python -B tools/ci/test_checkpoint_digest.py",
+        "python -B tools/ci/check_gofmt.py",
+        "go test ./...",
+        "go vet ./...",
+        "go build ./..."
+      ],
+      "context": "spec-contract (windows-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/spec-contract/windows",
+      "job_name": "spec-contract",
+      "kind": "check_run",
+      "matrix": {
+        "os": "windows-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    },
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "npm ci --ignore-scripts --no-audit --no-fund",
+        "npm run test:contract:ui"
+      ],
+      "context": "explorer-contract (ubuntu-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/explorer-contract/ubuntu",
+      "job_name": "explorer-contract",
+      "kind": "check_run",
+      "matrix": {
+        "os": "ubuntu-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    },
+    {
+      "checkout_binding": "head",
+      "command_refs": [
+        "npm ci --ignore-scripts --no-audit --no-fund",
+        "npm run test:contract:ui"
+      ],
+      "context": "explorer-contract (windows-latest)",
+      "eligible_events": [
+        "push",
+        "pull_request"
+      ],
+      "id": "actions/explorer-contract/windows",
+      "job_name": "explorer-contract",
+      "kind": "check_run",
+      "matrix": {
+        "os": "windows-latest"
+      },
+      "reported_sha_binding": "subject",
+      "requirement_origins": [
+        "project"
+      ],
+      "source_app": "github.com:app:15368",
+      "workflow_path": ".github/workflows/bootstrap.yml"
+    }
+  ],
+  "closing_local_reuse_refs": [],
+  "credential_class": "local_user",
+  "format_version": 1,
+  "local_check_refs": [
+    "local-checks/allocation/records/bootstrap.json",
+    "local-checks/allocation/records/bootstrap-fixtures.json",
+    "local-checks/allocation/records/delivery-plan.json",
+    "local-checks/allocation/records/spec-check.json",
+    "local-checks/allocation/records/spec-check-fixtures.json",
+    "local-checks/allocation/records/delivery-policy-fixtures.json",
+    "local-checks/allocation/records/checkpoint-digest-fixtures.json",
+    "local-checks/allocation/records/go-format.json",
+    "local-checks/allocation/records/go-test.json",
+    "local-checks/allocation/records/go-vet.json",
+    "local-checks/allocation/records/go-build.json",
+    "local-checks/allocation/records/explorer-install.json",
+    "local-checks/allocation/records/explorer-contract.json"
+  ],
+  "merge_checks": [],
+  "phase": "core",
+  "pull_request_flow": null,
+  "repository": {
+    "host": "github.com",
+    "name": "maps-context-engine-4d",
+    "owner": "LonelyTraderBay",
+    "publication_authority_ref": "authority/task-start.txt",
+    "ref": "refs/heads/main",
+    "remote_name": "origin",
+    "remote_url_sanitized": "https://github.com/LonelyTraderBay/maps-context-engine-4d.git",
+    "repository_id": 1421031011,
+    "visibility": "public"
+  },
+  "required_set_status": "VERIFIED"
+}

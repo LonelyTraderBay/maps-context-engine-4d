@@ -1,0 +1,139 @@
+{
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "499356345f1ff0d18769fdb0ce0b1a0ebcc2c862:refs/heads/main"
+    ],
+    "baseline_ref": "git:5ebe2dafbe8e0fc2c347c8f5d2a66dafd850890d",
+    "budget_refs": [],
+    "cache_roots": [],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 499356345f1ff0d18769fdb0ce0b1a0ebcc2c862:refs/heads/main"
+    ],
+    "cleanup_permission_ref": null,
+    "cleanup_plan_ref": "archive-view/operations/closing-push-c2-01/retention.json",
+    "command_id": "T085-r2-closing-c2-push-attempt1",
+    "command_source_ref": "archive-view/operations/closing-push-c2-01/push-driver.ps1",
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "cwd": ".",
+    "deadline_at_utc": "2026-10-25T11:44:28.9838850Z",
+    "download_roots": [],
+    "executable": "git",
+    "expected_writes": [
+      "archive-view/operations/closing-push-c2-01/github-tool-repo-observation.json",
+      "archive-view/operations/closing-push-c2-01/remote-config.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-preflight.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-preflight.json",
+      "archive-view/operations/closing-push-c2-01/preflight.json",
+      "archive-view/operations/closing-push-c2-01/push-output.txt",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-1-classification.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-2-classification.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight.json",
+      "archive-view/operations/closing-push-c2-01/postflight.json",
+      "archive-view/operations/closing-push-c2-01/postflight-query-metadata.json",
+      "archive-view/operations/closing-push-c2-01/push-operation.json",
+      "archive-view/operations/closing-push-c2-01/destination-observation.json",
+      "archive-view/operations/closing-push-c2-01/command-lifecycle.json",
+      "archive-view/operations/closing-push-c2-01/retention.json",
+      "archive-view/operations/closing-push-c2-01/push-driver.ps1",
+      "archive-view/operations/closing-push-c2-01/finalize-postflight-closing.ps1",
+      "archive-view/operations/closing-push-c2-01/retention-attempt-1-path-mismatch.json",
+      "archive-view/operations/closing-push-c2-01/command-lifecycle-attempt-1-path-mismatch.json",
+      "archive-view/operations/closing-push-c2-01/retention-path-correction.json"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "d9656c100a4466d735d17563ff1541c3d81c11b00735a7f884d7aedadcd257bf",
+      "command_source_sha256": "27d8034068947cd1a2304b98821e80ab1efce75ed71054d1ecc9d769210b787e",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4"
+    },
+    "input_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/check-plan-canonical.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/local-checks/closing/attempt-3/summary.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-2/ci/payload/attempt-3/payload-evidence-summary.json"
+    ],
+    "log_roots": [],
+    "monitor_interval_ms": 1000,
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "output_root": "archive-view/operations/closing-push-c2-01",
+    "owner": "Codex",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "retention_ref": "archive-view/operations/closing-push-c2-01/retention.json",
+    "run_id": "1e7db575-6167-41ef-90f8-4acce2c92cf6",
+    "side_effect_class": "external_service",
+    "storage_mode": "bounded_small",
+    "task_mode": "implement",
+    "temporary_roots": [],
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "volumes": []
+  },
+  "delivery_id": "322ba698-8262-4b1f-9678-87da2ed9e29a",
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "lifecycle_id": "d68533f1-5b3f-4daa-8eee-a4d29296e5bf",
+  "operation_id": "cfe5f8b7-4a14-4b53-bc77-e83f4029419b",
+  "result": {
+    "artifact_refs": [
+      "archive-view/operations/closing-push-c2-01/github-tool-repo-observation.json",
+      "archive-view/operations/closing-push-c2-01/remote-config.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-preflight.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-preflight.json",
+      "archive-view/operations/closing-push-c2-01/preflight.json",
+      "archive-view/operations/closing-push-c2-01/push-output.txt",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-1-stale.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-1-classification.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/closing-push-c2-01/postflight-attempt-2-classification.json",
+      "archive-view/operations/closing-push-c2-01/github-repository-postflight.json",
+      "archive-view/operations/closing-push-c2-01/github-branch-postflight.json",
+      "archive-view/operations/closing-push-c2-01/postflight.json",
+      "archive-view/operations/closing-push-c2-01/postflight-query-metadata.json",
+      "archive-view/operations/closing-push-c2-01/push-operation.json",
+      "archive-view/operations/closing-push-c2-01/destination-observation.json",
+      "archive-view/operations/closing-push-c2-01/command-lifecycle.json",
+      "archive-view/operations/closing-push-c2-01/retention.json",
+      "archive-view/operations/closing-push-c2-01/push-driver.ps1",
+      "archive-view/operations/closing-push-c2-01/finalize-postflight-closing.ps1",
+      "archive-view/operations/closing-push-c2-01/retention-attempt-1-path-mismatch.json",
+      "archive-view/operations/closing-push-c2-01/command-lifecycle-attempt-1-path-mismatch.json",
+      "archive-view/operations/closing-push-c2-01/retention-path-correction.json"
+    ],
+    "cleanup_status": "NOT_REQUIRED",
+    "command_exit_status": 0,
+    "completed_at_utc": "2026-10-25T11:35:21.9928593Z",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/closing-push-c2-01/push-output.txt"
+    ],
+    "started_at_utc": "2026-10-25T11:34:30.9262730Z",
+    "termination_reason": "completed"
+  },
+  "retry_index": 0,
+  "task_id": "T085",
+  "task_revision": 2
+}

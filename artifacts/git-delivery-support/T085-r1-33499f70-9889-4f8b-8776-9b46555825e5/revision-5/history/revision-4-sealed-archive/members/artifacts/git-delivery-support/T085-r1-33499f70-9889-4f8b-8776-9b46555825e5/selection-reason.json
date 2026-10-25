@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "kind": "task_selection_reason",
+  "task_id": "T085",
+  "task_revision": 1,
+  "delivery_id": "33499f70-9889-4f8b-8776-9b46555825e5",
+  "selected_at_utc": "2026-10-24T14:54:03.254153Z",
+  "work_order_ref": "Maps-Context-Engine-4D_SPEC.md#S47/card-063",
+  "selection_rule": "S47 topological ready order after exact closure of pending T003 r26; select first Ready task, not lowest ID.",
+  "ready_dependencies": [
+    "T084",
+    "T044",
+    "T056"
+  ],
+  "dependencies_review_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/dependency-review.json",
+  "sequence_predecessor": "T047",
+  "priority": "P0",
+  "status_before": "TODO",
+  "scope_change_ref": "Maps-Context-Engine-4D_SPEC.md#S21/D090",
+  "reason": "T085 is the first Ready S47 card after the current pending delivery settles; its dependency rows are effective DONE. D090 records only the source-proven path expansion needed for index v4 UI support and dev-only CI coverage."
+}

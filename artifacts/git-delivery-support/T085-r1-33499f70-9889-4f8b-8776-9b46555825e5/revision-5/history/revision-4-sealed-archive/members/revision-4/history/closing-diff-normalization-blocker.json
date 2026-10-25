@@ -1,0 +1,16 @@
+{
+  "candidate_base_sha": "e45478b8b5a6ec4b6047f794c2b134acce03d486",
+  "errors": [
+    "S19 payload contains malformed evidence field: preserved_and_excluded)",
+    "S19 closing contains malformed evidence field: preserved_and_excluded)"
+  ],
+  "format_version": 1,
+  "kind": "closing_diff_preflight_rejection",
+  "observed_at_utc": "2026-10-25T14:09:00Z",
+  "resolution": "normalize the nested delimiter from semicolon to comma while preserving the recorded FAIL categories; do not change delivery_policy",
+  "result": "REJECTED_BEFORE_COMMIT_OR_PUSH",
+  "root_cause": "allocation_typed_records value contains an unescaped semicolon that the frozen field parser treats as a field separator",
+  "task_id": "T085",
+  "task_revision": 4,
+  "validator": "tools.ci.delivery_policy.classify_closing_spec_diff"
+}

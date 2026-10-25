@@ -1,0 +1,95 @@
+{
+  "base_sha": "2c3754a4dc8c20eacabf790b48def7225da3bcad",
+  "checked_at_utc": "2026-10-25T15:27:08.439132Z",
+  "contracts_reviewed": [
+    "S47 card 063 and order",
+    "S35 MAP-03",
+    "S37 no target execution",
+    "S38 producer/store boundary",
+    "S43 CT-04",
+    "S44 DB-02/DB-03/DB-07",
+    "S45 AL-08",
+    "S53 AW-08"
+  ],
+  "delivery_id": "f2f6cdbc-13f0-493d-9f83-d2992aded582",
+  "dependencies": [
+    {
+      "closing_sha": "d7ee0c5c6437f398e26de1af7817dd4aac137396",
+      "delivery_id": "ef81c22d-7b1c-4b30-98c9-104d11112dc9",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "S19:T084:effective-DONE",
+        "artifacts/git-live/ef81c22d-7b1c-4b30-98c9-104d11112dc9/458649d4-51bb-41da-a9cb-0fe85a6412d3/live-verification.json"
+      ],
+      "task_id": "T084",
+      "task_revision": "6"
+    },
+    {
+      "closing_sha": "e27c04630b17b97b4c1a1f0babc4756246e472e3",
+      "delivery_id": "5c0cf0dc-8452-41c8-988b-dfb5fbbec703",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "S19:T044:effective-DONE",
+        "artifacts/git-live/5c0cf0dc-8452-41c8-988b-dfb5fbbec703/e031a098-7b02-4628-84e4-952422483c0f/live-verification.json"
+      ],
+      "task_id": "T044",
+      "task_revision": "1"
+    },
+    {
+      "closing_sha": "5612409d2949ad76516d1184fd526da638a57502",
+      "delivery_id": "58f89164-99e7-4e57-9dd0-d359af4af29b",
+      "effective_status": "DONE",
+      "evidence_refs": [
+        "S19:T056:effective-DONE",
+        "artifacts/git-live/58f89164-99e7-4e57-9dd0-d359af4af29b/1937fb9a-14e7-4316-9719-c9461dc15e9b/live-verification.json"
+      ],
+      "task_id": "T056",
+      "task_revision": "4"
+    }
+  ],
+  "format_version": 1,
+  "kind": "task_dependency_review",
+  "limitations": [
+    "T057 remains effective VERIFY with its own missing r3 archive/live files; it is not a T085 prerequisite and no historical bytes/status are changed.",
+    "No production, live target-project or browser usage is claimed by this allocation."
+  ],
+  "result": "READY",
+  "sequence": {
+    "closing_sha": "ec1f36d2244df4e210b88b361fd7da727448fe6e",
+    "delivery_id": "a004e264-287b-4c6c-bacc-049b4cfa20f3",
+    "effective_status": "DONE",
+    "evidence_refs": [
+      "S19:T047:effective-DONE",
+      "artifacts/git-live/a004e264-287b-4c6c-bacc-049b4cfa20f3/fb4ccda8-4cf9-4608-96a3-7dac345b1b8d/live-verification.json"
+    ],
+    "task_id": "T047",
+    "task_revision": "7"
+  },
+  "source_review": {
+    "base_sha": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77",
+    "paths": [
+      {
+        "observation": "core index schema and reader constants are 2; migrations are applied only through 002; preflight and migration guards reject versions above 2.",
+        "path": "internal/store/sqlite/store.go"
+      },
+      {
+        "observation": "domain migration exists in source and precedes UI map schema.",
+        "path": "internal/store/sqlite/migrations/index/003.sql"
+      },
+      {
+        "observation": "UI map schema migration 004 sets schema_version and min_reader_version to 4.",
+        "path": "Maps-Context-Engine-4D_SPEC.md#S44/DB-02,DB-03"
+      },
+      {
+        "observation": "current owned paths omit generic opener, migration 004, Vite config and the UI CI contract test.",
+        "path": "Maps-Context-Engine-4D_SPEC.md#S47/card-063"
+      }
+    ],
+    "remote_refs": {
+      "refs/heads/codex/t003-d089-regressions": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77",
+      "refs/heads/main": "39b8c0361ea78f502fe0ca635c93cdc2e9fdbe77"
+    }
+  },
+  "task_id": "T085",
+  "task_revision": 5
+}

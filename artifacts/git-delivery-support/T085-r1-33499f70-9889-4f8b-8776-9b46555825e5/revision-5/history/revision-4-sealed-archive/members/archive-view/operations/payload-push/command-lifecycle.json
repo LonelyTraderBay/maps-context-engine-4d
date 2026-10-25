@@ -1,0 +1,134 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "e687c9bb-7d96-4e28-9a6e-1dd8eb127d1e",
+  "lifecycle_id": "115e0cef-0328-403a-bff1-b79972b6c47c",
+  "retry_index": 0,
+  "assignment_ref": "assignment:T085",
+  "task_id": "T085",
+  "task_revision": 1,
+  "delivery_id": "33499f70-9889-4f8b-8776-9b46555825e5",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r1-payload-normal-push",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:9813fe7299ff3b103531e8350614f27b1737063d",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "29a3ea41eb00fc17e20d52460d704c7738679a6c:refs/heads/main"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "archive-view/operations/payload-push/push-driver.ps1",
+    "input_refs": [
+      "tools/ci/check-plan.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/local-checks/payload/attempt-4/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "bfa01b91730ed4b3f2c0eaf9a765bf8e6ade89383b3363036222eb03853b5e8c",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4",
+      "command_source_sha256": "d33447cb59d13fe8141fd81ed87fb023c2e3f261bf41147a390123e440d8e2ef"
+    },
+    "expected_writes": [
+      "archive-view/operations/payload-push/github-tool-repo-observation.json",
+      "archive-view/operations/payload-push/remote-config.json",
+      "archive-view/operations/payload-push/github-repository-preflight.json",
+      "archive-view/operations/payload-push/github-branch-preflight.json",
+      "archive-view/operations/payload-push/preflight.json",
+      "archive-view/operations/payload-push/push-output.txt",
+      "archive-view/operations/payload-push/github-repository-postflight-attempt-1.json",
+      "archive-view/operations/payload-push/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/payload-push/postflight-attempt-1-stale.json",
+      "archive-view/operations/payload-push/postflight-attempt-1-classification.json",
+      "archive-view/operations/payload-push/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/postflight-attempt-2-classification.json",
+      "archive-view/operations/payload-push/github-repository-postflight.json",
+      "archive-view/operations/payload-push/github-branch-postflight.json",
+      "archive-view/operations/payload-push/postflight.json",
+      "archive-view/operations/payload-push/postflight-query-metadata.json",
+      "archive-view/operations/payload-push/push-operation.json",
+      "archive-view/operations/payload-push/destination-observation.json",
+      "archive-view/operations/payload-push/command-lifecycle.json",
+      "archive-view/operations/payload-push/retention.json",
+      "archive-view/operations/payload-push/push-driver.ps1",
+      "archive-view/operations/payload-push/reconcile-postflight.ps1",
+      "archive-view/operations/payload-push/finalize-postflight-v3.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 29a3ea41eb00fc17e20d52460d704c7738679a6c:refs/heads/main"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "archive-view/operations/payload-push/retention.json",
+    "deadline_at_utc": "2026-10-25T08:22:54.7211195Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "009819ae-5834-41b5-b360-3df0146739d5",
+    "output_root": "archive-view/operations/payload-push",
+    "cleanup_plan_ref": "archive-view/operations/payload-push/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T08:12:56.5814847Z",
+    "completed_at_utc": "2026-10-25T08:17:40.6286003Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/payload-push/push-output.txt"
+    ],
+    "artifact_refs": [
+      "archive-view/operations/payload-push/github-tool-repo-observation.json",
+      "archive-view/operations/payload-push/remote-config.json",
+      "archive-view/operations/payload-push/github-repository-preflight.json",
+      "archive-view/operations/payload-push/github-branch-preflight.json",
+      "archive-view/operations/payload-push/preflight.json",
+      "archive-view/operations/payload-push/push-output.txt",
+      "archive-view/operations/payload-push/github-repository-postflight-attempt-1.json",
+      "archive-view/operations/payload-push/github-branch-postflight-attempt-1-stale.json",
+      "archive-view/operations/payload-push/postflight-attempt-1-stale.json",
+      "archive-view/operations/payload-push/postflight-attempt-1-classification.json",
+      "archive-view/operations/payload-push/github-repository-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/postflight-attempt-2-cachebusted-success.json",
+      "archive-view/operations/payload-push/postflight-attempt-2-classification.json",
+      "archive-view/operations/payload-push/github-repository-postflight.json",
+      "archive-view/operations/payload-push/github-branch-postflight.json",
+      "archive-view/operations/payload-push/postflight.json",
+      "archive-view/operations/payload-push/postflight-query-metadata.json",
+      "archive-view/operations/payload-push/push-operation.json",
+      "archive-view/operations/payload-push/destination-observation.json",
+      "archive-view/operations/payload-push/command-lifecycle.json",
+      "archive-view/operations/payload-push/retention.json",
+      "archive-view/operations/payload-push/push-driver.ps1",
+      "archive-view/operations/payload-push/reconcile-postflight.ps1",
+      "archive-view/operations/payload-push/finalize-postflight-v3.ps1"
+    ]
+  }
+}

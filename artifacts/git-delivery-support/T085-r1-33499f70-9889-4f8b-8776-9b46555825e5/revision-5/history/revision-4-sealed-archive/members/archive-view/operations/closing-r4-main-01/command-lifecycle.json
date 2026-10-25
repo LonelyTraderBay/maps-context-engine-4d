@@ -1,0 +1,86 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "c1cf62a2-dc62-4e0a-a613-bcb34885dd55",
+  "lifecycle_id": "aafc3aef-7b88-4100-ad7e-f6731a238a24",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 4,
+  "delivery_id": "711606c8-9642-44fc-905a-7ebfd8cfd686",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r4-closing-C-push-main",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:f08efd6b3219f4b48c50d5224b6b84abb82edc22",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "2c3754a4dc8c20eacabf790b48def7225da3bcad:refs/heads/main"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "archive-view/operations/closing-r4-main-01/push-driver.ps1",
+    "input_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/check-plan-canonical.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-4/local-checks/closing/attempt-1/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "check_plan_sha256": "f2b9c8a6e6979bea3fa659e5f13075a33f2232663c672021191c42294135de62",
+      "remote_config_sha256": "75e1608febf1b5545e75be6ae0e23d93f15b75543512161697f6171086dbd8e4",
+      "command_source_sha256": "ffad87890d00afea0e75f54c0acc4979d4c176a87f8788eb2baa5d026cb422b2"
+    },
+    "expected_writes": [
+      "archive-view/operations/closing-r4-main-01/github-tool-repo-observation.json archive-view/operations/closing-r4-main-01/remote-config.json archive-view/operations/closing-r4-main-01/github-repository-preflight.json archive-view/operations/closing-r4-main-01/github-branch-preflight.json archive-view/operations/closing-r4-main-01/preflight.json archive-view/operations/closing-r4-main-01/push-output.txt archive-view/operations/closing-r4-main-01/github-repository-postflight.json archive-view/operations/closing-r4-main-01/github-branch-postflight.json archive-view/operations/closing-r4-main-01/postflight.json archive-view/operations/closing-r4-main-01/push-operation.json archive-view/operations/closing-r4-main-01/destination-observation.json archive-view/operations/closing-r4-main-01/command-lifecycle.json archive-view/operations/closing-r4-main-01/retention.json archive-view/operations/closing-r4-main-01/push-driver.ps1"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 2c3754a4dc8c20eacabf790b48def7225da3bcad:refs/heads/main"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "archive-view/operations/closing-r4-main-01/retention.json",
+    "deadline_at_utc": "2026-10-25T14:50:46.0024977Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "eacd4283-6dc1-4615-a70f-6fe1e9072500",
+    "output_root": "archive-view/operations/closing-r4-main-01",
+    "cleanup_plan_ref": "archive-view/operations/closing-r4-main-01/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T14:40:47.9717054Z",
+    "completed_at_utc": "2026-10-25T14:40:53.0328285Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "archive-view/operations/closing-r4-main-01/push-output.txt"
+    ],
+    "artifact_refs": [
+      "archive-view/operations/closing-r4-main-01/github-tool-repo-observation.json archive-view/operations/closing-r4-main-01/remote-config.json archive-view/operations/closing-r4-main-01/github-repository-preflight.json archive-view/operations/closing-r4-main-01/github-branch-preflight.json archive-view/operations/closing-r4-main-01/preflight.json archive-view/operations/closing-r4-main-01/push-output.txt archive-view/operations/closing-r4-main-01/github-repository-postflight.json archive-view/operations/closing-r4-main-01/github-branch-postflight.json archive-view/operations/closing-r4-main-01/postflight.json archive-view/operations/closing-r4-main-01/push-operation.json archive-view/operations/closing-r4-main-01/destination-observation.json archive-view/operations/closing-r4-main-01/command-lifecycle.json archive-view/operations/closing-r4-main-01/retention.json archive-view/operations/closing-r4-main-01/push-driver.ps1"
+    ]
+  }
+}
