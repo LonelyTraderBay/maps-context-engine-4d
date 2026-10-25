@@ -1,0 +1,89 @@
+{
+  "format_version": 1,
+  "kind": "command_lifecycle",
+  "operation_id": "99057b26-2868-4ec4-8272-29a3c026970a",
+  "lifecycle_id": "12ea9bf2-7c74-43e1-a93c-e0140c0ccdfe",
+  "retry_index": 0,
+  "assignment_ref": "S53/AW-01/AW-08:user-assignment-2026-10-15",
+  "task_id": "T085",
+  "task_revision": 5,
+  "delivery_id": "f2f6cdbc-13f0-493d-9f83-d2992aded582",
+  "command_state": "SUCCEEDED",
+  "contract": {
+    "command_id": "T085-r5-payload-push-codex-t003-d089-regressions",
+    "task_mode": "implement",
+    "owner": "Codex",
+    "baseline_ref": "git:c04441ab75baac426492b8ad5be9167dcb1b0f3c",
+    "executable": "git",
+    "argv": [
+      "push",
+      "--porcelain",
+      "origin",
+      "3ea6c38d67772b26ffce5ad4a8661772aa806cdc:refs/heads/codex/t003-d089-regressions"
+    ],
+    "cwd": ".",
+    "tool_versions": {
+      "git": "git version 2.56.0.windows.2",
+      "powershell": "7.6.5"
+    },
+    "command_source_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-driver.ps1",
+    "input_refs": [
+      "tools/ci/check-plan.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/task-mode.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/local-checks/payload/attempt-1/summary.json"
+    ],
+    "contracts": [
+      "S51",
+      "PUSH-FRESH-01",
+      "COMMAND-LIFECYCLE-01"
+    ],
+    "fingerprints": {
+      "remote_config_sha256": "6d4cf4a3ee42c3e36029f86ab1bfb6e541a998ddee302edd6b698a2afe2e9e89",
+      "command_source_sha256": "99f02807b462d8b412307759c44acf0fc29aecc4a0757b704712e8d4b21c935d"
+    },
+    "expected_writes": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-tool-repo-observation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/remote-config.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-output.txt artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-1-classification.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-classification.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-query-metadata.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-operation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/destination-observation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/command-lifecycle.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/retention.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-driver.ps1 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/finalize-postflight.ps1",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-classification.json"
+    ],
+    "temporary_roots": [],
+    "cache_roots": [],
+    "log_roots": [],
+    "download_roots": [],
+    "network_scope": [
+      "api.github.com",
+      "github.com"
+    ],
+    "child_processes": [
+      "C:\\Program Files\\Git\\cmd\\git.exe push --porcelain origin 3ea6c38d67772b26ffce5ad4a8661772aa806cdc:refs/heads/codex/t003-d089-regressions"
+    ],
+    "side_effect_class": "external_service",
+    "permission_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/authority/task-start.txt",
+    "storage_mode": "bounded_small",
+    "volumes": [],
+    "budget_refs": [],
+    "retention_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/retention.json",
+    "deadline_at_utc": "2026-10-25T16:15:12.7739728Z",
+    "monitor_interval_ms": 1000,
+    "run_id": "7c15a833-6b1c-4c2c-b84b-f33cf2571afc",
+    "output_root": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01",
+    "cleanup_plan_ref": "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/retention.json",
+    "cleanup_permission_ref": null
+  },
+  "result": {
+    "started_at_utc": "2026-10-25T16:05:14.5889584Z",
+    "completed_at_utc": "2026-10-25T16:05:24.7259702Z",
+    "command_exit_status": 0,
+    "termination_reason": "completed",
+    "cleanup_status": "NOT_REQUIRED",
+    "final_status": "SUCCEEDED",
+    "outputs_created": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-output.txt"
+    ],
+    "artifact_refs": [
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-tool-repo-observation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/remote-config.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/preflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-output.txt artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-1-stale.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-1-classification.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-cachebusted-success.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-classification.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-repository-postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-query-metadata.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-operation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/destination-observation.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/command-lifecycle.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/retention.json artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/push-driver.ps1 artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/finalize-postflight.ps1",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/github-branch-postflight-attempt-2-cachebusted-success.json",
+      "artifacts/git-delivery-support/T085-r1-33499f70-9889-4f8b-8776-9b46555825e5/revision-5/operations/payload-P5-task-branch-01/postflight-attempt-2-classification.json"
+    ]
+  }
+}

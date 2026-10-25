@@ -1,0 +1,5 @@
+docs(progress): [P0][T085] Ghi nhận payload checkpoint P6
+
+Mục đích: Đóng băng kết quả local PASS trên payload parent để closing chuyển VERIFY sang DONE theo CLOSE-DIFF.
+Thay đổi: Ghi nhận frozen acceptance attempt 2 đạt 15/15 trên P5; thêm E894 và giữ payload SHA/CI, closing, archive/readback, live ở PENDING cho đến khi có đúng chứng cứ.
+Kiểm tra: SPEC v1.6.14 PASS; test_spec_check.py 151 chạy, 150 pass, 1 skip do giới hạn symlink của filesystem; frozen payload acceptance 15/15 trên P5; payload exact-SHA CI cho P6 còn PENDING.
