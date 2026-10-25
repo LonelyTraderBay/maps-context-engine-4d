@@ -1,0 +1,5 @@
+docs(progress): [P0][T085] Ghi nhận exact-SHA CI P6
+
+Mục đích: Ghi nhận kết quả exact-SHA CI P6 và chuẩn bị trạng thái VERIFY bắt buộc trước closing.
+Thay đổi: Thêm E895 với raw evidence cho hai ref; chuyển candidate hiện hành sang VERIFY, giữ payload SHA/CI của P7 cùng closing, archive/readback và live ở PENDING.
+Kiểm tra: SPEC v1.6.14 PASS; test_spec_check.py 151 chạy, 150 pass, 1 skip do filesystem không tạo được symlink; P6 exact CI đạt 6/6 trên main và codex/t003-d089-regressions.
