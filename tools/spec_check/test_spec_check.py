@@ -39,7 +39,7 @@ from tools.spec_check.semantics import (
     validate_semantics,
 )
 from tools.spec_check.spec import _effective_status, validate_spec_text
-from tools.spec_check.archive import ArchiveError, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
+from tools.spec_check.archive import ArchiveError, _load_index, _member_path, _read_bounded, _rename_noreplace, persist_publication_projection, publish_archive, verify_archive
 from tools.ci.publish_git_archive import main as publish_git_archive_main
 from tools.spec_check.github_observer import (
     GitHubApiClient,
@@ -2120,6 +2120,7 @@ class ArchivePublicationTests(unittest.TestCase):
         root: Path,
         *,
         include_powershell: bool = False,
+        powershell_script_content: str | None = None,
         powershell_script_count: int = 0,
     ) -> dict[str, object]:
         objects, raw = _delivery_link_bundle()
@@ -2130,7 +2131,11 @@ class ArchivePublicationTests(unittest.TestCase):
         raw["history/invalidation-note.md"] = "Bằng chứng invalidation UTF-8 được giữ nguyên.\n"
         raw["history/invalidation-fixture.log"] = "Lỗi precheck: thành viên .log UTF-8 cần được giữ nguyên.\n"
         if include_powershell:
-            raw["operations/retain.ps1"] = "Write-Output 'Bằng chứng giữ nguyên'\r\n"
+            raw["operations/retain.ps1"] = (
+                powershell_script_content
+                if powershell_script_content is not None
+                else "Write-Output 'Bằng chứng giữ nguyên'\r\n"
+            )
         for index in range(powershell_script_count):
             raw[f"operations/retain-{index + 1}.ps1"] = (
                 f"Write-Output 'Bằng chứng {index + 1} giữ nguyên'\r\n"
@@ -2209,18 +2214,21 @@ class ArchivePublicationTests(unittest.TestCase):
     def test_archive_preserves_utf8_powershell_script_as_raw_text_through_cold_readback(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mce4d-archive-powershell-raw-") as temp:
             root = Path(temp)
-            archive = self._seed_valid_archive(root, include_powershell=True)
-            expected = "Write-Output 'Bằng chứng giữ nguyên'\r\n".encode("utf-8")
+            archive = self._seed_valid_archive(root, include_powershell=True, powershell_script_content="1\r\n")
+            expected = "1\r\n".encode("utf-8")
             published = publish_archive(root, archive, spec_path=SPEC_PATH)
             cold = verify_archive(root, archive["delivery_id"], spec_path=SPEC_PATH)
             final = root / published["planned_archive_path"]
             index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
+            _, raw_members, member_bytes = _load_index(final, archive)
             self.assertIn("operations/retain.ps1", index["raw_members"])
             self.assertEqual((final / "operations" / "retain.ps1").read_bytes(), expected)
+            self.assertEqual(raw_members["operations/retain.ps1"], "1\r\n")
+            self.assertEqual(member_bytes["operations/retain.ps1"], expected)
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])
 
     def test_archive_preserves_seven_utf8_powershell_scripts_through_cold_readback(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="mce4d-archive-seven-powershell-raw-") as temp:
+        with tempfile.TemporaryDirectory(prefix="mce4d-ps1-seven-") as temp:
             root = Path(temp)
             archive = self._seed_valid_archive(root, powershell_script_count=7)
             expected = {
@@ -2234,7 +2242,10 @@ class ArchivePublicationTests(unittest.TestCase):
             final = root / published["planned_archive_path"]
             index = json.loads((final / "bundle-index.json").read_text(encoding="utf-8"))
 
-            self.assertTrue(set(expected).issubset(index["raw_members"]))
+            archived_scripts = {
+                ref for ref in index["raw_members"] if Path(ref).suffix.casefold() == ".ps1"
+            }
+            self.assertEqual(set(expected), archived_scripts)
             for relative, contents in expected.items():
                 self.assertEqual((final.joinpath(*relative.split("/"))).read_bytes(), contents)
             self.assertEqual(published["archive_manifest_sha256"], cold["archive_manifest_sha256"])

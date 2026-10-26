@@ -226,12 +226,15 @@ def _load_index(root: Path, archive: dict[str, Any]) -> tuple[dict[str, Any], di
             text = data.decode("utf-8", "strict")
         except UnicodeDecodeError as exc:
             raise ArchiveError(f"raw member không phải UTF-8 tại {rel}: {exc}") from exc
+        if Path(rel).suffix.casefold() == ".ps1":
+            raw[rel] = text
+            continue
         try:
             raw[rel] = json.loads(text)
         except json.JSONDecodeError as exc:
-            if Path(rel).suffix.casefold() not in {".md", ".txt", ".log", ".ps1"}:
+            if Path(rel).suffix.casefold() not in {".md", ".txt", ".log"}:
                 raise ArchiveError(f"raw JSON member lỗi tại {rel}: {exc}") from exc
-            # Selection invalidation and delivery retention may include UTF-8 text evidence/scripts.
+            # Selection invalidation and delivery retention may include UTF-8 text evidence.
             # Keep its decoded text for graph checks while member_bytes preserves
             # the original bytes and manifest hash without normalization.
             raw[rel] = text
